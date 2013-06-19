@@ -238,12 +238,12 @@ void C_GCTRL::attach_default_children(void){
             strcpy(action,pGUI->last_control_clicked->action);
         }
         if(strlen(action)){
-            strcpy(temp,dlcs_getcwd());
+            dlcs_getcwd(temp);
             dlcs_chdir(action);
-            dirs=Dir2Vector(dlcs_getcwd(),"*.*");
+            dirs=Dir2Vector(dlcs_getcwd(temp),"*.*");
             dlcs_chdir(temp);
         }else{
-            dirs=Dir2Vector(dlcs_getcwd(),"*.*");
+            dirs=Dir2Vector(dlcs_getcwd(temp),"*.*");
         }
 
         sort(dirs.begin(), dirs.end());
@@ -2063,6 +2063,7 @@ void C_GUI::call_do_line(char *line){
     int prop=0;
 	char r,g,b;
 	int i;
+	char temp[1024]; memset(temp,0,1024);
     static char cur_gump[1024];
     static char cur_ctrl[1024];
     static eGUILOADMODE mode;
@@ -2127,7 +2128,9 @@ void C_GUI::call_do_line(char *line){
                     {
                         if(dscc((char *)vin[0].c_str(),"name"))
                         {
-                            pLog->_DebugAdd("Loading GUI file -> %s",                                va("%s%cgumps%c%s",dlcs_getcwd(),PATH_SEP,PATH_SEP,vin[1].c_str()) );
+                            dlcs_getcwd(temp);
+                            pLog->_DebugAdd("Loading GUI file -> %s",
+                                            va("%s%cgumps%c%s",temp,PATH_SEP,PATH_SEP,vin[1].c_str()) );
                         }
                     }
                 }
