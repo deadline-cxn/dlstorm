@@ -25,9 +25,7 @@ class CLog
 public:
 	CLog(void);
     CLog(char *szFilename);
-    CLog(char *szFilename, bool bQ);
 	virtual ~CLog(void);
-
     void Initialize(void);
     void AddEntry(char *fmt, ...);
     void AddEntryNoTime(char *fmt, ...);
@@ -39,7 +37,6 @@ public:
     void LineFeedsOff(void);
     bool IsActive(void);
 	bool Restart(void);
-
 	char szBegin[255];
 	char szEnd[255];
 	char szLineSep[255];
@@ -49,11 +46,8 @@ public:
 	bool bActive;
     bool bLineFeeds;
     bool disable;
-    bool bDebug;
-    bool bQuiet;
 
-    void _Add(const char *fmt, ...);
-    void _DebugAdd(const char *fmt, ...);
+    void _Add(char *fmt, ...);
 };
 
 #endif

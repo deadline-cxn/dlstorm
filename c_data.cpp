@@ -146,7 +146,7 @@ void CC_Data::SetToDefaults(void)
     SelectedCharacterSlot=0;
     currentsample=0;
 //    strcpy(LastDirectory,"");
-
+    Mode=0;
 
 	strcpy(ServerAuthor,"");
 
@@ -154,12 +154,11 @@ void CC_Data::SetToDefaults(void)
 //	ClearCharacters();
 	ServerListOffset=0;
 	ServerCharacterListOffset=0;
-	// ID=0;
-	memset(session_id,0,64);
+	ID=0;
 	Access=0;
 	strcpy(szAccessName,"");
 //	strcpy(PlayMouseLB,"");
-//    dwKeyPressTimer=dlcs_get_tickcount();
+    dwKeyPressTimer=dlcs_get_tickcount();
 
     bDrawMapObjects=true;
     bDrawMap=true;
@@ -172,6 +171,15 @@ void CC_Data::SetToDefaults(void)
     ScreenHeight= 768; //SCREEN_HEIGHT;
     ScreenColors= 16; //SCREEN_COLORS;
 
+    screen_res_640x480x16=false;
+    screen_res_800x600x16=false;
+    screen_res_1024x768x16=false;
+    screen_res_1280x1024x16=false;
+
+    screen_res_640x480x32=false;
+    screen_res_800x600x32=false;
+    screen_res_1024x768x32=false;
+    screen_res_1280x1024x32=false;
 }
 
 /***************************************************************/
@@ -471,9 +479,11 @@ bool CC_Data::bSave(void)
 		return false;
 
 	fputs("***************************************************************\n",fout);
-	fputs("** Mantra initialization file                                **\n",fout);
+	fputs("** EMBER                                                     **\n",fout);
 	fputs("***************************************************************\n",fout);
-    fputs("NOTE: If Mantra has problems starting, try renaming this file.\n",fout);
+	fputs("** Client initialization file                                **\n",fout);
+	fputs("***************************************************************\n",fout);
+    fputs("NOTE: If Ember has problems starting, try renaming this file.\n",fout);
 
 	// set name name
 	sprintf(Temp,"Name=%s\n",Name);

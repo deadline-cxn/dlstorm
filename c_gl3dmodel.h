@@ -1,268 +1,16 @@
-#ifndef DL_OPEN_GL_MODEL
-#define DL_OPEN_GL_MODEL
 
+#ifndef B4_MODEL
+#define B4_MODEL
+
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 #include <string>
 #include <vector>
 
 using namespace std;
-
-
 #include "c_gltexture.h"
-#include "c_log.h"
-
-
-/*
-
-#ifndef __MD2MODEL_H__
-#define __MD2MODEL_H__
-
-#include <vector>
-#include <string>
-#include <map>
-
-
-
-// #include "Texture.h"
-
-using std::map;
-using std::vector;
-using std::string;
-
-
-// OpenGL vector types
-typedef GLfloat vec2_t[2];
-typedef GLfloat vec3_t[3];
-
-
-// Md2 header
-struct Md2Header_t
-{
-  int ident;          // Magic number, "IDP2"
-  int version;        // Md2 format version, should be 8
-  int skinwidth;      // Texture width
-  int skinheight;     // Texture height
-  int framesize;      // Size of a frame, in bytes
-  int num_skins;      // Number of skins
-  int num_vertices;   // Number of vertices per frame
-  int num_st;         // Number of texture coords
-  int num_tris;       // Number of triangles
-  int num_glcmds;     // Number of OpenGL commands
-  int num_frames;     // Number of frames
-  int offset_skins;   // offset to skin data
-  int offset_st;      // offset to texture coords
-  int offset_tris;    // offset to triangle data
-  int offset_frames;  // offset to frame data
-  int offset_glcmds;  // offset to OpenGL commands
-  int offset_end;     // offset to the end of the file
-};
-
-
-// Skin data
-struct Md2Skin_t
-{
-  char name[64];  // Texture's filename
-};
-
-
-// Texture coords.
-struct Md2TexCoord_t
-{
-  short s;
-  short t;
-};
-
-
-// Triangle data
-struct Md2Triangle_t
-{
-  unsigned short vertex[3];  // Triangle's vertex indices
-  unsigned short st[3];      // Texture coords. indices
-};
-
-
-// Vertex data
-struct Md2Vertex_t
-{
-  unsigned char v[3];         // Compressed vertex position
-  unsigned char normalIndex;  // Normal vector index
-};
-
-
-// Frame data
-struct Md2Frame_t
-{
-  // Destructor
-  ~Md2Frame_t () {
-    delete [] verts;
-  }
-
-  vec3_t scale;        // Scale factors
-  vec3_t translate;    // Translation vector
-  char name[16];       // Frame name
-  Md2Vertex_t *verts;  // Frames's vertex list
-};
-
-
-// OpenGL command packet
-struct Md2Glcmd_t
-{
-  float s;    // S texture coord.
-  float t;    // T texture coord.
-  int index;  // Vertex index
-};
-
-
-// Animation infos
-struct Md2Anim_t
-{
-  int start;  // first frame index
-  int end;    // last frame index
-};
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// class Md2Model -- MD2 Model Data Class.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class Md2Model
-{
-public:
-  // Constructors/destructor
-  Md2Model (const string &filename);
-//  throw (std::runtime_error);
-  ~Md2Model ();
-
-public:
-  // Internal types
-//  typedef map<string, Texture*> SkinMap;
-  typedef map<string, Md2Anim_t> AnimMap;
-
-public:
-  // Public interface
-  bool loadTexture (const string &filename);
-  void setTexture (const string &filename);
-
-  void renderFrameImmediate (int frame);
-  void drawModelItpImmediate (int frameA, int frameB, float interp);
-
-  void renderFrameWithGLcmds (int frame);
-  void drawModelItpWithGLcmds (int frameA, int frameB, float interp);
-
-  void setScale (GLfloat scale) { _scale = scale; }
-
-  // Accessors
-//  const SkinMap &skins () const { return _skinIds; }
-  const AnimMap &anims () const { return _anims; }
-
-private:
-  // Internal functions
-  void setupAnimations ();
-
-private:
-  // Member variables
-
-  // Constants
-  static vec3_t _kAnorms[162];
-  static int _kMd2Ident;
-  static int _kMd2Version;
-
-  // Model data
-  Md2Header_t _header;
-  Md2Skin_t *_skins;
-  Md2TexCoord_t *_texCoords;
-  Md2Triangle_t *_triangles;
-  Md2Frame_t *_frames;
-  int *_glcmds;
-
-  GLfloat _scale;
-//  Texture *_tex;
-
-//  SkinMap _skinIds;
-  AnimMap _anims;
-};
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// class Md2Object -- MD2 Object Class.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class Md2Object
-{
-public:
-  // Public internal types/enums
-  enum Md2RenderMode
-    {
-      kDrawImmediate = 0,
-      kDrawGLcmds,
-    };
-
-public:
-  // Constructor/destructor
-  Md2Object ();
-  Md2Object (Md2Model *model);
-  ~Md2Object ();
-
-public:
-  // Public interface
-  void drawObjectItp (bool animated, Md2RenderMode renderMode);
-  void drawObjectFrame (int frame, Md2RenderMode renderMode);
-  void animate (int startFrame, int endFrame, float percent);
-  void animate (float percent);
-
-  void setModel (Md2Model *model);
-  void setScale (float scale) { _scale = scale; }
-  void setAnim (const string &name);
-
-  // Accessors
-  const Md2Model *model () const { return _model; }
-  float scale () const { return _scale; }
-  const string &currentAnim () const { return _currentAnim; }
-
-private:
-  // Member variables
-  Md2Model *_model;
-
-  int _currFrame;
-  int _nextFrame;
-  float _interp;
-
-  float _percent;
-  float _scale;
-
-  // Animation data
-  const Md2Anim_t *_animInfo;
-  string _currentAnim;
-};
-
-#endif // __MD2_H__
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
-
-
-
 
 
 
@@ -280,11 +28,23 @@ typedef unsigned char byte;
 #define MD2_MAX_FRAMESIZE       (MD2_MAX_VERTICES * 4 + 128)
 
 // This is our 3D point class.  This will be used to store the vertices of our model.
-class CVector3 { public: float x, y, z; };
-class CColor3  { public: float r, g, b; };
+class CVector3
+{
+public:
+    float x, y, z;
+};
+class CColor3
+{
+public:
+    float r, g, b;
+};
 
 // This is our 2D point class.  This will be used to store the UV coordinates.
-class CVector2 { public: float x, y; };
+class CVector2
+{
+public:
+    float x, y;
+};
 struct tFace
 {
     int vertIndex[3];           // indicies for the verts that make up this triangle
@@ -326,13 +86,13 @@ struct tMaterialInfo
 {
     char  strName[255];         // The texture name
     char  strFile[255];         // The texture file name (If this is set it's a texture map)
-    unsigned char color[3];    // The color of the object (R, G, B)
+    unsigned char color[3];             // The color of the object (R, G, B)
     int   texureId;             // the texture ID
     float uTile;                // u tiling of texture  (Currently not used)
     float vTile;                // v tiling of texture  (Currently not used)
     float uOffset;              // u offset of texture  (Currently not used)
     float vOffset;              // v offset of texture  (Currently not used)
-    CGLTexture  *texture;
+    CGLTexture  texture;
 } ;
 
 
@@ -359,7 +119,6 @@ public:
 
     vector<tAnimationInfo>  pAnimations;// The list of animations (NEW)
     vector<tMaterialInfo>   pMaterials; // The list of material information (Textures and colors)
-    CGLTexture              *texture;
     vector<t3DObject>       pObject;    // The object list for our model
 };
 
@@ -445,9 +204,8 @@ class CLoadMD2
 {
 
 public:
-    CLoadMD2(CLog *pInLog);
+    CLoadMD2();
     ~CLoadMD2() {} ;
-    CLog *pLog;
 
     bool ImportMD2(t3DModel *pModel, char *strFileName, char *strTexture);
     void ReadMD2Data();
@@ -472,11 +230,7 @@ class CGLModel
 {
 public:
     CGLModel();
-    CGLModel(CLog *pInLog);
     ~CGLModel();
-
-    bool bMadeLog;
-    CLog *pLog;
 
     CGAF *pGAF;
     char name[64];
@@ -498,9 +252,6 @@ public:
     CLoadMD2 *MD2;
     t3DModel *Model;
     CGLModel *next;
-    CGLModel *prev;
 };
-
-
 
 #endif//B4_MODEL

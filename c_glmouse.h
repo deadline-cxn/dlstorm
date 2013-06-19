@@ -38,19 +38,17 @@ public:
     GLvoid          draw(void);
 };
 
-class C_Mouse
+class C_GLMouse
 {
 public:
 
-    C_Mouse();
-    C_Mouse(CGAF *pInGAF, CLog *pInLog);
-    ~C_Mouse();
+    C_GLMouse();
+    C_GLMouse(CGAF *pInGAF, CLog *pInLog);
+    ~C_GLMouse();
 
     CLog            *pLog;
     CGAF            *pGAF;
     C_MouseCursor   *pCursor;
-
-    void ClearClicks(void);
 
     bool bLeftDown;
     bool bMiddleDown;

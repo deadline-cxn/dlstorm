@@ -72,16 +72,19 @@ CGAF::CGAF(char *file,int comp)
 	Elements=(GAFFile_ElmHeader*)malloc(sizeof(GAFFile_ElmHeader)*MaxElements);
 	SetFileDescription("[GAF Game Archive File]");
     Open(file,0);
+    //CabLog=new CLog(va("%s.log",file));
+    //CabLog->AddEntry(va("GAF [%s] constructed",file));
 }
 
 CGAF::~CGAF()
 {
+    //CabLog->AddEntry("GAF deconstructed");
+    //DEL(CabLog);
 	free(Elements);
 	Close();
 }
 
-// _bIgnoreDescription = true to ignore the file's Description.
-
+// _bIgnoreDescription = true to ignore the NUK file's Description.
 bool CGAF::Open ( LPSTR fn, bool _bIgnoreDescription )
 {
 	Close();
@@ -118,8 +121,7 @@ bool CGAF::Create(LPSTR fn)
 	return Open(fn);
 }
 
-// _bIgnoreDescription = true to ignore the file's Description.
-
+// _bIgnoreDescription = true to ignore the NUK file's Description.
 bool CGAF::ReadFile(bool _bIgnoreDescription)
 {
 	GAFFile_ElmHeader TempElement;
@@ -132,7 +134,7 @@ bool CGAF::ReadFile(bool _bIgnoreDescription)
     // Ignore the header if the user want's us to.
     if ( _bIgnoreDescription == false )
     {
-        if(dscc(Header.Description,FileDesc)==0)return false;
+        if(dscc(Header.Description,FileDesc)!=0)return false;
     }                                   // EO: if
 
 
@@ -648,6 +650,7 @@ bool CGAF::Move(LPSTR Name, LPSTR Destination)
 
 bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs)
 {
+    //CabLog->AddEntry(va("Adding Directory Files:%s",indir));
     CDirScanner DirScanner;
 	DirScanner.Start(indir);
 	while(DirScanner.GetFile())
@@ -662,6 +665,7 @@ bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs)
 			}
 		}else
 		{
+            //CabLog->AddEntry(va("Adding File:%s",DirScanner.FindData.cFileName));
             if(!AddFile(DirScanner.FindData.cFileName,DirScanner.FindData.cFileName))return false;
 		}
 	}
@@ -675,8 +679,11 @@ bool CGAF::AddDir(LPSTR Name)
 
 bool CGAF::AddDir(LPSTR Dest, LPSTR dirname, bool SubDirs)
 {
-    int n;
+    	int n;
 	char DirName[GAF_NAMESIZE];
+
+    //if(strlen(dirname)) CabLog->AddEntry(va("Adding Directory:%s",dirname));
+    //else CabLog->AddEntry("WTF!!!");
 	if(Dest!=NULL)
 	{
 		strcpy(DirName,Dest);
@@ -723,6 +730,7 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs)
 		{
 			strcpy(FileName,DirName);
 			strcat(FileName,DirScanner.FindData.cFileName);
+            //CabLog->AddEntry(va("Adding File:%s",IndexName));
             if(!AddFile(IndexName,FileName))return false;
 		}
 	}
@@ -744,7 +752,6 @@ int CGAF::GetCompressedFileSize(LPSTR Name)
 }
 
 // Set _bWriteHeader = true to write the header immediately, defaults to false.
-
 bool CGAF::SetFileDescription(LPSTR Desc, bool _bWriteHeader)
 {
     // Vars and Assignment
@@ -771,7 +778,7 @@ int CGAF::Find(LPSTR Name)
 	for(int n=0;n<NumElements;n++)
 	{
 		GetFullPath(n,FullName);
-		if(dscc(FullName,Name)!=0)return n;
+		if(dscc(FullName,Name)==0)return n;
 	}
 	return -1;
 }
@@ -785,7 +792,7 @@ int CGAF::FindDir(LPSTR Name)
 		if(Elements[n].Type==GAFELMTYPE_DIR)
 		{
 			GetFullPath(n,FullName);
-			if(dscc(FullName,Name)!=0)return n;
+			if(dscc(FullName,Name)==0)return n;
 		}
 	}
 	return -1;
@@ -800,7 +807,7 @@ int CGAF::FindFile(LPSTR Name)
 		if(Elements[n].Type==GAFELMTYPE_FILE)
 		{
 			GetFullPath(n,FullName);
-			if(dscc(FullName,Name)!=0)return n;
+			if(dscc(FullName,Name)==0)return n;
 		}
 	}
 	return -1;
@@ -809,7 +816,7 @@ int CGAF::FindFile(LPSTR Name)
 int CGAF::FindDirNumber(LPSTR Name)
 {
 	if(Name==NULL)return 0;
-	if(dscc(Name,"")!=0)return 0;
+	if(dscc(Name,"")==0)return 0;
 	int dn=FindDir(Name);
 	if(dn>=0)return Elements[dn].DirNumber;
 	return -1;

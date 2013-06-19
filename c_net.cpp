@@ -60,9 +60,6 @@ void CCSocket::initSocket(void)
     dMasterRetry    = NET_RETRY_MASTER;
     dBufferedSize   = NET_BUFFERED_SIZE;
     dBufferedQueue  = NET_BUFFERED_QUEUE;
-    PacketBuffer.iLen=0;
-    PacketBuffer.iSequence=0;
-    memset(PacketBuffer.pData,0,MAX_DATAGRAM);
 }
 
 ////////////////////////////////////////////////////////
@@ -147,20 +144,13 @@ void CCSocket::SendMessageNext()
 void CCSocket::ReSendMessage(void)
 {
     unsigned int  iPacketLen,iDataLen,eom;
-    iPacketLen=0;
-    iDataLen=0;
-    eom=0;
     int ret;
     if(iSendBufferLength<=MAX_DATAGRAM) { iDataLen = iSendBufferLength ; eom = NET_FLAG_EOM; }
-    else                                { iDataLen = MAX_DATAGRAM;       eom = 0;   }
-
-    if(iDataLen > MAX_DATAGRAM) return;
-
+    else                                { iDataLen = MAX_DATAGRAM;     eom = 0;   }
     iPacketLen = NET_HEADERSIZE + iDataLen;
-
     PacketBuffer.iLen      = htonl(iPacketLen |(NET_FLAG_RELIABLE | eom));
     PacketBuffer.iSequence = htonl(iSendSequence - 1);
-    memcpy(PacketBuffer.pData, pSendBuffer, iDataLen);
+    memcpy (PacketBuffer.pData, pSendBuffer, iDataLen);
     bSendNext = false;
     ret=nSend((char *)&PacketBuffer, iPacketLen, (struct sockaddr*)&ToAddr);
     if((ret==-1)||(ret!=(int)iPacketLen)) return;
@@ -980,23 +970,23 @@ float   CPacket::fRead(void) {READ(float)}
 char   *CPacket::pRead(void)
 {
     int i;
-    if(iPacketLen<1) return ("null");
-    if(!pPacketBuffer) return ("null");
+    if(iPacketLen<1) return strdup("null");
+    if(!pPacketBuffer) return strdup("null");
     i=iPacketCursor;
     iPacketCursor+=strlen(pPacketBuffer+iPacketCursor)+1;
-    if(iPacketCursor > iPacketLen) return ("null");
+    if(iPacketCursor > iPacketLen) return strdup("null");
     return (char *) (pPacketBuffer+i);
 }
 
 char *CPacket::pRead(int iSize)
 {
     int i;
-    if(iSize==0) return ("null");
-    if(iPacketLen<1) return ("null");
-    if(pPacketBuffer==NULL) return ("null");
+    if(iSize==0) return strdup("null");
+    if(iPacketLen<1) return strdup("null");
+    if(pPacketBuffer==NULL) return strdup("null");
     i=iPacketCursor;
     iPacketCursor+=iSize;
-    if(iPacketCursor > iPacketLen) return ("null");
+    if(iPacketCursor > iPacketLen) return strdup("null");
     return (char *) (pPacketBuffer+i);
 }
 

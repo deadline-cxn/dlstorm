@@ -44,15 +44,15 @@ public:
 
     FMUSIC_MODULE * fmusic;
 
-    typedef struct
-    samplelist {
+    //typedef struct
+    //samplelist {
 
     FSOUND_SAMPLE *sptr;
-    };
+    // };
 
 
 
-    samplelist *sample;
+    //samplelist *sample;
 
 
     unsigned char svol;

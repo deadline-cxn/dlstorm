@@ -64,7 +64,7 @@ void CInetAddress::Ping(void)
     {
         iPingCount = 0;
         fPing = 0;
-        iSocket = NET_OpenSocket(0);
+        //iSocket = OpenSocket(0);
         if (iSocket==-1)
         {
             //Log("Ping() ping to host failed");

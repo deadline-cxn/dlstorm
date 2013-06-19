@@ -1,23 +1,17 @@
+
 #include "dlstorm.h"
 
-#ifdef _DL_INCLUDE_LOG
-    CLog* p_Log;
-    void dLog(const char *fmt, ...){
-        if(!p_Log) return;
-    char ach[1024];
-    va_list va;
-    va_start( va, fmt );
-    vsprintf( ach, fmt, va );
-    va_end( va );
-    p_Log->_Add(ach);
-    }
-#endif
+// extern "C" void Log(char *fmt,...);
 
-// __stdcall DllMain() { return 0; }
-
+//__stdcall DllMain()
+//{
+ //return 0;
+//?/}
 using namespace std;
 
-vector <string> explode(const string &delimiter, const string &str){
+
+vector <string> explode(const string &delimiter, const string &str)
+{
 	vector <string> arr;
 	arr.clear();
 	int strleng=str.length();
@@ -47,8 +41,9 @@ vector <string> explode(const string &delimiter, const string &str){
 	return arr;
 
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-vector <string> Dir2Vector(char *szDir, char *szWildCard){
+
+vector <string> Dir2Vector(char *szDir, char *szWildCard)
+{
     //FILE *fp;
     vector <string> diro;
     diro.clear();
@@ -102,8 +97,9 @@ vector <string> Dir2Vector(char *szDir, char *szWildCard){
 	//fclose(fp);
     return diro;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-bool Dir2File(char *szDir,char *szFile,char *szWildCard){
+
+bool Dir2File(char *szDir,char *szFile,char *szWildCard)
+{
 	FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
@@ -152,62 +148,19 @@ bool Dir2File(char *szDir,char *szFile,char *szWildCard){
 	fclose(fp);
     return true;
 }
+
+// #include "wincrypt.h"
 ////////////////////////////////////////////////////////////////////////////////////////////////
-inline int length(const char* s){ return s?strlen(s):0;}
-////////////////////////////////////////////////////////////////////////////////////////////////
-char* dlcs_strreplace(char *str, const char* what, const char* to){
-    int i, j, k, m, n, delta;
-    int n1, n2, n3;
-    char* p, *q;
-    if (!str || !what)
-        return 0;
-    if (!to)
-        to = "";
-    n1 = length(str);
-    n2 = length(what);
-    n = n1 - n2 + 1;
-    for (i = 0; i < n; ++i)
-    {
-        for (j = 0; j < n2 && what[j] == str[i+j]; ++j)
-            ;
-        if (j == n2) // found
-        {
-            n3 = length(to);
-            delta = n3 - n2;
-            m = n1 - i - n2;
-            if (delta < 0) /* move left */
-            {
-                p = str + (i + n2 + delta);
-                q = p - delta;
-                for (k = 0; k <= m; ++k)
-                    p[k] = q[k];
-            }
-            else if (delta > 0) /* move right */
-            {
-                q = str + n1 - m;
-                p = q + delta;
-                for (k = m; k >= 0; --k)
-                    p[k] = q[k];
-            }
-            for (k = 0; k < n3; ++k)
-                str[i+k] = to[k];
-            return str + i + n3;
-        }
-    }
-    return 0;
+
+char *md5_digest(char *text) // return a md5 digest of text
+{
+	return strdup((char *)md5(text).c_str());
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char* dlcs_strreplaceall(char* str, const char* what, const char* to){
-    char* p = str;
-    while ((p=dlcs_strreplace(p,what,to)) != 0);
-    return str;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-void md5_digest(char *str, char *text){  // return a md5 digest of text
-    strcpy(str,md5(text).c_str());
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *encrypt(char *text){
+
+char *encrypt(char *text)
+{
 	char ntext[1024];	memset(ntext,0,1024);
 	char ntext2[1024];	memset(ntext2,0,1024);
 	int i;
@@ -218,68 +171,82 @@ char *encrypt(char *text){
 		if(ntext2[i]==0) ntext2[i]=1;
 		if(ntext2[i]=='|') ntext2[i]=1;
 	}
-	return (ntext2);
+	return strdup(ntext2);
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *decrypt(char *text){
 
-	return (text);
-}
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_charreplace(char *str, char cold,char cnew){
-	for(int i=0;i<(int)strlen(str);i++){
-		if(str[i]==cold)
-			str[i]=cnew;
+
+char *decrypt(char *text)
+{
+
+	return strdup(text);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+char   *dlcs_strreplace(char cold,char cnew, char *strg)
+{
+	for(int i=0;i<(int)strlen(strg);i++)
+	{
+		if(strg[i]==cold)
+			strg[i]=cnew;
 	}
-	return (str);
+	return strdup(strg);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_get_time(char *x){
+char *dlcs_get_time(void)
+{
     struct tm *dc;
     time_t td;
     time(&td);
     dc=localtime(&td);
-    strcpy(x,asctime(dc));
-    x[strlen(x)-1]=0;
-    return x;
+    char time[1024];
+    strcpy(time,asctime(dc));
+    time[strlen(time)-1]=0;
+    return(strdup(time));
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_convert_time(char *x,struct tm* dc){
+char *dlcs_convert_time(struct tm* dc)
+{
     time_t td;
     time(&td);
     dc=localtime(&td);
-    strcpy(x,asctime(dc));
-    x[strlen(x)-1]=0;
-	return x;
+    char time[1024];
+    strcpy(time,asctime(dc));
+    time[strlen(time)-1]=0;
+	return(strdup(time));
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_timestamp(char *x){
+char *dlcs_timestamp(void)
+{
 	time_t td;
     time( &td );
-    strcpy(x,va("%ld",td));
-	return x;
+    char time[1024];
+    strcpy(time,va("%ld",td));
+	return(strdup(time));
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_readable_timestamp(char *x,char *in){
+
+char *dlcs_readable_timestamp(char *ints)
+{
 	long wtf;
-	wtf=atoi(in);
-	strcpy(x,ctime(&wtf));
-	return x;
+	wtf=atoi("1254546348");
+	return strdup(ctime(&wtf));
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
-char _vx[1024];
-const char *va(const char *format, ...){
-    memset(_vx,0,1024);
-	va_list argptr;
+
+/////////////////////////////////////////////////////////
+
+const char *va(const char *format, ...)
+{
+	va_list		argptr;
+    char string[1024];
     va_start (argptr, format);
-	//vsprintf (string, format,argptr);
-	vsprintf (_vx, format,argptr);
+	vsprintf (string, format,argptr);
 	va_end (argptr);
-	//return (string);
-	return (_vx);
+	return strdup(string);
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int dlcs_hex_to_dec(char *pa){
+int dlcs_hex_to_dec(char *pa)
+{
     if(pa==0) return 0; if(!strlen(pa)) return 0;
     char a; int result=0;
     for(int i=0;i<(int)strlen(pa);i++) {
@@ -295,7 +262,8 @@ int dlcs_hex_to_dec(char *pa){
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 int b2d(char *pa) { return dlcs_bin_to_dec(pa); }
-int dlcs_bin_to_dec(char *pa){
+int dlcs_bin_to_dec(char *pa)
+{
 	if(!pa) return 0; if(!strlen(pa)) return 0;
 	int result=0; char a;
 	for(;;) {
@@ -307,7 +275,8 @@ int dlcs_bin_to_dec(char *pa){
 	return result;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void dlcs_suspend_power_management(void){
+void dlcs_suspend_power_management(void)
+{
 #ifdef _WIN32
   //  TCHAR szPath[MAX_PATH];
   //  HINSTANCE hInstKernel32 = NULL;
@@ -330,7 +299,8 @@ void dlcs_suspend_power_management(void){
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 long getticks(void) { return dlcs_get_tickcount(); }
-long dlcs_get_tickcount(void){
+long dlcs_get_tickcount(void)
+{
 #ifdef _WIN32
     return GetTickCount();
 #else
@@ -339,13 +309,16 @@ long dlcs_get_tickcount(void){
     curtime = (tp.tv_sec - secbase)*1000 + tp.tv_usec/1000; return curtime;
 #endif
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
 int sp_strcmp(char *szOne, char *szTwo) { return dlcs_strcasecmp(szOne,szTwo); }
 int dscc(const char *x, const char *y) { return dlcs_strcasecmp(x,y); }
-int dlcs_strcasecmp(const char *szOne,const char *szTwo){
+int dlcs_strcasecmp(const char *szOne,const char *szTwo)
+{
     int rval=0;
 #ifdef _WIN32
-    if(strcmp(szOne,szTwo)==0) rval=1;
+    if(strcmpi(szOne,szTwo)==0) rval=1;
 #else
     if(strcasecmp(szOne,szTwo)==0) rval=1;
 #endif
@@ -353,7 +326,8 @@ int dlcs_strcasecmp(const char *szOne,const char *szTwo){
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 int sp_mkdir(char *szDirectoryName) { return dlcs_mkdir(szDirectoryName); }
-int dlcs_mkdir(char *szDirectoryName){
+int dlcs_mkdir(char *szDirectoryName)
+{
     int returnval=0;
 #ifdef _WIN32
     if(_mkdir(szDirectoryName)==0) returnval=1;
@@ -365,7 +339,8 @@ int dlcs_mkdir(char *szDirectoryName){
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 int sp_chdir(char *szDirectoryName) { return dlcs_chdir(szDirectoryName); }
-int dlcs_chdir(char *szDirectory){
+int dlcs_chdir(char *szDirectory)
+{
     int returnval=0;
 #ifdef _WIN32
     if(_chdir(szDirectory)==0) returnval=1;
@@ -375,14 +350,17 @@ int dlcs_chdir(char *szDirectory){
     return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *sp_getcwd(char *x) { return dlcs_getcwd(x); }
-char *dlcs_getcwd(char *x){
-    getcwd(x,_MAX_PATH);
-    return x;
+char *sp_getcwd(void) { return dlcs_getcwd(); }
+char *dlcs_getcwd(void)
+{
+    static char string[1024];
+    getcwd(string,_MAX_PATH);
+    return string;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *getos(char *x) { return dlcs_get_os_version(x); }
-char *dlcs_get_os_version(char *x){
+char *getos(void) { return dlcs_get_os_version(); }
+char *dlcs_get_os_version(void)
+{
 #ifdef _WIN32
     char szTemp[128];
     memset(szTemp,0,128);
@@ -395,10 +373,7 @@ char *dlcs_get_os_version(char *x){
     if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) )
     {
         osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-        if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) ){
-            strcpy(x,"unknown");
-            return x;
-        }
+        if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) ) return strdup("unknown");
     }
     switch (osvi.dwPlatformId)
     {
@@ -444,34 +419,53 @@ char *dlcs_get_os_version(char *x){
             }
             break;
     }
-    strcpy(x,szTemp);
-    return x;
+    return strdup(szTemp);
 #else
-    strcpy(x,CPUSTRING);
-    return x;
+    return strdup(CPUSTRING);
 #endif
 }
 
-/* MD5 converted to C++ class by Frank Thilo (thilo@unix-ag.org)
- for bzflag (http://www.bzflag.org) based on:
-   md5.h and md5.c reference implemantion of RFC 1321
+
+/* MD5
+ converted to C++ class by Frank Thilo (thilo@unix-ag.org)
+ for bzflag (http://www.bzflag.org)
+
+   based on:
+
+   md5.h and md5.c
+   reference implemantion of RFC 1321
+
    Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
 rights reserved.
+
 License to copy and use this software is granted provided that it
 is identified as the "RSA Data Security, Inc. MD5 Message-Digest
 Algorithm" in all material mentioning or referencing this software
 or this function.
+
 License is also granted to make and use derivative works provided
 that such works are identified as "derived from the RSA Data
 Security, Inc. MD5 Message-Digest Algorithm" in all material
 mentioning or referencing the derived work.
+
 RSA Data Security, Inc. makes no representations concerning either
 the merchantability of this software or the suitability of this
 software for any particular purpose. It is provided "as is"
 without express or implied warranty of any kind.
-These notices must be retained in any copies of any part of this
-documentation and/or software. */
 
+These notices must be retained in any copies of any part of this
+documentation and/or software.
+
+*/
+
+/* interface header */
+//#include "md5.h"
+
+/* system implementation headers */
+//#include <stdio.h>
+
+
+// Constants for MD5Transform routine.
 #define S11 7
 #define S12 12
 #define S13 17
@@ -490,71 +484,97 @@ documentation and/or software. */
 #define S44 21
 
 ///////////////////////////////////////////////
+
 // F, G, H and I are basic MD5 functions.
 inline MD5::uint4 MD5::F(uint4 x, uint4 y, uint4 z) {
   return x&y | ~x&z;
 }
+
 inline MD5::uint4 MD5::G(uint4 x, uint4 y, uint4 z) {
   return x&z | y&~z;
 }
+
 inline MD5::uint4 MD5::H(uint4 x, uint4 y, uint4 z) {
   return x^y^z;
 }
+
 inline MD5::uint4 MD5::I(uint4 x, uint4 y, uint4 z) {
   return y ^ (x | ~z);
 }
+
 // rotate_left rotates x left n bits.
 inline MD5::uint4 MD5::rotate_left(uint4 x, int n) {
   return (x << n) | (x >> (32-n));
 }
+
 // FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
 // Rotation is separate from addition to prevent recomputation.
 inline void MD5::FF(uint4 &a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) {
   a = rotate_left(a+ F(b,c,d) + x + ac, s) + b;
 }
+
 inline void MD5::GG(uint4 &a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) {
   a = rotate_left(a + G(b,c,d) + x + ac, s) + b;
 }
+
 inline void MD5::HH(uint4 &a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) {
   a = rotate_left(a + H(b,c,d) + x + ac, s) + b;
 }
+
 inline void MD5::II(uint4 &a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac) {
   a = rotate_left(a + I(b,c,d) + x + ac, s) + b;
 }
+
 //////////////////////////////////////////////
+
 // default ctor, just initailize
-MD5::MD5(){
+MD5::MD5()
+{
   init();
 }
+
 //////////////////////////////////////////////
+
 // nifty shortcut ctor, compute MD5 for string and finalize it right away
-MD5::MD5(const std::string &text){
+MD5::MD5(const std::string &text)
+{
   init();
   update(text.c_str(), text.length());
   finalize();
 }
+
 //////////////////////////////
-void MD5::init(){
+
+void MD5::init()
+{
   finalized=false;
+
   count[0] = 0;
   count[1] = 0;
+
   // load magic initialization constants.
   state[0] = 0x67452301;
   state[1] = 0xefcdab89;
   state[2] = 0x98badcfe;
   state[3] = 0x10325476;
 }
+
 //////////////////////////////
+
 // decodes input (unsigned char) into output (uint4). Assumes len is a multiple of 4.
-void MD5::decode(uint4 output[], const uint1 input[], size_type len){
+void MD5::decode(uint4 output[], const uint1 input[], size_type len)
+{
   for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
     output[i] = ((uint4)input[j]) | (((uint4)input[j+1]) << 8) |
       (((uint4)input[j+2]) << 16) | (((uint4)input[j+3]) << 24);
 }
+
 //////////////////////////////
+
 // encodes input (uint4) into output (unsigned char). Assumes len is
 // a multiple of 4.
-void MD5::encode(uint1 output[], const uint4 input[], size_type len){
+void MD5::encode(uint1 output[], const uint4 input[], size_type len)
+{
   for (size_type i = 0, j = 0; j < len; i++, j += 4) {
     output[j] = input[i] & 0xff;
     output[j+1] = (input[i] >> 8) & 0xff;
@@ -562,11 +582,15 @@ void MD5::encode(uint1 output[], const uint4 input[], size_type len){
     output[j+3] = (input[i] >> 24) & 0xff;
   }
 }
+
 //////////////////////////////
+
 // apply MD5 algo on a block
-void MD5::transform(const uint1 block[blocksize]){
+void MD5::transform(const uint1 block[blocksize])
+{
   uint4 a = state[0], b = state[1], c = state[2], d = state[3], x[16];
   decode (x, block, blocksize);
+
   /// Round 1
   FF (a, b, c, d, x[ 0], S11, 0xd76aa478); // 1
   FF (d, a, b, c, x[ 1], S12, 0xe8c7b756); // 2
@@ -584,6 +608,7 @@ void MD5::transform(const uint1 block[blocksize]){
   FF (d, a, b, c, x[13], S12, 0xfd987193); // 14
   FF (c, d, a, b, x[14], S13, 0xa679438e); // 15
   FF (b, c, d, a, x[15], S14, 0x49b40821); // 16
+
   // Round 2
   GG (a, b, c, d, x[ 1], S21, 0xf61e2562); // 17
   GG (d, a, b, c, x[ 6], S22, 0xc040b340); // 18
@@ -601,6 +626,7 @@ void MD5::transform(const uint1 block[blocksize]){
   GG (d, a, b, c, x[ 2], S22, 0xfcefa3f8); // 30
   GG (c, d, a, b, x[ 7], S23, 0x676f02d9); // 31
   GG (b, c, d, a, x[12], S24, 0x8d2a4c8a); // 32
+
   // Round 3
   HH (a, b, c, d, x[ 5], S31, 0xfffa3942); // 33
   HH (d, a, b, c, x[ 8], S32, 0x8771f681); // 34
@@ -618,6 +644,7 @@ void MD5::transform(const uint1 block[blocksize]){
   HH (d, a, b, c, x[12], S32, 0xe6db99e5); // 46
   HH (c, d, a, b, x[15], S33, 0x1fa27cf8); // 47
   HH (b, c, d, a, x[ 2], S34, 0xc4ac5665); // 48
+
   // Round 4
   II (a, b, c, d, x[ 0], S41, 0xf4292244); // 49
   II (d, a, b, c, x[ 7], S42, 0x432aff97); // 50
@@ -635,17 +662,22 @@ void MD5::transform(const uint1 block[blocksize]){
   II (d, a, b, c, x[11], S42, 0xbd3af235); // 62
   II (c, d, a, b, x[ 2], S43, 0x2ad7d2bb); // 63
   II (b, c, d, a, x[ 9], S44, 0xeb86d391); // 64
+
   state[0] += a;
   state[1] += b;
   state[2] += c;
   state[3] += d;
+
   // Zeroize sensitive information.
   memset(x, 0, sizeof x);
 }
+
 //////////////////////////////
+
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block
-void MD5::update(const unsigned char input[], size_type length){
+void MD5::update(const unsigned char input[], size_type length)
+{
   // compute number of bytes mod 64
   size_type index = count[0] / 8 % blocksize;
 
@@ -678,15 +710,21 @@ void MD5::update(const unsigned char input[], size_type length){
   // buffer remaining input
   memcpy(&buffer[index], &input[i], length-i);
 }
+
 //////////////////////////////
+
 // for convenience provide a verson with signed char
-void MD5::update(const char input[], size_type length){
+void MD5::update(const char input[], size_type length)
+{
   update((const unsigned char*)input, length);
 }
+
 //////////////////////////////
+
 // MD5 finalization. Ends an MD5 message-digest operation, writing the
 // the message digest and zeroizing the context.
-MD5& MD5::finalize(){
+MD5& MD5::finalize()
+{
   static unsigned char padding[64] = {
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -715,25 +753,38 @@ MD5& MD5::finalize(){
 
     finalized=true;
   }
+
   return *this;
 }
+
 //////////////////////////////
+
 // return hex representation of digest as string
-std::string MD5::hexdigest() const{
+std::string MD5::hexdigest() const
+{
   if (!finalized)
     return "";
+
   char buf[33];
   for (int i=0; i<16; i++)
     sprintf(buf+i*2, "%02x", digest[i]);
   buf[32]=0;
+
   return std::string(buf);
 }
+
 //////////////////////////////
-std::ostream& operator<<(std::ostream& out, MD5 md5){
+
+std::ostream& operator<<(std::ostream& out, MD5 md5)
+{
   return out << md5.hexdigest();
 }
+
 //////////////////////////////
-std::string md5(const std::string str){
+
+std::string md5(const std::string str)
+{
     MD5 md5 = MD5(str);
+
     return md5.hexdigest();
 }

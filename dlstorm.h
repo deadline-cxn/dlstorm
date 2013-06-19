@@ -5,31 +5,31 @@
 #ifndef _DEADLINE_LIBRARY
 #define _DEADLINE_LIBRARY
 
+//#if _MSC_VER > 1000
+//#pragma once
+//#endif // _MSC_VER > 1000
+
 #include "dlstorm_lib.h"
-
-#ifdef _DL_INCLUDE_LOG
-
-#include "c_log.h"
-    class CLog;
-    extern CLog* p_Log;
-
-    extern "C" void dLog(const char *format, ...);
-#endif
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
 
 vector <string> explode(const string &delimiter, const string &explodeme);
-
-extern char _vx[1024];
-extern "C" const char *va(const char *format, ...);
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-
     vector  <string> Dir2Vector(char *szDir, char *szWildCard);
 	bool	Dir2File(char *szDir,char *szFile,char *szWildCard);
 
-	void    md5_digest(char *str, char *text); // md5 digest of the text
+	char	*md5_digest(char *text); // md5 digest of the text
+
+	char   *encrypt(char *text); // encrypt text
+	char   *decrypt(char *text); // decrypt text
+
+	const char   *va(const char *format, ...);
 
 	void    dlcs_suspend_power_management(void);
 
@@ -42,8 +42,8 @@ extern "C"
     long    getticks(void);
 	long    dlcs_get_tickcount(void);
 
-    char   *getos(char *x);
-	char   *dlcs_get_os_version(char *x);
+    char   *getos(void);
+	char   *dlcs_get_os_version(void);
 
 	int     sp_mkdir(char *szdir);
 	int     dlcs_mkdir(char *szDirectoryName);
@@ -51,8 +51,8 @@ extern "C"
 	int     sp_chdir(char *szdir);
 	int     dlcs_chdir(char *szDirectory);
 
-	char   *sp_getcwd(char *x);
-	char   *dlcs_getcwd(char *x);
+	char   *sp_getcwd(void);
+	char   *dlcs_getcwd(void);
 
 	int     sp_strcmp(char *sz1, char *sz2);
 
@@ -61,46 +61,72 @@ extern "C"
 
 	int		dlcs_str2mem(char *string, char &mem);
 
-	char   *sp_charreplace(char *str, char cold,char cnew);
-	char   *dlcs_charreplace(char *str, char cold,char cnew);
+	char   *sp_strreplace(char cold,char cnew,char *strg); char   *dlcs_strreplace(char cold,char cnew, char *strg);
 
-	char   *dlcs_get_time(char *x);
-	char   *dlcs_convert_time(char *x,struct tm*);
-	char   *dlcs_timestamp(char *x);
-	char   *dlcs_readable_timestamp(char *x,char *in);
+	char   *dlcs_get_time(void);
+	char   *dlcs_convert_time(struct tm*);
+	char   *dlcs_timestamp(void);
+	char   *dlcs_readable_timestamp(char *in);
 
 #ifdef __cplusplus
 }
 #endif
 
-/* MD5 converted to C++ class by Frank Thilo (thilo@unix-ag.org)
- for bzflag (http://www.bzflag.org) based on: md5.h and md5.c
+
+
+
+
+/* MD5
+ converted to C++ class by Frank Thilo (thilo@unix-ag.org)
+ for bzflag (http://www.bzflag.org)
+
+   based on:
+
+   md5.h and md5.c
    reference implementation of RFC 1321
-Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
+
+   Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
 rights reserved.
+
 License to copy and use this software is granted provided that it
 is identified as the "RSA Data Security, Inc. MD5 Message-Digest
 Algorithm" in all material mentioning or referencing this software
 or this function.
+
 License is also granted to make and use derivative works provided
 that such works are identified as "derived from the RSA Data
 Security, Inc. MD5 Message-Digest Algorithm" in all material
 mentioning or referencing the derived work.
+
 RSA Data Security, Inc. makes no representations concerning either
 the merchantability of this software or the suitability of this
 software for any particular purpose. It is provided "as is"
 without express or implied warranty of any kind.
+
 These notices must be retained in any copies of any part of this
 documentation and/or software.
-A small class for calculating MD5 hashes of strings or byte arrays
-it is not meant to be fast or secure
-usage: 1) feed it blocks of uchars with update()
-       2) finalize()
-       3) get hexdigest() string
-       or
-       MD5(std::string).hexdigest()
-assumes that char is 8 bit and int is 32 bit */
 
+*/
+
+
+
+//#ifndef BZF_MD5_H
+//#define BZF_MD5_H
+
+//#include <string>
+//#include <iostream>
+
+
+// a small class for calculating MD5 hashes of strings or byte arrays
+// it is not meant to be fast or secure
+//
+// usage: 1) feed it blocks of uchars with update()
+//      2) finalize()
+//      3) get hexdigest() string
+//      or
+//      MD5(std::string).hexdigest()
+//
+// assumes that char is 8 bit and int is 32 bit
 class MD5
 {
 public:
@@ -144,7 +170,12 @@ private:
 
 std::string md5(const std::string str);
 
+// #endif
+
+
+
+
+
 
 
 #endif // _DEADLINE_LIBRARY
-

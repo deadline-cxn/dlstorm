@@ -70,8 +70,7 @@ bool CGLFont::Load(const char *file) // Build Our Font Display List
     strcpy(szFile,file);
     DEL(pFontTex);// glDEL(pFontTexture);
 
-    pFontTex=new CGLTexture(pLog);
-    pFontTex->pGAF=pGAF;
+    pFontTex=new CGLTexture();
     if(!pFontTex) return 0;
     pFontTex->usemask=1;
     pFontTex->Load(pGAF,va("%s.bmp",szFile),0);

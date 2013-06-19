@@ -3,50 +3,8 @@
 #include "glerrors.h"
 #include "SDL.h"
 
-CGLTexture::CGLTexture() {   Initialize(); }
-
-CGLTexture::CGLTexture(CLog *pInLog) {     Initialize();     pLog=pInLog; }
-
-CGLTexture::CGLTexture(CGAF *pGAF,char *fname)
+CGLTexture::CGLTexture()
 {
-    Initialize();
-    Load(pGAF,fname,0);
-}
-
-CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname)
-{
-    Initialize();
-    pLog=pInLog;
-    Load(pGAF,fname,0);
-}
-
-CGLTexture::CGLTexture(CGAF *pGAF,char *fname, bool fmask)
-{
-    Initialize();
-    usemask=fmask;
-    Load(pGAF,fname,0);
-}
-
-CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname, bool fmask)
-{
-    Initialize();
-    pLog=pInLog;
-    usemask=fmask;
-    Load(pGAF,fname,0);
-}
-
-/****************************************************************************************************/
-CGLTexture::~CGLTexture()
-{
-    if(bMadeLog) DEL(pLog);
-    glDEL(bmap);
-    glDEL(mask);
-}
-
-void CGLTexture::Initialize()
-{
-    pLog=0;
-    bMadeLog=0;
     next=0;
     bmap=0;
     mask=0;
@@ -55,6 +13,33 @@ void CGLTexture::Initialize()
     memset(name,0,1024);
 }
 
+CGLTexture::CGLTexture(CGAF *pGAF,char *fname)
+{
+    next=0;
+    bmap=0;
+    mask=0;
+    usemask=0;
+    memset(tfilename,0,1024);
+    memset(name,0,1024);
+    Load(pGAF,fname,0);
+
+}
+CGLTexture::CGLTexture(CGAF *pGAF,char *fname, bool fmask)
+{
+    next=0;
+    bmap=0;
+    mask=0;
+    usemask=fmask;
+    memset(tfilename,0,1024);
+    memset(name,0,1024);
+    Load(pGAF,fname,0);
+}
+/****************************************************************************************************/
+CGLTexture::~CGLTexture()
+{
+    glDEL(bmap);
+    glDEL(mask);
+}
 bool CGLTexture::Create(int x, int y)
 {
     width=x;
@@ -70,7 +55,7 @@ bool CGLTexture::Create(int x, int y)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
     delete [] data;
-    if(pLog) pLog->_DebugAdd("CGLTexture::Create() -> created a texture!");
+    //D//Log("CGLTexture::Create() -> created a texture!");
     return 1;
 }
 bool CGLTexture::Clear(u_char R,u_char G,u_char B)
@@ -153,13 +138,13 @@ bool CGLTexture::Transparent(bool trans)
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         delete [] data;
         usemask=1;
-        if(pLog) pLog->_DebugAdd("CGLTexture::Transparent() set texture to use transparency...");
+        //D//Log("CGLTexture::Transparent() set texture to use transparency...");
     }
     else
     {
         glDEL(mask);
         usemask=0;
-        if(pLog) pLog->_DebugAdd("CGLTexture::Transparent() set texture to not use transparency...");
+        //D//Log("CGLTexture::Transparent() set texture to not use transparency...");
     }
 
     return 1;
@@ -196,8 +181,6 @@ extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
 {
 
-    pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> Start");
-
 	if(!strlen(filename)) return 0;
 	if(!pGAF) return 0;
 
@@ -226,24 +209,15 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
     filename2[strlen(filename2)-4]=0;
     sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
 
-	if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> %s %s",filename,maskfile);
+	////Log("%s %s",filename,maskfile);
 
 	nfbuf1  = pGAF->GetFile((LPSTR)filename);
-
-	if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> 11111");
-
 	size1	= nfbuf1.Size;
 	fb1		= nfbuf1.fb;
-
-	if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> 22222");
-
-	if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> nbuf size = %d",size1);
 
 	if(!fb1) return 0;
 
 	himage=new CxImage((BYTE*)fb1,size1,CXIMAGE_FORMAT_BMP);
-
-	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> ZZZZZ");
 
 	if(himage)
 	{
@@ -256,10 +230,9 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
 	    glGenTextures(1, &bmap);
 	    glBindTexture(GL_TEXTURE_2D, bmap);
 
+		//Log("%s %d %d size(%d) bmap(%d)",filename,himage->GetWidth(),himage->GetHeight(),himage->GetSize(),bmap);
 
-		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> %s %d %d size(%d) bmap(%d)",filename,himage->GetWidth(),himage->GetHeight(),himage->GetSize(),bmap);
-
-		glTexImage2D    ( GL_TEXTURE_2D,
+		glTexImage2D    (	GL_TEXTURE_2D,
 						0,
 						3,
 						himage->GetWidth(),
@@ -271,30 +244,14 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
 
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> AAAAA");
-
 		glFlush();
-
-		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> BBBBB");
-
 		himage->Destroy();
-
-		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> CCCCC");
-
 		DEL(himage);
-
-		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> DDDDD");
-
 	}
-
-	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> YYYYY");
 
 	nfbuf2  = pGAF->GetFile(maskfile);
 	size2   = nfbuf2.Size;
 	fb2	    = nfbuf2.fb;
-
-	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> XXXXX");
 
 	if(fb2)
 	{
@@ -324,7 +281,7 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-			if(pLog) pLog->_DebugAdd("                    \\--> Mask found: %s mask(%d)",maskfile,mask);
+			//Log("                    \\--> Mask found: %s mask(%d)",maskfile,mask);
 			usemask=1;
 			himage2->Destroy();
 			DEL(himage2);
@@ -335,8 +292,6 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
 
 	free(fb1);
 
-	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> End");
-
     return 1;
 
 }
@@ -345,15 +300,10 @@ bool CGLTexture::ReLoad(void)
 {
     if(!strlen(tfilename))
     {
-        if(pLog) pLog->_DebugAdd("CGLTexture::ReLoad() (could not produce tfilename)");
+        //D//Log("CGLTexture::ReLoad() (could not produce tfilename)");
         return 0;
     }
-    return (Load(pGAF,tfilename,0)?0:1);
-}
-
-bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b)
-{
-    return Draw2d(x,y,x2,y2,r,g,b,255,255,255);
+    return (Load(pWhichGAF,tfilename,0)?0:1);
 }
 
 bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b)
@@ -363,8 +313,8 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b)
 
 bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2)//Draw(int x,int y,int x2,int y2,long color)
 {
-    if(!bmap) { Load(pGAF,tfilename,1); return 0; }
-    if(usemask) if(!mask) { Load(pGAF,tfilename,1); return 0; }
+    if(!bmap) { Load(pWhichGAF,tfilename,1); return 0; }
+    if(usemask) if(!mask) { Load(pWhichGAF,tfilename,1); return 0; }
 
     int x3=(x2-x);
     int y3=(y2-y);
@@ -468,125 +418,6 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
         glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+x3),   float(y),       1);
         glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x),      float(y),       1);
         glEnd();
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-        glEnable(GL_DEPTH_TEST);
-    }
-
-    return 1;
-}
-
-
-bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2)//Draw(int x,int y,int x2,int y2,long color)
-{
-    if(!bmap) { Load(pGAF,tfilename,1); return 0; }
-    if(usemask) if(!mask) { Load(pGAF,tfilename,1); return 0; }
-
-    int x3=(x2-x);
-    int y3=(y2-y);
-
-    x=x/2;
-    y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-
-    if(usemask)
-    {
-        ////////////////////////////////////////////////////////
-        // draw mask
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_DST_COLOR,GL_ZERO);
-        glDisable(GL_DEPTH_TEST);
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();  // <------------------- push matrix
-        glLoadIdentity();
-        gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();  // <------------------- push matrix
-        glLoadIdentity();
-
-        glTranslated(x,y,0);
-        glBindTexture(GL_TEXTURE_2D,mask);
-        glEnable(GL_TEXTURE_2D);
-        glColor3ub(r2,g2,b2);
-
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 0); glVertex3d(x,y-y3,1);
-        glTexCoord2d(1, 0); glVertex3d(x+x3,y-y3,1);
-        glTexCoord2d(1, 1); glVertex3d(x+x3,y,1);
-        glTexCoord2d(0, 1); glVertex3d(x,y,1);
-        glEnd();
-
-        ////////////////////////////////////////////////////////
-        // draw bmap
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glDisable(GL_DEPTH_TEST);
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glTranslated(x,y,0);
-        glBindTexture(GL_TEXTURE_2D,bmap);
-        glEnable(GL_TEXTURE_2D);
-        glColor3ub(r,g,b);
-
-
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 0); glVertex3d(x,y-y3,1);
-        glTexCoord2d(1, 0); glVertex3d(x+x3,y-y3,1);
-        glTexCoord2d(1, 1); glVertex3d(x+x3,y,1);
-        glTexCoord2d(0, 1); glVertex3d(x,y,1);
-        glEnd();
-
-        ////////////////////////////////////////////////////////
-        // pop matrices
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-        glEnable(GL_DEPTH_TEST);
-
-
-    }
-    else
-    {
-        glDisable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_TEXTURE_2D);
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-
-        gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-
-        glTranslated(x,y,0);
-        glBindTexture(GL_TEXTURE_2D,bmap);
-        glColor3ub(r,g,b);
-
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 0); glVertex3d(x,y-y3,1);
-        glTexCoord2d(1, 0); glVertex3d(x+x3,y-y3,1);
-        glTexCoord2d(1, 1); glVertex3d(x+x3,y,1);
-        glTexCoord2d(0, 1); glVertex3d(x,y,1);
-        glEnd();
-
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
         glMatrixMode(GL_MODELVIEW);

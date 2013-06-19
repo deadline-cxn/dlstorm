@@ -70,39 +70,52 @@ public:
 	bool			bLog;
 	bool			bDownload;
 
+    bool            bFullScreen;
     bool            bAudioFailure;
     bool            bSound;					    	// Is sound system present?
-    bool			 bMusic;					    	// Play Music? (MIDI only for now)
+    bool			bMusic;					    	// Play Music? (MIDI only for now)
 	float           fSoundVolume;
 	float           fMusicVolume;
 	char			MouseLeftButtonSound[1024];
-
-    bool            bFullScreen;
     int             ScreenWidth;
     int             ScreenHeight;
     int             ScreenColors;
 
-    bool            drawoptions;
 
     ///////////////////////////////////////////////////////////////
 	// Discardable variables:
+
+    bool            drawoptions;
+
+    char            screen_res_640x480x16;
+    char            screen_res_800x600x16;
+    char            screen_res_1024x768x16;
+    char            screen_res_1280x1024x16;
+
+    char            screen_res_640x480x32;
+    char            screen_res_800x600x32;
+    char            screen_res_1024x768x32;
+    char            screen_res_1280x1024x32;
 
     char            cDebug;                         // Debug level 1 = onscreen messages only 2 = log
     bool            bShowPING;			    		// On or Off show PING
     int				SelectedServer;			    	// For server selection
     char			CharacterSlots;			    	// Character slots on selected server
-    u_char          SelectedCharacterSlot;	    	// For choosing your character when logging on or creating a character
+    unsigned char			SelectedCharacterSlot;	    	// For choosing your character when logging on or creating a character
+
     char			currentsample;				    // Which sample is positioned
+
+    char			Mode;
+
 	char			ServerAuthor[1024];
+
 	int				ServerListOffset;
 	int				ServerCharacterListOffset;
-
-	char            session_id[64];
-
-	u_char          Access;
+	int				ID;
+	unsigned char			Access;
 	char			szAccessName[255];
 
-    //unsigned long  dwKeyPressTimer;
+    unsigned long   dwKeyPressTimer;
 
     bool            bDrawMap;
     bool            bDrawMapObjects;
@@ -115,7 +128,7 @@ public:
 
 //  ServerData      *FavoriteServer;
 //  ServerData      *FirstFavoriteServer;
-//	C_ServerInfo    *ServerInfo;
+//	C_ServerInformation *ServerInfo;
 
 	float		    x;
 	float		    y;
@@ -129,7 +142,14 @@ public:
     long            dwRetroTimer;
     char            cRetroMode;
 
+
+    ////////////////////////////////////////////////////////////
+    // Var declarations
+
     int            GAME_MODE;
+    int            LAST_GAME_MODE;
+    int            NEXT_GAME_MODE;
+
 
 };
 

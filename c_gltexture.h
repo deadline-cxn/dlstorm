@@ -1,5 +1,10 @@
+
 #ifndef B4_GL_TEXTURE
 #define B4_GL_TEXTURE
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -13,7 +18,6 @@
 #include <GL/glu.h>
 
 #include "c_gaf.h"
-#include "c_log.h"
 
 struct Image { u_long width; u_long height; int bpp; int type; char *data; }; // Image;
 #define glDEL(x) if(glIsTexture(x)) { glDeleteTextures(1,&x); x=0; }
@@ -23,33 +27,19 @@ class CGLTexture
 public:
 
     CGLTexture();
-    CGLTexture(CLog *pLog);
-
 	CGLTexture(CGAF *pGAF,char *fname);
-	CGLTexture(CLog *pLog, CGAF *pGAF,char *fname);
-
     CGLTexture(CGAF *pGAF,char *fname,bool fmask);
-    CGLTexture(CLog *pLog, CGAF *pGAF,char *fname,bool fmask);
-
-
     ~CGLTexture();
 
-    CLog    *pLog;
-    bool    bMadeLog;
-
-    CGAF    *pGAF;
+    CGAF    *pWhichGAF;
     char    name[1024];
-
-    void    Initialize(void);
 
     bool    Create(int x,int y);
     bool    Transparent(bool trans);
     bool    Clear(u_char R,u_char G,u_char B);
     bool    ClearMask(u_char R,u_char G,u_char B);
 
-    bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b);
-    bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
 
@@ -63,8 +53,6 @@ public:
 
     GLuint  Load(CGAF *pGAF,const char *filename,bool which);
 
-    GLuint  Load(const char *filename,bool which);
-
     // GLuint  LoadMask(char *filename);
 
 	bool    ReLoad(void);
@@ -72,7 +60,6 @@ public:
     bool    Loaded(void);
 
     GLuint  bmap;
-
     GLuint  mask;
 
     int     width;

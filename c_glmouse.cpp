@@ -12,20 +12,14 @@ C_MouseCursor::C_MouseCursor()
 {
     memset(filename,0,1024);
     Cursor=0;
-    // pLog->_DebugAdd("Mouse cursor created");
+    // pLog->_Add("Mouse cursor created");
 }
 
 C_MouseCursor::C_MouseCursor(CLog *pInLog)
 {
     pLog=pInLog;
     Cursor=0;
-    x_offset=0;
-    y_offset=0;
-    x=0;
-    y=0;
-    x_hotspot=0;
-    y_hotspot=0;
-    pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
+    pLog->_Add(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
 }
 
 
@@ -34,13 +28,7 @@ C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog)
     pGAF=pInGAF;
     pLog=pInLog;
     Cursor=0;
-    x_offset=0;
-    y_offset=0;
-    x=0;
-    y=0;
-    x_hotspot=0;
-    y_hotspot=0;
-    pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
+    pLog->_Add(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
 }
 
 /*************************************************////////////////////
@@ -48,20 +36,14 @@ C_MouseCursor::C_MouseCursor(char *fn)
 {
     memset(filename,0,1024);
     Cursor=0;
-    x_offset=0;
-    y_offset=0;
-    x=0;
-    y=0;
-    x_hotspot=0;
-    y_hotspot=0;
     load(fn);
-    pLog->_DebugAdd("Mouse cursor created");
+    pLog->_Add("Mouse cursor created");
 }
 /*************************************************////////////////////
 C_MouseCursor::~C_MouseCursor()
 {
     kill();
-    pLog->_DebugAdd("Mouse cursor destroyed");
+    pLog->_Add("Mouse cursor destroyed");
 }
 /*************************************************////////////////////
 GLvoid C_MouseCursor::kill()
@@ -78,8 +60,7 @@ GLvoid C_MouseCursor::load(char *file)
     strcpy(filename,file);
 
     DEL(Cursor);
-    Cursor=new CGLTexture(pLog);
-    Cursor->pGAF=pGAF;
+    Cursor=new CGLTexture();
     if(!Cursor) return;
     Cursor->bmap=0;
     Cursor->mask=0;
@@ -193,12 +174,12 @@ GLvoid C_MouseCursor::draw(void)
 /*************************************************//*************************************************/
 
 
-C_Mouse::C_Mouse()
+C_GLMouse::C_GLMouse()
 {
 
 }
 
-C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog)
+C_GLMouse::C_GLMouse(CGAF *pInGAF, CLog *pInLog)
 {
     pGAF=pInGAF;
     pLog=pInLog;
@@ -207,13 +188,13 @@ C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog)
     pCursor->load("mouse/0");
 }
 
-C_Mouse::~C_Mouse()
+C_GLMouse::~C_GLMouse()
 {
     DEL(pCursor);
 
 }
 
-void C_Mouse::InitializeInput(void)
+void C_GLMouse::InitializeInput(void)
 {
     bLeftDown             = 0;
     bMiddleDown           = 0;
@@ -231,7 +212,7 @@ void C_Mouse::InitializeInput(void)
     lRightDblClickTimer   = dlcs_get_tickcount();
 }
 
-void C_Mouse::draw()
+void C_GLMouse::draw()
 {
     pCursor->x=ix+pCursor->x_offset;
     pCursor->y=iy+pCursor->y_offset;
@@ -240,17 +221,7 @@ void C_Mouse::draw()
 
 /*************************************************/
 
-void C_Mouse::ClearClicks(void)
-{
-    bLeftRelease=0;
-    bRightRelease=0;
-    bMiddleRelease=0;
-    bLeftDblClick=0;
-    bMiddleDblClick=0;
-    bRightDblClick=0;
-}
-
-void C_Mouse::Refresh(void)
+void C_GLMouse::Refresh(void)
 {
     bool bLeft=0;
     bool bRight=0;
@@ -339,7 +310,7 @@ void C_Mouse::Refresh(void)
 
 /*************************************************/
 
-bool C_Mouse::ButtonDownTick(int iWhich)
+bool C_GLMouse::ButtonDownTick(int iWhich)
 {
     switch(iWhich)
     {
@@ -358,7 +329,7 @@ bool C_Mouse::ButtonDownTick(int iWhich)
 
 /*************************************************/
 
-void C_Mouse::SetDownTick(int iWhich,bool set)
+void C_GLMouse::SetDownTick(int iWhich,bool set)
 {
     switch(iWhich)
     {
@@ -377,28 +348,28 @@ void C_Mouse::SetDownTick(int iWhich,bool set)
 }
 /*************************************************/
 
-bool C_Mouse::LeftClick()
+bool C_GLMouse::LeftClick()
 {
     return Click(SDL_BUTTON_LEFT);
 }
 
 /*************************************************/
 
-bool C_Mouse::MiddleClick()
+bool C_GLMouse::MiddleClick()
 {
     return Click(SDL_BUTTON_MIDDLE);
 }
 
 /*************************************************/
 
-bool C_Mouse::RightClick()
+bool C_GLMouse::RightClick()
 {
     return Click(SDL_BUTTON_RIGHT);
 }
 
 /*************************************************/
 
-bool C_Mouse::Click(int iWhich)
+bool C_GLMouse::Click(int iWhich)
 {
     switch(iWhich)
     {
@@ -415,7 +386,7 @@ bool C_Mouse::Click(int iWhich)
     return 0;
 }
 /*************************************************/
-void C_Mouse::SetClick(int iWhich,bool set)
+void C_GLMouse::SetClick(int iWhich,bool set)
 {
     switch(iWhich)
     {
@@ -433,7 +404,7 @@ void C_Mouse::SetClick(int iWhich,bool set)
     }
 }
 /*************************************************/
-void C_Mouse::SetButtonDown(int iWhich,bool set)
+void C_GLMouse::SetButtonDown(int iWhich,bool set)
 {
     switch(iWhich)
     {
@@ -448,7 +419,7 @@ void C_Mouse::SetButtonDown(int iWhich,bool set)
     }
 }
 /*************************************************/
-bool C_Mouse::ButtonDown(int iWhich)
+bool C_GLMouse::ButtonDown(int iWhich)
 {
     switch(iWhich)
     {
@@ -464,7 +435,7 @@ bool C_Mouse::ButtonDown(int iWhich)
     return 0;
 }
 /*************************************************/
-bool C_Mouse::DoubleClick(int iWhich)
+bool C_GLMouse::DoubleClick(int iWhich)
 {
     switch(iWhich)
     {
@@ -480,15 +451,15 @@ bool C_Mouse::DoubleClick(int iWhich)
     return 0;
 }
 /*************************************************/
-int  C_Mouse::X(void){ return ix; }
+int  C_GLMouse::X(void){ return ix; }
 /*************************************************/
-void C_Mouse::SetX(int x) { ix=x; }
+void C_GLMouse::SetX(int x) { ix=x; }
 /*************************************************/
-int  C_Mouse::Y(void){return iy;}
+int  C_GLMouse::Y(void){return iy;}
 /*************************************************/
-void C_Mouse::SetY(int y) { iy=y; }
+void C_GLMouse::SetY(int y) { iy=y; }
 /*************************************************/
-bool C_Mouse::InX(int x1,int x2)
+bool C_GLMouse::InX(int x1,int x2)
 {
     //float sfx=(float)((float)x1/800)*(float)pClientData->ScreenWidth;
 	//float mfx=(float)((float)GetMouseX()/800)*(float)pClientData->ScreenWidth;
@@ -499,7 +470,7 @@ bool C_Mouse::InX(int x1,int x2)
 	return false;
 }
 /*************************************************/
-bool C_Mouse::InY(int y1,int y2)
+bool C_GLMouse::InY(int y1,int y2)
 {
 	//float sfy=(float)((float)y1/600)*(float)pClientData->ScreenHeight;
 	//float mfy=(float)((float)GetMouseY()/600)*(float)pClientData->ScreenHeight;
@@ -509,7 +480,7 @@ bool C_Mouse::InY(int y1,int y2)
 	return false;
 }
 /*************************************************/
-bool C_Mouse::In( int x1,int y1,int x2,int y2)
+bool C_GLMouse::In( int x1,int y1,int x2,int y2)
 {
     if((InX(x1,x2))&&(InY(y1,y2)))
         return true;
@@ -517,13 +488,13 @@ bool C_Mouse::In( int x1,int y1,int x2,int y2)
 }
 /*************************************************/
 
-bool C_Mouse::InRect(RECT rc)
+bool C_GLMouse::InRect(RECT rc)
 {
     return (In(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom));
 }
 
 /*************************************************
-bool C_Mouse::InXPct(float fx1,float fx2)
+bool C_GLMouse::InXPct(float fx1,float fx2)
 {
 	if((X()>(pClientData->ScreenWidth*fx1)) && (X()<(pClientData->ScreenWidth*fx2)))
 		return true;
@@ -531,7 +502,7 @@ bool C_Mouse::InXPct(float fx1,float fx2)
 }
 */
 /*************************************************
-bool C_Mouse::InYPct(float fy1,float fy2)
+bool C_GLMouse::InYPct(float fy1,float fy2)
 {
 	if((Y()>(pClientData->ScreenHeight*fy1)) && (Y()<(pClientData->ScreenHeight*fy2)))
 		return true;
@@ -539,7 +510,7 @@ bool C_Mouse::InYPct(float fy1,float fy2)
 }
 */
 /*************************************************
-bool C_Mouse::InPct( float fx1,float fy1,float fx2,float fy2)
+bool C_GLMouse::InPct( float fx1,float fy1,float fx2,float fy2)
 {
 	if((InXPct(fx1,fx2))&&(InYPct(fy1,fy2)))
 		return true;
@@ -547,12 +518,12 @@ bool C_Mouse::InPct( float fx1,float fy1,float fx2,float fy2)
 }
 */
 /*************************************************/
-void C_Mouse::SetWheelUp(bool m)
+void C_GLMouse::SetWheelUp(bool m)
 {
     bWheelUp=m;
 }
 /*************************************************/
-int  C_Mouse::WheelUp(void)
+int  C_GLMouse::WheelUp(void)
 {
     //return bWheelUp;
     if(bWheelUp)
@@ -566,12 +537,12 @@ int  C_Mouse::WheelUp(void)
     }
 }
 /*************************************************/
-void C_Mouse::SetWheelDown(bool m)
+void C_GLMouse::SetWheelDown(bool m)
 {
     bWheelDown=m;
 }
 /*************************************************/
-int  C_Mouse::WheelDown(void)
+int  C_GLMouse::WheelDown(void)
 {
     //return bWheelDown;
     if(bWheelDown)

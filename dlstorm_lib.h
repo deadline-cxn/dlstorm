@@ -112,9 +112,6 @@
 #include <malloc.h>
 #endif//FREEBSD_NATIVE
 
-//////////////////////////////////////////////////////////////////////////
-// System indepentant includes
-
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -123,12 +120,6 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <sys/stat.h>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
-#include <algorithm>
-using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////
 // WIN32 Defines
@@ -265,7 +256,7 @@ typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
 #define LONGRGB(r,g,b)         ((long)(((u_char)(r)|((u_short)((u_char)(g))<<8))|(((long)(u_char)(b))<<16)))
 #define _PS PATH_SEP
 #define DLSTR(x)				char x[1024]; memset(x,0,1024);
-#define fold_block
+
 
 
 

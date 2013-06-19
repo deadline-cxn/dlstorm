@@ -8,7 +8,6 @@
 CLog::CLog() { memset(logfile,0,_MAX_PATH); strcpy(logfile,"log.log"); Initialize();}
 //////////////////////////////////////////////////////
 CLog::CLog(char *szFilename) { Initialize(); SetName(szFilename); Restart(); LineFeedsOn();}
-CLog::CLog(char *szFilename, bool bQ) { Initialize(); SetName(szFilename); bQuiet=bQ; Restart(); LineFeedsOn();}
 //////////////////////////////////////////////////////
 CLog::~CLog() { }
 //////////////////////////////////////////////////////
@@ -22,7 +21,6 @@ void CLog::Initialize(void)
     strcpy(szLineSep,"*****************************************************************");
     bActive = true;
     bLineFeeds = false;
-    bQuiet = true;
 }
 //////////////////////////////////////////////////////
 void CLog::SetName(char *szFilename)
@@ -51,18 +49,10 @@ void CLog::AddEntry(char *fmt, ...)
     FILE *fp=fopen(logfile,"a+");
     if(fp)
     {
-        if(!bLineFeeds){
+        if(!bLineFeeds)
             fprintf(fp,"%s%s%s%s",szBegin,temp,szEnd,ach);
-            if(!bQuiet)
-                printf("%s%s%s%s",szBegin,temp,szEnd,ach);
-
-        }
-        else{
+        else
             fprintf(fp,"%s%s%s%s\n",szBegin,temp,szEnd,ach);
-            if(!bQuiet)
-                printf("%s%s%s%s\n",szBegin,temp,szEnd,ach);
-
-        }
         fclose(fp);
     }
 
@@ -77,16 +67,8 @@ void CLog::AddEntryNoTime(char *fmt, ...)
     FILE *fp=fopen(logfile,"a+");
     if(fp)
     {
-        if(!bLineFeeds){
-            fprintf(fp,"%s",ach);
-            if(!bQuiet)
-            printf(ach);
-        }
-        else{
-            fprintf(fp,"%s\n",ach);
-            if(!bQuiet)
-                printf("%s\n",ach);
-        }
+        if(!bLineFeeds) fprintf(fp,"%s",ach);
+        else            fprintf(fp,"%s\n",ach);
         fclose(fp);
     }
 

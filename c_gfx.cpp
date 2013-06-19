@@ -8,111 +8,6 @@
 #define Z .850650808352039932
 
 
-#ifdef _WIN32
-#ifndef _GL_VBO_STUFF
-#define _GL_VBO_STUFF
-
-/*
-PFNGLGENBUFFERSARBPROC            glGenBuffersARB = 0;             // VBO Name Generation Procedure
-PFNGLBINDBUFFERARBPROC            glBindBufferARB = 0;             // VBO Bind Procedure
-PFNGLBUFFERDATAARBPROC            glBufferDataARB = 0;             // VBO Data Loading Procedure
-PFNGLBUFFERSUBDATAARBPROC         glBufferSubDataARB = 0;          // VBO Sub Data Loading Procedure
-PFNGLDELETEBUFFERSARBPROC         glDeleteBuffersARB = 0;          // VBO Deletion Procedure
-PFNGLGETBUFFERPARAMETERIVARBPROC  glGetBufferParameterivARB = 0;   // return various parameters of VBO
-PFNGLMAPBUFFERARBPROC             glMapBufferARB = 0;              // map VBO procedure
-PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO procedure
-
-#define glGenBuffersARB           pglGenBuffersARB
-#define glBindBufferARB           pglBindBufferARB
-#define glBufferDataARB           pglBufferDataARB
-#define glBufferSubDataARB        pglBufferSubDataARB
-#define glDeleteBuffersARB        pglDeleteBuffersARB
-#define glGetBufferParameterivARB pglGetBufferParameterivARB
-#define glMapBufferARB            pglMapBufferARB
-#define glUnmapBufferARB          pglUnmapBufferARB
-*/
-
-#endif
-
-#endif
-
-
-
-// cube ///////////////////////////////////////////////////////////////////////
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-
-// vertex coords array for glDrawArrays() =====================================
-// A cube has 6 sides and each side has 2 triangles, therefore, a cube consists
-// of 36 vertices (6 sides * 2 tris * 3 vertices = 36 vertices). And, each
-// vertex is 3 components (x,y,z) of floats, therefore, the size of vertex
-// array is 108 floats (36 * 3 = 108).
-
-GLfloat Cubevertices[]  =
-                      { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,      // v0-v1-v2 (front)
-                       -1,-1, 1,   1,-1, 1,   1, 1, 1,      // v2-v3-v0
-
-                        1, 1, 1,   1,-1, 1,   1,-1,-1,      // v0-v3-v4 (right)
-                        1,-1,-1,   1, 1,-1,   1, 1, 1,      // v4-v5-v0
-
-                        1, 1, 1,   1, 1,-1,  -1, 1,-1,      // v0-v5-v6 (top)
-                       -1, 1,-1,  -1, 1, 1,   1, 1, 1,      // v6-v1-v0
-
-                       -1, 1, 1,  -1, 1,-1,  -1,-1,-1,      // v1-v6-v7 (left)
-                       -1,-1,-1,  -1,-1, 1,  -1, 1, 1,      // v7-v2-v1
-
-                       -1,-1,-1,   1,-1,-1,   1,-1, 1,      // v7-v4-v3 (bottom)
-                        1,-1, 1,  -1,-1, 1,  -1,-1,-1,      // v3-v2-v7
-
-                        1,-1,-1,  -1,-1,-1,  -1, 1,-1,      // v4-v7-v6 (back)
-                       -1, 1,-1,   1, 1,-1,   1,-1,-1 };    // v6-v5-v4
-
-// normal array
-GLfloat Cubenormals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
-                        0, 0, 1,   0, 0, 1,   0, 0, 1,      // v2-v3-v0
-
-                        1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v3-v4 (right)
-                        1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v5-v0
-
-                        0, 1, 0,   0, 1, 0,   0, 1, 0,      // v0-v5-v6 (top)
-                        0, 1, 0,   0, 1, 0,   0, 1, 0,      // v6-v1-v0
-
-                       -1, 0, 0,  -1, 0, 0,  -1, 0, 0,      // v1-v6-v7 (left)
-                       -1, 0, 0,  -1, 0, 0,  -1, 0, 0,      // v7-v2-v1
-
-                        0,-1, 0,   0,-1, 0,   0,-1, 0,      // v7-v4-v3 (bottom)
-                        0,-1, 0,   0,-1, 0,   0,-1, 0,      // v3-v2-v7
-
-                        0, 0,-1,   0, 0,-1,   0, 0,-1,      // v4-v7-v6 (back)
-                        0, 0,-1,   0, 0,-1,   0, 0,-1 };    // v6-v5-v4
-
-// color array
-GLfloat Cubecolors[]    = { 1, 1, 1,   1, 1, 0,   1, 0, 0,      // v0-v1-v2 (front)
-                        1, 0, 0,   1, 0, 1,   1, 1, 1,      // v2-v3-v0
-
-                        1, 1, 1,   1, 0, 1,   0, 0, 1,      // v0-v3-v4 (right)
-                        0, 0, 1,   0, 1, 1,   1, 1, 1,      // v4-v5-v0
-
-                        1, 1, 1,   0, 1, 1,   0, 1, 0,      // v0-v5-v6 (top)
-                        0, 1, 0,   1, 1, 0,   1, 1, 1,      // v6-v1-v0
-
-                        1, 1, 0,   0, 1, 0,   0, 0, 0,      // v1-v6-v7 (left)
-                        0, 0, 0,   1, 0, 0,   1, 1, 0,      // v7-v2-v1
-
-                        0, 0, 0,   0, 0, 1,   1, 0, 1,      // v7-v4-v3 (bottom)
-                        1, 0, 1,   1, 0, 0,   0, 0, 0,      // v3-v2-v7
-
-                        0, 0, 1,   0, 0, 0,   0, 1, 0,      // v4-v7-v6 (back)
-                        0, 1, 0,   0, 1, 1,   0, 0, 1 };    // v6-v5-v4
-
-//GLfloat mapvertices[1024][1024];
-
-
 static GLfloat vdata[12][3] = {
     {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z},
     {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X},
@@ -156,224 +51,20 @@ void drawsphere(int ndiv, float radius, float cr,float cg,float cb) {
     glEnd();
 }
 
-void drawcube()
+/****************************************************************************************************/
+
+C_GFX::C_GFX()
 {
-
-
-    glBegin(GL_QUADS);
-        // Front Face
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Left Of The Texture and Quad
-        // Back Face
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
-        // Top Face
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
-        // Bottom Face
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);  // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-        // Right face
-        glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);  // Top Left Of The Texture and Quad
-        glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-        // Left Face
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
-    glEnd();
-/*  // enable vertex arrays
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        // before draw, specify vertex arrays
-        glNormalPointer(GL_FLOAT, 0, Cubenormals);
-        glColorPointer(3, GL_FLOAT, 0, Cubecolors);
-        glVertexPointer(3, GL_FLOAT, 0, Cubevertices);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-        glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);*/
+    VideoFlags=0;
 }
-
-
-
-C_Camera::C_Camera()
-{
-    Initialize();
-}
-
-C_Camera::~C_Camera()
-{
-
-}
-
-void C_Camera::Initialize()
-{
-    cScale = 1.0;
-    bounce = 0.0;
-    xpos  = 0.0f;
-    ypos  = 0.0f;
-    zpos  = 15.0f;
-    xrot  = 0;
-    yrot  = 0;
-    angle = 0.0;
-    bMovingBackward=0;
-    bMovingForward=0;
-    bMovingLeft=0;
-    bMovingRight=0;
-}
-
-void C_Camera::Go()
-{
-	glRotatef(xrot,1.0,0.0,0.0);
-	glRotatef(yrot,0.0,1.0,0.0);
-	glTranslated(-xpos,-ypos,-zpos);
-}
-
-void C_Camera::Rotate_Left()
-{
-}
-
-void C_Camera::Rotate_Right()
-{
-}
-
-void C_Camera::Move_Left_Start()
-{
-    bMovingLeft=true;
-}
-void C_Camera::Move_Left_Stop()
-{
-    bMovingLeft=false;
-}
-
-void C_Camera::Move_Left()
-{
-    if(!bMovingLeft) return;
-	float yrotrad;
-	yrotrad = (yrot / 180 * 3.141592654f);
-	xpos -= float(cos(yrotrad)) * cScale;
-	zpos -= float(sin(yrotrad)) * cScale;
-}
-
-void C_Camera::Move_Right_Start()
-{
-    bMovingRight=true;
-}
-void C_Camera::Move_Right_Stop()
-{
-    bMovingRight=false;
-}
-
-void C_Camera::Move_Right()
-{
-    if(!bMovingRight) return;
-    float yrotrad;
-	yrotrad = (yrot / 180 * 3.141592654f);
-	xpos += float(cos(yrotrad)) * cScale;
-	zpos += float(sin(yrotrad)) * cScale;
-
-}
-
-void C_Camera::Move_Forward_Start()
-{
-    bMovingForward=true;
-}
-void C_Camera::Move_Forward_Stop()
-{
-    bMovingForward=false;
-}
-
-void C_Camera::Move_Forward()
-{
-    if(!bMovingForward) return;
-	float xrotrad, yrotrad;
-	yrotrad = (yrot / 180 * 3.141592654f);
-	xrotrad = (xrot / 180 * 3.141592654f);
-	xpos += float(sin(yrotrad)) * cScale;
-	zpos -= float(cos(yrotrad)) * cScale;
-	ypos -= float(sin(xrotrad)) ;
-	bounce += 0.04;
-}
-
-void C_Camera::Move_Backward_Start()
-{
-    bMovingBackward=true;
-}
-void C_Camera::Move_Backward_Stop()
-{
-    bMovingBackward=false;
-}
-
-void C_Camera::Move_Backward()
-{
-    if(!bMovingBackward) return;
-	float xrotrad, yrotrad;
-	yrotrad = (yrot / 180 * 3.141592654f);
-	xrotrad = (xrot / 180 * 3.141592654f);
-	xpos -= float(sin(yrotrad)) * cScale;
-	zpos += float(cos(yrotrad)) * cScale;
-	ypos += float(sin(xrotrad));
-	bounce += 0.04;
-}
-
-void C_Camera::mouseMovement(int x, int y)
-{
-	int diffx=x-lastx;
-	int diffy=y-lasty;
-
-    //diffx=0;
-	//if(x>lastx) diffx=1;
-    //if(x<lastx) diffx=-1;
-
-    //diffy=0;
-	//if(y>lasty) diffy=1;
-    //if(y<lasty) diffy=-1;
-
-	lastx=x;
-	lasty=y;
-
-	xrot += (float) diffy;
-	yrot += (float) diffx;
-
-	if(xrot < -60.0f) xrot=-60.0f;
-	if(xrot > 60.0f) xrot=60.0f;
-
-    if(yrot < -5000.0f) yrot=0.0f;
-
-}
-
 
 /****************************************************************************************************/
 
-// C_GFX::C_GFX() { pCamera = 0; VideoFlags=0; }
-
-/****************************************************************************************************/
-
-C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF)
+C_GFX::C_GFX(int w, int h, int c, bool FullScreen, const char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF)
 {
-    BaseTexture=0;
-    Model=0;
-    FirstModel=0;
 
-    g_pMesh=0;
-    pManMap=0;
-    pCamera=0;
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
+
 }
 
 /****************************************************************************************************/
@@ -386,46 +77,31 @@ C_GFX::~C_GFX()
 
 /****************************************************************************************************/
 
-bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF)
+bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, const char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF)
 {
+    pLog=pUSELOG;
+    pGAF=pUSEGAF;
+
+    pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
+
 #ifdef __linux__
 	putenv("SDL_VIDEODRIVER=dga");
 #endif
 
-    pLog=pUSELOG;
-    pGAF=pUSEGAF;
-
-    bFullScreen =FullScreen;
-    ScreenWidth =w;
-    ScreenHeight=h;
-    ScreenColors=c;
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
-
     SDL_InitSubSystem(SDL_INIT_VIDEO);
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... B");
 
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
 
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... C");
+    if(FullScreen) VideoFlags |= SDL_FULLSCREEN;
 
-    if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... D");
-
-    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... E");
+    const
+    SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
 
     if(!VideoInfo)
     {
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... F");
-
     if(VideoInfo->hw_available)
     {
         VideoFlags |= SDL_HWSURFACE;
@@ -437,24 +113,37 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Software surfaces...");
     }
 
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... G");
-
     if(VideoInfo->blit_hw)
     {
         VideoFlags |= SDL_HWACCEL;
         pLog->_Add("Hardware acceleration enabled!");
     }
 
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... H");
-
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
 
     pLog->_Add("Video memory:[%d]",VideoInfo->video_mem);
+/*
+    pClientData->screen_res_640x480x16   = SDL_VideoModeOK(600,480,16, VideoFlags);
+    pClientData->screen_res_800x600x16   = SDL_VideoModeOK(800,600,16, VideoFlags);
+    pClientData->screen_res_1024x768x16  = SDL_VideoModeOK(1024,768,16, VideoFlags);
+    pClientData->screen_res_1280x1024x16 = SDL_VideoModeOK(1280,1024,16, VideoFlags);
+    pClientData->screen_res_640x480x32   = SDL_VideoModeOK(600,480,32, VideoFlags);
+    pClientData->screen_res_800x600x32   = SDL_VideoModeOK(800,600,32, VideoFlags);
+    pClientData->screen_res_1024x768x32  = SDL_VideoModeOK(1024,768,32, VideoFlags);
+    pClientData->screen_res_1280x1024x32 = SDL_VideoModeOK(1280,1024,32, VideoFlags);
+    */
 
-    if(!SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) pLog->_Add("SDL_VideoModeOK failure");
 
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... I");
+    if(!SDL_VideoModeOK(w,h,c,VideoFlags))
+    {
+        pLog->_Add("SDL_VideoModeOK failure");
+    }
+    // if(!pClientData->ScreenColors)
+  //  {
+         //pClientData->ScreenColors=16;
+    //     return false;
+    //}
 
     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
     if(!pScreen)
@@ -463,90 +152,27 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         return false;
     }
 
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... J");
+    pLog->_Add("Attempting OpenGL initialization");
+
+    if(!InitGL())       return false;
+
+    //strcpy(WindowCaption,wincaption);
+    //SDL_WM_SetCaption(WindowCaption,"icon");
 
     SDL_ShowCursor(SDL_DISABLE);
 
-    SetWindowTitle(wincaption);
-
-    pLog->_Add("SDL_VideoModeOK");
-
-    if(!InitGL()) return false;
-    pLog->_Add("OpenGL initialized");
-
-#ifdef _WIN32
-/*  glGenBuffersARB     = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffersARB");
-	glBindBufferARB     = (PFNGLBINDBUFFERARBPROC) wglGetProcAddress("glBindBufferARB");
-	glBufferDataARB     = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferDataARB");
-	glDeleteBuffersARB  = (PFNGLDELETEBUFFERSARBPROC) wglGetProcAddress("glDeleteBuffersARB"); */
-#endif
-
-    pCamera=new C_Camera();
-    if(pCamera)
-    {
-        pCamera->Move_Left_Stop();
-        pCamera->Move_Right_Stop();
-        pCamera->Move_Forward_Stop();
-        pCamera->Move_Backward_Stop();
-    }
-    pLog->_Add("Camera initialized");
-
-    BaseTexture=0;
-    if(!InitBaseGFX()) return false;
-    LoadBaseGFX(pGAF);
-    pLog->_Add("Base Textures initialized");
-
-    //if(!InitModels()) return false;
-    //pLog->_Add("Models initialized");
-
-    g_pMesh = new CMesh(pLog, pGAF, BaseTexture[103].texture);
-
-	pManMap = new CMantraMap();
-
-	pLog->_Add("Map mesh initialized");
-
-    pLog->_Add("GFX Initialized");
 
     return true;
 }
 
 /****************************************************************************************************/
 
-void C_GFX::SetWindowTitle(char *fmt, ...)
-{
-    char ach[512]; va_list va; va_start( va, fmt ); vsprintf( ach, fmt, va ); va_end( va );
-    strcpy(WindowCaption, ach);
-    SDL_WM_SetCaption(WindowCaption,0);
-}
-
-/****************************************************************************************************/
-
-void C_GFX::ToggleFullScreen(void)
-{
-    // SDL_WM_ToggleFullScreen(pScreen);
-    /*
-    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
-    if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces..."); }
-    else                        { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
-	if(bFullScreen==true) bFullScreen=false;
-	else bFullScreen=true;
-	pScreen = SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
-	InitGL();
-	*/
-}
-
-/****************************************************************************************************/
-
 void C_GFX::ShutDownGFX(void)
 {
-    pLog->_DebugAdd("Shutting down SDL/OpenGL GFX subsystem...");
-
-    DEL(pCamera);
-    DEL(g_pMesh);
-    DEL(pManMap);
+    pLog->_Add("Shutting down SDL/OpenGL GFX subsystem...");
 
     DestroyBaseGFX();
-    DestroyModels();
+    //DestroyModels();
 
     glFinish();
     glFlush();
@@ -560,12 +186,35 @@ void C_GFX::ShutDownGFX(void)
 
 int C_GFX::InitGL() // All Setup For OpenGL Goes Here
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glViewport(0, 0, SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h);
+
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
-	gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
+
+	gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,0.1f,200.0f);
+	// gluPerspective(45.0f,1.333f,0.1f,20000.0f);
+
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	glLoadIdentity();
+
+	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearDepth(1.0f);									// Depth Buffer Setup
+
+	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+
+	glEnable(GL_TEXTURE_2D);
+
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+    BaseTexture=0;
+
+    if(!InitBaseGFX())  return false;
+    //if(!InitModels())   return false;
+
+    pLog->_Add("OpenGL Initialized...");
+
     return true; // Initialization Went OK
 }
 
@@ -587,16 +236,6 @@ void C_GFX::BeginScene(void)
 {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-    if(pCamera)
-    {
-        pCamera->Move_Left();
-        pCamera->Move_Right();
-        pCamera->Move_Forward();
-        pCamera->Move_Backward();
-    }
-
 
 /*
     static stra star[500];
@@ -708,31 +347,79 @@ void C_GFX::BeginScene(void)
 		*/
 }
 
+/****************************************************************************************************/
+
+void C_GFX::ToggleFullScreen(void)
+{
+    // const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
+
+    // if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces..."); }
+    // else                        { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
+
+    // SDL_FULLSCREEN
+
+	//if(pClientData->bFullScreen==false)
+	//{
+
+	 //   pClientData->bFullScreen=true;
+	//}
+	//else
+	//{
+	//    pClientData->bFullScreen=false;
+	//}
+
+#ifdef _WIN32
+
+ 	//ShutDownGFX();
+ 	//InitializeGFX(pClientData->bFullScreen);
+
+#else
+
+	if(!pScreen)
+	{
+	    pLog->_Add("FATAL ERROR: no pScreen!");
+	    return;
+    }
+
+	if(SDL_WM_ToggleFullScreen(pScreen)!=1)
+	{
+		pLog->_Add("Unable to toggle fullscreen: [%s]\n", SDL_GetError() );
+	}
+
+	// 7034549721
+
+#endif
+}
 
 /****************************************************************************************************/
 
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs)
 {
-	//ShutDownGFX();
- 	//InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
+	ShutDownGFX();
+ 	InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
 }
 
 /****************************************************************************************************/ // BASE GFX
 
 bool C_GFX::InitBaseGFX()
 {
-    // BaseTexture=0;
+    BaseTexture=0;
 	BaseTexture=new CGLTextureList[MAX_BASE_GFX];
 	if(!BaseTexture)
 	{
-		pLog->_DebugAdd("BaseTexture initialization failure...");
+		pLog->_Add("BaseTexture initialization failure...");
 		return false;
 	}
     for(int i=0;i<MAX_BASE_GFX;i++)
     {
+
+
 		BaseTexture[i].texture=0;
+
+
+
     }
-    pLog->_DebugAdd("BaseGFX initialized...");
+    pLog->_Add("BaseGFX initialized...");
 	return 1;
 }
 
@@ -740,7 +427,14 @@ bool C_GFX::InitBaseGFX()
 
 bool C_GFX::LoadBaseGFX(CGAF *pGAF) // Load in GFX Base
 {
-    pLog->_DebugAdd("Begin LoadBaseGFX...");
+    pLog->_Add("Begin BaseTexture load...");
+    DestroyBaseGFX();
+	if(!InitBaseGFX())
+	{
+		pLog->_Add("BaseTexture load failure...");
+		return false;
+	}
+
     for(int i=0;i<MAX_BASE_GFX;i++)
 	{
 		Load1BaseGFX(pGAF,i);
@@ -752,36 +446,25 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) // Load in GFX Base
 
 bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which)
 {
-    pLog->_DebugAdd("Begin Load1BaseGFX...");
-    char fname[1024]; memset(fname,0,1024);
+    char fname[1024];
     sprintf(fname,"base/b%04d.bmp",which);
-
-    pLog->_DebugAdd(" AAAAAA %s",fname);
-
 	if(!BaseTexture[which].texture)
 	{
-		BaseTexture[which].texture=new CGLTexture(pLog,pGAF,fname);
-		pLog->_DebugAdd(" AAAAA....22222");
+		BaseTexture[which].texture=new CGLTexture();
         BaseTexture[which].texture->usemask=false;
-        pLog->_DebugAdd(" AAAAA....33333");
         BaseTexture[which].texture->Load(pGAF,fname,1);
-        pLog->_DebugAdd(" AAAAA....44444");
         strcpy(BaseTexture[which].texture->name,va("%d",which));
-        pLog->_DebugAdd(" AAAAA....55555");
 		return false;
 	}
-
-	pLog->_DebugAdd("  BBBBBB");
     if(!BaseTexture[which].texture)
 	{
-		pLog->_DebugAdd("ERROR: texture not valid");
+		pLog->_Add("ERROR: texture not valid");
 		return false;
 	}
 
 	BaseTexture[which].texture->usemask=false;
    	BaseTexture[which].texture->Load(pGAF,fname,1);
     strcpy(BaseTexture[which].texture->name,va("%d",which));
-    pLog->_DebugAdd("Loaded base texture [%d]",which);
     return 1;
 }
 
@@ -801,108 +484,84 @@ CGLTexture *C_GFX::GetBaseGFX(char *name)
 
 bool C_GFX::DestroyBaseGFX(void)
 {
-    pLog->_DebugAdd("Begin BaseTexture destroy...");
-
+    pLog->_Add("Begin BaseTexture destroy...");
 	if(!BaseTexture) return 0;
-	pLog->_DebugAdd("BaseTexture destroy... 2");
-    for(int i=0;i<MAX_BASE_GFX;i++)
-    {
-        pLog->_DebugAdd("BaseTexture destroy... 2.5");
-        DEL(BaseTexture[i].texture);
-        pLog->_DebugAdd("BaseTexture destroy... 3");
-    }
-    pLog->_DebugAdd("BaseTexture destroy... 4");
+    for(int i=0;i<MAX_BASE_GFX;i++) DEL(BaseTexture[i].texture);
     delete [] BaseTexture; BaseTexture=0;
-
-    pLog->_DebugAdd("BaseTexture destroyed..."); return false;
+    pLog->_Add("BaseTexture destroyed..."); return false;
 }
 
 /****************************************************************************************************/ // MODELS
 
 bool C_GFX::InitModels()
 {
-	pLog->_DebugAdd("Begin Models init...");
-	LoadModels();
-	pLog->_DebugAdd("Models initialized...");
-	return true;
+	//pLog->_Add("Begin Models init...");
+	//Model=new CGLModel();
+	//FirstModel=Model;
+	//pLog->_Add("Models initialized...");
+	return 1;
 }
 
 /****************************************************************************************************/
 
 bool C_GFX::LoadModels(void)
 {
-/*
+    /*
 	int i=0;
-	pLog->_DebugAdd("C_GFX::LoadModels() Begin Models load...");
+	pLog->_Add("Begin Models load...");
 	Model=FirstModel;
-	if(!Model) Model=new CGLModel(pLog);
+	if(!Model)
+		Model=new CGLModel();
 	FirstModel=Model;
 	if(Model)
 	{
-        pLog->_DebugAdd("C_GFX::LoadModels() Begin load model [%d]",i);
-
-        Model->pGAF=pGAF;
 		while(i<MAX_MODELS)
 		{
 			if(Load1Model(i))
 			{
-				Model->next = new CGLModel(pLog);//,pGAF);
-				Model->next->prev=Model;
+				Model->next=new CGLModel(CGAF *pGAF);
 				Model=Model->next;
-				pLog->_DebugAdd("C_GFX::LoadModels() Found model [%d]",i);
+				pLog->_Add("Found model [%d]",i);
 			}
 			i++;
 		}
 	}
-	Model->prev->next=0;
-	DEL(Model);
-	Model=FirstModel;
-	pLog->_DebugAdd("C_GFX::LoadModels() Models loaded...");
-*/
-	return true;
+	pLog->_Add("Models loaded...");
+	*/
+	return 1;
 }
 
 /****************************************************************************************************/
 
 bool C_GFX::Load1Model(int i)
 {
-
-    pLog->_DebugAdd("C_GFX::Load1Model() Begin");
-
-	if(!Model) return false;
-
-	pLog->_DebugAdd("C_GFX::Load1Model() Attempting to load [%s]",(char *)va("models/%04d.md2",i));
-
-	if(	!Model->Load((char *)va("models/%04d.md2",i),(char *)va("models/%04d.bmp",i)))
-    {
-        pLog->_DebugAdd("C_GFX::Load1Model() Model [%s] LOAD FAILURE!",(char *)va("models/%04d.md2",i));
-        return false;
-    }
-
-    if(Model)
-    {
-        strcpy(Model->name,va("%d",i));
-        pLog->_DebugAdd("C_GFX::Load1Model() Created model [%s]",Model->name);
-    }
-
-	pLog->_DebugAdd("C_GFX::Load1Model() End");
-
-	return true;
+    /*
+	if(!Model)
+		return false;
+	if(
+		!Model->Load(
+		va("models/%04d/tris.md2",i),
+		va("models/%04d/skin.bmp",i)
+		)
+		)
+		return false;
+	strcpy(Model->name,va("%d",i));
+	*/
+	return 1;
 }
 
-/****************************************************************************************************
+/****************************************************************************************************/
 
 CGLModel *C_GFX::GetModel(char *name)
 {
-
-
+    /*
 	Model=FirstModel;
 	while(Model)
 	{
 		if(atoi(Model->name)==atoi(name))
 		return Model; Model=Model->next;
 	}
-
+	*/
 	return false;
 }
 
@@ -910,7 +569,8 @@ CGLModel *C_GFX::GetModel(char *name)
 
 bool C_GFX::DestroyModels(void)
 {
-	pLog->_DebugAdd("Begin Models destroy...");
+    /*
+	pLog->_Add("Begin Models destroy...");
 	CGLModel *del;
 	Model=FirstModel;
 	while(Model)
@@ -919,101 +579,33 @@ bool C_GFX::DestroyModels(void)
 		Model=Model->next;
 		DEL(del);
 	}
-	pLog->_DebugAdd("Models destroyed...");
-
-	return true;
+	pLog->_Add("Models destroyed...");
+	*/
+	return 1;
 }
 
 /****************************************************************************************************/
 
-
-
-
 void C_GFX::RenderScene(void) // Render the game scene Frame
 {
-
-   //static float xxx;
-
-   //xxx+=.005;
-
-
-
-    //glClearColor (0.0f, 0.0f, 0.0f, 1.0f);						// Black Background
-	//glClearDepth (1.0f);										// Depth Buffer Setup
-
-
-
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity ();											// Reset The Modelview Matrix
-
-    //glEnable(GL_CULL_FACE);
-    //glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_TEXTURE_2D);//|GL_LIGHTING);
-
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-
-	glDisable (GL_BLEND);
-	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
-	glClearDepth(1.0f);									// Depth Buffer Setup
-
-    glEnable(GL_TEXTURE_2D);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
-
-    if(pCamera) pCamera->Go();
-
-  glEnable (GL_FOG);  //enable this for fog
-  glFogi (GL_FOG_MODE, GL_LINEAR);
-  glFogf (GL_FOG_START, 484.0f);
-  glFogf (GL_FOG_END, 5880.0f);
-
-
-
-	// Enable Pointers
-	glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
-
-    if(g_pMesh->pTexture)
-    if(g_pMesh->pTexture->bmap)
-	glBindTexture(GL_TEXTURE_2D, g_pMesh->pTexture->bmap);
-
-    glVertexPointer( 3, GL_FLOAT, 0, g_pMesh->m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
-    glTexCoordPointer( 2, GL_FLOAT, 0, g_pMesh->m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
-	glDrawArrays( GL_TRIANGLES, 0, g_pMesh->m_nVertexCount );	// Draw All Of The Triangles At Once
-
-	// Disable Pointers
-	glDisableClientState( GL_VERTEX_ARRAY );					// Disable Vertex Arrays
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );				// Disable Texture Coord Arrays
-
-
-	pManMap->Draw();
-
-
     //if(!camera)      return;
 
-    //static float x,y,z;
+    static float x,y,z;
 
-	//static float lxp=0; lxp=lxp+.000021; if(lxp>360) lxp=0;
-	//static float lyp=0; lyp=lyp+.000021; if(lyp>360) lyp=0;
-	//static float lzp=0; lzp=lzp+.000021; if(lyp>360) lyp=0;
+	static float lxp=0; lxp=lxp+.000021; if(lxp>360) lxp=0;
+	static float lyp=0; lyp=lyp+.000021; if(lyp>360) lyp=0;
+	static float lzp=0; lzp=lzp+.000021; if(lyp>360) lyp=0;
 
-	//static float sxp;
-	//static float syp;
-	//static float szp;
+	static float sxp;
+	static float syp;
+	static float szp;
 
-	//sxp=(sin(lxp)/12)*1232;
-	//syp=(cos(lyp)/132)*1232;
-	//szp=(cos(lzp)/12)*1232;
+	sxp=(sin(lxp)/12)*1232;
+	syp=(cos(lyp)/132)*1232;
+	szp=(cos(lzp)/12)*1232;
 
-	//glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
     /*
     ---------------------------
@@ -1034,10 +626,12 @@ void C_GFX::RenderScene(void) // Render the game scene Frame
                              |
     */
 
-//    static float tx,ty,tz,rx,ry,rz;
-//glTranslatef((0.0f)+tx,(0.0f)+ty,(0.0f)+tz);
-//    glRotatef(rx,1.0f,0,0);
-//	glRotatef(rz,0,0,1.0f);
+    static float tx,ty,tz,rx,ry,rz;
+
+    glTranslatef((0.0f)+tx,(0.0f)+ty,(0.0f)+tz);
+
+    glRotatef(rx,1.0f,0,0);
+	glRotatef(rz,0,0,1.0f);
 
 
 
@@ -1063,90 +657,26 @@ void C_GFX::RenderScene(void) // Render the game scene Frame
     glEnd();
     */
 
-	//glPopMatrix();
 
-}
-
-void C_GFX::DrawSun(void)
-{
-
-
-    static float der;
-    static float zpos;
-    static float ypos;
-
-    float skycolor_r;
-    float skycolor_g;
-    float skycolor_b;
-
-
-    der+=.0002;
-    ypos = sin(der) * 1550;
-    zpos = cos(der) * 1550;
-
-    //pLog->_Add("SUN POS X[0.0] Y[%f] Z[%f]",ypos,zpos);
-
-
-    skycolor_r=((ypos+300)/1549);
-    skycolor_g=((ypos+300)/1549);
-    skycolor_b=((ypos+300)/1549);
-
-    if(skycolor_r > 0.4f) skycolor_r=0.4f;
-    if(skycolor_r < 0.0f) skycolor_r=0.0f;
-
-    if(skycolor_g > 0.2f) skycolor_g=0.2f;
-    if(skycolor_g < 0.0f) skycolor_g=0.0f;
-
-    if(skycolor_b > 1.0f) skycolor_b=1.0f;
-    if(skycolor_b < 0.0f) skycolor_b=0.0f;
-
-    glClearColor( skycolor_r , skycolor_g, skycolor_b ,0);
-    //glClearColor( (0.2f) , (0.4f), (1.0f) ,0);
-    //if(zpos>5) zpos=5;
-
-
-    //glPushMatrix();
-	glLoadIdentity();
-
+	//glPushMatrix();
+	//glLoadIdentity();
+	//glTranslatef(camera->x,camera->y,camera->z);
+	//glTranslatef(syp,sxp,szp);
 	//glDisable(GL_BLEND);
+
 	//glEnable(GL_TEXTURE_2D);
     //if(SunTex) glBindTexture(GL_TEXTURE_2D, SunTex->bmap);
 
-	//glTranslatef(0.0f,0.0f,-5.0f);//zpos);//-2.0f);
-
-    if(pCamera)
-    {
-        pLog->_DebugAdd("%f %f %f",pCamera->xpos,pCamera->ypos,pCamera->zpos);
-        pCamera->Go();
-    }
-
-    glTranslatef(0.0f,ypos,zpos);//-2.0f);
-
-    glBindTexture(GL_TEXTURE_2D,BaseTexture[101].texture->bmap);
-    glDisable(GL_BLEND);
-
-    drawsphere(2,60.0f,1.0f,1.0f,0.0f);
-
-
-
-    //  `666.40f);
-
-	//drawcube();
-
-	//Model=FirstModel;
-	//if(Model)
-	//{
-        //pLog->_DebugAdd("%s",Model->name);
-        //Model->Draw();
-	//}
+	// drawsphere(2,3.0f,1.0f,1.0f,.40f);
 
 
 	// drawtri(6.0f,6.0f,1.0f,4,2,255,255,255);
+
+
 	//glTranslatef(-syp,-sxp,-szp);
 	//glTranslatef(0,0,10.0f);
 	//glTranslatef(camera->ux,camera->uy,camera->uz);
 	//glMatrixMode(GL_MODELVIEW);
-
 	//glPopMatrix();
 
 }
@@ -1157,7 +687,6 @@ void C_GFX::DrawRect(RECT rc, long color)
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
 }
 /****************************************************************************************************/
-void C_GFX::DrawRect(int iX, int iY, int iX2, int iY2, long color) { DrawRectangle(iX,iY,iX2,iY2,color); }
 void C_GFX::DrawRectangle(int iX,int iY,int iX2,int iY2,long color)
 {
     DrawBar(iX,iY,iX+1,iY2,color,color);
@@ -1187,22 +716,18 @@ void C_GFX::DrawBar(RECT rc, long color1, long color2)
 /****************************************************************************************************/
 void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2)
 {
-
-
     iY=SDL_GetVideoSurface()->h-iY;
     iY2=SDL_GetVideoSurface()->h-iY2;
-
+    glDisable(GL_BLEND);
+    glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
-
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
-    glTranslated(0.375,0.375,0);
+    glTranslated(0,0,0);
     glDisable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
     glColor3ub( ((color1) & 0xff), ((color1>>8 ) & 0xff), ((color1>>16) & 0xff) );
@@ -1218,13 +743,9 @@ void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2)
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
-
     glEnable(GL_DEPTH_TEST);
-
 }
-
 /****************************************************************************************************/
-
 void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2)
 {
     iY=SDL_GetVideoSurface()->h-iY;
@@ -1288,7 +809,7 @@ void C_GFX::DrawBaseGFX(int x,int y,int x2,int y2,int which,u_char r,u_char g,u_
 		return;
 	}
 
-    BaseTexture[which].texture->Draw2d(x,y,x2,y2,r,g,b);
+    BaseTexture[which].texture->Draw(x,y,x2,y2,r,g,b);
 }
 
 /****************************************************************************************************
@@ -1358,10 +879,10 @@ void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
 		*/
 // }
 
-/****************************************************************************************************
+/****************************************************************************************************/
 void C_GFX::DrawModels(void)
 {
-
+    /*
     static float x,y,z;
 
     x=320.4f;
@@ -1395,7 +916,7 @@ void C_GFX::DrawModels(void)
             }
         }
     }
-
+    */
 }
 
 /****************************************************************************************************/
@@ -1468,19 +989,19 @@ u_char C_GFX::GetFade(char cWhichFade)
 {
     static u_char  cFader1=0;
     static unsigned long dwFadeTimer1=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime1=400;
+    static unsigned long dwFadeChangeTime1=4;
     static char  cFadeDir1=1;
     static u_char  cFader2=0;
     static unsigned long dwFadeTimer2=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime2=300;
+    static unsigned long dwFadeChangeTime2=3;
     static char  cFadeDir2=1;
     static u_char  cFader3=0;
     static unsigned long dwFadeTimer3=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime3=100;
+    static unsigned long dwFadeChangeTime3=1;
     static char  cFadeDir3=1;
 
     static unsigned long dwFadeTimer4=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime4=100;
+    static unsigned long dwFadeChangeTime4=1;
     static u_char  cFader4=0;
 
     if(dlcs_get_tickcount()-dwFadeTimer1 > dwFadeChangeTime1)
@@ -1519,37 +1040,4 @@ u_char C_GFX::GetFade(char cWhichFade)
     if(cWhichFade==3) return cFader3;
     if(cWhichFade==4) return cFader4;
     return 0;
-}
-
-
-
-void C_GFX::draw_3d_box(int x, int y, int x2, int y2){
-    RECT r;
-    r.left=x;
-    r.top=y;
-    r.right=(x2-x);
-    r.bottom=(y2-y);
-    draw_3d_box(r);
-}
-void C_GFX::draw_3d_box(RECT rect){
-    DrawBar(  rect.left,
-                    rect.top,
-                    rect.left+rect.right-2,
-                    rect.top+rect.bottom-2,
-                    LONGRGB(240,240,240),
-                    LONGRGB(240,240,240));
-
-    DrawBar(  rect.left+2,
-                    rect.top+2,
-                    rect.left+rect.right,
-                    rect.top+rect.bottom,
-                    LONGRGB(80,80,80),
-                    LONGRGB(80,80,80));
-
-    DrawBar(  rect.left+2,
-                    rect.top+2,
-                    rect.left+rect.right-2,
-                    rect.top+rect.bottom-2,
-                    LONGRGB(180,180,180),
-                    LONGRGB(180,180,180));
 }

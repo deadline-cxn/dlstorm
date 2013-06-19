@@ -19,6 +19,10 @@
 #include <errno.h>
 #endif
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Network junk
+
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
 
 #ifndef _WIN32
@@ -60,6 +64,8 @@
 #define NET_BUFFERED_QUEUE              3
 #define NET_FILE_XFER_BLOCK_SIZE		1024
 #define	NET_NAMELEN 64
+
+
 
 #ifdef _WIN32
 static struct stErrorEntry{
@@ -121,28 +127,6 @@ static struct stErrorEntry{
 };
 const int iNumMessages = sizeof(pErrorList) / sizeof(struct stErrorEntry);
 #endif
-
-typedef enum
-{
-    LOGIN_WHAT,
-    GOOD_LOGIN,
-    BAD_LOGIN,
-    NEW_ACCOUNT,
-    ALREADY_LOGGED_IN,
-    TOO_MANY_PLAYERS,
-    SERVER_MAXXED_OUT,
-    ACCOUNT_EXPIRED,
-    MASTER_LOGIN,
-} eLoginStuff;
-
-typedef enum
-{
-    NET_NOTCONNECT=0,     // not connected to any host
-    NET_LOGGINPROC,     // connected but not logged in
-    NET_SYSBUSY,        // if some class internal things (filetransfer) are done
-    NET_CONNECTED,      // ok normal connecting
-} eConState;
-
 
 class CPacket
 {
