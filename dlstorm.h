@@ -26,8 +26,8 @@ extern "C"
 
 	char	*md5_digest(char *text); // md5 digest of the text
 
-	char   *encrypt(char *text); // encrypt text
-	char   *decrypt(char *text); // decrypt text
+	char   *dlcs_encrypt(char *text); // encrypt text
+	char   *dlcs_decrypt(char *text); // decrypt text
 
 	const char   *va(const char *format, ...);
 

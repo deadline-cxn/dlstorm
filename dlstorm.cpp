@@ -159,7 +159,7 @@ char *md5_digest(char *text) // return a md5 digest of text
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-char *encrypt(char *text)
+char *dlcs_encrypt(char *text)
 {
 	char ntext[1024];	memset(ntext,0,1024);
 	char ntext2[1024];	memset(ntext2,0,1024);
@@ -176,7 +176,7 @@ char *encrypt(char *text)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-char *decrypt(char *text)
+char *dlcs_decrypt(char *text)
 {
 
 	return strdup(text);

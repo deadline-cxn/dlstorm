@@ -9,7 +9,8 @@ CGAF::CDirScanner::CDirScanner()
 
 CGAF::CDirScanner::~CDirScanner()
 {
-	if(Handle!=INVALID_HANDLE_VALUE)FindClose(Handle);
+	if(Handle!=INVALID_HANDLE_VALUE)
+        FindClose(Handle);
 }
 
 void CGAF::CDirScanner::Start(LPSTR dirname)
@@ -27,17 +28,21 @@ bool CGAF::CDirScanner::GetFile()
 	{
 		Handle=FindFirstFile(DirName,&FindData);
 		NextIsFirst=false;
-		if(Handle!=INVALID_HANDLE_VALUE)return true;
-	}else
+		if(Handle!=INVALID_HANDLE_VALUE)
+            return true;
+	}
+	else
 	{
-		if(FindNextFile(Handle,&FindData))return true;
+		if(FindNextFile(Handle,&FindData))
+            return true;
 	}
 	return false;
 }
 
 bool CGAF::CDirScanner::Error()
 {
-	if(Handle==INVALID_HANDLE_VALUE)return true;
+	if(Handle==INVALID_HANDLE_VALUE)
+        return true;
 	return false;
 }
 
