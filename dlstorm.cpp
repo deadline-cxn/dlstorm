@@ -100,8 +100,7 @@ vector <string> Dir2Vector(char *szDir, char *szWildCard)
 #endif
 }
 
-bool Dir2File(char *szDir,char *szFile,char *szWildCard)
-{
+bool Dir2File(char *szDir,char *szFile,char *szWildCard) {
 
 #ifdef _WIN32
 	FILE *fp;
@@ -330,6 +329,15 @@ int dlcs_strcasecmp(const char *szOne,const char *szTwo)
     return rval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool sp_isdir(char *dir) {
+    struct stat st;
+    if(stat(dir,&st) == 0)
+        if(st.st_mode & S_IFDIR != 0)
+            return true;
+    return false;
+}
+
 int sp_mkdir(char *szDirectoryName) { return dlcs_mkdir(szDirectoryName); }
 int dlcs_mkdir(char *szDirectoryName)
 {

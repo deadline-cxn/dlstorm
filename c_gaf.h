@@ -12,6 +12,8 @@
 #include "zlib.h"
 #include "c_log.h"
 
+#include <dirent.h>
+
 // Maximum size of a Indexname in CGAF File.
 #define GAF_NAMESIZE 24
 #define GAF_DESCSIZE 24
@@ -26,22 +28,23 @@
 #define GAFCOMP_NORMAL		Z_DEFAULT_COMPRESSION
 #define GAFCOMP_BEST		Z_BEST_COMPRESSION
 
+#define BUFFERSIZE (1024*1024)
+#define GAF_VERSION 1306250000
+
 struct GAFFile_Header;
 struct GAFFile_ElmHeader;
 class  CGAF;
 
 typedef void (*GAF_SCANCALLBACK)(GAFFile_ElmHeader *ElmInfo,LPSTR FullPath);
 
-struct GAFFile_Header
-{
+struct GAFFile_Header {
     DWORD Size;			// Size of this header
     DWORD Version;		// Version
     char Description[GAF_DESCSIZE];	// Description
     int NumElements;	// Amount of elements
 };
 
-struct GAFFile_ElmHeader
-{
+struct GAFFile_ElmHeader {
     DWORD	FileSize;	// Size of this file.
     DWORD	FileOffset;	// This files contents Offset in the nukefile.
     DWORD	Type;		// Type of this element. (Dir or File)
@@ -54,16 +57,17 @@ struct GAFFile_ElmHeader
 
 #ifndef GAF_FILEBUF_DEFINED
 #define GAF_FILEBUF_DEFINED
-struct GAF_FileBuffer
-{
+struct GAF_FileBuffer {
     unsigned char *fb;
     int Size;
 };
 #endif
 
-class CGAF
-{
+class CGAF {
 public:
+
+    CLog *CabLog;
+
     // Remove Many files...
     // Allows removal of many files without rebuilding the nuk every time.
     // Calling ManyFileEnd is obligatory!!
@@ -94,20 +98,17 @@ public:
     void SelectCompression(DWORD Level);
 
     // Returns the current default compression level. One of the #defines NFCOMP_****
-    DWORD GetCompressionLevel ( void )
-    {
+    DWORD GetCompressionLevel ( void ) {
         return CompLevel;
     }
 
     // RetVal = true if the This CNukeFile object has an open .NUK file.
-    bool IsFileOpen ( void )
-    {
+    bool IsFileOpen ( void ) {
         return FileOpen;
     }
 
     // Returns the .NUK file's Description (What Builder `NUK File Header (255 Chars max)`
-    LPCSTR GetDescriptionString ( void )
-    {
+    LPCSTR GetDescriptionString ( void ) {
         return *&Header.Description;
     }
 
@@ -153,57 +154,29 @@ public:
     bool AddDir(LPSTR Dest,LPSTR dirname,bool SubDirs);
     bool AddDirFilesToRoot(LPSTR dir, bool SubDirs);
 
-    // Move a file or a directory + content
     bool Move(LPSTR Name,LPSTR Destination);
-
-    // Rename a file or a directory
-    // ect. Rename("Testdir/image.bmp","stuff.bmp");
     bool Rename(LPSTR Name,LPSTR NewName);
-
-    // Remove a directory and all it's content
     bool RemoveDir(LPSTR Name);
-
-    // Removes a file.
     bool RemoveFile(LPSTR Name);
-
-    // Scan Directory - Calls 'CallBack' with this information about the elements in the dir
     bool ScanDir(LPSTR Name,GAF_SCANCALLBACK CallBack);
-
-    // Uses ScanDir to scan this dir and all subdirs, for elements.
     bool ScanTree(LPSTR Name,GAF_SCANCALLBACK CallBack);
-
-    // Seek to the position of the file 'Name' and return a filehandle. Returns NULL on error.
     FILE * Seek(LPSTR Name);
-
-    // Creates a dir.
     bool CreateDir(LPSTR Name);
-
-    // Create an empty file, with the size 'Size'. (ect. CreateFile("Image.raw",ImageWidth*ImageHeight); )
     bool CreateFile(LPSTR Name, DWORD Size);
-
-    // Close the current file.
     bool Close();
-
-    // Create a new, and empty, NukeFile.
     bool Create(LPSTR fn);
-
-    // Open an existing NukeFile.
-    // The FileDescription in the NukeFile must match the specified filedescripion.
-    // (Use SetFileDescription)
-    // `_bIgnoreDescription = true` to ignore the NUK file's description.
     bool Open ( LPSTR fn, bool _bIgnoreDescription = false );
 
     CGAF();
     CGAF(char *file,int comp);
     virtual ~CGAF();
 
-
     bool AddFile_Compress(LPSTR Name,LPSTR filename);
     bool CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel);
     DWORD CompLevel;
     int GetFullLength();
-    class CDirScanner
-    {
+    /*
+    class CDirScanner {
     public:
         bool Error();
         char DirName[GAF_NAMESIZE];
@@ -215,6 +188,7 @@ public:
         CDirScanner();
         virtual ~CDirScanner();
     };
+    */
     int FindDirNumber(LPSTR Name);
     int FindDir(LPSTR Name);
     int FindFile(LPSTR Name);

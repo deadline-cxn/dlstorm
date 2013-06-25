@@ -41,6 +41,8 @@ extern "C"
     char   *getos(void);
 	char   *dlcs_get_os_version(void);
 
+    bool    sp_isdir(char *dir);
+
 	int     sp_mkdir(char *szdir);
 	int     dlcs_mkdir(char *szDirectoryName);
 

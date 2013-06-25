@@ -219,9 +219,7 @@ void Sys_PumpEvents( void );
 // Windows type structs for non windows conversions
 
 #ifndef _WIN32
-
-typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
-
+ // typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////

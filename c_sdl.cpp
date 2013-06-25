@@ -215,6 +215,7 @@ CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb,char *icon){
 	Begin(appname,nw,nh,nb,icon);
 }
 CSDL_Wrap::CSDL_Wrap(char *an,Uint32 w,Uint32 h,Uint32 b, Uint16 f, char *icon){
+
 	GAF=0;
 	Log=0;
 	videoflags = f;
@@ -228,9 +229,9 @@ CSDL_Wrap::~CSDL_Wrap(){
 }
 bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, char *icon){
     if(!Log) Log=new CLog("gfx.log");
-    RebuildGAF();
-    Icon=LoadGAFSurface(icon);
-    if(Icon==0) { InitSuccess=0; return 0; }
+    Log->AddEntry("CSDL_Wrap::Begin(1)...");
+    // Icon=LoadGAFSurface(icon);
+    // if(Icon==0) { InitSuccess=0; return 0; }
     return Begin(appname,nw,nh,np,Icon);
 }
 bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface *icon){
@@ -238,7 +239,7 @@ bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface
     Log->AddEntry("CSDL_Wrap::Begin(2)...");
     w=nw; h=nh; b=np;
     RebuildGAF();
-    if(!GAF) GAF=new CGAF("gfx.gaf",GAFCOMP_NONE);
+    if(!GAF) GAF = new CGAF("gfx.gaf",GAFCOMP_BEST);
     Icon=icon;
     strcpy(APP_NAME,appname);
     InitSuccess=Init2D(w,h,b,Icon);
@@ -249,9 +250,10 @@ void CSDL_Wrap::RebuildGAF(void){
     Log->AddEntry("Rebuilding gfx.gaf GAF...");
     remove("gfx.gaf");
     CGAF *gaf;
-    gaf=new CGAF("gfx.gaf",GAFCOMP_NONE);
-    gaf->AddDir("","gfx",1);
+    gaf=new CGAF("newgfx.gaf",GAFCOMP_BEST);
+    gaf->AddDir("gfx");
     DEL(gaf);
+    rename("newgfx.gaf","gfx.gaf");
 }
 
 bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon){
@@ -275,35 +277,22 @@ bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon){
 
 SDL_Surface *CSDL_Wrap::LoadGAFSurface(char *fn){
     Log->AddEntry(va("CSDL_Wrap::LoadGAFSurface(\"%s\")...",fn));
-    if(!GAF)
-        GAF=new CGAF("gfx.gaf",GAFCOMP_BEST);
-
+    if(!GAF) GAF=new CGAF("gfx.gaf",GAFCOMP_BEST);
     Log->AddEntry(va("GAF [%d]",GAF));
-
     SDL_Surface *what;
     what=0;
-
     SDL_RWops *rw;
     // unsigned char * fi;
-    if(GAF->GetFileSize(fn))
-    {
-        rw   = SDL_RWFromMem(GAF->GetFile(fn).fb,GAF->GetFileSize(fn));
-
-        Log->AddEntry(va("%s",rw));
-
+    if(GAF->GetFileSize(fn)) {
+        rw = SDL_RWFromMem(GAF->GetFile(fn).fb,GAF->GetFileSize(fn));
         FILE *fb; fb=fopen("TEST.GIF","wb");
-        if(fb)
-        {
+        if(fb) {
             fwrite(rw,sizeof(rw),1,fb);
         }
         fclose(fb);
-
         what = LoadMemSurface(rw);
-
         SDL_FreeRW(rw);
-
-        if(what)
-        {
+        if(what) {
             SDL_SetColorKey(what, SDL_SRCCOLORKEY,SDL_MapRGB(what->format, 0, 0, 0));
             Log->AddEntry(va("CSDL_Wrap::LoadGAFSurface(\"%s\") - [%s] loaded to surface [%d]",fn,fn,what));
         }
@@ -317,13 +306,9 @@ SDL_Surface *CSDL_Wrap::LoadGAFSurface(char *fn){
 
 SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw){
     Log->AddEntry(va("CSDL_Wrap::LoadMemSurface((SDL_RWops *)%d)...",rw));
-
     SDL_Surface *what;
-
     what=0;
-
     if(!rw) return 0;
-
     if(IMG_isBMP(rw)) what=IMG_LoadBMP_RW(rw);
     if(IMG_isGIF(rw)) what=IMG_LoadGIF_RW(rw);
     if(IMG_isJPG(rw)) what=IMG_LoadJPG_RW(rw);
@@ -336,11 +321,8 @@ SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw){
     if(IMG_isXPM(rw)) what=IMG_LoadXPM_RW(rw);
     if(IMG_isXV(rw))  what=IMG_LoadXV_RW(rw);
     if(what==0)       what=IMG_LoadTGA_RW(rw);
-
-    Log->AddEntry(va("%d",what));
-
+    Log->AddEntry(va("WHAT = %d",what));
     Log->AddEntry(va("CSDL_Wrap::LoadSurface(SDL_RWops *)%d) - end",rw));
-
     return what;
 }
 
@@ -442,7 +424,7 @@ void CSDL_Wrap::DrawMap(){
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-C2DFont::C2DFont() { }
+C2DFont::C2DFont() { Font=0; }
 C2DFont::C2DFont(char *file) { Load(file); }
 C2DFont::~C2DFont() { }
 void C2DFont::Load(char *file) { Font = SDL_LoadBMP(file); if(Font) SDL_SetColorKey(Font, SDL_SRCCOLORKEY,SDL_MapRGB(Font->format, 0, 0, 0)); }
@@ -473,10 +455,11 @@ void C2DFont::Write(int x, int y, char *string,int bank){
             }
             draw=1;
         }
-        if(draw)
-        {
+        if(draw) {
+
             src_rect.x=getx;
             src_rect.y=gety+(bank*128);
+            if(Font)
             SDL_BlitSurface(Font, &src_rect, SDL_GetVideoSurface(), &dst_rect);
         }
         dst_rect.x+=10;
