@@ -8,29 +8,25 @@ CGame::CGame()
 	screen_colors=32;
 }
 
-CGame::CGame(char *APP_NAME,Uint16 FLAGS)
-{
+CGame::CGame(char *APP_NAME,Uint16 FLAGS) {
 	screen_width=800;
 	screen_height=600;
 	screen_colors=32;
     Start(APP_NAME,FLAGS);
 }
 
-CGame::CGame(char *APP_NAME,Uint32 SCREEN_WIDTH,Uint32 SCREEN_HEIGHT,Uint32 SCREEN_COLORS,Uint16 FLAGS)
-{
+CGame::CGame(char *APP_NAME,Uint32 SCREEN_WIDTH,Uint32 SCREEN_HEIGHT,Uint32 SCREEN_COLORS,Uint16 FLAGS) {
 	screen_width=SCREEN_WIDTH;
 	screen_height=SCREEN_HEIGHT;
 	screen_colors=SCREEN_COLORS;
     Start(APP_NAME,FLAGS);
 }
 
-CGame::~CGame()
-{
+CGame::~CGame() {
     ShutDown();
 }
 
-void CGame::Start(char *APP_NAME,Uint16 _flags)
-{
+void CGame::Start(char *APP_NAME,Uint16 _flags) {
     flags=_flags;
 
     G_QUIT=false;
@@ -43,16 +39,20 @@ void CGame::Start(char *APP_NAME,Uint16 _flags)
     Log->AddEntry("------------------------------------------------------");
     Log->AddEntry(va("%s! Started...",APP_NAME));
 
-    if(flags&G_SDL)
-    {
+    if(flags&G_SDL) {
         GFX = new CSDL_Wrap(APP_NAME,screen_width,screen_height,screen_colors, flags, "gfx/icon.bmp");
         if(!GFX) ShutDown();
-        if(!GFX->InitSuccess) ShutDown();
-        Log->AddEntry("GFX Subsystem Initialized...");
+        if(!GFX->InitSuccess) {
+            Log->AddEntry("GFX Subsystem Init FAILURE!");
+            ShutDown();
+            return;
+        }
+
     }
 
-    if(flags&G_FMOD)
-    {
+    Log->AddEntry("GFX Subsystem Initialized...");
+
+    if(flags&G_FMOD) {
         SND = new CFMOD();
         Log->AddEntry("SND Subsystem Initialized...");
     }
@@ -64,8 +64,7 @@ void CGame::Start(char *APP_NAME,Uint16 _flags)
 
 }
 
-void CGame::ShutDown()
-{
+void CGame::ShutDown() {
     Log->AddEntry("Game shutting down...");
     DEL(SND);
     Log->AddEntry("Game shutting down... SND");
@@ -75,14 +74,12 @@ void CGame::ShutDown()
     G_QUIT=true;
 }
 
-bool CGame::Inject(Uint16 TYPE,char *name)
-{
+bool CGame::Inject(Uint16 TYPE,char *name) {
 
     return true;
 }
 
-bool CGame::UpdateGFXStart()
-{
+bool CGame::UpdateGFXStart() {
     if(!GFX) return false;
     GFX->ClearScreen(SDL_MapRGB(GFX->screen->format,0,0,0));
 
@@ -92,8 +89,7 @@ bool CGame::UpdateGFXStart()
     return false;
 }
 
-bool CGame::DrawVortex()
-{
+bool CGame::DrawVortex() {
 
         /* // CSprite     *spaceship;
         // CSprite     *grape;
@@ -140,23 +136,20 @@ bool CGame::DrawVortex()
     return 0;
 }
 
-bool CGame::UpdateGFXEnd()
-{
+bool CGame::UpdateGFXEnd() {
     if(!GFX) return false;G_QUIT=true;
     GFX->Flip();
     return false;
 }
 
-bool CGame::UpdateInput()
-{
+bool CGame::UpdateInput() {
     SDL_Event   event;
 
     G_KEYDOWN=0;
 
     RefreshMouse();
     SDL_PollEvent(&event);
-    switch (event.type)
-    {
+    switch (event.type)     {
         case SDL_KEYDOWN:
             G_KEYDOWN=event.key.keysym.sym;
             break;
@@ -180,8 +173,7 @@ bool CGame::UpdateInput()
     return false;
 }
 
-bool CGame::Loop()
-{
+bool CGame::Loop() {
     UpdateGFXStart();
     UserGFX();
     UpdateGFXEnd();

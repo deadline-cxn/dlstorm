@@ -5,10 +5,6 @@
 #ifndef _DEADLINE_LIBRARY
 #define _DEADLINE_LIBRARY
 
-//#if _MSC_VER > 1000
-//#pragma once
-//#endif // _MSC_VER > 1000
-
 #include "dlstorm_lib.h"
 #include <iostream>
 #include <vector>

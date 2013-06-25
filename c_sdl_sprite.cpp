@@ -1,30 +1,25 @@
 
 #include "c_sdl_sprite.h"
 
-CSprite::CSprite()
-{
+CSprite::CSprite(){
     Init();
 }
-CSprite::CSprite(SDL_Surface *source_surface)
-{
+CSprite::CSprite(SDL_Surface *source_surface){
     Init();
     source_surface=source_surface;
-    target_surface=0;   
+    target_surface=0;
 }
 
-CSprite::CSprite(SDL_Surface *s_surface,SDL_Surface *t_surface)
-{
+CSprite::CSprite(SDL_Surface *s_surface,SDL_Surface *t_surface){
     Init();
     source_surface=s_surface;
     target_surface=t_surface;
 }
 
-CSprite::~CSprite()
-{
+CSprite::~CSprite() {
 }
 
-void CSprite::Init()
-{
+void CSprite::Init(){
 	source_surface=0;
 	target_surface=0;
     x=0;
@@ -48,15 +43,14 @@ void CSprite::Init()
 
 void CSprite::Draw() { Draw(x,y); }
 
-void CSprite::Draw(float x, float y)
-{   
+void CSprite::Draw(float x, float y){
     if(animated)
     {
         if(animtimer < ( getticks()-animation_speed))
         {
             animtimer= getticks();
 
-            
+
             animation_frame++;
 
             if(animation_frame>animation_lastframe)
@@ -71,21 +65,20 @@ void CSprite::Draw(float x, float y)
     SDL_BlitSurface(source_surface, &rect[animation_frame], target_surface, &destrec);
 }
 
-void CSprite::LoadDLZ(CCab *cab,char *file)
-{
-	NF_FileBuffer fb;
+void CSprite::LoadDLZ(CGAF *cab,char *file){
+	GAF_FileBuffer fb;
 	fb=cab->GetFile(file);
-	source_surface=LoadMemBMP(fb.FileBuffer,fb.Size);
+	LoadMemBMP(fb.fb);
 }
 
+void CSprite::LoadMemBMP(unsigned char *fb) {
+    // source_surface=fb;
+}
 
-
-void CSprite::LoadSurface(char *fname)
-{
+void CSprite::LoadSurface(char *fname){
     source_surface=SDL_LoadBMP(fname);
 }
 
-void CSprite::SetColorKey(int r, int g, int b)
-{
+void CSprite::SetColorKey(int r, int g, int b){
     SDL_SetColorKey(source_surface, SDL_SRCCOLORKEY,SDL_MapRGB(source_surface->format, 0, 0, 0));
 }

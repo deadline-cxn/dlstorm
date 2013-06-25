@@ -1,5 +1,5 @@
-#include "c_sdl.h"
 #include "dlstorm.h"
+#include "c_sdl.h"
 #include "sdl_image.h"
 
 bool bLeftDown,bMiddleDown,bRightDown;
@@ -10,8 +10,7 @@ long dwLeftDblClickTimer,dwMiddleDblClickTimer,dwRightDblClickTimer;
 int ix,iy;
 
 ///////////////////////////////////////////////////////////////////////
-void InitializeInput(void)
-{
+void InitializeInput(void) {
     bLeftDown             = 0;
     bMiddleDown           = 0;
     bRightDown            = 0;
@@ -27,8 +26,7 @@ void InitializeInput(void)
 ///////////////////////////////////////////////////////////////////////
 void ShutDownInput(void) { } // Obsolete
 ///////////////////////////////////////////////////////////////////////
-void RefreshMouse(void)
-{
+void RefreshMouse(void){
     bool bLeft,bRight,bMiddle;
     int butt;
     butt       = SDL_GetMouseState(&ix,&iy);
@@ -37,7 +35,6 @@ void RefreshMouse(void)
     bRight     = TOBOOL((SDL_BUTTON(SDL_BUTTON_RIGHT)     & butt));
     bWheelUp   = TOBOOL((SDL_BUTTON(SDL_BUTTON_WHEELUP)   & butt));
     bWheelDown = TOBOOL((SDL_BUTTON(SDL_BUTTON_WHEELDOWN) & butt));
-
     bLeftRelease=0;
     bRightRelease=0;
     bMiddleRelease=0;
@@ -67,8 +64,7 @@ void RefreshMouse(void)
     bMiddleDown=bMiddle;
 }
 ///////////////////////////////////////////////////////////////////////
-bool GetMouseRelease(int iWhich)
-{
+bool GetMouseRelease(int iWhich){
     switch(iWhich)
     {
         case SDL_BUTTON_LEFT:
@@ -84,8 +80,7 @@ bool GetMouseRelease(int iWhich)
     return 0;
 }
 ///////////////////////////////////////////////////////////////////////
-void SetMouseRelease(int iWhich,bool set)
-{
+void SetMouseRelease(int iWhich,bool set){
     switch(iWhich)
     {
         case SDL_BUTTON_LEFT:
@@ -102,8 +97,7 @@ void SetMouseRelease(int iWhich,bool set)
     }
 }
 ///////////////////////////////////////////////////////////////////////
-bool GetMouseDown(int iWhich)
-{
+bool GetMouseDown(int iWhich){
     switch(iWhich)
     {
         case SDL_BUTTON_LEFT:
@@ -118,8 +112,7 @@ bool GetMouseDown(int iWhich)
     return 0;
 }
 ///////////////////////////////////////////////////////////////////////
-bool GetMouseDblClick(int iWhich)
-{
+bool GetMouseDblClick(int iWhich){
     switch(iWhich)
     {
         case SDL_BUTTON_LEFT:
@@ -142,14 +135,12 @@ int  GetMouseY(void){return iy;}
 ///////////////////////////////////////////////////////////////////////
 void SetMouseY(int y) { iy=y; }
 ///////////////////////////////////////////////////////////////////////
-bool MouseInX(int x1,int x2)
-{
+bool MouseInX(int x1,int x2){
 	if((GetMouseX()>x1) && (GetMouseX()<x2)) return true;
 	return false;
 }
 ///////////////////////////////////////////////////////////////////////
-bool MouseInY(int y1,int y2)
-{
+bool MouseInY(int y1,int y2){
 	if((GetMouseY()>y1) && (GetMouseY()<y2)) return true;
 	return false;
 }
@@ -192,8 +183,7 @@ int  GetMouseWheelDown(void) { return bWheelDown; }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CSDL_Wrap Class
 
-CSDL_Wrap::CSDL_Wrap()
-{
+CSDL_Wrap::CSDL_Wrap(){
 	GAF=0;
 	Log=0;
 	SDL_Surface *s;
@@ -202,8 +192,7 @@ CSDL_Wrap::CSDL_Wrap()
     Begin(0,800,600,32,s);
 }
 
-CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb)
-{
+CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb){
 	GAF=0;
 	Log=0;
 	SDL_Surface *s;
@@ -212,70 +201,60 @@ CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb)
     Begin(appname,nw,nh,nb,s);
  }
 
-CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb,SDL_Surface *icon)
-{
+CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb,SDL_Surface *icon){
 	GAF=0;
 	Log=0;
 	videoflags = SDL_HWSURFACE|SDL_HWPALETTE|SDL_DOUBLEBUF|SDL_FULLSCREEN|SDL_NOFRAME;
 	Begin(appname,nw,nh,nb,icon);
 }
 
-CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb,char *icon)
-{
+CSDL_Wrap::CSDL_Wrap(char *appname,Uint32 nw,Uint32 nh,Uint32 nb,char *icon){
 	GAF=0;
 	Log=0;
 	videoflags = SDL_HWSURFACE|SDL_HWPALETTE|SDL_DOUBLEBUF|SDL_FULLSCREEN|SDL_NOFRAME;
 	Begin(appname,nw,nh,nb,icon);
 }
-CSDL_Wrap::CSDL_Wrap(char *an,Uint32 w,Uint32 h,Uint32 b, Uint16 f, char *icon)
-{
+CSDL_Wrap::CSDL_Wrap(char *an,Uint32 w,Uint32 h,Uint32 b, Uint16 f, char *icon){
 	GAF=0;
 	Log=0;
 	videoflags = f;
 	Begin(an,w,h,b,icon);
 }
 
-CSDL_Wrap::~CSDL_Wrap()
-{
+CSDL_Wrap::~CSDL_Wrap(){
     DEL(GAF);
     DEL(Log);
     SDL_Quit();
 }
-bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, char *icon)
-{
+bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, char *icon){
     if(!Log) Log=new CLog("gfx.log");
     RebuildGAF();
     Icon=LoadGAFSurface(icon);
     if(Icon==0) { InitSuccess=0; return 0; }
     return Begin(appname,nw,nh,np,Icon);
 }
-bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface *icon)
-{
+bool CSDL_Wrap::Begin(char *appname,Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface *icon){
     if(!Log) Log=new CLog("gfx.log");
     Log->AddEntry("CSDL_Wrap::Begin(2)...");
-
-
-
     w=nw; h=nh; b=np;
-    if(!GAF) GAF=new CGAF("gfx.gaf",NFCOMP_BEST);
+    RebuildGAF();
+    if(!GAF) GAF=new CGAF("gfx.gaf",GAFCOMP_NONE);
     Icon=icon;
     strcpy(APP_NAME,appname);
     InitSuccess=Init2D(w,h,b,Icon);
     return InitSuccess;
 }
 
-void CSDL_Wrap::RebuildGAF(void)
-{
+void CSDL_Wrap::RebuildGAF(void){
     Log->AddEntry("Rebuilding gfx.gaf GAF...");
     remove("gfx.gaf");
     CGAF *gaf;
-    gaf=new CGAF("gfx.gaf",NFCOMP_BEST);
+    gaf=new CGAF("gfx.gaf",GAFCOMP_NONE);
     gaf->AddDir("","gfx",1);
     DEL(gaf);
 }
 
-bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon)
-{
+bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon){
 	if(screen) return true;
     Log->AddEntry(va("CSDL_Wrap::Init2D(%d,%d,%d,(SDL_Surface *)%d)",width,height,bpp,icon));
     if(SDL_Init(SDL_INIT_VIDEO) < 0) return false;
@@ -294,11 +273,10 @@ bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon)
     return true;
 }
 
-SDL_Surface *CSDL_Wrap::LoadGAFSurface(char *fn)
-{
+SDL_Surface *CSDL_Wrap::LoadGAFSurface(char *fn){
     Log->AddEntry(va("CSDL_Wrap::LoadGAFSurface(\"%s\")...",fn));
     if(!GAF)
-        GAF=new CGAF("gfx.gaf",NFCOMP_BEST);
+        GAF=new CGAF("gfx.gaf",GAFCOMP_BEST);
 
     Log->AddEntry(va("GAF [%d]",GAF));
 
@@ -337,8 +315,7 @@ SDL_Surface *CSDL_Wrap::LoadGAFSurface(char *fn)
     return what;
 }
 
-SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw)
-{
+SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw){
     Log->AddEntry(va("CSDL_Wrap::LoadMemSurface((SDL_RWops *)%d)...",rw));
 
     SDL_Surface *what;
@@ -367,14 +344,12 @@ SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw)
     return what;
 }
 
-void CSDL_Wrap::LoadFont(char *fn)
-{
+void CSDL_Wrap::LoadFont(char *fn){
     Log->AddEntry(va("CSDL_Wrap::LoadFont(\"%s\")...",fn));
     Font=LoadGAFSurface(fn);
 }
 
-SDL_Surface *CSDL_Wrap::CreateScreen(Uint16 w, Uint16 h, Uint8 bpp, Uint32 flags)
-{
+SDL_Surface *CSDL_Wrap::CreateScreen(Uint16 w, Uint16 h, Uint8 bpp, Uint32 flags){
     Log->AddEntry(va("CSDL_Wrap::CreateScreen(%d,%d,%d,%d)...",w,h,bpp,flags));
     SDL_Surface *screen;
     int i;
@@ -394,8 +369,7 @@ SDL_Surface *CSDL_Wrap::CreateScreen(Uint16 w, Uint16 h, Uint8 bpp, Uint32 flags
     return(screen);
 }
 
-bool CSDL_Wrap::ToggleFullScreen()
-{
+bool CSDL_Wrap::ToggleFullScreen(){
     int videoflags;
     videoflags = screen->flags;
     videoflags ^= SDL_FULLSCREEN;
@@ -403,8 +377,7 @@ bool CSDL_Wrap::ToggleFullScreen()
     if(screen == NULL ) return false;
     return true;
 }
-Uint32 CSDL_Wrap::GetPixel(int x, int y)
-{
+Uint32 CSDL_Wrap::GetPixel(int x, int y){
     if(x>(screen->w-1)) return 0; if(x<0) return 0; if(y>(screen->h-1)) return 0; if(y<0) return 0;
     int bpp = screen->format->BytesPerPixel; Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * bpp;
     switch(bpp) {
@@ -417,8 +390,7 @@ Uint32 CSDL_Wrap::GetPixel(int x, int y)
     default:return 0;
     }
 }
-void CSDL_Wrap::PutPixel(int x, int y, Uint32 pixel)
-{
+void CSDL_Wrap::PutPixel(int x, int y, Uint32 pixel){
     if(x>(screen->w-1)) return; if(x<0) return; if(y>(screen->h-1)) return;if(y<0) return;
     int bpp=screen->format->BytesPerPixel; Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * bpp;
     switch(bpp)
@@ -433,25 +405,21 @@ void CSDL_Wrap::PutPixel(int x, int y, Uint32 pixel)
     }
 }
 
-void CSDL_Wrap::ClearScreen(Uint32 color)
-{
+void CSDL_Wrap::ClearScreen(Uint32 color){
     SDL_Rect barea2; barea2.x=0; barea2.y=0; barea2.w=screen->w;barea2.h=screen->h;
     SDL_FillRect(screen, &barea2, color);
 }
 
-void CSDL_Wrap::Flip()
-{
+void CSDL_Wrap::Flip(){
     if(videoflags&&SDL_DOUBLEBUF) SDL_Flip(screen);
 }
 
-void CSDL_Wrap::DrawRect(int x, int y, int w, int h, Uint32 color)
-{
+void CSDL_Wrap::DrawRect(int x, int y, int w, int h, Uint32 color){
     SDL_Rect barea2; barea2.x=x; barea2.y=y; barea2.w=w; barea2.h=h;
     SDL_FillRect(screen, &barea2, color);
 }
 
-void CSDL_Wrap::DrawMap()
-{
+void CSDL_Wrap::DrawMap(){
     int x,y ;
 	//int dt;
 
@@ -474,13 +442,11 @@ void CSDL_Wrap::DrawMap()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
 C2DFont::C2DFont() { }
 C2DFont::C2DFont(char *file) { Load(file); }
 C2DFont::~C2DFont() { }
 void C2DFont::Load(char *file) { Font = SDL_LoadBMP(file); if(Font) SDL_SetColorKey(Font, SDL_SRCCOLORKEY,SDL_MapRGB(Font->format, 0, 0, 0)); }
-void C2DFont::Write(int x, int y, char *string,int bank)
-{
+void C2DFont::Write(int x, int y, char *string,int bank){
     char c;
     int getx;
     int gety;
@@ -515,104 +481,5 @@ void C2DFont::Write(int x, int y, char *string,int bank)
         }
         dst_rect.x+=10;
     }
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-CSprite::CSprite()
-{
-    Init();
-    source_surface=NULL;
-    target_surface=SDL_GetVideoSurface(); //NULL;
-}
-CSprite::CSprite(SDL_Surface *source_surface)
-{
-    Init();
-    source_surface=source_surface;
-    target_surface=0;
-}
-
-CSprite::CSprite(SDL_Surface *s_surface,SDL_Surface *t_surface)
-{
-    Init();
-    source_surface=s_surface;
-    target_surface=t_surface;
-}
-
-CSprite::~CSprite()
-{
-}
-
-void CSprite::Init()
-{
-    x=0;
-    y=0;
-    visible=false;
-    animation_frame=0;
-    animation_lastframe=0;
-    animation_speed=180;
-    for(int i=0;i<256;i++)
-    {
-        rect[i].x=0;
-        rect[i].y=0;
-        rect[i].w=0;
-        rect[i].h=0;
-    }
-    xdir=0;
-    ydir=0;
-    xspeed=1;
-    yspeed=1;
-}
-
-void CSprite::SetRect(int which,int x, int y, int w, int h)
-{
-    rect[which].x=x;
-    rect[which].y=y;
-    rect[which].w=w;
-    rect[which].h=h;
-}
-
-void CSprite::Draw() { Draw(x,y); }
-
-void CSprite::Draw(float x, float y)
-{
-    if(animated)
-    {
-        if(animtimer < ( getticks()-animation_speed))
-        {
-            animtimer= getticks();
-
-            animation_frame++;
-
-            if(animation_frame>animation_lastframe)
-            {
-                if(animation_loop==true) animation_frame=0;
-                else animation_frame=animation_lastframe;
-            }
-        }
-    }
-    SDL_Rect destrec; destrec.x=x; destrec.y=y;
-    SDL_BlitSurface(source_surface, &rect[animation_frame], target_surface, &destrec);
-}
-
-void CSprite::LoadSurface(char *fname)
-{
-    source_surface=SDL_LoadBMP(fname);
-}
-/*
-void CSprite::LoadMemSurface(unsigned char *fb)
-{
-    source_surface=LoadMemBMP(fb);
-}
-*/
-
-void CSprite::SetColorKey(int r, int g, int b)
-{
-    SDL_SetColorKey(source_surface, SDL_SRCCOLORKEY,SDL_MapRGB(source_surface->format, 0, 0, 0));
 }
 
