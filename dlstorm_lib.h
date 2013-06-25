@@ -221,32 +221,6 @@ void Sys_PumpEvents( void );
 #ifndef _WIN32
 
 typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
-typedef char * LPSTR;
-typedef char * LPCSTR;
-typedef unsigned long DWORD;
-typedef char * TCHAR;
-typedef void * HANDLE;
-
-#define MAX_PATH 1024
-#define INVALID_HANDLE_VALUE NULL
-
-typedef struct _FILETIME {
-  DWORD dwLowDateTime;
-  DWORD dwHighDateTime;
-} FILETIME, *PFILETIME;
-
-typedef struct _WIN32_FIND_DATA {
-  DWORD    dwFileAttributes;
-  FILETIME ftCreationTime;
-  FILETIME ftLastAccessTime;
-  FILETIME ftLastWriteTime;
-  DWORD    nFileSizeHigh;
-  DWORD    nFileSizeLow;
-  DWORD    dwReserved0;
-  DWORD    dwReserved1;
-  TCHAR    cFileName[MAX_PATH];
-  TCHAR    cAlternateFileName[14];
-} WIN32_FIND_DATA, *PWIN32_FIND_DATA, *LPWIN32_FIND_DATA;
 
 #endif
 

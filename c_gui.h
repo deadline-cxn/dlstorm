@@ -5,18 +5,25 @@
 #ifndef _EMBER_GUI
 #define _EMBER_GUI
 
+#include "dlstorm.h"
+
 #include <map>
 #include <algorithm>
 
+
+#ifdef _EMBER_CLIENT_
+#include "ximage.h"
 #include "c_gfx.h"
 #include "c_gaf.h"
 #include "c_glfont.h"
 #include "c_glmouse.h"
 #include "c_gltexture.h"
 #include "c_console.h"
+#endif
 
-#include "dlstorm.h"
-#include "ximage.h"
+
+
+
 
 
 

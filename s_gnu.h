@@ -2,8 +2,6 @@
  **      EMBER                                                **
  ***************************************************************/
 
-#include "global.h"
-
 #ifndef _WIN32
 extern "C" long GetTickCount(void);
 extern "C" void Sleep(int ms);

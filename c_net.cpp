@@ -488,7 +488,7 @@ int CCSocket::OpenSocket(char *pAddress, int iPort)
 #ifdef _WIN32
     if(ioctlsocket(iSocket, FIONBIO, &_true) == SOCKET_ERROR)
 #else
-    bzero(&address, sizeof(address)); // linux func
+    bzero(&pAddress, sizeof(pAddress)); // linux func
     if(fcntl(iSocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
 #endif
     {
@@ -759,8 +759,17 @@ void CCSocket::SetRemotePort(int iPort)
 int CCSocket::iGetLocalPort(void)
 {
     struct sockaddr_in local_address;
+
+#ifdef _WIN32
     int addr_size = sizeof(local_address);
-    getsockname(iSocket, (struct sockaddr *)&local_address, &addr_size);
+#else
+    socklen_t addr_size =sizeof(local_address);
+#endif
+
+    getsockname(    iSocket,
+                    (struct sockaddr *)&local_address,
+                    &addr_size                                    );
+
     return ntohs(local_address.sin_port);
 }
 
@@ -781,7 +790,11 @@ char *CCSocket::pGetRemoteIPAddress()
 char *CCSocket::pGetLocalIPAddress()
 {
     struct sockaddr_in local_address;
+#ifdef _WIN32
     int addr_size = sizeof(local_address);
+#else
+    socklen_t addr_size = sizeof(local_address);
+#endif
     getsockname(iSocket, (struct sockaddr *)&local_address, &addr_size);
     return inet_ntoa(local_address.sin_addr);
 }
@@ -1016,12 +1029,20 @@ int NET_Shutdown (void)
 
 //////////////////////////////////////////////////////////////////////////////////
 
+#ifndef _WIN32
+char *NET_pGetLastError(int errnum)
+#else
 char *NET_pGetLastError(void)
+#endif
 {
     int i,err;
 #ifdef _WIN32
     err = WSAGetLastError();
-    for (i = 0;i<iNumMessages;i++) { if (pErrorList[i].iID == err) { return (char *)pErrorList[i].pMessage; } }
+    for (i = 0;i<iNumMessages;i++) {
+        if (pErrorList[i].iID == err) {
+            return (char *)pErrorList[i].pMessage;
+        }
+    }
     return (char *)pErrorList[0].pMessage;
 #else
     return(strerror(errnum));

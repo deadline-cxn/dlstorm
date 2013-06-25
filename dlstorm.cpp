@@ -44,6 +44,7 @@ vector <string> explode(const string &delimiter, const string &str)
 
 vector <string> Dir2Vector(char *szDir, char *szWildCard)
 {
+#ifdef _WIN32
     //FILE *fp;
     vector <string> diro;
     diro.clear();
@@ -96,10 +97,13 @@ vector <string> Dir2Vector(char *szDir, char *szWildCard)
     SetCurrentDirectory(szCurrentDir);
 	//fclose(fp);
     return diro;
+#endif
 }
 
 bool Dir2File(char *szDir,char *szFile,char *szWildCard)
 {
+
+#ifdef _WIN32
 	FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
@@ -147,6 +151,7 @@ bool Dir2File(char *szDir,char *szFile,char *szWildCard)
     SetCurrentDirectory(szCurrentDir);
 	fclose(fp);
     return true;
+#endif
 }
 
 // #include "wincrypt.h"
