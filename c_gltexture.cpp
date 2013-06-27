@@ -179,21 +179,24 @@ extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 
 /****************************************************************************************************/
 GLuint CGLTexture::Load(CGAF *pGAF, char *filename,bool which){
+    glDEL(bmap);
+    glDEL(mask);
+
 	if(!strlen(filename)) return 0;
 	if(!pGAF) return 0;
     char filename2[1024]; memset(filename2,0,1024);
     char maskfile[1024];  memset(maskfile,0,1024);
     char ax,ay,az;
-	long size1;
-	long size2;
-	unsigned char *fb1;
-	unsigned char *fb2;
+	//long size1;
+	//long size2;
+	//unsigned char *fb1;
+	//unsigned char *fb2;
 	CxImage *himage=0;
 	CxImage *himage2=0;
+
 	GAF_FileBuffer nfbuf1;
 	GAF_FileBuffer nfbuf2;
-    glDEL(bmap);
-    glDEL(mask);
+
     ax=filename[strlen(filename)-3];
     ay=filename[strlen(filename)-2];
     az=filename[strlen(filename)-1];
@@ -202,16 +205,13 @@ GLuint CGLTexture::Load(CGAF *pGAF, char *filename,bool which){
     sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
 
 	nfbuf1  = pGAF->GetFile((LPSTR)filename);
-	size1	= nfbuf1.Size;
-	fb1		= nfbuf1.fb;
 
-
+	//size1	= nfbuf1.Size;
+	//fb1		= nfbuf1.fb;
 	////Log("%s %s",filename,maskfile);
+    //if(!fb1) return 0;
 
-
-	if(!fb1) return 0;
-
-	himage=new CxImage((BYTE*)fb1,size1,CXIMAGE_FORMAT_BMP);
+	himage=new CxImage((BYTE*)nfbuf1.fb,nfbuf1.Size,CXIMAGE_FORMAT_BMP);
 
 	if(himage) {
 
@@ -241,12 +241,12 @@ GLuint CGLTexture::Load(CGAF *pGAF, char *filename,bool which){
 	}
 
 	nfbuf2  = pGAF->GetFile(maskfile);
-	size2   = nfbuf2.Size;
-	fb2	    = nfbuf2.fb;
+	//size2   = nfbuf2.Size;
+	//fb2	    = nfbuf2.fb;
 
-	if(fb2)
-	{
-		himage2=new CxImage((BYTE*)fb2,size2,CXIMAGE_FORMAT_BMP);
+//	if(fb2)
+	//{
+		himage2=new CxImage((BYTE*)nfbuf2.fb,nfbuf2.Size,CXIMAGE_FORMAT_BMP);
 
 		if(himage2)
 		{
@@ -278,10 +278,10 @@ GLuint CGLTexture::Load(CGAF *pGAF, char *filename,bool which){
 			DEL(himage2);
 		}
 
-		free(fb2);
-	}
+		//free(fb2);
+	//}
 
-	free(fb1);
+	//free(fb1);
 
     return 1;
 

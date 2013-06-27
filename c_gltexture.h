@@ -1,12 +1,7 @@
-
 #ifndef B4_GL_TEXTURE
 #define B4_GL_TEXTURE
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#ifdef _WIN32
+#ifdef _WINDOWS
 #include <winsock2.h>
 #ifndef _MMEDIA_
 #define _MMEDIA_
