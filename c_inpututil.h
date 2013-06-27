@@ -11,5 +11,5 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-#endif//_DLSTORM_INPUT_UTIL
 
+#endif//_DLSTORM_INPUT_UTIL

@@ -1,4 +1,3 @@
-
 #ifndef _C_EM_LUA
 #define _C_EM_LUA
 
