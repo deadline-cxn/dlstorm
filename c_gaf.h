@@ -1,17 +1,17 @@
-/* Seth's Game Archive File Class */
+/* Seth's File Cabinet Class */
 
-#ifndef SETH_GAF_
-#define SETH_GAF_
+#ifndef SETH_FILE_CAB
+#define SETH_FILE_CAB
+
+#if _MSC_VER >= 1000
+#pragma once
+#endif // _MSC_VER >= 1000
 
 #include "dlstorm.h"
-#include "zlib.h"
-#include "c_log.h"
+#include <zLib.h>
 
-//#pragma comment( lib, "zlib.lib" )
-
-// Maximum size of a Indexname in CGAF File.
+// Maximum size of Indexname
 #define GAF_NAMESIZE 256
-#define GAF_DESCSIZE 256
 
 // Element types.
 #define GAFELMTYPE_FILE		0	// a file.
@@ -29,11 +29,14 @@ class  CGAF;
 
 typedef void (*GAF_SCANCALLBACK)(GAFFile_ElmHeader *ElmInfo,LPSTR FullPath);
 
-struct GAFFile_Header
-{
+#define RELEASE(x) if(x!=NULL){x->Release();x=NULL;}
+#define DEL(x) if(x!=NULL){delete x;x=NULL;}
+#define FREE(x) if(x!=NULL){free(x);x=NULL;}
+
+struct GAFFile_Header {
 	DWORD Size;			// Size of this header
 	DWORD Version;		// Version
-	char Description[GAF_DESCSIZE];	// Description
+	char Description[256];	// Description
 	int NumElements;	// Amount of elements
 };
 
@@ -51,23 +54,21 @@ struct GAFFile_ElmHeader
 
 #ifndef GAF_FILEBUF_DEFINED
 #define GAF_FILEBUF_DEFINED
-struct GAF_FileBuffer
-{
+struct GAF_FileBuffer {
 	unsigned char *fb;
 	int Size;
 };
 #endif
 
-class CGAF
-{
+class CGAF {
 public:
     // Remove Many files...
     // Allows removal of many files without rebuilding the nuk every time.
     // Calling ManyFileEnd is obligatory!!
     // Use like so:
-    // GAF.ManyFileRemove( "OldFile.Txt" );
-    // GAF.ManyFileRemove( "Graphics/SpaceShip.bmp" );
-    // GAF.ManyFileEnd();
+    // NF.ManyFileRemove( "OldFile.Txt" );
+    // NF.ManyFileRemove( "Graphics/SpaceShip.bmp" );
+    // NF.ManyFileEnd();
     bool ManyFileRemove ( LPSTR Name ); // Call once for each file.
     bool ManyFileEnd ( void );          // End the ManyFileRemove (You MUST call this!)
 
@@ -84,13 +85,12 @@ public:
 
 	// Allocate memory, and extract a file into it.
 	GAF_FileBuffer GetFile(LPSTR Name);
-    //void *GetSurface(char *fb);
 
-	// Select between the 4 compression modes. (NFCOMP_xxx)
+	// Select between the 4 compression modes. (GAFCOMP_xxx)
 	// All new files will have this compression-level.
     void SelectCompression(DWORD Level);
 
-    // Returns the current default compression level. One of the #defines NFCOMP_****
+    // Returns the current default compression level. One of the #defines GAFCOMP_****
     DWORD GetCompressionLevel ( void )  { return CompLevel; }
 
     // RetVal = true if the This CNukeFile object has an open .NUK file.
@@ -137,9 +137,10 @@ public:
     // bool SubDirs							true to add SubFolders from `dirname`
     //                                      also, else just the contents of
     //                                      `dirname`
-    bool AddDir(LPSTR Name);
+
+	bool AddDir(LPSTR sdir);
+
 	bool AddDir(LPSTR Dest,LPSTR dirname,bool SubDirs);
-    bool AddDirFilesToRoot(LPSTR dir, bool SubDirs);
 
 	// Move a file or a directory + content
 	bool Move(LPSTR Name,LPSTR Destination);
@@ -182,10 +183,9 @@ public:
     bool Open ( LPSTR fn, bool _bIgnoreDescription = false );
 
 	CGAF();
-    CGAF(char *file,int comp);
 	virtual ~CGAF();
 
-
+private:
 	bool AddFile_Compress(LPSTR Name,LPSTR filename);
     bool CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel);
 	DWORD CompLevel;
@@ -208,7 +208,7 @@ public:
 	int FindFile(LPSTR Name);
 	int Find(LPSTR Name);
     bool AddDirEx(LPSTR Dest,LPSTR dirname,bool SubDirs);
-	char FileDesc[GAF_DESCSIZE];
+	char FileDesc[256];
 	bool ScanTreeEx(int DirNumber,GAF_SCANCALLBACK CallBack);
 	bool RemoveDir(int DirNumber);
 	void WriteElmHeader(int n);
@@ -231,13 +231,14 @@ public:
 	void AddElement(GAFFile_ElmHeader *Element);
 	int MaxElements;
 	FILE *fh;
-	char CurrentFileName[GAF_NAMESIZE];
+	char CurrentFileName[256];
 	bool FileOpen;
 	void SetAmount(int a);
 };
 
 //////////////////////////////////////////////////////////////////////////
-
-#endif
-
-
+//  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
+//////////////////////////////////////////////////////////////////////////
+#endif //#ifndef macHeader_NukeFile_h
+//
+///EOF

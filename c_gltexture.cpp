@@ -178,30 +178,22 @@ bool   CGLTexture::Loaded(void)
 extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 
 /****************************************************************************************************/
-GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
-{
-
+GLuint CGLTexture::Load(CGAF *pGAF, char *filename,bool which){
 	if(!strlen(filename)) return 0;
 	if(!pGAF) return 0;
-
     char filename2[1024]; memset(filename2,0,1024);
     char maskfile[1024];  memset(maskfile,0,1024);
     char ax,ay,az;
-
 	long size1;
 	long size2;
 	unsigned char *fb1;
 	unsigned char *fb2;
-
-	CxImage *himage;
-	CxImage *himage2;
-
+	CxImage *himage=0;
+	CxImage *himage2=0;
 	GAF_FileBuffer nfbuf1;
 	GAF_FileBuffer nfbuf2;
-
     glDEL(bmap);
     glDEL(mask);
-
     ax=filename[strlen(filename)-3];
     ay=filename[strlen(filename)-2];
     az=filename[strlen(filename)-1];
@@ -209,18 +201,19 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
     filename2[strlen(filename2)-4]=0;
     sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
 
-	////Log("%s %s",filename,maskfile);
-
 	nfbuf1  = pGAF->GetFile((LPSTR)filename);
 	size1	= nfbuf1.Size;
 	fb1		= nfbuf1.fb;
+
+
+	////Log("%s %s",filename,maskfile);
+
 
 	if(!fb1) return 0;
 
 	himage=new CxImage((BYTE*)fb1,size1,CXIMAGE_FORMAT_BMP);
 
-	if(himage)
-	{
+	if(himage) {
 
 		himage->IncreaseBpp(24);
 		himage->SwapRGB2BGR();
@@ -229,8 +222,6 @@ GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which)
 
 	    glGenTextures(1, &bmap);
 	    glBindTexture(GL_TEXTURE_2D, bmap);
-
-		//Log("%s %d %d size(%d) bmap(%d)",filename,himage->GetWidth(),himage->GetHeight(),himage->GetSize(),bmap);
 
 		glTexImage2D    (	GL_TEXTURE_2D,
 						0,

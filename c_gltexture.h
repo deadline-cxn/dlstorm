@@ -51,7 +51,7 @@ public:
     bool    LoadTGA(char* filename, Image *image);
     bool    LoadBMP(char* filename, Image *image);
 
-    GLuint  Load(CGAF *pGAF,const char *filename,bool which);
+    GLuint  Load(CGAF *pGAF,char *filename,bool which);
 
     // GLuint  LoadMask(char *filename);
 

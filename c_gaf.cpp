@@ -1,16 +1,24 @@
-/* Seth's Game Archive File Class */
+/* Seth's File Cabinet Class */
 
 #include "c_gaf.h"
+
+//extern "C" void    Log(char *fmt,...);
+
+//////////////////////////////////////////////////////////////////////////////
 
 CGAF::CDirScanner::CDirScanner()
 {
 	Handle=INVALID_HANDLE_VALUE;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 CGAF::CDirScanner::~CDirScanner()
 {
 	if(Handle!=INVALID_HANDLE_VALUE)FindClose(Handle);
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 void CGAF::CDirScanner::Start(LPSTR dirname)
 {
@@ -20,6 +28,8 @@ void CGAF::CDirScanner::Start(LPSTR dirname)
 	GetFile();
 	GetFile();
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::CDirScanner::GetFile()
 {
@@ -35,6 +45,8 @@ bool CGAF::CDirScanner::GetFile()
 	return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::CDirScanner::Error()
 {
 	if(Handle==INVALID_HANDLE_VALUE)return true;
@@ -47,42 +59,30 @@ bool CGAF::CDirScanner::Error()
 
 #define BUFFERSIZE (1024*1024)
 
-DWORD GAF_VERSION=0x120101c5;
+DWORD NukeFile_Version=0x020101c5;
+
+//////////////////////////////////////////////////////////////////////////////
 
 CGAF::CGAF()
 {
-	CompLevel=GAFCOMP_BEST;
+	CompLevel=GAFCOMP_NONE;
 	CurrentFileName[0]=0;
 	FileOpen=false;
 	NumElements=0;
 	MaxElements=1;
 	Elements=(GAFFile_ElmHeader*)malloc(sizeof(GAFFile_ElmHeader)*MaxElements);
-    SetFileDescription("[GAF Game Archive File]");
-    //CabLog=new CLog("gaf.log");
-    //CabLog->AddEntry("GAF constructed");
+	SetFileDescription("GAME ARCHIVE FILE");
 }
 
-CGAF::CGAF(char *file,int comp)
-{
-    CompLevel=comp;
-    CurrentFileName[0]=0;
-    FileOpen=false;
-    NumElements=0;
-    MaxElements=1;
-	Elements=(GAFFile_ElmHeader*)malloc(sizeof(GAFFile_ElmHeader)*MaxElements);
-	SetFileDescription("[GAF Game Archive File]");
-    Open(file,0);
-    //CabLog=new CLog(va("%s.log",file));
-    //CabLog->AddEntry(va("GAF [%s] constructed",file));
-}
+//////////////////////////////////////////////////////////////////////////////
 
 CGAF::~CGAF()
 {
-    //CabLog->AddEntry("GAF deconstructed");
-    //DEL(CabLog);
 	free(Elements);
 	Close();
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 // _bIgnoreDescription = true to ignore the NUK file's Description.
 bool CGAF::Open ( LPSTR fn, bool _bIgnoreDescription )
@@ -91,20 +91,19 @@ bool CGAF::Open ( LPSTR fn, bool _bIgnoreDescription )
 	strcpy(CurrentFileName,fn);
 	FileOpen=false;
 	fh=fopen(fn,"r+b");
-    if(fh==NULL) return false;
-    /*
+    if(fh==NULL)
     {
         Create(fn);
         fh=fopen(fn,"r+b");
         if(fh==NULL)
             return false;
     }
-    */
-    FileOpen=ReadFile(_bIgnoreDescription);
-	if(!FileOpen)
-        fclose(fh);
+    FileOpen=ReadFile ( _bIgnoreDescription );
+	if(!FileOpen)fclose(fh);
 	return FileOpen;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::Create(LPSTR fn)
 {
@@ -113,7 +112,7 @@ bool CGAF::Create(LPSTR fn)
 	fh=fopen(fn,"w+b");
 	if(fh==NULL)return false;
 	Header.Size=sizeof(Header);
-	Header.Version=GAF_VERSION;
+	Header.Version=NukeFile_Version;
 	Header.NumElements=0;
 	strcpy(Header.Description,FileDesc);
 	WriteHeader();
@@ -121,13 +120,15 @@ bool CGAF::Create(LPSTR fn)
 	return Open(fn);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 // _bIgnoreDescription = true to ignore the NUK file's Description.
 bool CGAF::ReadFile(bool _bIgnoreDescription)
 {
 	GAFFile_ElmHeader TempElement;
 	fseek(fh,0,SEEK_SET);
 	fread(&Header,sizeof(Header),1,fh);
-	if(Header.Version!=GAF_VERSION)return false;
+	if(Header.Version!=NukeFile_Version)return false;
 	if(Header.Size!=sizeof(Header))return false;
 
 
@@ -153,6 +154,8 @@ bool CGAF::ReadFile(bool _bIgnoreDescription)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void CGAF::AddElement(GAFFile_ElmHeader * Element)
 {
 	if(NumElements==MaxElements)
@@ -163,18 +166,24 @@ void CGAF::AddElement(GAFFile_ElmHeader * Element)
 	NumElements++;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void CGAF::SetAmount(int a)
 {
 	MaxElements=a;
 	Elements=(GAFFile_ElmHeader*)realloc(Elements,sizeof(GAFFile_ElmHeader)*MaxElements);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::Close()
 {
-	if(FileOpen) fclose(fh);
+	if(FileOpen)fclose(fh);
 	FileOpen=false;
 	return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::CreateFile(LPSTR Name, DWORD Size)
 {
@@ -207,6 +216,8 @@ bool CGAF::CreateFile(LPSTR Name, DWORD Size)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel)
 {
 	if(!FileOpen)return false;
@@ -238,11 +249,15 @@ bool CGAF::CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::CheckSlash(char c)
 {
 	if(c=='/'||c=='\\')return true;
 	return false;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::GetNumSlashes(LPSTR String)
 {
@@ -254,6 +269,8 @@ int CGAF::GetNumSlashes(LPSTR String)
 	}
 	return NumSlashes;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::GetUntilSlash(LPSTR Source,LPSTR Dest)
 {
@@ -267,6 +284,8 @@ int CGAF::GetUntilSlash(LPSTR Source,LPSTR Dest)
 	return p;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 FILE * CGAF::Seek(LPSTR Name)
 {
 	if(!FileOpen)return NULL;
@@ -275,6 +294,8 @@ FILE * CGAF::Seek(LPSTR Name)
 	fseek(fh,Elements[fn].FileOffset,SEEK_SET);
 	return fh;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::CreateDir(LPSTR Name)
 {
@@ -307,6 +328,8 @@ bool CGAF::CreateDir(LPSTR Name)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 int CGAF::FindAvailDir()
 {
 	int fd=1;
@@ -323,9 +346,19 @@ int CGAF::FindAvailDir()
 	return fd;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::AddFile(LPSTR Name,LPSTR filename)
 {
-	if(CompLevel!=GAFCOMP_NONE) return AddFile_Compress(Name,filename);
+
+#ifdef _FILECAB_SHOW_PROG
+
+	printf("   %s\n",Name);
+
+#endif
+
+
+	if(CompLevel!=GAFCOMP_NONE)return AddFile_Compress(Name,filename);
 	FILE *f=fopen(filename,"rb");
 	if(f==NULL)
 	{
@@ -347,6 +380,8 @@ bool CGAF::AddFile(LPSTR Name,LPSTR filename)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::AddFileFromMem(LPSTR Name,unsigned char *fb,int size)
 {
     if(!CreateFile(Name,size)) return false;
@@ -354,6 +389,8 @@ bool CGAF::AddFileFromMem(LPSTR Name,unsigned char *fb,int size)
     fwrite(fb,1,size,fh);
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::FileSize(FILE * f)
 {
@@ -365,6 +402,8 @@ int CGAF::FileSize(FILE * f)
 	fseek(f,Pos,SEEK_SET);
 	return Size;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 //This Returns false every time....
 bool CGAF::WriteHeader()
@@ -380,28 +419,58 @@ bool CGAF::WriteHeader()
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::RemoveFile(LPSTR Name)
 {
-    if ( !FileOpen )    {        return false;    }
+    if ( !FileOpen )
+    {
+        return false;
+    }
+
 	int ne=FindFile(Name);
-    if ( ne==-1 )    {        return false;    }
+
+    if ( ne==-1 )
+    {
+        return false;
+    }
+
 	fseek(fh,0,SEEK_SET);
 	int FullLength=GetFullLength();
+
 	FILE *tf=tmpfile();
+
 	CopyData(fh,tf,Elements[ne].FileOffset-sizeof(GAFFile_ElmHeader));
+
 	fseek(fh,Elements[ne].FileOffset+Elements[ne].FileSize,SEEK_SET);
+
 	CopyData(fh,tf,FullLength-ftell(fh));
+
 	fclose(fh);
+
 	fh=fopen(CurrentFileName,"w+b");
-    if ( fh == NULL )    {        return false;    }
+
+    if ( fh == NULL )
+    {
+        return false;
+    }
+
 	Header.NumElements--;
+
 	fseek(tf,0,SEEK_SET);
+
 	CopyData(tf,fh,FileSize(tf));
+
 	WriteHeader();
+
 	ReadFile();
+
 	fclose(tf);
+
 	return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 void CGAF::CopyData(FILE * Source, FILE * Dest, int Size)
 {
@@ -422,6 +491,8 @@ void CGAF::CopyData(FILE * Source, FILE * Dest, int Size)
 	}
 	free(buffer);
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::SplitNameAndDir(LPSTR Source, LPSTR FileName, LPSTR Dir)
 {
@@ -451,6 +522,8 @@ bool CGAF::SplitNameAndDir(LPSTR Source, LPSTR FileName, LPSTR Dir)
 	return false;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::ScanTree(LPSTR Name,GAF_SCANCALLBACK CallBack)
 {
 	if(!FileOpen)return false;
@@ -460,15 +533,22 @@ bool CGAF::ScanTree(LPSTR Name,GAF_SCANCALLBACK CallBack)
 	return ScanTreeEx(nd,CallBack);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::ScanDir(LPSTR Name,GAF_SCANCALLBACK CallBack)
 {
 	if(!FileOpen)return false;
 	if(CallBack==NULL)return false;
+
 	int nd=FindDirNumber(Name);
-	if(nd<0)return false;
+
+	if(nd<0)
+		return false;
+
 	char Dir[GAF_NAMESIZE];
 	char FileName[GAF_NAMESIZE];
 	char FullPath[GAF_NAMESIZE];
+
 	for(int n=0;n<NumElements;n++)
 	{
 		if(Elements[n].DirPos==nd)
@@ -480,6 +560,8 @@ bool CGAF::ScanDir(LPSTR Name,GAF_SCANCALLBACK CallBack)
 	}
 	return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::GetFullPath(int n, LPSTR Dest)
 {
@@ -513,6 +595,8 @@ bool CGAF::GetFullPath(int n, LPSTR Dest)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::RemoveDir(LPSTR Name)
 {
 	int ne=FindDir(Name);
@@ -522,11 +606,15 @@ bool CGAF::RemoveDir(LPSTR Name)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void CGAF::RemoveElement(int n)
 {
 	Elements[n]=Elements[NumElements-1];
 	NumElements--;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 void CGAF::ReBuild()
 {
@@ -546,6 +634,8 @@ void CGAF::ReBuild()
 	fclose(tf);
 	ReadFile();
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::RemoveDir(int DirNumber)
 {
@@ -576,6 +666,8 @@ bool CGAF::RemoveDir(int DirNumber)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::Rename(LPSTR Name,LPSTR NewName)
 {
 	if(!FileOpen)return false;
@@ -596,11 +688,15 @@ bool CGAF::Rename(LPSTR Name,LPSTR NewName)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void CGAF::WriteElmHeader(int n)
 {
 	fseek(fh,Elements[n].FileOffset-sizeof(GAFFile_ElmHeader),SEEK_SET);
 	fwrite(&Elements[n],sizeof(GAFFile_ElmHeader),1,fh);
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::ScanTreeEx(int DirNumber, GAF_SCANCALLBACK CallBack)
 {
@@ -630,6 +726,8 @@ bool CGAF::ScanTreeEx(int DirNumber, GAF_SCANCALLBACK CallBack)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::Move(LPSTR Name, LPSTR Destination)
 {
 	int DestDir=0;
@@ -648,42 +746,19 @@ bool CGAF::Move(LPSTR Name, LPSTR Destination)
 	}else return false;
 }
 
-bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs)
-{
-    //CabLog->AddEntry(va("Adding Directory Files:%s",indir));
-    CDirScanner DirScanner;
-	DirScanner.Start(indir);
-	while(DirScanner.GetFile())
-	{
-		if(DirScanner.Error()) return false;
-		if(DirScanner.FindData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
-		{
-			if(SubDirs)
-			{
-				if(!CreateDir(DirScanner.FindData.cFileName)) return false;
-                if(!AddDirEx(DirScanner.FindData.cFileName,DirScanner.FindData.cFileName,true)) return false;
-			}
-		}else
-		{
-            //CabLog->AddEntry(va("Adding File:%s",DirScanner.FindData.cFileName));
-            if(!AddFile(DirScanner.FindData.cFileName,DirScanner.FindData.cFileName))return false;
-		}
-	}
-    return true;
-}
+//////////////////////////////////////////////////////////////////////////////
 
-bool CGAF::AddDir(LPSTR Name)
+bool CGAF::AddDir(LPSTR sdir)
 {
-	return AddDir("",Name,1);
+	//CreateDir(sdir);
+	AddDir("",sdir,1);
+	return 1;
 }
 
 bool CGAF::AddDir(LPSTR Dest, LPSTR dirname, bool SubDirs)
 {
-    	int n;
+	int n;
 	char DirName[GAF_NAMESIZE];
-
-    //if(strlen(dirname)) CabLog->AddEntry(va("Adding Directory:%s",dirname));
-    //else CabLog->AddEntry("WTF!!!");
 	if(Dest!=NULL)
 	{
 		strcpy(DirName,Dest);
@@ -698,6 +773,8 @@ bool CGAF::AddDir(LPSTR Dest, LPSTR dirname, bool SubDirs)
 	return AddDirEx(DirName,dirname,SubDirs);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs)
 {
 	char IndexName[GAF_NAMESIZE];
@@ -706,8 +783,11 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs)
 	strcpy(DirName,dirname);
 	if(strlen(DirName)>0&&!CheckSlash(DirName[strlen(DirName)-1]))strcat(DirName,"\\");
 	if(Dest!=NULL&&Dest[0]==0)Dest=NULL;
+
 	CDirScanner DirScanner;
+
 	DirScanner.Start(DirName);
+
 	while(DirScanner.GetFile())
 	{
 		if(DirScanner.Error())return false;
@@ -715,8 +795,11 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs)
 		{
 			strcpy(IndexName,Dest);
 			strcat(IndexName,"/");
-		}else IndexName[0]=0;
+		}
+		else IndexName[0]=0;
+
 		strcat(IndexName,DirScanner.FindData.cFileName);
+
 		if(DirScanner.FindData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY)
 		{
 			if(SubDirs)
@@ -730,19 +813,24 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs)
 		{
 			strcpy(FileName,DirName);
 			strcat(FileName,DirScanner.FindData.cFileName);
-            //CabLog->AddEntry(va("Adding File:%s",IndexName));
             if(!AddFile(IndexName,FileName))return false;
 		}
 	}
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
+
+
 int CGAF::GetFileSize(LPSTR Name)
 {
 	int nf=FindFile(Name);
-	if(nf<0)return -1;
+	if(nf<0) return -1;
 	return Elements[nf].UncompSize;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::GetCompressedFileSize(LPSTR Name)
 {
@@ -751,11 +839,15 @@ int CGAF::GetCompressedFileSize(LPSTR Name)
 	return Elements[nf].FileSize;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 // Set _bWriteHeader = true to write the header immediately, defaults to false.
+
 bool CGAF::SetFileDescription(LPSTR Desc, bool _bWriteHeader)
 {
+	memset(FileDesc,0,256);
     // Vars and Assignment
-	if(Desc==NULL||strlen(Desc)>(GAF_DESCSIZE-1))return false;
+	if(Desc==NULL||strlen(Desc)>255)return false;
 	strcpy(FileDesc,Desc);
 
     // Write the header immediately.
@@ -771,6 +863,8 @@ bool CGAF::SetFileDescription(LPSTR Desc, bool _bWriteHeader)
     return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 int CGAF::Find(LPSTR Name)
 {
 	if(Name==NULL)return -1;
@@ -782,6 +876,8 @@ int CGAF::Find(LPSTR Name)
 	}
 	return -1;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::FindDir(LPSTR Name)
 {
@@ -798,20 +894,32 @@ int CGAF::FindDir(LPSTR Name)
 	return -1;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 int CGAF::FindFile(LPSTR Name)
 {
-	if(Name==NULL)return -1;
+	if(Name==NULL)
+		return -1;
+
+	//Log("%s",Name);
+
 	char FullName[GAF_NAMESIZE];
 	for(int n=0;n<NumElements;n++)
 	{
 		if(Elements[n].Type==GAFELMTYPE_FILE)
 		{
 			GetFullPath(n,FullName);
-			if(strcmpi(FullName,Name)==0)return n;
+
+			//Log("%s %s",Name,FullName);
+
+			if(strcmpi(FullName,Name)==0) return n;
+
 		}
 	}
 	return -1;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::FindDirNumber(LPSTR Name)
 {
@@ -821,6 +929,8 @@ int CGAF::FindDirNumber(LPSTR Name)
 	if(dn>=0)return Elements[dn].DirNumber;
 	return -1;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 int CGAF::GetFullLength()
 {
@@ -833,14 +943,14 @@ int CGAF::GetFullLength()
 	return l;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::AddFile_Compress(LPSTR Name, LPSTR filename)
 {
 	FILE *SourceFile=fopen(filename,"rb");
 	if(SourceFile==NULL)return false;
 	int fs=FileSize(SourceFile);
-
 	unsigned long destLen=(unsigned long)(fs*1.01+12); // Just to be safe take 1% more room. (The ZLib doc says 0.1%)
-
 	unsigned char *SourceBuffer=(unsigned char *)malloc(fs);
 	unsigned char *DestBuffer=(unsigned char *)malloc(destLen);
 	fread(SourceBuffer,fs,1,SourceFile);
@@ -865,6 +975,8 @@ bool CGAF::AddFile_Compress(LPSTR Name, LPSTR filename)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::ExtractFile_ToMem(LPSTR Name, void *dest)
 {
 	int ElmNum=FindFile(Name);
@@ -886,6 +998,8 @@ bool CGAF::ExtractFile_ToMem(LPSTR Name, void *dest)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 bool CGAF::ExtractFile_ToFile(LPSTR Name, LPSTR FileName)
 {
 	int fn=FindFile(Name);
@@ -900,10 +1014,14 @@ bool CGAF::ExtractFile_ToFile(LPSTR Name, LPSTR FileName)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 void CGAF::SelectCompression(DWORD Level)
 {
 	CompLevel=Level;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 GAF_FileBuffer CGAF::GetFile(LPSTR Name)
 {
@@ -913,6 +1031,8 @@ GAF_FileBuffer CGAF::GetFile(LPSTR Name)
 	ExtractFile_ToMem(Name,FileBuffer.fb);
 	return FileBuffer;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 
 bool CGAF::ChangeCompression(LPSTR Name, DWORD clevel)
 {
@@ -943,6 +1063,8 @@ bool CGAF::ChangeCompression(LPSTR Name, DWORD clevel)
 	return true;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 GAFFile_ElmHeader *CGAF::GetFileInfo(LPSTR Name)
 {
     int nf=FindFile(Name);
@@ -950,12 +1072,15 @@ GAFFile_ElmHeader *CGAF::GetFileInfo(LPSTR Name)
     return &Elements[nf];
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
 // Remove Many files...
 // Allows removal of many files without rebuilding the nuk file every time.
 // NF.ManyFileRemove( "OldFile.Txt" );
 // NF.ManyFileRemove( "Graphics/SpaceShip.bmp" );
 // NF.ManyFileEnd(); // MUST Call this!!
 // Call once for each file.
+
 bool CGAF::ManyFileRemove ( LPSTR Name )
 {
     if(!FileOpen)return false;
@@ -964,7 +1089,10 @@ bool CGAF::ManyFileRemove ( LPSTR Name )
     RemoveElement ( ne );
     return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
 // End the ManyFileRemove process
+
 bool CGAF::ManyFileEnd ( void )
 {
     if(!FileOpen)return false;
