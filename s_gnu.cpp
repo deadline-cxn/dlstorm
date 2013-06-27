@@ -2,6 +2,7 @@
  **      EMBER                                                **
  ***************************************************************/
 
+
 // Make win32 system funcs for *nix so I don't have to recode 5000 lines of code...
 
 
@@ -19,7 +20,7 @@ extern "C" long GetTickCount(void)
     struct timeval  tp;
     struct timezone tzp;
     static long     secbase;
-       
+
     gettimeofday(&tp,&tzp);
 
 	if (!secbase)
@@ -28,7 +29,7 @@ extern "C" long GetTickCount(void)
 		return tp.tv_usec/1000;
 	}
 
-	curtime = (tp.tv_sec - secbase)*1000 + tp.tv_usec/1000;	
+	curtime = (tp.tv_sec - secbase)*1000 + tp.tv_usec/1000;
 	return curtime;
 }
 
