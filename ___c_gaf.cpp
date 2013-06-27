@@ -1,6 +1,6 @@
 /* Seth's File Cabinet Class */
 
-#include "b_filecab.h"
+#include "c_gaf.h"
 
 //extern "C" void    Log(char *fmt,...);
 

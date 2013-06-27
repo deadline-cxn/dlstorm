@@ -10,8 +10,8 @@
 //#pragma comment( lib, "zlib.lib" )
 
 // Maximum size of a Indexname in CGAF File.
-#define GAF_NAMESIZE 24
-#define GAF_DESCSIZE 24
+#define GAF_NAMESIZE 256
+#define GAF_DESCSIZE 256
 
 // Element types.
 #define GAFELMTYPE_FILE		0	// a file.
