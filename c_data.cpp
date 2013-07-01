@@ -6,25 +6,14 @@
 #include "SDL.h"
 
 /***************************************************************
-
-CFM_Character::CFM_Character()
-{
-    memset(t_name,0,32);
-}
+CFM_Character::CFM_Character() { memset(t_name,0,32); }
 */
 
 /***************************************************************
-
-CFM_Character::~CFM_Character()
-{
-
-}
-*/
+CFM_Character::~CFM_Character() { } */
 
 /***************************************************************/
-
-CFM_Profile::CFM_Profile()
-{
+CFM_Profile::CFM_Profile() {
     memset(name,0,32);
     memset(passwd,0,32);
     savepw=0;
@@ -32,46 +21,31 @@ CFM_Profile::CFM_Profile()
 }
 
 /***************************************************************/
-
-CFM_Profile::~CFM_Profile()
-{
-
-}
-
+CFM_Profile::~CFM_Profile() { }
 /***************************************************************/
-
-CC_Data::CC_Data()
-{
+CC_Data::CC_Data() {
     //Log("Creating Client Data...");
-
 	x=0;
 	y=0;
 	z=0;
-
     //	ServerInfo=new C_ServerInformation;
-
     //pCharacter = new C_Toon(); //CFM_Character();
 	//ServerCharacter = NULL;
 	//ServerCharacter = new C_Toon[MAX_TOONS]; //CFM_Character[MAX_SERVER_CHARS];
-
     //    ClearCharacters();
-
 	//ChatBuffer = NULL;
 	//ChatBuffer = new CFM_String[MAX_CHAT_BUFFER+1];
     //ClearChat();
-
     //    FavoriteServer=NULL;
     //    FirstFavoriteServer=NULL;
     //    FavoriteServer=new ServerData;
     //    FirstFavoriteServer=FavoriteServer;
     ClearFavoriteServers();
-
     Profile = NULL;
     FirstProfile=NULL;
     Profile = new CFM_Profile;
     FirstProfile=Profile;
     ClearProfiles();
-
 	memset(szAccessName,0,255);
     strcpy(szServerVersion,"Unknown");
 	SetToDefaults();
@@ -79,17 +53,9 @@ CC_Data::CC_Data()
 }
 
 /***************************************************************/
-
-CC_Data::~CC_Data()
-{
-    CleanUp();
-}
-
+CC_Data::~CC_Data() { CleanUp(); }
 /***************************************************************/
-
-void CC_Data::CleanUp(void)
-{
-
+void CC_Data::CleanUp(void) {
     //DLog("Cleaning up data...");
     //DEL(pCharacter);
     //if(ServerCharacter)
@@ -104,9 +70,7 @@ void CC_Data::CleanUp(void)
 }
 
 /***************************************************************/
-
-void CC_Data::SetToDefaults(void)
-{
+void CC_Data::SetToDefaults(void) {
 	memset(Name,0,24);
 	memset(Password,0,24);
 	memset(IPAddress,0,255);
@@ -135,8 +99,6 @@ void CC_Data::SetToDefaults(void)
 	fMusicVolume=100;
 
     //sprintf(MouseLeftButtonSound,"snd%cmouselb.wav",PATH_SEP);
-
-
     cDebug=0;
     bShowPING=false;
     bSound=true;

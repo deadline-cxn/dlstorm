@@ -22,13 +22,10 @@
 #define MAX_CHANNELS 32
 
 
-class C_Sound
-{
-
+class C_Sound {
 public:
     C_Sound();
     ~C_Sound();
-
 
 	char *FMODVersion(void);
     char InitializeSound();
@@ -41,7 +38,6 @@ public:
     void SetSoundVolume(float f);
     int  PlaySample(char* szFilename);
 
-
     FMUSIC_MODULE * fmusic;
 
     typedef struct
@@ -50,10 +46,7 @@ public:
     FSOUND_SAMPLE *sptr;
     };
 
-
-
     samplelist *sample;
-
 
     unsigned char svol;
     unsigned char mvol;

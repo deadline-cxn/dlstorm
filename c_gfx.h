@@ -44,15 +44,12 @@
 #define MAX_BASE_GFX				160	    // GFX Index array
 #define MAX_MODELS                  4
 
-class C_Camera
-{
+class C_Camera {
 public:
     C_Camera();
     ~C_Camera();
-
     void    Initialize(void);
     void    Go(void);
-
     void    Rotate_Left(void);
     void    Rotate_Left_Start(void);
     void    Rotate_Left_Stop(void);
@@ -99,8 +96,7 @@ public:
 
 };
 
-class C_GFX
-{
+class C_GFX {
 public:
 
     // C_GFX();

@@ -1,29 +1,18 @@
 
 #include "c_net.h"
-
-CCSocket::CCSocket()
-{
-    initSocket();
-}
-
+CCSocket::CCSocket() { initSocket(); }
 ////////////////////////////////////////////////////////
-
-CCSocket::CCSocket(int iPort)
-{
+CCSocket::CCSocket(int iPort) {
     initSocket();
-
-    if(Listen(iPort, true)==-1)
-    {
+    if(Listen(iPort, true)==-1) {
         printf("ERROR LISTENING ON PORT %d\n",iPort);
     }
-    else
-    {
+    else {
         printf("SETTING LISTEN PORT TO %d\n",iPort);
     }
 }
 
-CCSocket::CCSocket(int iPort,bool bListen)
-{
+CCSocket::CCSocket(int iPort,bool bListen) {
     initSocket();
 
 }

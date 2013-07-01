@@ -5,8 +5,7 @@
 
 using namespace std;
 
-CGLModel::CGLModel()
-{
+CGLModel::CGLModel() {
     memset(name,0,64);
     memset(skin,0,1024);
     next=0;

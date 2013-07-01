@@ -1,10 +1,8 @@
 #include "glerrors.h"
 
-extern "C" char *GL_Error(GLenum err)
-{
+extern "C" char *GL_Error(GLenum err) {
     char der[1024]; memset(der,0,1024);
-    switch(err)
-    {
+    switch(err) {
         case GL_NO_ERROR:
             strcpy(der,"GL_NO_ERROR");
             break;
@@ -33,12 +31,10 @@ extern "C" char *GL_Error(GLenum err)
     return strdup(der);
 }
 
-extern "C" void GL_ClearErrors(void)
-{
+extern "C" void GL_ClearErrors(void) {
     GLenum err = GL_NO_ERROR;
     err=glGetError();
-    while(err!=GL_NO_ERROR)
-    {
+    while(err!=GL_NO_ERROR) {
         err=glGetError();
     }
 }

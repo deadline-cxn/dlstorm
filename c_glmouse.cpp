@@ -8,8 +8,7 @@
 // C_MouseCursor Class
 /*************************************************////////////////////
 
-C_MouseCursor::C_MouseCursor()
-{
+C_MouseCursor::C_MouseCursor() {
     memset(filename,0,1024);
     Cursor=0;
     // pLog->_DebugAdd("Mouse cursor created");

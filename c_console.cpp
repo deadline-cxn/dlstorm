@@ -3,7 +3,6 @@
 #include "c_console.h"
 C_CONS::C_CONS(){
     Init();
-
 }
 C_CONS::C_CONS(CLog *pInLog){
     pLog=pInLog;

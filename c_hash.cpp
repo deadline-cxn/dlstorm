@@ -6,15 +6,13 @@
 
 using namespace std;
 
-namespace // for example only
-{
+namespace { // for example only
     void DoOne() { cout << "One" << endl; }
     void DoTwo() { cout << "Two" << endl; }
     void DoNil() { cout << "Nil" << endl; }
 }
 
-void Mapper()
-{
+void Mapper() {
     typedef void (*DoIt)();
     typedef map<string,DoIt> MapCall;
 

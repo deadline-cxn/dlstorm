@@ -12,8 +12,7 @@ CLog::CLog(char *szFilename, bool bQ) { Initialize(); SetName(szFilename); bQuie
 //////////////////////////////////////////////////////
 CLog::~CLog() { }
 //////////////////////////////////////////////////////
-void CLog::Initialize(void)
-{
+void CLog::Initialize(void) {
     //if( getcwd( logfile, _MAX_PATH ) != NULL )
     //    strcpy(logdir,getcwd( "", _MAX_PATH ));
     strcpy(logfile,"[CLog].log");
@@ -25,15 +24,13 @@ void CLog::Initialize(void)
     bQuiet = true;
 }
 //////////////////////////////////////////////////////
-void CLog::SetName(char *szFilename)
-{
+void CLog::SetName(char *szFilename) {
 	strcpy(logfile,szFilename);
     //if( getcwd( logfile, _MAX_PATH ) != NULL) strcpy(logdir,getcwd("",_MAX_PATH));
     //strcpy(logfile,szFilename);
 }
 //////////////////////////////////////////////////////
-void CLog::AddEntry(char *fmt, ...)
-{
+void CLog::AddEntry(char *fmt, ...) {
     if(!bActive) return;
     char ach[512];
     char temp[512];

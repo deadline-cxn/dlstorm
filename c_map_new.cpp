@@ -1,25 +1,20 @@
 #include "c_map_new.h"
 
-CMesh :: CMesh()
-{
+CMesh :: CMesh() {
     Initialize();
     bMadeLog=true;
     pLog=0;
 }
 
-CMesh::CMesh(CLog *pInLog, CGAF *pInGAF, CGLTexture *pInTexture)
-{
-
+CMesh::CMesh(CLog *pInLog, CGAF *pInGAF, CGLTexture *pInTexture) {
     pLog=pInLog;
     pGAF=pInGAF;
     bMadeLog=false;
-
     Initialize();
     pTexture=pInTexture;
 }
 
-void CMesh::Initialize(void)
-{
+void CMesh::Initialize(void) {
     pTexture=0;
 	m_pVertices = NULL;
 	m_pTexCoords = NULL;

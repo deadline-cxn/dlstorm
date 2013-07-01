@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
-C_GCTRL::C_GCTRL(C_GSTMP *pInParentStump, CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole){
+C_GCTRL::C_GCTRL(C_GSTMP *pInParentStump, CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole) {
     parent_stump=pInParentStump;
     pLog=pInLog;
     pGFX=pInGFX;
@@ -238,12 +238,14 @@ void C_GCTRL::attach_default_children(void){
             strcpy(action,pGUI->last_control_clicked->action);
         }
         if(strlen(action)){
-            strcpy(temp,dlcs_getcwd());
+            dlcs_getcwd(temp);
+            // strcpy(temp,dlcs_getcwd());
             dlcs_chdir(action);
-            dirs=Dir2Vector(dlcs_getcwd(),"*.*");
+            dirs=Dir2Vector(temp,"*.*");
             dlcs_chdir(temp);
         }else{
-            dirs=Dir2Vector(dlcs_getcwd(),"*.*");
+            dlcs_getcwd(temp);
+            dirs=Dir2Vector(temp,"*.*");
         }
 
         sort(dirs.begin(), dirs.end());
@@ -2056,6 +2058,7 @@ C_GSTMP *C_GUI::get_prev_stump(C_GSTMP *tstump){
     return gui_stump;
 }
 void C_GUI::call_do_line(char *line){
+    char temp[1024]; memset(temp,0,1024);
    	std::vector <std::string> vs;
 	std::vector <std::string> vin;
 	static C_GSTMP *stump;
@@ -2127,7 +2130,9 @@ void C_GUI::call_do_line(char *line){
                     {
                         if(dscc((char *)vin[0].c_str(),"name"))
                         {
-                            pLog->_DebugAdd("Loading GUI file -> %s",                                va("%s%cgumps%c%s",dlcs_getcwd(),PATH_SEP,PATH_SEP,vin[1].c_str()) );
+                            dlcs_getcwd(temp);
+                            pLog->_DebugAdd("Loading GUI file -> %s",
+                                            va("%s%cgumps%c%s",temp,PATH_SEP,PATH_SEP,vin[1].c_str()) );
                         }
                     }
                 }
@@ -2537,15 +2542,21 @@ void C_GUI::cab_call(char *file){
 	CxMemFile *hi;
 	if(!pGAF) return;
 	GAF_FileBuffer nfb;
+    nfb.fb=0;
+    nfb.Size=0;
+
 	char fin[1024];
 	memset(fin,0,1024);
 	nfb=pGAF->GetFile((char *)va("gumps/%s",file));
-	hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
-	while(hi->GetS(fin,256)){
-		vs=explode("\r",fin);
-		if(vs.size()) call_do_line((char *)vs[0].c_str());
-	}
-	DEL(hi);
+
+    if(nfb.fb) {
+        hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
+        while(hi->GetS(fin,256)){
+            vs=explode("\r",fin);
+            if(vs.size()) call_do_line((char *)vs[0].c_str());
+        }
+        DEL(hi);
+    }
 }
 void C_GUI::bcall(char *file){
 	pLog->_DebugAdd("   GUI->bcall(gumps/%s)",file);

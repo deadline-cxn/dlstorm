@@ -212,8 +212,7 @@ char *encrypt(char *text){
 	char ntext2[1024];	memset(ntext2,0,1024);
 	int i;
 	strcpy(ntext,text);
-	for(i=0;i<(int)strlen(ntext);i++)
-	{
+	for(i=0;i<(int)strlen(ntext);i++) {
 		ntext2[i] = ntext[i]<<2;
 		if(ntext2[i]==0) ntext2[i]=1;
 		if(ntext2[i]=='|') ntext2[i]=1;

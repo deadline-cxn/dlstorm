@@ -122,8 +122,7 @@ static struct stErrorEntry{
 const int iNumMessages = sizeof(pErrorList) / sizeof(struct stErrorEntry);
 #endif
 
-typedef enum
-{
+typedef enum {
     LOGIN_WHAT,
     GOOD_LOGIN,
     BAD_LOGIN,
@@ -135,8 +134,7 @@ typedef enum
     MASTER_LOGIN,
 } eLoginStuff;
 
-typedef enum
-{
+typedef enum {
     NET_NOTCONNECT=0,     // not connected to any host
     NET_LOGGINPROC,     // connected but not logged in
     NET_SYSBUSY,        // if some class internal things (filetransfer) are done
@@ -144,8 +142,7 @@ typedef enum
 } eConState;
 
 
-class CPacket
-{
+class CPacket {
 public:
     CPacket();
     CPacket(int iSize);
@@ -191,7 +188,7 @@ public:
 
 #define MAX_DATAGRAM                1024    // Length of unreliable message
 
-typedef enum{
+typedef enum {
 	CTL_CONNECT = 1,
 	CTL_PLACEHOLDER,
 	CTL_REJECT,
@@ -205,19 +202,14 @@ typedef enum{
 } tSocketCtrlMsg;
 
 
-class CCSocket
-{
+class CCSocket {
 public:
     CCSocket(void);
     CCSocket(int iPort);
     CCSocket(int iPort,bool bListen);
     CCSocket(int iPort,bool bListen, bool What2);
     ~CCSocket();
-
-
     void             initSocket(void);
-
-
     virtual int      iGetMessage();             // 0 if no incomming data, 1 unreliable, 2 reliable
     virtual char     *pcGetMessage();
     virtual int      iGetMessageSize();
@@ -230,10 +222,8 @@ public:
     virtual int     SendUnreliableMessage(CPacket *pMessage);
     virtual double   dSendStatus();             // sends a message
     virtual void     Disconnect();              // if a dead connection is returned by a get or send function, this function should be called when it is convenient
-
     void              SendMessageNext(void);
     void              ReSendMessage (void);
-
     //queue<int>       BufferedQ;               // sizes of the buffered packets
     //virtual void     SendBufferedMessage(char *pData,int iSize);
     //virtual void     SendBufferedMessage(CPacket *pMessage);
@@ -243,24 +233,20 @@ public:
     //char             *pBackupBuffer;            // queuebuffer for buffered messages
     //unsigned int     iBufferedSendSequence;     // current sendsequenece for buffered messages
     //unsigned int     iBufferedReceivedSequence; // current receivesequenece for buffered messages
-
     void              FinishCtlPacket(CPacket *pPacket);
     bool              bConnecting;
     int               dConnectRetries;
     int               dConnectRetry;             // how often attempt to retry to connect
     int               dConnectTimeOut;           // timeout for a connection request
     int               iLastLength;
-
     CPacket           *pTempPacket;              // temporary packet for pGetMessage
     bool              bConnected;                // exists a validated connection?
     bool              bCanSend;                  // indicates wether reliable messages can be sent or not
     bool              bSendNext;                 // can we send next part of the message
-
     char              *pSendBuffer;              // pointer to sendbuffer
     int               iCurBufSize;               // current size of messagebuffer
     int               iSendBufferLength;         // length of current message
     char              *pReceiveBuffer;           // pointer to receivebuffer
-
     int               iCurReceiveSize;           // current size of receivebuffer
     int               iReceiveBufferLength;      // currently read data
     int               iReceivedMessageLength;    // length of the last message
@@ -285,64 +271,41 @@ public:
     unsigned int     iPacketsReceived;
     unsigned int     iDroppedDatagrams;
     unsigned int     iReceivedDuplicateCount;
-
-
 	//int               NET_StringToAddr(char *pString, struct sockaddr *pAddr);
 	int               NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr);
-
 	//int               NET_GetSocketPort(struct sockaddr *pAddr);
 	//int               NET_SetSocketPort(struct sockaddr *pAddr, int iPort);
 	// void              NET_SetPort(int iPort);
 	// int               NET_GetPort(void);
-
-
     //CCSocket         *pAccept(int iReSocket,struct sockaddr *ReAddr);
-
-
 	void              SetRemoteIPAddress(char *iNetAddress);
 	void              SetRemotePort(int iPort);
     char              *pGetRemoteIPAddress(void);
     int               iGetRemotePort(void);
-
     char              *pGetLocalIPAddress(void);
     int               iGetLocalPort(void);
-
     int               OpenSocket(char *pAddress, int iPort);
 	int               OpenSocket(int iPort);
-
 	int               zOpenSocket(int iPort);
 	int               zOpenSocket(char *pAddress, int iPort);
-
 	int               CloseSocket(int iSocket);
-
 	int               Listen(int iHostPort, int iState);
-
 	int               CheckNewConnections (void);
 	int               nRecv(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
 	int               nRecv(char *pBuf, int iLen, struct sockaddr *pAddr);
 	int               nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
 	int               nSend(char *pBuf, int iLen, struct sockaddr *pAddr);
-
-
-
     SOCKET             iSocket;
-
     struct sockaddr_in ToAddr;
     struct sockaddr_in FromAddr;
-
-
     #pragma pack(1)
-    struct
-    {
+    struct {
         unsigned int  iLen;
         unsigned int  iSequence;
         char          pData[MAX_DATAGRAM];
     } PacketBuffer;
     #pragma pack()
 };
-
-
-
 
 #ifdef __cplusplus
 extern "C"
@@ -351,17 +314,14 @@ extern "C"
 	int     NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName);
 	int     NET_GetAddrFromName(char *pName, struct sockaddr *pAddr);
     char   *NET_pGetLastError(void);
-
     char   *NET_pAddrToString(struct sockaddr *pAddr);
 	int     NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2);
 	void    FinishCtlPacket(CPacket *pPacket);
 	int     NET_Init(void);
 	int     NET_Shutdown(void);
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+

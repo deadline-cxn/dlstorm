@@ -7,7 +7,6 @@
 #define X .525731112119133606
 #define Z .850650808352039932
 
-
 #ifdef _WIN32
 #ifndef _GL_VBO_STUFF
 #define _GL_VBO_STUFF
@@ -35,7 +34,6 @@ PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO 
 #endif
 
 #endif
-
 
 
 // cube ///////////////////////////////////////////////////////////////////////
@@ -493,7 +491,9 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
     BaseTexture=0;
     if(!InitBaseGFX()) return false;
+
     LoadBaseGFX(pGAF);
+
     pLog->_Add("Base Textures initialized");
 
     //if(!InitModels()) return false;
@@ -738,11 +738,9 @@ bool C_GFX::InitBaseGFX()
 
 /****************************************************************************************************/
 
-bool C_GFX::LoadBaseGFX(CGAF *pGAF) // Load in GFX Base
-{
+bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
     pLog->_DebugAdd("Begin LoadBaseGFX...");
-    for(int i=0;i<MAX_BASE_GFX;i++)
-	{
+    for(int i=0;i<MAX_BASE_GFX;i++) {
 		Load1BaseGFX(pGAF,i);
 	}
 	return 1;
@@ -750,16 +748,14 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) // Load in GFX Base
 
 /****************************************************************************************************/
 
-bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which)
-{
+bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which) {
     pLog->_DebugAdd("Begin Load1BaseGFX...");
     char fname[1024]; memset(fname,0,1024);
     sprintf(fname,"base/b%04d.bmp",which);
 
     pLog->_DebugAdd(" AAAAAA %s",fname);
 
-	if(!BaseTexture[which].texture)
-	{
+	if(!BaseTexture[which].texture) {
 		BaseTexture[which].texture=new CGLTexture(pLog,pGAF,fname);
 		pLog->_DebugAdd(" AAAAA....22222");
         BaseTexture[which].texture->usemask=false;
@@ -772,8 +768,7 @@ bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which)
 	}
 
 	pLog->_DebugAdd("  BBBBBB");
-    if(!BaseTexture[which].texture)
-	{
+    if(!BaseTexture[which].texture) {
 		pLog->_DebugAdd("ERROR: texture not valid");
 		return false;
 	}

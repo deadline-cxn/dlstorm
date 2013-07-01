@@ -17,8 +17,7 @@
 #define CHATROOM        5
 #define LOGIN           6
 
-class CFM_Profile
-{
+class CFM_Profile {
 public:
     CFM_Profile();
     ~CFM_Profile();
@@ -28,8 +27,7 @@ public:
     CFM_Profile *pNext;
 };
 
-class CC_Data
-{
+class CC_Data {
 public:
 	CC_Data(void);
 	~CC_Data(void);

@@ -3,7 +3,7 @@
 
 #include "dlstorm.h"
 
-typedef enum{
+typedef enum {
     CHANNEL_UNKNOWN,
     CHANNEL_SYSTEM,
     CHANNEL_CONSOLE,
@@ -29,6 +29,5 @@ extern map <int, string> rGUI_CHAT;
 extern map <int ,string> GUI_CHAT_COLOR;
 
 extern "C" void dfGUI_CHAT(void);
-
 
 #endif

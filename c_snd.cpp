@@ -5,27 +5,23 @@
 #include "c_snd.h"
 
 
-C_Sound::C_Sound()
-{
+C_Sound::C_Sound() {
     fmusic=0;
     svol=255;
     mvol=64;
-
-}
-C_Sound::~C_Sound()
-{
-
 }
 
+C_Sound::~C_Sound() {
+
+}
 
 
-char C_Sound::InitializeSound()
-{
+
+char C_Sound::InitializeSound() {
     char x;
 
     x = FSOUND_Init(44100, MAX_CHANNELS, 0);
-    if(x)
-    {
+    if(x) {
         bfmod=1;
 
         //MAX_CHANNELS = 6;//FSOUND_GetMaxChannels();
