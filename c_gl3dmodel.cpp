@@ -65,10 +65,9 @@ bool CGLModel::RenderSceneDraw(void)
 {
     pLog->_DebugAdd("CGLModel::RenderSceneDraw(void)");
     if(!Model) return 0;
-    if(!Model->texture)
-    {
+    if(!Model->texture) {
         Model->texture=new CGLTexture(pLog);
-        Model->texture->Load(pGAF,skin,0);
+        Model->texture->LoadBMP(pGAF,skin,0);
     }
     if(Model->pObject.size() <= 0) return 1;
 
@@ -146,7 +145,7 @@ bool CGLModel::Draw(void)
     {
         Model->texture=new CGLTexture(pLog);
         Model->texture->pGAF=pGAF;
-        Model->texture->Load(pGAF,skin,0);
+        Model->texture->LoadBMP(pGAF,skin,0);
     }
 
     if(Model->pObject.size() <= 0) return 1;
@@ -369,7 +368,7 @@ bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture)
 
 
         MD2->texture=new CGLTexture(pLog,pGAF,strTexture,0);
-        MD2->texture->Load(pGAF,strTexture,0);//(pGAF,strTexture,0);
+        MD2->texture->LoadBMP(pGAF,strTexture,0);//(pGAF,strTexture,0);
 
     }
     pLog->_DebugAdd("CLoadMD2::ImportMD2() end");

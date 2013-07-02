@@ -2,18 +2,15 @@
 
 #include "c_gaf.h"
 
-CGAF::CDirScanner::CDirScanner()
-{
+CGAF::CDirScanner::CDirScanner(){
 	Handle=INVALID_HANDLE_VALUE;
 }
 
-CGAF::CDirScanner::~CDirScanner()
-{
+CGAF::CDirScanner::~CDirScanner(){
 	if(Handle!=INVALID_HANDLE_VALUE)FindClose(Handle);
 }
 
-void CGAF::CDirScanner::Start(LPSTR dirname)
-{
+void CGAF::CDirScanner::Start(LPSTR dirname){
 	strcpy(DirName,dirname);
 	strcat(DirName,"*.*");
 	NextIsFirst=true;
@@ -21,22 +18,19 @@ void CGAF::CDirScanner::Start(LPSTR dirname)
 	GetFile();
 }
 
-bool CGAF::CDirScanner::GetFile()
-{
-	if(NextIsFirst)
-	{
+bool CGAF::CDirScanner::GetFile(){
+	if(NextIsFirst)	{
 		Handle=FindFirstFile(DirName,&FindData);
 		NextIsFirst=false;
 		if(Handle!=INVALID_HANDLE_VALUE)return true;
-	}else
-	{
+	}
+	else {
 		if(FindNextFile(Handle,&FindData))return true;
 	}
 	return false;
 }
 
-bool CGAF::CDirScanner::Error()
-{
+bool CGAF::CDirScanner::Error(){
 	if(Handle==INVALID_HANDLE_VALUE)return true;
 	return false;
 }

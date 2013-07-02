@@ -401,112 +401,63 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
 
     SDL_InitSubSystem(SDL_INIT_VIDEO);
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... B");
-
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... C");
-
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... D");
-
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... E");
-
-    if(!VideoInfo)
-    {
+    if(!VideoInfo) {
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... F");
-
-    if(VideoInfo->hw_available)
-    {
+    if(VideoInfo->hw_available) {
         VideoFlags |= SDL_HWSURFACE;
         pLog->_Add("Hardware surfaces...");
     }
-    else
-    {
+    else {
         VideoFlags |= SDL_SWSURFACE;
         pLog->_Add("Software surfaces...");
     }
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... G");
-
-    if(VideoInfo->blit_hw)
-    {
+    if(VideoInfo->blit_hw) {
         VideoFlags |= SDL_HWACCEL;
         pLog->_Add("Hardware acceleration enabled!");
     }
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... H");
-
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
-
     pLog->_Add("Video memory:[%d]",VideoInfo->video_mem);
-
     if(!SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) pLog->_Add("SDL_VideoModeOK failure");
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... I");
-
     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
-    if(!pScreen)
-    {
+    if(!pScreen) {
         pLog->_Add("Can't set up pScreen! ErroR!");
         return false;
     }
-
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem... J");
-
     SDL_ShowCursor(SDL_DISABLE);
-
     SetWindowTitle(wincaption);
-
     pLog->_Add("SDL_VideoModeOK");
-
     if(!InitGL()) return false;
     pLog->_Add("OpenGL initialized");
-
 #ifdef _WIN32
 /*  glGenBuffersARB     = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffersARB");
 	glBindBufferARB     = (PFNGLBINDBUFFERARBPROC) wglGetProcAddress("glBindBufferARB");
 	glBufferDataARB     = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferDataARB");
 	glDeleteBuffersARB  = (PFNGLDELETEBUFFERSARBPROC) wglGetProcAddress("glDeleteBuffersARB"); */
 #endif
-
     pCamera=new C_Camera();
-    if(pCamera)
-    {
+    if(pCamera) {
         pCamera->Move_Left_Stop();
         pCamera->Move_Right_Stop();
         pCamera->Move_Forward_Stop();
         pCamera->Move_Backward_Stop();
     }
     pLog->_Add("Camera initialized");
-
     BaseTexture=0;
     if(!InitBaseGFX()) return false;
-
     LoadBaseGFX(pGAF);
-
     pLog->_Add("Base Textures initialized");
-
     //if(!InitModels()) return false;
     //pLog->_Add("Models initialized");
-
     g_pMesh = new CMesh(pLog, pGAF, BaseTexture[103].texture);
-
 	pManMap = new CMantraMap();
-
 	pLog->_Add("Map mesh initialized");
-
     pLog->_Add("GFX Initialized");
-
     return true;
 }
 
@@ -752,29 +703,20 @@ bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which) {
     pLog->_DebugAdd("Begin Load1BaseGFX...");
     char fname[1024]; memset(fname,0,1024);
     sprintf(fname,"base/b%04d.bmp",which);
-
-    pLog->_DebugAdd(" AAAAAA %s",fname);
-
 	if(!BaseTexture[which].texture) {
 		BaseTexture[which].texture=new CGLTexture(pLog,pGAF,fname);
-		pLog->_DebugAdd(" AAAAA....22222");
         BaseTexture[which].texture->usemask=false;
-        pLog->_DebugAdd(" AAAAA....33333");
-        BaseTexture[which].texture->Load(pGAF,fname,1);
-        pLog->_DebugAdd(" AAAAA....44444");
+        BaseTexture[which].texture->LoadBMP(pGAF,fname,1);
         strcpy(BaseTexture[which].texture->name,va("%d",which));
-        pLog->_DebugAdd(" AAAAA....55555");
 		return false;
 	}
-
-	pLog->_DebugAdd("  BBBBBB");
     if(!BaseTexture[which].texture) {
 		pLog->_DebugAdd("ERROR: texture not valid");
 		return false;
 	}
 
 	BaseTexture[which].texture->usemask=false;
-   	BaseTexture[which].texture->Load(pGAF,fname,1);
+   	BaseTexture[which].texture->LoadBMP(pGAF,fname,1);
     strcpy(BaseTexture[which].texture->name,va("%d",which));
     pLog->_DebugAdd("Loaded base texture [%d]",which);
     return 1;

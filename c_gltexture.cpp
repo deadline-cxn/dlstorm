@@ -2,6 +2,7 @@
 #include "c_gltexture.h"
 #include "glerrors.h"
 #include "SDL.h"
+#include "ximage.h"
 
 CGLTexture::CGLTexture() {   Initialize(); }
 
@@ -9,26 +10,26 @@ CGLTexture::CGLTexture(CLog *pInLog) {     Initialize();     pLog=pInLog; }
 
 CGLTexture::CGLTexture(CGAF *pGAF,char *fname) {
     Initialize();
-    Load(pGAF,fname,0);
+    LoadBMP(pGAF,fname,0);
 }
 
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname) {
     Initialize();
     pLog=pInLog;
-    Load(pGAF,fname,0);
+    LoadBMP(pGAF,fname,0);
 }
 
 CGLTexture::CGLTexture(CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
     usemask=fmask;
-    Load(pGAF,fname,0);
+    LoadBMP(pGAF,fname,0);
 }
 
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
     pLog=pInLog;
     usemask=fmask;
-    Load(pGAF,fname,0);
+    LoadBMP(pGAF,fname,0);
 }
 
 /****************************************************************************************************/
@@ -162,209 +163,87 @@ bool   CGLTexture::Loaded(void) {
     return 0;
 }
 
-/****************************************************************************************************/
-
-#pragma comment(lib,"cximage.lib")
-#pragma comment(lib,"Tiff.lib" )
-#pragma comment(lib,"jasper.lib" )
-#pragma comment(lib,"libdcr.lib" )
-#pragma comment(lib,"Jpeg.lib" )
-#pragma comment(lib,"mng.lib" )
-#pragma comment(lib,"png.lib" )
-#pragma comment(lib,"zlib.lib" )
-
-#include "ximage.h"
-
 extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 
 /****************************************************************************************************/
-GLuint CGLTexture::Load(CGAF *pGAF,const char *filename,bool which) {
-
+GLuint CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
     pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> Start");
-
-	if(!strlen(filename)) return 0;
-	if(!pGAF) return 0;
-
- 	CxImage *himage;
-	CxImage *himage2;
-
+	if(!strlen(filename))   return 0;
+	if(!pGAF)               return 0;
     char filename2[1024]; memset(filename2,0,1024);
     char maskfile[1024];  memset(maskfile,0,1024);
     char ax,ay,az;
-
-
+    int x, y;
 	GAF_FileBuffer nfbuf1;
-	GAF_FileBuffer nfbuf2;
-
 	nfbuf1.fb=0;
-	nfbuf2.fb=0;
 	nfbuf1.Size=0;
+	GAF_FileBuffer nfbuf2;
+    nfbuf2.fb=0;
 	nfbuf2.Size=0;
-
     glDEL(bmap);
     glDEL(mask);
-
     ax=filename[strlen(filename)-3];
     ay=filename[strlen(filename)-2];
     az=filename[strlen(filename)-1];
     strcpy(filename2,filename);
     filename2[strlen(filename2)-4]=0;
     sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
-
-	if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> %s %s",filename,maskfile);
-
 	nfbuf1=pGAF->GetFile((LPSTR)filename);
-
 	if(nfbuf1.fb) {
-
         pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) nfbuf1.fb[%d] nfbuf1.Size[%d]",nfbuf1.fb,nfbuf1.Size);
-
-
-        pLog->AddEntry("Filename   = %s\n",filename);
-        pLog->AddEntry("Maskfile   = %s\n",maskfile);
-        pLog->AddEntry("nfbuf1.fb  = %d\n",nfbuf1.fb);
-        pLog->AddEntry("nfbuf1.Size= %d\n",nfbuf1.Size);
-
-        himage=0;
-
-        pLog->AddEntry("CGLTexture::Load(pGAF,filename,which) himage = %d\n",himage);
-
-        himage = new CxImage(   nfbuf1.fb,
-                                nfbuf1.Size,
-                                CXIMAGE_FORMAT_BMP );
-
-        pLog->AddEntry("CGLTexture::Load(pGAF,filename,which) himage = %d\n",himage);
-
-
-
-        if(himage) {
-
-            himage->IncreaseBpp(24);
-            himage->SwapRGB2BGR();
-            himage->SetXDPI(72);
-            himage->SetYDPI(72);
-
-            glGenTextures(1, &bmap);
-            glBindTexture(GL_TEXTURE_2D, bmap);
-
-
-            if(pLog)
-                pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> %s %d %d  size(%d) bmap(%d)",filename,
-                                himage->GetWidth(),
-                                himage->GetHeight(),
-                                himage->GetSize(),
-                                bmap);
-
-            glTexImage2D (  GL_TEXTURE_2D,
-                            0,
-                            3,
-                            himage->GetWidth(),
-                            himage->GetHeight(),
-                            0,
-                            GL_RGB,
-                            GL_UNSIGNED_BYTE,
-                            himage->GetBits());
-
-            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> AAAAA");
-
-            glFlush();
-
-            if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> BBBBB");
-
-            himage->Destroy();
-
-            if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> CCCCC");
-
-            DEL(himage);
-
-            if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> DDDDD");
-
-        }
+        pLog->_DebugAdd("Filename   = %s\n",filename);
+        pLog->_DebugAdd("Maskfile   = %s\n",maskfile);
+        pLog->_DebugAdd("nfbuf1.fb  = %d\n",nfbuf1.fb);
+        pLog->_DebugAdd("nfbuf1.Size= %d\n",nfbuf1.Size);
+        x=nfbuf1.fb[18]+nfbuf1.fb[19]*256+nfbuf1.fb[20]*512+nfbuf1.fb[21]*1024;
+        y=nfbuf1.fb[22]+nfbuf1.fb[23]*256+nfbuf1.fb[24]*512+nfbuf1.fb[25]*1024;
+        pLog->_DebugAdd(" X: %d  Y: %d ",x,y);
+        glGenTextures(1, &bmap);
+        glBindTexture(GL_TEXTURE_2D, bmap);
+        glTexImage2D( GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, nfbuf1.fb+54);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFlush();
 	}
-
-	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> YYYYY");
-
 	nfbuf2=pGAF->GetFile(maskfile);
-
-
     if(nfbuf2.fb) {
-
-        pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> XXXXX");
-
-        himage2=new CxImage(nfbuf2.fb,nfbuf2.Size,CXIMAGE_FORMAT_BMP);
-
-        if(himage2) {
-            himage2->IncreaseBpp(24);
-            himage2->SwapRGB2BGR();
-            himage2->SetXDPI(72);
-            himage2->SetYDPI(72);
-
-            glGenTextures   (1, &mask);
-            glBindTexture   (GL_TEXTURE_2D, mask);
-
-            glTexImage2D    (	GL_TEXTURE_2D,
-                                0,
-                                3,
-                                himage2->GetWidth(),
-                                himage2->GetHeight(),
-                                0,
-                                GL_RGB,
-                                GL_UNSIGNED_BYTE,
-                                himage2->GetBits());
-
-
-            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-            if(pLog) pLog->_DebugAdd("                    \\--> Mask found: %s mask(%d)",maskfile,mask);
-            usemask=1;
-            himage2->Destroy();
-            DEL(himage2);
-        }
+        x=nfbuf2.fb[18]+nfbuf2.fb[19]*256+nfbuf2.fb[20]*512+nfbuf2.fb[22]*1024;
+        y=nfbuf2.fb[22]+nfbuf2.fb[23]*256+nfbuf2.fb[24]*512+nfbuf2.fb[25]*1024;
+        glGenTextures(1, &mask);
+        glBindTexture(GL_TEXTURE_2D, mask);
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, nfbuf2.fb+54);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        if(pLog) pLog->_DebugAdd("                    \\--> Mask found: %s mask(%d)",maskfile,mask);
+        usemask=1;
     }
-
-	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> End");
-
     return 1;
-
 }
 /****************************************************************************************************/
-bool CGLTexture::ReLoad(void)
-{
-    if(!strlen(tfilename))
-    {
+bool CGLTexture::ReLoad(void) {
+    if(!strlen(tfilename)) {
         if(pLog) pLog->_DebugAdd("CGLTexture::ReLoad() (could not produce tfilename)");
         return 0;
     }
-    return (Load(pGAF,tfilename,0)?0:1);
+    return (LoadBMP(pGAF,tfilename,0)?0:1);
 }
 
-bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b)
-{
+bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b){
     return Draw2d(x,y,x2,y2,r,g,b,255,255,255);
 }
 
-bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b)
-{
+bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b){
     return Draw(x,y,x2,y2,r,g,b,255,255,255);
 }
 
-bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2)//Draw(int x,int y,int x2,int y2,long color)
-{
-    if(!bmap) { Load(pGAF,tfilename,1); return 0; }
-    if(usemask) if(!mask) { Load(pGAF,tfilename,1); return 0; }
-
+bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2){
+    if(!bmap) { LoadBMP(pGAF,tfilename,1); return 0; }
+    if(usemask) if(!mask) { LoadBMP(pGAF,tfilename,1); return 0; }
     int x3=(x2-x);
     int y3=(y2-y);
-
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-
-    if(usemask)
-    {
+    if(usemask) {
         ////////////////////////////////////////////////////////
         // draw mask
 
@@ -472,8 +351,8 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
 
 bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2)//Draw(int x,int y,int x2,int y2,long color)
 {
-    if(!bmap) { Load(pGAF,tfilename,1); return 0; }
-    if(usemask) if(!mask) { Load(pGAF,tfilename,1); return 0; }
+    if(!bmap) { LoadBMP(pGAF,tfilename,1); return 0; }
+    if(usemask) if(!mask) { LoadBMP(pGAF,tfilename,1); return 0; }
 
     int x3=(x2-x);
     int y3=(y2-y);

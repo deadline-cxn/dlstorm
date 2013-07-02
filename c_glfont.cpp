@@ -73,7 +73,7 @@ bool CGLFont::Load(const char *file) // Build Our Font Display List
     pFontTex->pGAF=pGAF;
     if(!pFontTex) return 0;
     pFontTex->usemask=1;
-    pFontTex->Load(pGAF,va("%s.bmp",szFile),0);
+    pFontTex->LoadBMP(pGAF,va("%s.bmp",szFile),0);
     pFontList=glGenLists(256);                          // Creating 256 Display Lists
     glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);         // Select Our Font Texture
     for(loop=0; loop<256; loop++)                       // Loop Through All 256 Lists
@@ -511,7 +511,7 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int set, u_char r, u_char g, u_char b) // Where The yPrinting Happens
 {
     if(!pFontTex) return;
-    if(!pFontTex->bmap) { pFontTex->Load(pGAF,va("%s.bmp",szFile),0); }
+    if(!pFontTex->bmap) { pFontTex->LoadBMP(pGAF,va("%s.bmp",szFile),0); }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
     if(set<2)
     {
@@ -561,7 +561,7 @@ GLvoid CGLFont::BoldPrint(GLint x,GLint y, const char *string,int set, u_char r,
     return;
 
     if(!pFontTex) return;
-    if(!pFontTex->bmap) { pFontTex->Load(pGAF,va("%s.bmp",szFile),0); }
+    if(!pFontTex->bmap) { pFontTex->LoadBMP(pGAF,va("%s.bmp",szFile),0); }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
     if(set<2)
     {

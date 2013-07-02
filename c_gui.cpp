@@ -2121,15 +2121,11 @@ void C_GUI::call_do_line(char *line){
 		switch(mode){
             case FGL_ATTACH:
                 if(stump){
-                    if(cab_loading)
-                    {
-
+                    if(cab_loading) {
                         cab_call((char *)vin[1].c_str());
                     }
-                    else
-                    {
-                        if(dscc((char *)vin[0].c_str(),"name"))
-                        {
+                    else {
+                        if(dscc((char *)vin[0].c_str(),"name")) {
                             dlcs_getcwd(temp);
                             pLog->_DebugAdd("Loading GUI file -> %s",
                                             va("%s%cgumps%c%s",temp,PATH_SEP,PATH_SEP,vin[1].c_str()) );
@@ -2971,7 +2967,7 @@ void C_GUI::drawB9utton(int x,int y, int w, int h){
 		}
 		if(!B9utton[i].texture->Loaded()){
 			B9utton[i].texture->usemask=0;
-			B9utton[i].texture->Load(pGAF,va("buttons/b9_%03d.bmp",i),0);
+			B9utton[i].texture->LoadBMP(pGAF,va("buttons/b9_%03d.bmp",i),0);
 			return;
 		}
 		cx=x + (col*8);
@@ -2991,7 +2987,7 @@ void C_GUI::drawGUIButton(int x, int y, int which, int size){
     }
     if(!ButtonTexture[which].texture->Loaded()){
 		ButtonTexture[which].texture->usemask=1;
-		ButtonTexture[which].texture->Load(pGAF,va("buttons/%03d.bmp",which),0);
+		ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }
 
@@ -3009,7 +3005,7 @@ void C_GUI::drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,u_char r, u
     }
     if(!ButtonTexture[which].texture->Loaded()){
 		ButtonTexture[which].texture->usemask=1;
-		ButtonTexture[which].texture->Load(pGAF,va("buttons/%03d.bmp",which),0);
+		ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }
     ButtonTexture[which].texture->Draw(iX,iY,iX2,iY2,r,g,b);
@@ -3043,7 +3039,7 @@ void C_GUI::drawButton(int which, int updown, int x, int y,int w, int h){
     }
     if(!ButtonTexture[which].texture->Loaded()){
 		ButtonTexture[which].texture->usemask=0;
-		ButtonTexture[which].texture->Load(pGAF,va("buttons/%03d.bmp",which),0);
+		ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }
     ButtonTexture[which].texture->Draw(x,y,x+w,y+h,255,255,255);
@@ -3613,18 +3609,19 @@ int  C_GUI::processKeyboard(){
                         break;
 
                     default:
+                        memset(temp,0,1024);
+                        if(focus_control) {
                             focus_control->get_value(temp);
                             if( (tkey>=' ') &&
                                 (tkey<='~') &&
-                                (CGLFont_StrLen(temp) < focus_control->max_val_len) )
-                            {
-                                if(strlen(temp) > focus_control->max_val_len)
-                                    break;
+                                (CGLFont_StrLen(temp) < focus_control->max_val_len) ) {
+                                if(strlen(temp) > focus_control->max_val_len) break;
                                 temp[strlen(temp)+1]=0;
                                 temp[strlen(temp)]=tkey;
                                 focus_control->set_value(temp);
                             }
-                        break;
+                        }
+                    break;
                 }
             }
          }

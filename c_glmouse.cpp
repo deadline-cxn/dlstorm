@@ -83,7 +83,7 @@ GLvoid C_MouseCursor::load(char *file)
     Cursor->bmap=0;
     Cursor->mask=0;
     Cursor->usemask=1;
-    Cursor->Load(pGAF,va("%s.bmp",file),0);
+    Cursor->LoadBMP(pGAF,va("%s.bmp",file),0);
 
 	std::vector <std::string> vs;
 	CxMemFile *hi;
