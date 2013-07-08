@@ -190,20 +190,20 @@ GLuint CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
     sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
 	nfbuf1=pGAF->GetFile((LPSTR)filename);
 	if(nfbuf1.fb) {
-        pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) nfbuf1.fb[%d] nfbuf1.Size[%d]",nfbuf1.fb,nfbuf1.Size);
-        pLog->_DebugAdd("Filename   = %s\n",filename);
-        pLog->_DebugAdd("Maskfile   = %s\n",maskfile);
-        pLog->_DebugAdd("nfbuf1.fb  = %d\n",nfbuf1.fb);
-        pLog->_DebugAdd("nfbuf1.Size= %d\n",nfbuf1.Size);
+
         x=nfbuf1.fb[18]+nfbuf1.fb[19]*256+nfbuf1.fb[20]*512+nfbuf1.fb[21]*1024;
         y=nfbuf1.fb[22]+nfbuf1.fb[23]*256+nfbuf1.fb[24]*512+nfbuf1.fb[25]*1024;
-        pLog->_DebugAdd(" X: %d  Y: %d ",x,y);
+
         glGenTextures(1, &bmap);
         glBindTexture(GL_TEXTURE_2D, bmap);
         glTexImage2D( GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, nfbuf1.fb+54);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFlush();
+
+        pLog->_DebugAdd("GAF INFO: nfbuf1.Size= %d nfbuf1.fb  = %d(address)\n",nfbuf1.Size,nfbuf1.fb);
+        pLog->_DebugAdd("IMAGE   : Filename   = %s     OPENGL[%d] WIDTH: %d  HEIGHT: %d \n",filename,bmap,x,y);
+
 	}
 	nfbuf2=pGAF->GetFile(maskfile);
     if(nfbuf2.fb) {
@@ -214,7 +214,7 @@ GLuint CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
         glTexImage2D(GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, nfbuf2.fb+54);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        if(pLog) pLog->_DebugAdd("                    \\--> Mask found: %s mask(%d)",maskfile,mask);
+        if(pLog) pLog->_DebugAdd("      \\--> Mask found: %s OPENGL[%d] WIDTH:%d HEIGHT:%d",maskfile,mask,x,y);
         usemask=1;
     }
     return 1;
@@ -308,11 +308,8 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
         glEnable(GL_DEPTH_TEST);
-
-
     }
-    else
-    {
+    else {
         glDisable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glDisable(GL_DEPTH_TEST);
@@ -349,22 +346,14 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
 }
 
 
-bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2)//Draw(int x,int y,int x2,int y2,long color)
-{
+bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {//Draw(int x,int y,int x2,int y2,long color)
     if(!bmap) { LoadBMP(pGAF,tfilename,1); return 0; }
     if(usemask) if(!mask) { LoadBMP(pGAF,tfilename,1); return 0; }
-
     int x3=(x2-x);
     int y3=(y2-y);
-
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-
-    if(usemask)
-    {
-        ////////////////////////////////////////////////////////
-        // draw mask
-
+    if(usemask) { // draw mask
         glEnable(GL_BLEND);
         glBlendFunc(GL_DST_COLOR,GL_ZERO);
         glDisable(GL_DEPTH_TEST);
@@ -390,7 +379,6 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
         glTexCoord2d(0, 1); glVertex3d(x,y,1);
         glEnd();
 
-        ////////////////////////////////////////////////////////
         // draw bmap
 
         glEnable(GL_BLEND);
@@ -410,7 +398,6 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
         glEnable(GL_TEXTURE_2D);
         glColor3ub(r,g,b);
 
-
         glBegin(GL_QUADS);
         glTexCoord2d(0, 0); glVertex3d(x,y-y3,1);
         glTexCoord2d(1, 0); glVertex3d(x+x3,y-y3,1);
@@ -418,7 +405,6 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
         glTexCoord2d(0, 1); glVertex3d(x,y,1);
         glEnd();
 
-        ////////////////////////////////////////////////////////
         // pop matrices
 
         glMatrixMode(GL_PROJECTION);
@@ -426,11 +412,8 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
         glEnable(GL_DEPTH_TEST);
-
-
     }
-    else
-    {
+    else {
         glDisable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glDisable(GL_DEPTH_TEST);
@@ -463,25 +446,19 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
         glPopMatrix();
         glEnable(GL_DEPTH_TEST);
     }
-
     return 1;
 }
 
-bool CGLTexture::DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2)
-{
+bool CGLTexture::DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
     int x3=(x2-x);
     int y3=(y2-y);
-
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x),      float(y-y3),    1);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+x3),   float(y-y3),    1);
     glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+x3),   float(y),       1);
     glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x),      float(y),       1);
     glEnd();
-
     return 1;
-
 }

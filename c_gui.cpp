@@ -1391,9 +1391,9 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
 
     pLog->_DebugAdd("C_GCTRL::draw() END");
 }
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 C_GSTMP::C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole){
     pLog=pInLog;
     pGFX=pInGFX;
@@ -1403,6 +1403,7 @@ C_GSTMP::C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole)
     prev=0;
 	init_stmp();
 }
+
 C_GSTMP::~C_GSTMP(){
     C_GCTRL *del_gui_control;
     gui_control=first_gui_control;
@@ -1413,6 +1414,7 @@ C_GSTMP::~C_GSTMP(){
     }
     DEL(del_gui_control);
 }
+
 void C_GSTMP::init_stmp(){
     memset(name,0,1024);
     zeroize_stmp();
@@ -1421,6 +1423,7 @@ void C_GSTMP::init_stmp(){
     first_gui_control=NULL;
 	next=NULL;
 }
+
 void C_GSTMP::zeroize_stmp(){
     memset(media,0,1024);
     memset(action,0,1024);
@@ -1444,6 +1447,7 @@ void C_GSTMP::zeroize_stmp(){
     mrect.bottom=0;
     mrect.right=0;
 }
+
 void C_GSTMP::set_group_selecta(C_GCTRL *sgc){
 	C_GCTRL *tgc;
 	tgc=first_gui_control;
@@ -1454,6 +1458,7 @@ void C_GSTMP::set_group_selecta(C_GCTRL *sgc){
 	}
 	sgc->selected=1;
 }
+
 char C_GSTMP::control_count(void){
     C_GCTRL *tctrl;
     char x=0;
@@ -1464,9 +1469,11 @@ char C_GSTMP::control_count(void){
     }
     return x;
 }
+
 void C_GSTMP::add_control(const char *name,int type,int x,int y,int x2,int y2,int props,char *media,char *value){
     add_control(0,name,type,x,y,x2,y2,props,media,value);
 }
+
 void C_GSTMP::add_control(C_GCTRL *pInParentCTRL, const char *name,int type,int x,int y,int x2,int y2,int props,char *media,char *value){
     C_GCTRL *ngc;
     if(get_control(name)){
@@ -1507,6 +1514,7 @@ void C_GSTMP::add_control(C_GCTRL *pInParentCTRL, const char *name,int type,int 
     strcpy(ngc->name,name);
     mod_control(name,type,x,y,x2,y2,props,media,value);
 }
+
 void C_GSTMP::mod_control(const char *name,int type,int x,int y,int x2,int y2,int props,char *media,char *value){
     pLog->_DebugAdd("mod_control: %s,%d,%d,%d,%d,%d,%d,%s,%s",name,type,x,y,x2,y2,props,media,value);
     C_GCTRL *ngc;
@@ -1527,6 +1535,7 @@ void C_GSTMP::mod_control(const char *name,int type,int x,int y,int x2,int y2,in
     if(type==FM_GC_HIDDEN)
         ngc->visible=false;
 }
+
 C_GCTRL *C_GSTMP::get_control(const char *name){
     C_GCTRL *childctl;
     gui_control=first_gui_control;
@@ -1543,6 +1552,7 @@ C_GCTRL *C_GSTMP::get_control(const char *name){
     }
     return gui_control;
 }
+
 void C_GSTMP::size_control(char *name,int x,int y,int x2,int y2){
     gui_control=first_gui_control;
     while(gui_control){
@@ -1555,6 +1565,7 @@ void C_GSTMP::size_control(char *name,int x,int y,int x2,int y2){
         gui_control=gui_control->next;
     }
 }
+
 void C_GSTMP::del_control(char *name){
     C_GCTRL *pcontrol=0;
     pcontrol=get_control(name);
@@ -1565,6 +1576,7 @@ void C_GSTMP::del_control(char *name){
         pcontrol->prev->next=pcontrol->next;
     DEL(pcontrol);
 }
+
 void C_GSTMP::clear_grouptick(char *grp){
     C_GCTRL *cg=0;
     cg=first_gui_control;
@@ -1578,6 +1590,7 @@ void C_GSTMP::clear_grouptick(char *grp){
         cg=cg->next;
     }
 }
+
 void C_GSTMP::move_control_to_top(C_GCTRL *gc){
 //      	    ______   ______   ______
 //	           n      \ n      \ n      \
@@ -1625,11 +1638,12 @@ void C_GSTMP::move_control_to_top(C_GCTRL *gc){
         }
         tgc=tgc->next;
     }*/
-
 }
+
 void C_GSTMP::store_stmp(void){
     store_stmp(name);
 }
+
 void C_GSTMP::store_stmp(char *filename){
     pLog->_DebugAdd("Storing GUI stump [%s]",filename);
     remove(va("gumps%c%s.bak",PATH_SEP,filename));
@@ -1752,9 +1766,11 @@ void C_GSTMP::store_stmp(char *filename){
     }
     fclose(fp);
 }
+
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
+
 C_GUI::C_GUI(){
     pLog=new CLog("gui.log");
     pLog->On();
@@ -1764,17 +1780,20 @@ C_GUI::C_GUI(){
     init();
     bMadeLog=true;
 }
+
 C_GUI::C_GUI(CLog *pinLog){
     pLog=pinLog;
     init();
     cab_loading=false;
 }
+
 C_GUI::C_GUI(CGAF *pInGAF, CLog *pinLog){
     pGAF=pInGAF;
     pLog=pinLog;
     init();
     cab_loading=true;
 }
+
 C_GUI::C_GUI(C_GFX *pInGFX, CGAF *pInGAF, CLog *pinLog){
     pGFX=pInGFX;
     pGAF=pInGAF;
@@ -1783,6 +1802,7 @@ C_GUI::C_GUI(C_GFX *pInGFX, CGAF *pInGAF, CLog *pinLog){
     init();
     cab_loading=true;
 }
+
 C_GUI::~C_GUI(){
     pLog->_DebugAdd("C_GUI:~C_GUI()");
     if(bMadeLog) DEL(pLog);
@@ -1793,6 +1813,7 @@ C_GUI::~C_GUI(){
     destroyButtons();
 
 }
+
 void C_GUI::init(void){
     bCtrlMoving=0;
     bStmpMoving=0;
@@ -1898,6 +1919,7 @@ void C_GUI::init(void){
 	memset(hover_text,0,1024);
 	bDrawToolTip=false;
 }
+
 void C_GUI::consEntry(char *fmt, ...){
     C_GSTMP *stump;
     C_GCTRL *ctrl;
@@ -1925,6 +1947,7 @@ void C_GUI::consEntry(char *fmt, ...){
         }
     }
 }
+
 void C_GUI::clear(){
     C_GSTMP *gui_stump;
     gui_stump=0;
@@ -1941,6 +1964,7 @@ void C_GUI::clear(){
 	focus_control=0;
 	first_gui_stump=0;
 }
+
 void C_GUI::add_stump(char *name,int x,int y,int x2,int y2,int props,char *media){
 	bool bfree=0;
 	if(get_stump(name)){
@@ -1980,6 +2004,7 @@ void C_GUI::add_stump(char *name,int x,int y,int x2,int y2,int props,char *media
         pLog->_DebugAdd("stump added [%s] stump count [%d]",name,stump_count);
     }
 }
+
 void C_GUI::mod_stump(char *name,int x,int y,int x2,int y2,int props,char *media){
     C_GSTMP *stump=get_stump(name);
     if(!stump) return;
@@ -1991,6 +2016,7 @@ void C_GUI::mod_stump(char *name,int x,int y,int x2,int y2,int props,char *media
     stump->props=props;
     strcpy(stump->media,media);
 }
+
 void C_GUI::del_stump(C_GSTMP *tstump){
     char temp[1024]; memset(temp,0,1024);
     if(tstump){
@@ -2014,9 +2040,11 @@ void C_GUI::del_stump(C_GSTMP *tstump){
 		pLog->_DebugAdd("%s (stump count [%d])",temp,stump_count);
     }
 }
+
 void C_GUI::del_stump(char *name){
 	del_stump(get_stump(name));
 }
+
 void C_GUI::del_stumps(void){
     C_GSTMP *tstump;
     C_GSTMP *dstmp;
@@ -2032,6 +2060,7 @@ void C_GUI::del_stumps(void){
             tstump=tstump->next;
     }
 }
+
 C_GSTMP *C_GUI::get_stump(char *name){
     C_GSTMP *gui_stump=first_gui_stump;
     while(gui_stump){
@@ -2040,6 +2069,7 @@ C_GSTMP *C_GUI::get_stump(char *name){
     }
     return gui_stump;
 }
+
 C_GSTMP *C_GUI::get_prev_stump(char *name){
     C_GSTMP *gui_stump=first_gui_stump;
     while(gui_stump){
@@ -2049,6 +2079,7 @@ C_GSTMP *C_GUI::get_prev_stump(char *name){
     }
     return gui_stump;
 }
+
 C_GSTMP *C_GUI::get_prev_stump(C_GSTMP *tstump){
     C_GSTMP *gui_stump=first_gui_stump;
     while(gui_stump){
@@ -2057,7 +2088,11 @@ C_GSTMP *C_GUI::get_prev_stump(C_GSTMP *tstump){
     }
     return gui_stump;
 }
+
 void C_GUI::call_do_line(char *line){
+
+    pLog->_DebugAdd("   GUI->call_do_line");
+
     char temp[1024]; memset(temp,0,1024);
    	std::vector <std::string> vs;
 	std::vector <std::string> vin;
@@ -2507,6 +2542,7 @@ void C_GUI::call_do_line(char *line){
 		}
     }
 }
+
 void C_GUI::call(char *file){
 	if(cab_loading==true){
 		cab_call(file);
@@ -2518,6 +2554,7 @@ void C_GUI::call(char *file){
         focus_control=focus_stump->get_control(focus_stump->default_focus_control);
     }
 }
+
 void C_GUI::call_file(char *file){
     FILE *fp;
     char fin[1024];
@@ -2532,30 +2569,63 @@ void C_GUI::call_file(char *file){
         fclose(fp);
     }
 }
+
 void C_GUI::cab_call(char *file){
 	pLog->_DebugAdd("   GUI->call(gumps/%s)",file);
 	std::vector <std::string> vs;
-	CxMemFile *hi;
+
+	// CxMemFile *hi;
+
 	if(!pGAF) return;
+
 	GAF_FileBuffer nfb;
+	int nfbindex;
     nfb.fb=0;
     nfb.Size=0;
+    nfbindex=0;
 
-	char fin[1024];
-	memset(fin,0,1024);
-	nfb=pGAF->GetFile((char *)va("gumps/%s",file));
+	char fline[1024];
+	memset(fline,0,1024);
+	int lindex;
+	lindex=0;
 
-    if(nfb.fb) {
-        hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
-        while(hi->GetS(fin,256)){
-            vs=explode("\r",fin);
+	nfb = pGAF->GetFile((LPSTR)va("gumps/%s",file));
+
+    pLog->_DebugAdd(" nfb.Size=%d nfb.fb=%d(address) ",nfb.Size, nfb.fb);
+
+
+    if(nfb.Size) {
+
+        for(nfbindex=0;nfbindex<nfb.Size;nfbindex++) {
+
+            fline[lindex]=nfb.fb[nfbindex];
+
+            if( (nfb.fb[nfbindex]=='\r') ||
+                (nfb.fb[nfbindex]=='\n') ){
+                if(lindex) {
+                    fline[lindex]=0;
+                    lindex=0;
+                    call_do_line(fline);
+                }
+                memset(fline,0,1024);
+            }
+            else {
+                lindex++;
+            }
+        }
+
+        /* hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
+        while(hi->GetS(fin,256)) {
+            vs = explode("\r",fin);
             if(vs.size()) call_do_line((char *)vs[0].c_str());
         }
-        DEL(hi);
+        DEL(hi); */
     }
+    pLog->_DebugAdd("   GUI->call(gumps/%s) end",file);
 }
+
 void C_GUI::bcall(char *file){
-	pLog->_DebugAdd("   GUI->bcall(gumps/%s)",file);
+	pLog->_DebugAdd(" GUI->bcall(gumps/%s)",file);
 	CxMemFile *hi;
 	if(!pGAF) return;
 	GAF_FileBuffer nfb;
@@ -2564,14 +2634,17 @@ void C_GUI::bcall(char *file){
 	hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
 	DEL(hi);
 }
+
 void C_GUI::bstore(char *file){
     pGAF->AddFileFromMem((char *)va("gumps/new_%s",file),
                          (unsigned char *)&first_gui_stump,sizeof(&first_gui_stump));
     pGAF->ExtractFile_ToFile((LPSTR)va("gumps/new_%s",file),(LPSTR)va("gumps/new_%s",(LPSTR)file));
 }
+
 void C_GUI::store(char *stump_name){
     if(get_stump(stump_name)) get_stump(stump_name)->store_stmp();
 }
+
 void C_GUI::store(void){
     C_GSTMP *tstump;
     tstump=first_gui_stump;
@@ -2580,6 +2653,7 @@ void C_GUI::store(void){
         tstump=tstump->next;
     }
 }
+
 void C_GUI::draw(){
     draw_ctrls();
     checkMouseClicks();
@@ -2588,6 +2662,7 @@ void C_GUI::draw(){
     pMouse->draw();
     // TODO: Add MOUSE INPUT MODE
 }
+
 void C_GUI::moveStumpToTop(C_GSTMP *pStump){
     C_GSTMP *pTempStump;
     if(pStump)
@@ -2636,6 +2711,7 @@ void C_GUI::moveStumpToTop(C_GSTMP *pStump){
         }
     }
 }
+
 bool C_GUI::isAStumpMoving(void){
     C_GSTMP *pTempStump;
     pTempStump = first_gui_stump;
@@ -2646,6 +2722,7 @@ bool C_GUI::isAStumpMoving(void){
     }
     return false;
 }
+
 void C_GUI::checkMouseClicks(void){
     int i,j,k,x,y,w,h;
     C_GSTMP *tstump=0;
@@ -2773,6 +2850,7 @@ void C_GUI::checkMouseClicks(void){
         tstump=tstump->prev;
     }
 }
+
 void C_GUI::draw_ctrls(void) {
     C_GSTMP          *tstump=0;
     C_GSTMP          *bstump=0;
@@ -2872,11 +2950,13 @@ void C_GUI::draw_ctrls(void) {
     if(focus_control) focus_control->draw(bMouseWheelUp,bMouseWheelDown);
     del_stumps();
 }
+
 void C_GUI::set_focus_stump(C_GSTMP *stump){
     if(stump){
         focus_stump=stump;
     }
 }
+
 void C_GUI::set_focus_control(C_GCTRL *ctrl){
     if(ctrl)
     {
@@ -2884,6 +2964,7 @@ void C_GUI::set_focus_control(C_GCTRL *ctrl){
         set_focus_stump(ctrl->parent_stump);
     }
 }
+
 void C_GUI::drawToolTip(void){
     if(bDrawToolTip){
         pGFX->DrawRect(rectToolTip.left-1,rectToolTip.top-1,rectToolTip.right+1,rectToolTip.bottom+1,RGB(0,0,0));
@@ -2893,19 +2974,23 @@ void C_GUI::drawToolTip(void){
     bDrawToolTip=false;
     bResetToolTip=false;
 }
+
 char*C_GUI::getdata(char *ctrlname){
     if(!last_control_clicked) return("null");
     return (char *)last_control_clicked->parent_stump->data[ctrlname].c_str();
 }
+
 void C_GUI::getdata(char * pString, char *ctrlname){
     // hash this shit into a table then be able to call it like $name
     strcpy(pString,getdata(ctrlname));
 }
+
 void C_GUI::setdata(char *stump, char *ctrl, char *value){
     if(get_stump(stump))
         if(get_stump(stump)->get_control(ctrl))
             get_stump(stump)->get_control(ctrl)->set_value(value);
 }
+
 void C_GUI::edit_stump(char *file){
     char temp[1024];
     map <string, int>::iterator ii;
@@ -2945,12 +3030,14 @@ void C_GUI::edit_stump(char *file){
         }
     }
 }
+
 void C_GUI::remove_control(char *stump,char *control){
     C_GSTMP *pstump;
     pstump=get_stump(stump);
     if(!pstump) return;
     pstump->del_control(control);
 }
+
 void C_GUI::drawB9utton(int x,int y, int w, int h){
 	int i,row,col;
 	int cx,cy;
@@ -2977,6 +3064,7 @@ void C_GUI::drawB9utton(int x,int y, int w, int h){
 		if(col>2) { col=0; row++; }
 	}
 }
+
 void C_GUI::drawGUIButton(int x, int y, int which, int size){
     // draw a button at x,y in updown state
     if(!ButtonTexture) return;
@@ -2990,11 +3078,12 @@ void C_GUI::drawGUIButton(int x, int y, int which, int size){
 		ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }
-
     ButtonTexture[which].texture->Draw(x,y,x+size,y+size,255,255,255);
 }
+
 void C_GUI::drawGUIResource(int w,int x,int y,int x2,int y2){
     drawGUIResourceC(w,x,y,x2,y2,255,255,255);}
+
 void C_GUI::drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,u_char r, u_char g, u_char b){
     // draw a GUI resource at x,y
     if(!ButtonTexture) return;
@@ -3010,6 +3099,7 @@ void C_GUI::drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,u_char r, u
     }
     ButtonTexture[which].texture->Draw(iX,iY,iX2,iY2,r,g,b);
 }
+
 void C_GUI::drawOSIcon(int iX,int iY,char *szOS){
     switch(szOS[0]){
         case 'W': //win32
@@ -3026,10 +3116,12 @@ void C_GUI::drawOSIcon(int iX,int iY,char *szOS){
             break;
     }
 }
+
 void C_GUI::drawButton(int which, int updown, int x, int y){
     // draw a button at x,y in updown state
     drawButton(which,updown,x,y,16,16);
 }
+
 void C_GUI::drawButton(int which, int updown, int x, int y,int w, int h){
     if(!ButtonTexture) return;
     if(!ButtonTexture[which].texture){
@@ -3044,6 +3136,7 @@ void C_GUI::drawButton(int which, int updown, int x, int y,int w, int h){
     }
     ButtonTexture[which].texture->Draw(x,y,x+w,y+h,255,255,255);
 }
+
 int  C_GUI::drawSlicedGUIButton(C_GCTRL *gui_control,int x,int y){
     // draw a button at x,y in updown state
     int j=0;
@@ -3065,6 +3158,7 @@ int  C_GUI::drawSlicedGUIButton(C_GCTRL *gui_control,int x,int y){
     }
     return false;
 }
+
 int  C_GUI::drawBaseGFXGUIButton(C_GCTRL *gui_control,int x,int y){
     int j=0;
     pGFX->DrawBaseGFX(x,y,gui_control->rect.right+x, gui_control->rect.bottom+y,atoi(gui_control->media),255,255,255 );
@@ -3074,16 +3168,19 @@ int  C_GUI::drawBaseGFXGUIButton(C_GCTRL *gui_control,int x,int y){
     }
     return false;
 }
+
 void C_GUI::prompt(char *szPrompt, char *szCommand){
     // ProcessConsoleCommand("play prompt.wav",0);
     strcpy(szPromptMsg,szPrompt);
     strcpy(szCommand,szCommand);
     bClosePrompt=false;
 }
+
 void C_GUI::drawCPUSTRING(int iX, int iY){
     drawOSIcon(iX,iY,CPUSTRING);
     gPrint(iX+10,iY,va("^+^1(^5%s^1)",CPUSTRING),0);
 }
+
 void C_GUI::drawPrompt(void){
     if(bClosePrompt==true) { memset(szPromptMsg,0,1024); del_stump("prompt.gui"); return; }
     if(get_stump("prompt.gui")) { focus_stump=get_stump("prompt.gui"); return; }
@@ -3091,10 +3188,12 @@ void C_GUI::drawPrompt(void){
     call("prompt.gui");
     setdata("prompt.gui","message",szPromptMsg);
 }
+
 bool C_GUI::bIsPrompt(void){
     if(strlen(szPromptMsg)) return true;
     return false;
 }
+
 bool C_GUI::flashCursor(int xi, int yi) {
     static bool bCursor; // Get cursor time
     static unsigned long dwCursorTime=dlcs_get_tickcount();
@@ -3105,6 +3204,7 @@ bool C_GUI::flashCursor(int xi, int yi) {
     }
     return bCursor;
 }
+
 bool C_GUI::initButtons(){
 	int i;
 	B9utton=new CGLTextureList[9];
@@ -3117,11 +3217,13 @@ bool C_GUI::initButtons(){
 		B9utton[i].texture=0;
 	return true;
 }
+
 bool C_GUI::loadButtons(char *szFilename){
 	destroyButtons();
 	if(!initButtons()) return false;
 	return true;
 }
+
 bool C_GUI::destroyButtons(){
 	int i;
 	for(i=0;i<9;i++)
@@ -3134,6 +3236,7 @@ bool C_GUI::destroyButtons(){
 	ButtonTexture=0;
 	return true;
 }
+
 bool C_GUI::initFonts(){
     pLog->_DebugAdd("Begin Fonts init...");
     font=0;
@@ -3144,6 +3247,7 @@ bool C_GUI::initFonts(){
     pLog->_DebugAdd("Fonts initialized...");
     return 1;
 }
+
 bool C_GUI::loadFonts(void){
     pLog->_DebugAdd("Begin Fonts load...");
     destroyFonts();
@@ -3180,7 +3284,9 @@ bool C_GUI::destroyFonts(void){
     pLog->_DebugAdd("Fonts destroyed...");
     return true;
 }
-void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt){ gPrint(iX,iY,szText,fnt,1);}
+
+void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt) { gPrint(iX,iY,szText,fnt,1); }
+
 void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt, int set){ //void gPrintPct(float fX, float fY, char *szText,int fnt)
     if(fnt<0) return;
 	if(fnt>MAX_FONTS) return;
@@ -3192,6 +3298,7 @@ void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt, int set){ //void gP
 	}
 	font[fnt].ob->Print(iX-8.5,iY,szText,set);
 }
+
 void C_GUI::drawFPS(int iX,int iY) {
     static unsigned long   FPS;
     static unsigned long   LastShowFPS;
@@ -3208,9 +3315,10 @@ void C_GUI::drawFPS(int iX,int iY) {
     }
     gPrint(iX,iY,va("^5FPS ^1[^+^5%d^1^+]",FPS),5);
 }
+
 void C_GUI::drawFileXferStatus(void){
     // draw download stats at bottom of screen
-/*  if(!pPlayer) return;
+    /*  if(!pPlayer) return;
     if(!pPlayer->DownloadInfo.bIsDownloading) return;
     gPrint(10,310,va("Recieving file[%s]",pPlayer->DownloadInfo.szLocalXferName),LONGRGB(0,255,0));
     gPrint(10,320,va("File size[%d] u_chars",pPlayer->DownloadInfo.iFileSize),LONGRGB(0,255,0));
@@ -3218,39 +3326,30 @@ void C_GUI::drawFileXferStatus(void){
     // gPrint(10,340,va("Transfer Rate :%d u_chars per second",pPlayer->iBytesPerSecond),LONGRGB(0,255,0));
     drawStatBar(10,345,150,(int)pPlayer->DownloadInfo.iTotalBytesRead,(int)pPlayer->DownloadInfo.iFileSize);*/
 }
+
 int  C_GUI::doInput(){
     return processKeyboard();
 }
+
 int  C_GUI::processKeyboard(){
     char temp[1024];memset(temp,0,1024);
-
     SDL_Event event;
     SDLMod modstate;
-
     bool bDone=0;
-
     SDLKey ikey;
-
     unsigned __int8 *keystate;
-
-    /* Check for events */
-
     pMouse->Refresh();
 
-    while ( SDL_PollEvent (&event) )
-    {
-        switch (event.type)
-        {
+    while ( SDL_PollEvent (&event) ){
+        switch (event.type){
             case SDL_MOUSEBUTTONDOWN:
                 pMouse->SetWheelUp(0);
                 pMouse->SetWheelDown(0);
-                if(event.button.button==SDL_BUTTON_WHEELUP)
-                {
+                if(event.button.button==SDL_BUTTON_WHEELUP){
                     pMouse->SetWheelUp(1);
                 }
                 pMouse->SetWheelDown(0);
-                if(event.button.button==SDL_BUTTON_WHEELDOWN)
-                {
+                if(event.button.button==SDL_BUTTON_WHEELDOWN){
                     pMouse->SetWheelDown(1);
                 }
                 break;
@@ -3266,10 +3365,8 @@ int  C_GUI::processKeyboard(){
                     (modstate & KMOD_SHIFT) )
                     ikey=(SDLKey)(ikey-32);
 
-                if(modstate & KMOD_SHIFT)
-                {
-                    switch(ikey)
-                    {
+                if(modstate & KMOD_SHIFT) {
+                    switch(ikey) {
                     case '1':
                         ikey=(SDLKey)'!';
                         break;
@@ -3335,10 +3432,8 @@ int  C_GUI::processKeyboard(){
 
                 KeyDown[(SDLKey)ikey]=false;
 
-                if(!focus_control)
-                {
-                    switch(ikey)
-                    {
+                if(!focus_control) {
+                    switch(ikey) {
                         case SDLK_F5:
 
                             break;
@@ -3377,10 +3472,8 @@ int  C_GUI::processKeyboard(){
                     (modstate & KMOD_SHIFT) )
                     ikey=(SDLKey)(ikey-32);
 
-                if(modstate & KMOD_SHIFT)
-                {
-                    switch(ikey)
-                    {
+                if(modstate & KMOD_SHIFT) {
+                    switch(ikey) {
                     case '1':
                         ikey=(SDLKey)'!';
                         break;
@@ -3444,10 +3537,8 @@ int  C_GUI::processKeyboard(){
                     }
                 }
 
-                if(modstate & KMOD_ALT)
-                {
-                    if(keystate[SDLK_RETURN])
-                    {
+                if(modstate & KMOD_ALT) {
+                    if(keystate[SDLK_RETURN]) {
                         pGFX->ToggleFullScreen();
                         break;
                     }
@@ -3456,28 +3547,22 @@ int  C_GUI::processKeyboard(){
                 KeyDown[(SDLKey)ikey]=true;
                 KeyRepeatTimer=0;
 
-                if(focus_control)
-                {
+                if(focus_control) {
                     if( (focus_control->type==FM_GC_TEXTBOX) ||
-                        (focus_control->type==FM_GC_PASSWORD) )
-                    {
+                        (focus_control->type==FM_GC_PASSWORD) ) {
 
-                        if((ikey=='u') && (modstate & KMOD_CTRL))
-                        {
+                        if((ikey=='u') && (modstate & KMOD_CTRL)) {
 
                             focus_control->set_value("");
                             return 0;
                         }
 
-                        switch(ikey)
-                        {
+                        switch(ikey) {
                         case '\t':
-                            if(modstate & KMOD_SHIFT)
-                            {
+                            if(modstate & KMOD_SHIFT) {
                                 focus_control=focus_control->prev;
                             }
-                            else
-                            {
+                            else {
                                 focus_control=focus_control->next;
                             }
                             break;
@@ -3489,42 +3574,28 @@ int  C_GUI::processKeyboard(){
 
                         case 13:
 
-                            if(focus_control->parent_control)
-                            {
-                                if(focus_control->parent_control->type==FM_GC_CONSOLE)
-                                {
-
+                            if(focus_control->parent_control) {
+                                if(focus_control->parent_control->type==FM_GC_CONSOLE) {
                                     //_consExecute(focus_control->get_value());
-                                    //
                                     //pLog->_DebugAdd("[%s]",temp);
                                     strcpy(temp,focus_control->get_value());
                                     pCons->_Execute(temp);
-
-
                                     focus_control->set_value("");
-
                                     break;
                                 }
                             }
-
                             focus_control=focus_control->next;
-
                             break;
 
-
-
                         default:
-
                             break;
                         }
                     }
                 }
 
 
-                    if(!focus_control)
-                    {
-                        switch(ikey)
-                        {
+                if(!focus_control){
+                    switch(ikey) {
                         case SDLK_UP:
                             pGFX->pCamera->Move_Forward_Start();
                             break;
@@ -3556,8 +3627,7 @@ int  C_GUI::processKeyboard(){
         }
     }
 
-    if(pMouse->bRightDown)
-    {
+    if(pMouse->bRightDown) {
         pGFX->pCamera->mouseMovement(pMouse->ix,pMouse->iy);
         /*
         //pGFX->pCamera->Move_Forward_Start();
@@ -3581,28 +3651,18 @@ int  C_GUI::processKeyboard(){
         pGFX->pCamera->lastx=pMouse->ix;
         pGFX->pCamera->lasty=pMouse->iy;
         */
-
     }
-    else
-    {
+    else {
         //pGFX->pCamera->Move_Forward_Stop();
     }
-
-
-    if((dlcs_get_tickcount()-KeyRepeatTimer)>600)
-    {
+    if((dlcs_get_tickcount()-KeyRepeatTimer)>600) {
         KeyRepeatTimer=dlcs_get_tickcount();
-
-        for(int tkey=0;tkey<255;tkey++)
-        {
-            if(KeyDown[(SDLKey)tkey]==true)
-            {
-                switch(tkey)
-                {
+        for(int tkey=0;tkey<255;tkey++) {
+            if(KeyDown[(SDLKey)tkey]==true) {
+                switch(tkey) {
                     case 8:
                         focus_control->get_value(temp);
-                        if(strlen(temp))
-                        {
+                        if(strlen(temp)) {
                             temp[strlen(temp)-1]=0;
                             focus_control->set_value(temp);
                         }
@@ -3624,27 +3684,21 @@ int  C_GUI::processKeyboard(){
                     break;
                 }
             }
-         }
+        }
     }
-
     if((event.type) == SDL_KEYUP)
         return ikey;
     return 0;
 }
 bool C_GUI::bSaveBinds(char *szFilename){
-
     FILE *fout;
     int ikey;
     char szTemp[_MAX_PATH];
-
     fout=fopen(szFilename,"wt");
     if(!fout)
         return false;
-
     fputs("## Ember key bindings file.\n",fout);
-
-    for(ikey=0;ikey<SDLK_LAST;ikey++)
-    {
+    for(ikey=0;ikey<SDLK_LAST;ikey++) {
         strcpy(szTemp,"bind ");
         if(ikey == SDLK_ESCAPE) strcat(szTemp,"esc ");
         if(ikey == SDLK_1) strcat(szTemp,"1 ");
@@ -3756,40 +3810,40 @@ bool C_GUI::bSaveBinds(char *szFilename){
         if(ikey == SDLK_LSUPER) strcat(szTemp,"l_windows ");
         if(ikey == SDLK_RSUPER) strcat(szTemp,"r_windows ");
         if(ikey == SDLK_POWER) strcat(szTemp,"power ");
-
-        if(strlen(KeyMap[(SDLKey)ikey]))
-        {
+        if(strlen(KeyMap[(SDLKey)ikey])) {
             strcat(szTemp,KeyMap[(SDLKey)ikey]);
             strcat(szTemp,"\n");
             fputs(szTemp,fout);
             pLog->_DebugAdd("%d %s",ikey,szTemp);
         }
     }
-
     fclose(fout);
     return true;
 }
+
 void C_GUI::drawStatBar(int iX,int iY,int iW, int iT,int iV) {
-// iT is total value, iV is current value, will draw percentage bar
+    // iT is total value, iV is current value, will draw percentage bar
     pGFX->DrawBar(iX-1,iY-1,iX+iW+1,iY+4,LONGRGB(0,0,0),LONGRGB(0,0,0));
     pGFX->DrawBar(iX,iY,iX+iW,iY+3,LONGRGB(0,0,100),LONGRGB(0,0,100));
     float fPercent=( ((float)iV/(float)iT) * iW);
     pGFX->DrawBar(iX,iY,iX+(int)fPercent,iY+3,LONGRGB(0,100,0),LONGRGB(0,100,0));
 }
+
 void C_GUI::drawCStatBar(int iX,int iY,int iW, int iT,int iV,long Color1,long Color2) {
-// iT is total value, iV is current value, will draw percentage bar
+    // iT is total value, iV is current value, will draw percentage bar
     pGFX->DrawBar(iX-1,iY-1,iX+iW+1,iY+4,LONGRGB(0,0,0),LONGRGB(0,0,0));
     pGFX->DrawBar(iX,iY,iX+iW,iY+3,LONGRGB(0,0,100),LONGRGB(0,0,100));
     float fPercent=( ((float)iV/(float)iT) * iW);
     pGFX->DrawBar(iX,iY,iX+(int)fPercent,iY+3,Color1,Color2);
 }
+
 void C_GUI::clearKeys(void){ KeyMap.clear();}
+
 /* void C_GUI::_consExecute(char *cmd){
     char temp[1024]; memset(temp,0,1024);
     strcpy(temp,cmd);
     pCons->_Execute(temp);
 }*/
-
 
 void C_GUI::addChat(int channel, char * user,  char * msg){
     C_GCTRL *c;

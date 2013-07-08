@@ -26,6 +26,8 @@ extern "C"
 {
 #endif
 
+    bool    sp_istrue(char *text);
+
     vector  <string> Dir2Vector(char *szDir, char *szWildCard);
 	bool	Dir2File(char *szDir,char *szFile,char *szWildCard);
 
@@ -44,6 +46,9 @@ extern "C"
 
     char   *getos(char *x);
 	char   *dlcs_get_os_version(char *x);
+
+
+    bool    sp_isdir(char *dir);
 
 	int     sp_mkdir(char *szdir);
 	int     dlcs_mkdir(char *szDirectoryName);

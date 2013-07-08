@@ -384,8 +384,7 @@ C_GFX::~C_GFX()
 
 /****************************************************************************************************/
 
-bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF)
-{
+bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
 #ifdef __linux__
 	putenv("SDL_VIDEODRIVER=dga");
 #endif
@@ -463,8 +462,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
 /****************************************************************************************************/
 
-void C_GFX::SetWindowTitle(char *fmt, ...)
-{
+void C_GFX::SetWindowTitle(char *fmt, ...) {
     char ach[512]; va_list va; va_start( va, fmt ); vsprintf( ach, fmt, va ); va_end( va );
     strcpy(WindowCaption, ach);
     SDL_WM_SetCaption(WindowCaption,0);
@@ -472,8 +470,7 @@ void C_GFX::SetWindowTitle(char *fmt, ...)
 
 /****************************************************************************************************/
 
-void C_GFX::ToggleFullScreen(void)
-{
+void C_GFX::ToggleFullScreen(void){
     // SDL_WM_ToggleFullScreen(pScreen);
     /*
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
@@ -482,14 +479,12 @@ void C_GFX::ToggleFullScreen(void)
 	if(bFullScreen==true) bFullScreen=false;
 	else bFullScreen=true;
 	pScreen = SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
-	InitGL();
-	*/
+	InitGL();	*/
 }
 
 /****************************************************************************************************/
 
-void C_GFX::ShutDownGFX(void)
-{
+void C_GFX::ShutDownGFX(void) {
     pLog->_DebugAdd("Shutting down SDL/OpenGL GFX subsystem...");
 
     DEL(pCamera);
@@ -509,8 +504,7 @@ void C_GFX::ShutDownGFX(void)
 
 /****************************************************************************************************/
 
-int C_GFX::InitGL() // All Setup For OpenGL Goes Here
-{
+int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glViewport(0, 0, SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h);
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
@@ -521,34 +515,28 @@ int C_GFX::InitGL() // All Setup For OpenGL Goes Here
 }
 
 /****************************************************************************************************/
-void C_GFX::EndScene(void)
-{
+void C_GFX::EndScene(void){
     FlipSurfaces();
 }
 
-void C_GFX::FlipSurfaces(void)
-{
+void C_GFX::FlipSurfaces(void){
 	glFlush();
 	SDL_GL_SwapBuffers();
 }
 
 /****************************************************************************************************/
 
-void C_GFX::BeginScene(void)
-{
+void C_GFX::BeginScene(void) {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    if(pCamera)
-    {
+    if(pCamera) {
         pCamera->Move_Left();
         pCamera->Move_Right();
         pCamera->Move_Forward();
         pCamera->Move_Backward();
     }
-
-
 /*
     static stra star[500];
     static bool bstars;
@@ -662,28 +650,24 @@ void C_GFX::BeginScene(void)
 
 /****************************************************************************************************/
 
-void C_GFX::SetScreenRes(int x,int y,int cl, bool fs)
-{
+void C_GFX::SetScreenRes(int x,int y,int cl, bool fs){
 	//ShutDownGFX();
  	//InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
 }
 
 /****************************************************************************************************/ // BASE GFX
 
-bool C_GFX::InitBaseGFX()
-{
+bool C_GFX::InitBaseGFX() {
     // BaseTexture=0;
 	BaseTexture=new CGLTextureList[MAX_BASE_GFX];
-	if(!BaseTexture)
-	{
-		pLog->_DebugAdd("BaseTexture initialization failure...");
+	if(!BaseTexture) {
+		pLog->_Add("BaseTexture initialization failure...");
 		return false;
 	}
-    for(int i=0;i<MAX_BASE_GFX;i++)
-    {
+    for(int i=0;i<MAX_BASE_GFX;i++) {
 		BaseTexture[i].texture=0;
     }
-    pLog->_DebugAdd("BaseGFX initialized...");
+    pLog->_Add("BaseGFX initialized...");
 	return 1;
 }
 

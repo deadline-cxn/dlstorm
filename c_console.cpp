@@ -223,8 +223,7 @@ const char * C_CONS::get_cvartype_string(int t){
 int C_CONS::get_cvartype(const char * s){
     vector <string> vt;
     vt=explode("_",s);
-    if(vt.size()>1)
-    {
+    if(vt.size()>1) {
         if(dscc(vt[0].c_str(),"b"))  return CVAR_BOOL;
         if(dscc(vt[0].c_str(),"s"))  return CVAR_STRING;
         if(dscc(vt[0].c_str(),"c"))  return CVAR_CHAR;

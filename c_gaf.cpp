@@ -1,7 +1,7 @@
 /* Seth's Game Archive File Class */
 
 #include "c_gaf.h"
-
+/*
 CGAF::CDirScanner::CDirScanner(){
 	Handle=INVALID_HANDLE_VALUE;
 }
@@ -34,13 +34,13 @@ bool CGAF::CDirScanner::Error(){
 	if(Handle==INVALID_HANDLE_VALUE)return true;
 	return false;
 }
+*/
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 #define BUFFERSIZE (1024*1024)
-
 DWORD GAF_VERSION=0x120101c5;
 
 CGAF::CGAF() {
@@ -51,8 +51,11 @@ CGAF::CGAF() {
 	MaxElements=1;
 	Elements=(GAFFile_ElmHeader*)malloc(sizeof(GAFFile_ElmHeader)*MaxElements);
     SetFileDescription("[GAF Game Archive File]");
-    //CabLog=new CLog("gaf.log");
-    //CabLog->AddEntry("GAF constructed");
+
+    CabLog=new CLog();
+    CabLog->SetName("gaf.log");
+    CabLog->LineFeedsOn();
+    CabLog->AddEntry("===========================================================================GAF constructed\n");
 }
 
 CGAF::CGAF(char *file,int comp) {
@@ -67,6 +70,7 @@ CGAF::CGAF(char *file,int comp) {
 }
 
 CGAF::~CGAF() {
+    DEL(CabLog);
 	free(Elements);
 	Close();
 }
@@ -557,6 +561,7 @@ bool CGAF::Move(LPSTR Name, LPSTR Destination) {
 	}else return false;
 }
 
+/*
 bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs) {
     CDirScanner DirScanner;
 	DirScanner.Start(indir);
@@ -573,6 +578,45 @@ bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs) {
 	}
     return true;
 }
+*/
+bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs){
+    CabLog->AddEntry(va("Adding Directory Files:%s",indir));
+    char folder[1024]; memset(folder,0,1024);
+    DIR *dpdf;
+    struct dirent *epdf;
+    dpdf = opendir(indir);
+    if (dpdf != NULL){
+       while (epdf = readdir(dpdf)){
+            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
+                (dlcs_strcasecmp(epdf->d_name,"..")) ) {
+            }
+            else {
+                CabLog->AddEntry(va("Filename: %s",epdf->d_name));
+                if(sp_isdir(epdf->d_name)) {
+                    if(SubDirs) {
+                        if(!CreateDir(va("%s/%s",indir,epdf->d_name))) {
+                            CabLog->AddEntry(va("Can't create dir: %s",epdf->d_name));
+                            //return false;
+                        }
+                        if(!AddDirEx(va("%s/%s",indir,epdf->d_name),epdf->d_name,SubDirs)) {
+                            CabLog->AddEntry(va("Can't add dir: %s",epdf->d_name));
+                            //return false;
+                        }
+                    }
+                }
+                else {
+                    if(!AddFile(va("%s/%s",indir,epdf->d_name),epdf->d_name)) {
+                            CabLog->AddEntry(va("a Can't add file: %s",epdf->d_name));
+                            //return false;
+                    }
+                }
+            }
+        }
+    }
+    closedir(dpdf);
+    return true;
+}
+
 
 bool CGAF::AddDir(LPSTR Name) {
 	return AddDir("",Name,1);
@@ -592,7 +636,7 @@ bool CGAF::AddDir(LPSTR Dest, LPSTR dirname, bool SubDirs) {
 	if(!CreateDir(DirName))return false;
 	return AddDirEx(DirName,dirname,SubDirs);
 }
-
+/*
 bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs) {
 	char IndexName[GAF_NAMESIZE];
 	char FileName[GAF_NAMESIZE];
@@ -624,7 +668,65 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs) {
 	}
 	return true;
 }
+*/
 
+bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs){
+	char IndexName[GAF_NAMESIZE];
+	char FileName[GAF_NAMESIZE];
+	char DirName[GAF_NAMESIZE];
+	strcpy(DirName,dirname);
+	if(strlen(DirName)>0&&!CheckSlash(DirName[strlen(DirName)-1]))strcat(DirName,"\\");
+	if(Dest!=NULL&&Dest[0]==0)Dest=NULL;
+
+    DIR *dpdf;
+    struct dirent *epdf;
+    dpdf = opendir(dirname);
+    if (dpdf != NULL){
+       while (epdf = readdir(dpdf)){
+            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
+                (dlcs_strcasecmp(epdf->d_name,"..")) ) {
+            }
+            else {
+                // CabLog->AddEntry(va("Filename: %s",epdf->d_name));
+                if(Dest!=NULL) {
+                    strcpy(IndexName,Dest);
+                    strcat(IndexName,"/");
+                }
+                else {
+                    IndexName[0]=0;
+                }
+                strcat(IndexName,epdf->d_name);
+                if(sp_isdir(epdf->d_name)) {
+                    if(SubDirs) {
+                        if(!CreateDir(IndexName)) {
+                            CabLog->AddEntry("Can't create dir [%s] in GAF",IndexName);
+                            return false;
+                        }
+                        strcpy(FileName,DirName);
+                        strcat(FileName,epdf->d_name);
+                        if(!AddDirEx(IndexName,FileName,true)){
+                            CabLog->AddEntry("Can't add dir [%s] in GAF",IndexName);
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    strcpy(FileName,DirName);
+                    strcat(FileName,epdf->d_name);
+                    CabLog->AddEntry(va("Adding File:%s",IndexName));
+                    if(!AddFile(IndexName,FileName)){
+
+                        CabLog->AddEntry(va("ERROR Adding File:%s (%s)",IndexName,FileName));
+
+                            //return false;
+                    }
+                }
+            }
+        }
+    }
+    closedir(dpdf);
+	return true;
+}
 int CGAF::GetFileSize(LPSTR Name) {
 	int nf=FindFile(Name);
 	if(nf<0)return -1;

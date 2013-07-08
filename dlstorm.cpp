@@ -26,27 +26,35 @@ vector <string> explode(const string &delimiter, const string &str){
 		return arr;
 	int i=0;
 	int k=0;
-	while(i<strleng)
-	{
+	while(i<strleng) {
 		int j=0;
 		while(i+j<strleng && j<delleng && str[i+j]==delimiter[j])
 			j++;
-		if(j==delleng)
-		{
+		if(j==delleng) {
 			arr.push_back( str.substr(k,i-k) );
 			i+=delleng;
 			k=i;
 		}
-		else
-		{
+		else {
 			i++;
 		}
-
 	}
 	arr.push_back( str.substr(k,i-k) );
 	return arr;
 
 }
+
+
+bool sp_istrue(char *text) {
+    if( (dlcs_strcasecmp(text,"on")) ||
+        (dlcs_strcasecmp(text,"1")) ||
+        (dlcs_strcasecmp(text,"true")) ||
+        (dlcs_strcasecmp(text,"yes"))
+        )
+        return true;
+    return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 vector <string> Dir2Vector(char *szDir, char *szWildCard){
     //FILE *fp;
@@ -63,28 +71,22 @@ vector <string> Dir2Vector(char *szDir, char *szWildCard){
 	//fp=fopen(szFile,"wt");
 	//if(!fp) return false;
 
-    while(GetLastError() != ERROR_NO_MORE_FILES)
-    {
-        if(!strcmp(FileData.cFileName,"."))
-        {
+    while(GetLastError() != ERROR_NO_MORE_FILES) {
+        if(!strcmp(FileData.cFileName,".")) {
+            FindNextFile(dirsearch, &FileData);
+            continue;
+        }
+        if(!strcmp(FileData.cFileName,"..")) {
             FindNextFile(dirsearch, &FileData);
             continue;
         }
 
-        if(!strcmp(FileData.cFileName,".."))
-        {
+        if(!strcmp(FileData.cFileName,".")) {
             FindNextFile(dirsearch, &FileData);
             continue;
         }
 
-        if(!strcmp(FileData.cFileName,"."))
-        {
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-
-        if(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-        {
+        if(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             diro.push_back( va("<DIR> %s",FileData.cFileName) );
             //fputs("<DIR>.",fp);
 			//fputs(FileData.cFileName,fp);
@@ -351,6 +353,15 @@ int dlcs_strcasecmp(const char *szOne,const char *szTwo){
     return rval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool sp_isdir(char *dir) {
+    struct stat st;
+    if(stat(dir,&st) == 0)
+        if(st.st_mode & S_IFDIR != 0)
+            return true;
+    return false;
+}
+
 int sp_mkdir(char *szDirectoryName) { return dlcs_mkdir(szDirectoryName); }
 int dlcs_mkdir(char *szDirectoryName){
     int returnval=0;

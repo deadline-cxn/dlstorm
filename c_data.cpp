@@ -24,6 +24,23 @@ CFM_Profile::CFM_Profile() {
 CFM_Profile::~CFM_Profile() { }
 /***************************************************************/
 CC_Data::CC_Data() {
+    pLog=new CLog("cdata.log");
+    bCreatedLog=true;
+    Initialize();
+}
+CC_Data::CC_Data(CLog *pInLog) {
+    bCreatedLog=false;
+    pLog=pInLog;
+    Initialize();
+}
+
+/***************************************************************/
+CC_Data::~CC_Data() {
+    CleanUp();
+    if(bCreatedLog) DEL(pLog);
+}
+
+void CC_Data::Initialize(void) {
     //Log("Creating Client Data...");
 	x=0;
 	y=0;
@@ -50,10 +67,8 @@ CC_Data::CC_Data() {
     strcpy(szServerVersion,"Unknown");
 	SetToDefaults();
 	//Log("Client Data Created");
+	bLoad();
 }
-
-/***************************************************************/
-CC_Data::~CC_Data() { CleanUp(); }
 /***************************************************************/
 void CC_Data::CleanUp(void) {
     //DLog("Cleaning up data...");
@@ -67,6 +82,7 @@ void CC_Data::CleanUp(void) {
     //DEL(ServerInfo);
     ClearFavoriteServers();
     ClearProfiles();
+
 }
 
 /***************************************************************/
@@ -87,8 +103,8 @@ void CC_Data::SetToDefaults(void) {
 	strcpy(ServerName,"Ember Server");
     strcpy(ServerID,"standard"); // default
     strcpy(szServerVersion,"1");
-//    strcpy(IPAddress,NET_DEFAULT_EGS_IP);
-//	strcpy(Port,va("%d",NET_DEFAULT_EGS_PORT));
+    //    strcpy(IPAddress,NET_DEFAULT_EGS_IP);
+    //	strcpy(Port,va("%d",NET_DEFAULT_EGS_PORT));
     //strcpy(MasterIPAddress,NET_DEFAULT_EMS_IP);
     //strcpy(MasterPort,va("%d",NET_DEFAULT_EMS_PORT));
 	bLog=true;
@@ -107,48 +123,46 @@ void CC_Data::SetToDefaults(void) {
 	CharacterSlots=8;
     SelectedCharacterSlot=0;
     currentsample=0;
-//    strcpy(LastDirectory,"");
+    //    strcpy(LastDirectory,"");
 
 
 	strcpy(ServerAuthor,"");
 
 	ClearFavoriteServers();
-//	ClearCharacters();
+    //	ClearCharacters();
 	ServerListOffset=0;
 	ServerCharacterListOffset=0;
 	// ID=0;
 	memset(session_id,0,64);
 	Access=0;
 	strcpy(szAccessName,"");
-//	strcpy(PlayMouseLB,"");
-//    dwKeyPressTimer=dlcs_get_tickcount();
+    //	strcpy(PlayMouseLB,"");
+    //    dwKeyPressTimer=dlcs_get_tickcount();
 
     bDrawMapObjects=true;
     bDrawMap=true;
     bBlockGlow=true;
     bVertice=0;
     ClearProfiles();
-    bFullScreen=false;
+    bFullScreen=true;
 
-    ScreenWidth = 1024;// SCREEN_WIDTH;
+    ScreenWidth = 1366;// SCREEN_WIDTH;
     ScreenHeight= 768; //SCREEN_HEIGHT;
-    ScreenColors= 16; //SCREEN_COLORS;
+    ScreenColors= 24; //SCREEN_COLORS;
 
 }
 
 /***************************************************************/
 
-//void CC_Data::ClearCharacters(void)
-//{
+//void CC_Data::ClearCharacters(void){
 //    int i;
- ///   for(i=0;i<MAX_TOONS;i++)
+ //   for(i=0;i<MAX_TOONS;i++)
 //        memset(ServerCharacter[i].t_name,0,32);
 //}
 
 /***************************************************************/
 
-void CC_Data::ClearFavoriteServers(void)
-{
+void CC_Data::ClearFavoriteServers(void){
  //   ServerData *DelMe;
 //    FavoriteServer=FirstFavoriteServer;
 //    while(FavoriteServer)
@@ -162,12 +176,10 @@ void CC_Data::ClearFavoriteServers(void)
 
 /***************************************************************/
 
-void CC_Data::ClearProfiles(void)
-{
+void CC_Data::ClearProfiles(void) {
     CFM_Profile *DelMe;
     Profile=FirstProfile;
-    while(Profile)
-    {
+    while(Profile) {
         DelMe=Profile;
         Profile=Profile->pNext;
         DEL(DelMe);
@@ -177,249 +189,146 @@ void CC_Data::ClearProfiles(void)
 
 /***************************************************************/
 
-bool CC_Data::bLoad(void)
-{
+bool CC_Data::bLoad(void) {
 	SetToDefaults();
 
 	FILE *fp;
 	char In[256];
-	char *Entry;
     float f;
+    vector <string> lin;
 
-	fp=fopen("client.ini","r");
+	fp=fopen("client.ini","rt");
+
 	if(!fp)
-		return false;
-	while(1)
-	{
+        return false;
+
+	while(1) {
 		if(!fgets(In,255,fp)) break;
+		lin = explode("=",In);
+        if(lin.size()>1) {
 
-		Entry = strtok(In,"=,[];");
+        pLog->_Add("%s",lin[0].c_str());
+        pLog->_Add("%s",lin[1].c_str());
 
-		if(dlcs_strcasecmp(Entry,"name"))
-		{
-			Entry=strtok(NULL,"\n");
-			if( Entry != NULL )
-				strcpy(Name,Entry);
-			else
-				strcpy(Name,"Your Name");
+		if(dlcs_strcasecmp(lin[0].c_str(),"name")) {
+			strcpy(Name,lin[1].c_str());
+            pLog->_Add(" Name [%s]",Name);
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"password"))
-		{
-			Entry=strtok(NULL,"\n");
-			if(Entry)
-				strcpy(Password,Entry);
+		if(dlcs_strcasecmp(lin[0].c_str(),"password")) {
+			strcpy(Password,lin[1].c_str());
 			continue;
 
 		}
 
-		if(dlcs_strcasecmp(Entry,"save password"))
-		{
-			Entry=strtok(NULL,"\n");
-
-			bSavePassword=false;
-			if(Entry)
-			{
-                if( (dlcs_strcasecmp(Entry,"on")) ||
-                    (dlcs_strcasecmp(Entry,"1")) ||
-                    (dlcs_strcasecmp(Entry,"true")) )
-					bSavePassword=true;
-			}
+		if(dlcs_strcasecmp(lin[0].c_str(),"save password")) {
+            bSavePassword=sp_istrue(lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"last server"))
-		{
-			Entry=strtok(NULL,"\n");
-			if(Entry)
-				strcpy(ServerName,Entry);
+		if(dlcs_strcasecmp(lin[0].c_str(),"last server")) {
+			strcpy(ServerName,lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"last server ip"))
-		{
-			Entry=strtok(NULL,"\n");
-			if(Entry)
-				strcpy(IPAddress,Entry);
+		if(dlcs_strcasecmp(lin[0].c_str(),"last server ip")) {
+			strcpy(IPAddress,lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"port"))
-		{
-			Entry=strtok(NULL,"\n");
-			if(Entry)
-				strcpy(Port,Entry);
+		if(dlcs_strcasecmp(lin[0].c_str(),"port")) {
+			strcpy(Port,lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"log"))
-		{
-			Entry=strtok(NULL,"\n");
-			bLog=false;
-			if(Entry)
-                if( (dlcs_strcasecmp(Entry,"on")) ||
-                    (dlcs_strcasecmp(Entry,"1")) ||
-                    (dlcs_strcasecmp(Entry,"true")) )
-					bLog=true;
+		if(dlcs_strcasecmp(lin[0].c_str(),"log")) {
+            bLog=sp_istrue(lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"download"))
-		{
-			Entry=strtok(NULL,"\n");
-			bDownload=false;
-			if(Entry)
-                if( (dlcs_strcasecmp(Entry,"on")) ||
-                    (dlcs_strcasecmp(Entry,"1")) ||
-                    (dlcs_strcasecmp(Entry,"true")) )
-					bDownload=true;
+		if(dlcs_strcasecmp(lin[0].c_str(),"download")) {
+			bDownload=sp_istrue(lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"sound volume"))
-		{
-			Entry=strtok(NULL,"\n");
-			f=0;
-			if(Entry)
-			{
-				f=atof(Entry);
-				if( (f == 0) &&
-					(strcmp(Entry,"0")) )
-					continue;
-				if(f>100)
-					f=100;
-				if(f<0)
-					f=0;
-				fSoundVolume=f;
-			}
+		if(dlcs_strcasecmp(lin[0].c_str(),"sound volume")) {
+            f=atof(lin[1].c_str());
+			if(f>100) f=100;
+            if(f<0)   f=0;
+            fSoundVolume=f;
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"music volume"))
-		{
-			Entry=strtok(NULL,"\n");
-			f=0;
-			if(Entry)
-			{
-				f=atof(Entry);
-				if( (f == 0) &&
-					(strcmp(Entry,"0")) )
-					continue;
-				if(f>100)
-					f=100;
-				if(f<0)
-					f=0;
-				fMusicVolume=f;
-			}
+		if(dlcs_strcasecmp(lin[0].c_str(),"music volume")) {
+			f=atof(lin[1].c_str());
+			if(f>100) f=100;
+            if(f<0)   f=0;
+            fMusicVolume=f;
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"sound"))
-		{
-			Entry=strtok(NULL,"\n");
-			bSound=false;
-			if(Entry)
-                if( (dlcs_strcasecmp(Entry,"on")) ||
-                    (dlcs_strcasecmp(Entry,"1")) ||
-                    (dlcs_strcasecmp(Entry,"true")) )
-					bSound=true;
+		if(dlcs_strcasecmp(lin[0].c_str(),"sound")) {
+			bSound=sp_istrue(lin[1].c_str());
 			continue;
 		}
 
-		if(dlcs_strcasecmp(Entry,"music"))
-		{
-			Entry=strtok(NULL,"\n");
-			bMusic=false;
-			if(Entry)
-                if( (dlcs_strcasecmp(Entry,"on")) ||
-                    (dlcs_strcasecmp(Entry,"1")) ||
-                    (dlcs_strcasecmp(Entry,"true")) )
-					bMusic=true;
+		if(dlcs_strcasecmp(lin[0].c_str(),"music")) {
+            bMusic=sp_istrue(lin[1].c_str());
 			continue;
         }
 
-        if(dlcs_strcasecmp(Entry,"master server"))
-        {
-            Entry=strtok(NULL,"\n");
-            if(Entry)
-            {
-                strcpy(MasterIPAddress,Entry);
-            }
+        if(dlcs_strcasecmp(lin[0].c_str(),"master server")) {
+            strcpy(MasterIPAddress,lin[1].c_str());
+            continue;
         }
 
-        if(dlcs_strcasecmp(Entry,"master server port"))
-        {
-            Entry=strtok(NULL,"\n");
-            if(Entry)
-            {
-                strcpy(MasterPort,Entry);
-            }
+        if(dlcs_strcasecmp(lin[0].c_str(),"master server port")) {
+            strcpy(MasterPort,lin[1].c_str());
+            continue;
         }
 
-        if(dlcs_strcasecmp(Entry,"full screen"))
-		{
-			Entry=strtok(NULL,"\n");
-			bFullScreen=false;
-			if(Entry)
-                if( (dlcs_strcasecmp(Entry,"on")) ||
-                    (dlcs_strcasecmp(Entry,"1")) ||
-                    (dlcs_strcasecmp(Entry,"true")) )
-					bFullScreen=true;
+        if(dlcs_strcasecmp(lin[0].c_str(),"full screen")) {
+            bFullScreen=sp_istrue(lin[1].c_str());
+            pLog->_Add(" bFullScreen [%d]",bFullScreen);
 			continue;
         }
 
-        if(dlcs_strcasecmp(Entry,"screen width"))
-        {
-            Entry=strtok(NULL,"\n");
-            if(Entry)
-            {
-                ScreenWidth=atoi(Entry);
-                continue;
-            }
+        if(dlcs_strcasecmp(lin[0].c_str(),"screen width")) {
+            ScreenWidth=atoi(lin[1].c_str());
+            pLog->_Add(" ScreenWidth [%d]",ScreenWidth);
+            continue;
         }
 
-        if(dlcs_strcasecmp(Entry,"screen height"))
-        {
-            Entry=strtok(NULL,"\n");
-            if(Entry)
-            {
-                ScreenHeight=atoi(Entry);
-                continue;
-            }
+        if(dlcs_strcasecmp(lin[0].c_str(),"screen height")) {
+            ScreenHeight=atoi(lin[1].c_str());
+            pLog->_Add(" ScreenHeight [%d]",ScreenHeight);
+            continue;
         }
 
-        if(dlcs_strcasecmp(Entry,"screen colors"))
-        {
-            Entry=strtok(NULL,"\n");
-            if(Entry)
-            {
-                ScreenColors=atoi(Entry);
-                continue;
-            }
+        if(dlcs_strcasecmp(lin[0].c_str(),"screen colors")) {
+            ScreenColors=atoi(lin[1].c_str());
+            pLog->_Add(" ScreenColors [%d]",ScreenColors);
+            continue;
         }
+	}
 
 	}
+
 	fclose(fp);
 
-
-	if(bSavePassword==false)
-	{
+	if(bSavePassword==false) {
 		memset(Password,0,sizeof(Password));
 		bSave();
 	}
-
-
 	return true;
 }
 
 /***************************************************************/
 
-bool CC_Data::bSave(void)
-{
+bool CC_Data::bSave(void) {
 
 	FILE *fout;
-
 	char Temp[256];
 	char Temp3[_MAX_PATH];
 	char Temp4[_MAX_PATH];

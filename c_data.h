@@ -6,6 +6,7 @@
 #define _SC_DATA_CLASS
 
 #include "dlstorm.h"
+#include "c_log.h"
 
 // Game play modes
 
@@ -30,7 +31,10 @@ public:
 class CC_Data {
 public:
 	CC_Data(void);
+	CC_Data(CLog *pInLog);
 	~CC_Data(void);
+
+	void Initialize(void);
 
 	bool bLoad(void);
 	bool bSave(void);
@@ -126,6 +130,9 @@ public:
     bool            bTargeting;
     long            dwRetroTimer;
     char            cRetroMode;
+
+    bool            bCreatedLog;
+    CLog            *pLog;
 
     int            GAME_MODE;
 
