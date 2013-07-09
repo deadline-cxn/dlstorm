@@ -94,8 +94,7 @@ GLvoid C_MouseCursor::load(char *file)
 
 	char fin[1024];    memset(fin,0,1024);
 	nfb=pGAF->GetFile((LPSTR)va("%s.ini",file));
-	if(nfb.Size>0)
-	{
+	if(nfb.Size>0) {
 		//Log("                    \\--> Point file: %s.ini",file);
 		hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
 		hi->GetS(fin,256);

@@ -1,6 +1,8 @@
 #ifndef B4_GL_TEXTURE
 #define B4_GL_TEXTURE
 
+#include "png.h"
+
 #ifdef _WIN32
 #include <winsock2.h>
 #ifndef _MMEDIA_
@@ -62,7 +64,7 @@ public:
     bool    LoadBMP(char* filename, Image *image);
 
     GLuint  LoadBMP(CGAF *pGAF,const char *filename,bool which);
-    GLuint  LoadPNG(CGAF *pGAF,const char *filename,bool which);
+    GLuint  LoadPNG(const char *filename);
 
     GLuint  Load(const char *filename,bool which);
 

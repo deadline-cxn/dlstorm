@@ -362,8 +362,7 @@ void C_Camera::mouseMovement(int x, int y)
 
 /****************************************************************************************************/
 
-C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF)
-{
+C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF){
     BaseTexture=0;
     Model=0;
     FirstModel=0;
@@ -376,8 +375,7 @@ C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELO
 
 /****************************************************************************************************/
 
-C_GFX::~C_GFX()
-{
+C_GFX::~C_GFX(){
     ShutDownGFX();
     SDL_Quit();
 }
@@ -686,21 +684,22 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
 bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which) {
     pLog->_DebugAdd("Begin Load1BaseGFX...");
     char fname[1024]; memset(fname,0,1024);
-    sprintf(fname,"base/b%04d.bmp",which);
+    sprintf(fname,"base/b%04d.png",which);
 	if(!BaseTexture[which].texture) {
 		BaseTexture[which].texture=new CGLTexture(pLog,pGAF,fname);
-        BaseTexture[which].texture->usemask=false;
-        BaseTexture[which].texture->LoadBMP(pGAF,fname,1);
+        // BaseTexture[which].texture->usemask=false;
+        BaseTexture[which].texture->LoadPNG(fname); // BMP(pGAF,fname,1);
         strcpy(BaseTexture[which].texture->name,va("%d",which));
 		return false;
 	}
+
     if(!BaseTexture[which].texture) {
 		pLog->_DebugAdd("ERROR: texture not valid");
 		return false;
 	}
 
-	BaseTexture[which].texture->usemask=false;
-   	BaseTexture[which].texture->LoadBMP(pGAF,fname,1);
+	// BaseTexture[which].texture->usemask=false;
+   	BaseTexture[which].texture->LoadPNG(fname); //BMP(pGAF,fname,1);
     strcpy(BaseTexture[which].texture->name,va("%d",which));
     pLog->_DebugAdd("Loaded base texture [%d]",which);
     return 1;
@@ -708,8 +707,7 @@ bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which) {
 
 /****************************************************************************************************/
 
-CGLTexture *C_GFX::GetBaseGFX(char *name)
-{
+CGLTexture *C_GFX::GetBaseGFX(char *name) {
     if(!BaseTexture) return false;
     for(int i=0;i<MAX_BASE_GFX;i++)
         if(BaseTexture[i].texture)
@@ -720,8 +718,7 @@ CGLTexture *C_GFX::GetBaseGFX(char *name)
 
 /****************************************************************************************************/
 
-bool C_GFX::DestroyBaseGFX(void)
-{
+bool C_GFX::DestroyBaseGFX(void) {
     pLog->_DebugAdd("Begin BaseTexture destroy...");
 
 	if(!BaseTexture) return 0;
@@ -750,8 +747,7 @@ bool C_GFX::InitModels()
 
 /****************************************************************************************************/
 
-bool C_GFX::LoadModels(void)
-{
+bool C_GFX::LoadModels(void) {
 /*
 	int i=0;
 	pLog->_DebugAdd("C_GFX::LoadModels() Begin Models load...");
