@@ -226,14 +226,14 @@ int CGAF::GetNumSlashes(LPSTR String) {
 	int sl=strlen(String);
 	int NumSlashes=0;
 	for(int n=0;n<sl;n++) {
-		if(CheckSlash(String[n]))NumSlashes++;
+		if(CheckSlash(String[n])) NumSlashes++;
 	}
 	return NumSlashes;
 }
 
 int CGAF::GetUntilSlash(LPSTR Source,char * Dest) {
 	int p=0;
-	do{
+	do {
         Dest[p]=Source[p];
 		p++;
 	}while(!CheckSlash(Source[p])&&Source[p]!=0);
@@ -612,7 +612,7 @@ bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs){
                 }
                 else {
                     if(!AddFile(va("%s/%s",indir,epdf->d_name),epdf->d_name)) {
-                            CabLog->AddEntry(va("a Can't add file: %s",epdf->d_name));
+                            CabLog->AddEntry(va("Can't add file: %s",epdf->d_name));
                             //return false;
                     }
                 }
@@ -677,11 +677,12 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs) {
 */
 
 bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs){
+
 	char IndexName[GAF_NAMESIZE];
 	char FileName[GAF_NAMESIZE];
 	char DirName[GAF_NAMESIZE];
 	strcpy(DirName,dirname);
-	if(strlen(DirName)>0&&!CheckSlash(DirName[strlen(DirName)-1]))strcat(DirName,"\\");
+	if(strlen(DirName)>0&&!CheckSlash(DirName[strlen(DirName)-1]))strcat(DirName,"/");
 	if(Dest!=NULL&&Dest[0]==0)Dest=NULL;
 
     DIR *dpdf;
@@ -701,6 +702,7 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs){
                 else {
                     IndexName[0]=0;
                 }
+
                 strcat(IndexName,epdf->d_name);
                 if(sp_isdir(epdf->d_name)) {
                     if(SubDirs) {
@@ -720,10 +722,8 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs){
                     strcpy(FileName,DirName);
                     strcat(FileName,epdf->d_name);
                     CabLog->AddEntry(va("Adding File:%s",IndexName));
-                    if(!AddFile(IndexName,FileName)){
-
+                    if(!AddFile(IndexName,FileName)) {
                         CabLog->AddEntry(va("ERROR Adding File:%s (%s)",IndexName,FileName));
-
                             //return false;
                     }
                 }
