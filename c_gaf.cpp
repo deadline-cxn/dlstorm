@@ -174,7 +174,9 @@ bool CGAF::CreateFile(LPSTR Name, DWORD Size) {
 	TempElement.UncompSize=Size;
 	TempElement.Type=GAFELMTYPE_FILE;
 	TempElement.CompressLevel=CompLevel;
-	ZeroMemory(TempElement.Name,sizeof(TempElement.Name));
+
+	memset(TempElement.Name,0,sizeof(TempElement.Name));
+
 	strcpy(TempElement.Name,FileName);
 	fwrite(&TempElement,sizeof(TempElement),1,fh);
 	AddElement(&TempElement);
@@ -203,7 +205,10 @@ bool CGAF::CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel) 
 	TempElement.UncompSize=Size;
 	TempElement.Type=GAFELMTYPE_FILE;
 	TempElement.CompressLevel=clevel;
-	ZeroMemory(TempElement.Name,sizeof(TempElement.Name));
+
+	//ZeroMemory(TempElement.Name,sizeof(TempElement.Name));
+	memset(TempElement.Name,0,sizeof(TempElement.Name));
+
 	strcpy(TempElement.Name,FileName);
 	fwrite(&TempElement,sizeof(TempElement),1,fh);
 	AddElement(&TempElement);
@@ -264,7 +269,8 @@ bool CGAF::CreateDir(LPSTR Name) {
 	TempElement.UncompSize=0;
 	TempElement.Type=GAFELMTYPE_DIR;
 	TempElement.CompressLevel=GAFCOMP_NONE;
-	ZeroMemory(TempElement.Name,sizeof(TempElement.Name));
+    //ZeroMemory(TempElement.Name,sizeof(TempElement.Name));
+    memset(TempElement.Name,0,sizeof(TempElement.Name));
 	strcpy(TempElement.Name,FileName);
 	fwrite(&TempElement,sizeof(TempElement),1,fh);
 	AddElement(&TempElement);
@@ -748,7 +754,8 @@ bool CGAF::SetFileDescription(LPSTR Desc, bool _bWriteHeader) {
 
     // Write the header immediately.
     if ( _bWriteHeader ) {
-        ZeroMemory(Header.Description,sizeof(Header.Description));
+        memset(Header.Description,0,sizeof(Header.Description));
+        //ZeroMemory(Header.Description,sizeof(Header.Description));
         strcpy(Header.Description, FileDesc);
         if ( !WriteHeader() ) {
             return false;

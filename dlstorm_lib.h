@@ -40,7 +40,7 @@
 
     C Preprocessor Directives for various OS
 
-    Windows
+    Windows     _WINDOWS_
                 _WIN32
                 __WIN64 // new
     Unix
@@ -266,6 +266,18 @@ typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
 #define _PS PATH_SEP
 #define DLSTR(x)				char x[1024]; memset(x,0,1024);
 #define fold_block
+
+#ifndef DWORD
+#define DWORD uint32_t
+#endif
+
+#ifndef LPSTR
+#define LPSTR char *
+#endif
+
+#ifndef LPCSTR
+#define LPCSTR CONST char *
+#endif
 
 
 

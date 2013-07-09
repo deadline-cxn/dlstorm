@@ -194,6 +194,7 @@ public:
     bool CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel);
 	DWORD CompLevel;
 	int GetFullLength();
+	/*
 	class CDirScanner
 	{
 	public:
@@ -207,6 +208,7 @@ public:
 		CDirScanner();
 		virtual ~CDirScanner();
 	};
+	*/
 	int FindDirNumber(LPSTR Name);
 	int FindDir(LPSTR Name);
 	int FindFile(LPSTR Name);

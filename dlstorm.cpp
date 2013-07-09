@@ -57,9 +57,12 @@ bool sp_istrue(char *text) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 vector <string> Dir2Vector(char *szDir, char *szWildCard){
-    //FILE *fp;
     vector <string> diro;
     diro.clear();
+
+
+#ifdef _WINDOWS_
+    //FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
     char szCurrentDir[_MAX_PATH];
@@ -102,10 +105,16 @@ vector <string> Dir2Vector(char *szDir, char *szWildCard){
     FindClose(dirsearch);
     SetCurrentDirectory(szCurrentDir);
 	//fclose(fp);
+
+#endif
+
     return diro;
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool Dir2File(char *szDir,char *szFile,char *szWildCard){
+
+#ifdef _WINDOWS_
 	FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
@@ -152,6 +161,7 @@ bool Dir2File(char *szDir,char *szFile,char *szWildCard){
     FindClose(dirsearch);
     SetCurrentDirectory(szCurrentDir);
 	fclose(fp);
+#endif
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
