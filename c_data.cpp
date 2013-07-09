@@ -144,8 +144,7 @@ void CC_Data::SetToDefaults(void) {
     bBlockGlow=true;
     bVertice=0;
     ClearProfiles();
-    bFullScreen=true;
-
+    bFullScreen=false;
     ScreenWidth = 1366;// SCREEN_WIDTH;
     ScreenHeight= 768; //SCREEN_HEIGHT;
     ScreenColors= 24; //SCREEN_COLORS;

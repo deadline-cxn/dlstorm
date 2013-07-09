@@ -62,6 +62,7 @@ public:
     bool    LoadBMP(char* filename, Image *image);
 
     GLuint  LoadBMP(CGAF *pGAF,const char *filename,bool which);
+    GLuint  LoadPNG(CGAF *pGAF,const char *filename,bool which);
 
     GLuint  Load(const char *filename,bool which);
 
