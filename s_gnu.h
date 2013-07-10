@@ -1,9 +1,7 @@
 /***************************************************************
  **      EMBER                                                **
  ***************************************************************/
-
-#include "global.h"
-
+#include "dlstorm.h"
 #ifndef _WIN32
 extern "C" long GetTickCount(void);
 extern "C" void Sleep(int ms);

@@ -11,6 +11,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/un.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/time.h>
@@ -296,8 +297,10 @@ public:
 	int               nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
 	int               nSend(char *pBuf, int iLen, struct sockaddr *pAddr);
     SOCKET             iSocket;
+
     struct sockaddr_in ToAddr;
     struct sockaddr_in FromAddr;
+
     #pragma pack(1)
     struct {
         unsigned int  iLen;

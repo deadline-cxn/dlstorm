@@ -197,8 +197,8 @@ int CCSocket::SendUnreliableMessage(char *pData,int iSize)
 
 ////////////////////////////////////////////////////////
 
-int CCSocket::iGetMessage()
-{
+int CCSocket::iGetMessage() {
+
     unsigned int  iLength;
     unsigned int  iFlags;
     int       err = 0;
@@ -208,19 +208,23 @@ int CCSocket::iGetMessage()
     if((!bCanSend)&&((dlcs_get_tickcount() - dLastSendTime) > dAckTimeOut)) ReSendMessage();
     if(iSocket==-1) return 0;
     iLastLength = 0;
-    while(1)
-    {
+    while(1) {
         iLength = nRecv((char *)&PacketBuffer, NET_DATAGRAMSIZE, (struct sockaddr*)&FromAddr);
 
-        if(iLength==-1)
-        {
+        if(iLength==-1) {
             printf("ya done goofed 000\n");
             return -1;
         }
 
 
         if(iLength==0)  break;
+#ifdef _WIN32
         if(&FromAddr.sin_addr.s_addr != &ToAddr.sin_addr.s_addr)
+#else
+
+        if(&FromAddr.sin_addr.s_addr != &ToAddr.sin_addr.s_addr)
+#endif
+
         {
             //Log
             //printf("CCSocket::iGetMessage() forged packet received from %s - supposed to be from %s",NET_pAddrToString(&Read_Addr),NET_pAddrToString(&reAddr));
@@ -475,8 +479,8 @@ int CCSocket::OpenSocket(int iPort)
 int CCSocket::OpenSocket(char *pAddress, int iPort)
 {
     ToAddr.sin_family = AF_INET;
-    ToAddr.sin_addr.s_addr=inet_addr(pAddress);
     ToAddr.sin_port=htons((short)iPort);
+    inet_pton(AF_INET, pAddress, &(ToAddr.sin_addr)); // .s_addr=inet_addr(pAddress);
 
     iSocket=-1;
     unsigned long _true = 1;
@@ -487,7 +491,7 @@ int CCSocket::OpenSocket(char *pAddress, int iPort)
 #ifdef _WIN32
     if(ioctlsocket(iSocket, FIONBIO, &_true) == SOCKET_ERROR)
 #else
-    bzero(&address, sizeof(address)); // linux func
+    bzero(&pAddress, sizeof(pAddress)); // linux func
     if(fcntl(iSocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
 #endif
     {
@@ -495,11 +499,19 @@ int CCSocket::OpenSocket(char *pAddress, int iPort)
         return SOCKET_ERROR;
     }
 
-    if(bind(iSocket,(struct sockaddr *)& ToAddr, sizeof(ToAddr))==SOCKET_ERROR)
-    {
+#ifdef _WIN32
+    if(bind(iSocket,(struct sockaddr *)& ToAddr, sizeof(ToAddr))==SOCKET_ERROR) {
+
         CloseSocket(iSocket);
         return SOCKET_ERROR;
     }
+
+#else
+
+
+    bind(iSocket, (struct sockaddr*)&ToAddr, sizeof ToAddr);
+
+#endif
     return iSocket;
 }
 
@@ -530,11 +542,17 @@ int CCSocket::zOpenSocket(int iPort)
     // reAddr.sin_addr.s_addr = INADDR_ANY;
     ToAddr.sin_port = htons((short)iPort);
 
+#ifdef _WIN32
     if(bind(newsocket,(struct sockaddr *)&address, sizeof(address))==SOCKET_ERROR)
     {
         CloseSocket(newsocket);
         return SOCKET_ERROR;
     }
+#else
+    bind(newsocket,(struct sockaddr *)&address, sizeof(address));
+
+#endif
+
     return newsocket;
 }
 
@@ -567,11 +585,16 @@ int CCSocket::zOpenSocket(char *pAddress, int iPort)
     ToAddr.sin_addr.s_addr = inet_addr(pAddress);//INADDR_ANY;
     ToAddr.sin_port = htons((short)iPort);
 
+#ifdef _WIN32
     if(bind(newsocket,(struct sockaddr *)&address, sizeof(address))==SOCKET_ERROR)
     {
         CloseSocket(newsocket);
         return SOCKET_ERROR;
     }
+#else
+    bind(newsocket,(struct sockaddr *)&address, sizeof(address));
+
+#endif
     return newsocket;
 }
 
@@ -1015,15 +1038,14 @@ int NET_Shutdown (void)
 
 //////////////////////////////////////////////////////////////////////////////////
 
-char *NET_pGetLastError(void)
-{
+char *NET_pGetLastError(void) {
     int i,err;
 #ifdef _WIN32
     err = WSAGetLastError();
     for (i = 0;i<iNumMessages;i++) { if (pErrorList[i].iID == err) { return (char *)pErrorList[i].pMessage; } }
     return (char *)pErrorList[0].pMessage;
 #else
-    return(strerror(errnum));
+    return(strerror(errno));
 #endif
 }
 
