@@ -2,7 +2,7 @@
 #include "c_gaf.h"
 #include "c_log.h"
 #include "c_gltexture.h"
-// #include "ximage.h"
+#include "s_gnu.h"
 
 #define MESH_RESOLUTION 1.0f									// Pixels Per Vertex
 #define MESH_HEIGHTSCALE 1.0f									// Mesh Height Scale

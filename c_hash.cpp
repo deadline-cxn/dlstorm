@@ -1,4 +1,4 @@
-#include "C_Hash.h"
+#include "c_hash.h"
 
 #include <iostream>
 #include <string>

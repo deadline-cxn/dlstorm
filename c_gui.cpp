@@ -2626,13 +2626,12 @@ void C_GUI::cab_call(char *file){
 
 void C_GUI::bcall(char *file){
 	pLog->_DebugAdd(" GUI->bcall(gumps/%s)",file);
-	CxMemFile *hi;
+//	CxMemFile *hi;
 	if(!pGAF) return;
 	GAF_FileBuffer nfb;
 	char fin[1024];    memset(fin,0,1024);
 	nfb=pGAF->GetFile((char *)va("gumps/%s",file));
-	hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
-	DEL(hi);
+	//hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);	DEL(hi);
 }
 
 void C_GUI::bstore(char *file){
@@ -3337,7 +3336,10 @@ int  C_GUI::processKeyboard(){
     SDLMod modstate;
     bool bDone=0;
     SDLKey ikey;
-    unsigned __int8 *keystate;
+
+    Uint8 *keystate;//uint8_t *keystate; //__int8 *keystate;
+
+
     pMouse->Refresh();
 
     while ( SDL_PollEvent (&event) ){

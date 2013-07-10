@@ -6,7 +6,7 @@
 
 using namespace std;
 
-
+#include "s_gnu.h"
 #include "c_gltexture.h"
 #include "c_log.h"
 

@@ -4,6 +4,8 @@
 
 #include "c_snd.h"
 
+#ifdef _WINDOWS_
+
 
 C_Sound::C_Sound() {
     fmusic=0;
@@ -143,4 +145,6 @@ void C_Sound::SetSoundVolume(float f)
     svol=(u_char)f;
     FSOUND_SetSFXMasterVolume(svol);
 }
+
+#endif
 

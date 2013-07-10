@@ -256,8 +256,7 @@ bool CGLModel::Draw(void)
     return 1;
 }
 
-float CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame)
-{
+float CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame) {
     pLog->_DebugAdd("CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame)");
     float time = GetTickCount();//SDL_GetTicks();
     this->elapsedTime = time - this->lastTime;

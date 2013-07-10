@@ -2,7 +2,7 @@
 #include "c_gltexture.h"
 #include "glerrors.h"
 #include "SDL.h"
-#include "ximage.h"
+
 
 CGLTexture::CGLTexture() {   Initialize(); }
 

@@ -1,43 +1,9 @@
 /***************************************************************
 	Deadline's Code Storm
  ***************************************************************/
-
 #ifndef _DEADLINE_CODE_STORM_LIB
 #define _DEADLINE_CODE_STORM_LIB
-
-#ifdef _WIN32
-/*
-#pragma warning(disable : 4018)     // signed/unsigned mismatch
-#pragma warning(disable : 4032)
-#pragma warning(disable : 4051)
-#pragma warning(disable : 4057)		// slightly different base types
-#pragma warning(disable : 4100)		// unreferenced formal parameter
-#pragma warning(disable : 4115)
-#pragma warning(disable : 4125)		// decimal digit terminates octal escape sequence
-#pragma warning(disable : 4127)		// conditional expression is constant
-#pragma warning(disable : 4136)
-#pragma warning(disable : 4201)
-#pragma warning(disable : 4214)
-#pragma warning(disable : 4244)
-#pragma warning(disable : 4305)		// truncation from const double to float
-#pragma warning(disable : 4310)		// cast truncates constant value
-#pragma warning(disable : 4514)
-#pragma warning(disable : 4711)		// selected for automatic inline expansion
-#pragma warning(disable : 4220)		// varargs matches remaining parameters
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4091)
-#pragma warning(disable : 4006)     // second definition ignored
-#pragma warning(disable : 4089)     // reference to library discarded because no calls were made
-*/
-//#pragma comment(lib,"winmm")
-//#pragma comment(lib,"wsock32")
-//#pragma comment(lib,"ws2_32")
-//#pragma comment(lib,"errno")
-//#pragma intrinsic( memset, memcpy )
-#endif
-
 /**********************************************
-
     C Preprocessor Directives for various OS
 
     Windows     _WINDOWS_
@@ -71,7 +37,6 @@
                 _cplusplus
     GCC
                 _GNUC_
-
  **********************************************/
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -144,12 +109,10 @@ using namespace std;
 #define sqword _int64
 #define dwbool unsigned long
 #define bbool unsigned char
-
 #define u_char unsigned char
 #define u_short unsigned short
 #define u_int unsigned int
 #define u_long unsigned long
-
 #define	MAC_STATIC
 #undef QDECL
 #define	QDECL	__cdecl
@@ -228,7 +191,56 @@ void Sys_PumpEvents( void );
 // Windows type structs for non windows conversions
 
 #ifndef _WIN32
-typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
+
+#ifndef RECT
+typedef struct tagRECT {
+	long    left;
+	long    top;
+	long    right;
+	long    bottom;
+} RECT;
+#endif
+
+typedef long LONG;
+
+#ifndef DWORD
+typedef unsigned long  DWORD;
+#endif
+
+#ifndef BYTE
+typedef unsigned char  BYTE;
+#endif
+
+#ifndef WORD
+typedef unsigned short WORD;
+#endif
+
+#ifndef UINT
+typedef unsigned int   UINT;
+#endif
+
+#ifndef LPSTR
+#define LPSTR char *
+#endif
+
+#ifndef LPCTSTR
+#define LPCTSTR char *
+#endif
+
+#ifndef LPCSTR
+#define LPCSTR CONST char *
+#endif
+
+typedef DWORD          COLORREF;
+
+#define GetRValue(rgb)      ((BYTE)(rgb))
+#define GetGValue(rgb)      ((BYTE)(((WORD)(rgb)) >> 8))
+#define GetBValue(rgb)      ((BYTE)((rgb)>>16))
+#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+
+//#define	RGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
+//#define	RGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
+
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -241,8 +253,6 @@ typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Macros
 
-//#define	MAKERGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
-//#define	MAKERGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
 #define s_MAKEDWORD(a,b,c,d)     ((a)+(b<<8)+(c<<16)+(d<<24))
 #define s_MAKEWORD(a,b)          ((a)+(b<<8))
 #define PI                     3.145f
@@ -266,19 +276,5 @@ typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
 #define _PS PATH_SEP
 #define DLSTR(x)				char x[1024]; memset(x,0,1024);
 #define fold_block
-
-#ifndef DWORD
-#define DWORD uint32_t
-#endif
-
-#ifndef LPSTR
-#define LPSTR char *
-#endif
-
-#ifndef LPCSTR
-#define LPCSTR CONST char *
-#endif
-
-
 
 #endif // _DEADLINE_CODE_STORM_LIB

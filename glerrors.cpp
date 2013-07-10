@@ -1,7 +1,9 @@
 #include "glerrors.h"
 
 extern "C" char *GL_Error(GLenum err) {
-    char der[1024]; memset(der,0,1024);
+    char der[1024];
+    memset(der,0,1024);
+
     switch(err) {
         case GL_NO_ERROR:
             strcpy(der,"GL_NO_ERROR");

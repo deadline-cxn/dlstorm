@@ -68,11 +68,10 @@ GLvoid C_MouseCursor::kill()
     DEL(Cursor);
 }
 
-#include "ximage.h"
+
 
 /*************************************************////////////////////
-GLvoid C_MouseCursor::load(char *file)
-{
+GLvoid C_MouseCursor::load(char *file) {
     if(!strlen(file)) return;
     strcpy(filename,file);
 
@@ -86,30 +85,24 @@ GLvoid C_MouseCursor::load(char *file)
     Cursor->LoadBMP(pGAF,va("%s.bmp",file),0);
 
 	std::vector <std::string> vs;
-	CxMemFile *hi;
+
+	// CxMemFile *hi;
+
+
 
 	if(!pGAF) return;
-
 	GAF_FileBuffer nfb;
 
 	char fin[1024];    memset(fin,0,1024);
 	nfb=pGAF->GetFile((LPSTR)va("%s.ini",file));
+
 	if(nfb.Size>0) {
-		//Log("                    \\--> Point file: %s.ini",file);
-		hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
-		hi->GetS(fin,256);
-		x_offset=atoi(fin); //Log("                       \\--> x_offset = %d",x_offset);
-
-		hi->GetS(fin,256);
-		y_offset=atoi(fin); //Log("                       \\--> y_offset = %d",y_offset);
-
-		hi->GetS(fin,256);
-		x_hotspot=atoi(fin); //Log("                       \\--> x_hopspot = %d",x_hotspot);
-
-		hi->GetS(fin,256);
-		y_hotspot=atoi(fin); //Log("                       \\--> y_hopspot = %d",y_hotspot);
-
-		DEL(hi);
+	    vs=explode("\n",nfb.fb);
+		// Log("                    \\--> Point file: %s.ini",file);
+		x_offset=atoi(vs[0].c_str()); //Log("                       \\--> x_offset = %d",x_offset);
+		y_offset=atoi(vs[1].c_str()); //Log("                       \\--> y_offset = %d",y_offset);
+		x_hotspot=atoi(vs[2].c_str()); //Log("                       \\--> x_hopspot = %d",x_hotspot);
+		y_hotspot=atoi(vs[3].c_str()); //Log("                       \\--> y_hopspot = %d",y_hotspot);
 	}
 }
 /*************************************************////////////////////

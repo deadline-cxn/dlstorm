@@ -1,27 +1,15 @@
 /***************************************************************
- **      EMBER                                                **
+ ** EMBER Must include the following libs: fmodvc dsound winmm msacm32
  ***************************************************************/
-
 #ifndef _EMBER_SOUND_UTIL
 #define _EMBER_SOUND_UTIL
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#ifdef _WIN32
-#pragma comment(lib,"fmodvc")
-#pragma comment(lib,"dsound")
-#pragma comment(lib,"winmm")
-#pragma comment(lib,"msacm32")
-#endif
 
 #include "dlstorm.h"
 #include "fmod.h"
 
 #define MAX_CHANNELS 32
 
-
+#ifdef _WINDOWS_
 class C_Sound {
 public:
     C_Sound();
@@ -51,8 +39,9 @@ public:
     unsigned char svol;
     unsigned char mvol;
     bool bfmod;
-
 };
+#endif
+
 
 #endif
 

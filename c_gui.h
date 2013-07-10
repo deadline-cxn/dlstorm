@@ -16,8 +16,6 @@ using namespace std;
 #include "c_console.h"
 #include "dlstorm.h"
 
-#include "ximage.h"
-
 
 #define FM_GP_ALWAYS_ON_TOP     1
 #define FM_GP_SIZEABLE          2
