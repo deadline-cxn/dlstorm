@@ -480,7 +480,11 @@ int CCSocket::OpenSocket(char *pAddress, int iPort)
 {
     ToAddr.sin_family = AF_INET;
     ToAddr.sin_port=htons((short)iPort);
-    inet_pton(AF_INET, pAddress, &(ToAddr.sin_addr)); // .s_addr=inet_addr(pAddress);
+#ifdef _WIN32
+    ToAddr.sin_addr.s_addr=inet_addr(pAddress);
+#else
+    inet_pton(AF_INET, pAddress, &(ToAddr.sin_addr));
+#endif
 
     iSocket=-1;
     unsigned long _true = 1;
