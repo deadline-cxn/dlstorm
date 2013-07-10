@@ -1,44 +1,6 @@
 /* Seth's Game Archive File Class */
 
 #include "c_gaf.h"
-/*
-CGAF::CDirScanner::CDirScanner(){
-	Handle=INVALID_HANDLE_VALUE;
-}
-
-CGAF::CDirScanner::~CDirScanner(){
-	if(Handle!=INVALID_HANDLE_VALUE)FindClose(Handle);
-}
-
-void CGAF::CDirScanner::Start(LPSTR dirname){
-	strcpy(DirName,dirname);
-	strcat(DirName,"*.*");
-	NextIsFirst=true;
-	GetFile();
-	GetFile();
-}
-
-bool CGAF::CDirScanner::GetFile(){
-	if(NextIsFirst)	{
-		Handle=FindFirstFile(DirName,&FindData);
-		NextIsFirst=false;
-		if(Handle!=INVALID_HANDLE_VALUE)return true;
-	}
-	else {
-		if(FindNextFile(Handle,&FindData))return true;
-	}
-	return false;
-}
-
-bool CGAF::CDirScanner::Error(){
-	if(Handle==INVALID_HANDLE_VALUE)return true;
-	return false;
-}
-*/
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 
 #define BUFFERSIZE (1024*1024)
 DWORD GAF_VERSION=0x120101c5;
@@ -52,10 +14,13 @@ CGAF::CGAF() {
 	Elements=(GAFFile_ElmHeader*)malloc(sizeof(GAFFile_ElmHeader)*MaxElements);
     SetFileDescription("[GAF Game Archive File]");
 
+#ifdef GAFDEBUG
     CabLog=new CLog();
     CabLog->SetName("gaf.log");
     CabLog->LineFeedsOn();
     CabLog->AddEntry("===========================================================================GAF constructed\n");
+#endif
+
 }
 
 CGAF::CGAF(char *file,int comp) {
@@ -70,7 +35,9 @@ CGAF::CGAF(char *file,int comp) {
 }
 
 CGAF::~CGAF() {
+#ifdef GAFDEBUG
     DEL(CabLog);
+#endif
 	free(Elements);
 	Close();
 }
@@ -586,7 +553,10 @@ bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs) {
 }
 */
 bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs){
+
+#ifdef GAFDEBUG
     CabLog->AddEntry(va("Adding Directory Files:%s",indir));
+#endif
     char folder[1024]; memset(folder,0,1024);
     DIR *dpdf;
     struct dirent *epdf;
@@ -597,22 +567,30 @@ bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs){
                 (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             }
             else {
+#ifdef GAFDEBUG
                 CabLog->AddEntry(va("Filename: %s",epdf->d_name));
+#endif
                 if(sp_isdir(epdf->d_name)) {
                     if(SubDirs) {
                         if(!CreateDir(va("%s/%s",indir,epdf->d_name))) {
+#ifdef GAFDEBUG
                             CabLog->AddEntry(va("Can't create dir: %s",epdf->d_name));
+#endif
                             //return false;
                         }
                         if(!AddDirEx(va("%s/%s",indir,epdf->d_name),epdf->d_name,SubDirs)) {
+#ifdef GAFDEBUG
                             CabLog->AddEntry(va("Can't add dir: %s",epdf->d_name));
+#endif
                             //return false;
                         }
                     }
                 }
                 else {
                     if(!AddFile(va("%s/%s",indir,epdf->d_name),epdf->d_name)) {
+#ifdef GAFDEBUG
                             CabLog->AddEntry(va("Can't add file: %s",epdf->d_name));
+#endif
                             //return false;
                     }
                 }
@@ -707,13 +685,17 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs){
                 if(sp_isdir(epdf->d_name)) {
                     if(SubDirs) {
                         if(!CreateDir(IndexName)) {
+#ifdef GAFDEBUG
                             CabLog->AddEntry("Can't create dir [%s] in GAF",IndexName);
+#endif
                             return false;
                         }
                         strcpy(FileName,DirName);
                         strcat(FileName,epdf->d_name);
                         if(!AddDirEx(IndexName,FileName,true)){
+#ifdef GAFDEBUG
                             CabLog->AddEntry("Can't add dir [%s] in GAF",IndexName);
+#endif
                             return false;
                         }
                     }
@@ -721,9 +703,13 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs){
                 else {
                     strcpy(FileName,DirName);
                     strcat(FileName,epdf->d_name);
+#ifdef GAFDEBUG
                     CabLog->AddEntry(va("Adding File:%s",IndexName));
+#endif
                     if(!AddFile(IndexName,FileName)) {
+#ifdef GAFDEBUG
                         CabLog->AddEntry(va("ERROR Adding File:%s (%s)",IndexName,FileName));
+#endif
                             //return false;
                     }
                 }

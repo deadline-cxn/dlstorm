@@ -3,13 +3,10 @@
 #ifndef SETH_GAF_
 #define SETH_GAF_
 
+#include <dirent.h>
 #include "dlstorm.h"
 #include "zlib.h"
 #include "c_log.h"
-
-#include <dirent.h>
-
-//#pragma comment( lib, "zlib.lib" )
 
 // Maximum size of a Indexname in CGAF File.
 #define GAF_NAMESIZE 256
@@ -60,7 +57,9 @@ struct GAF_FileBuffer {
 class CGAF {
 public:
 
+#ifdef GAFDEBUG
      CLog *CabLog;
+#endif
 
     // Remove Many files...
     // Allows removal of many files without rebuilding the nuk every time.
