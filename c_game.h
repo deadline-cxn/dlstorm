@@ -8,10 +8,10 @@
 #endif // _MSC_VER > 1000
 
 #include "c_log.h"
-#include "c_sdl.h"
-#include "c_fmod.h"
+// #include "c_sdl.h"
+// #include "c_fmod.h"
 #include "c_timer.h"
-#include "c_map.h"
+//#include "c_map.h"
 
 #define G_CORE        1 // Always will be on
 #define G_SDL         2
@@ -34,8 +34,8 @@ class CGame
 public:
 
     CGame();
-    CGame(char *APP_NAME,Uint16 FLAGS);
-	CGame(char *APP_NAME,Uint32 SCREEN_WIDTH,Uint32 SCREEN_HEIGHT,Uint32 SCREEN_COLORS,Uint16 FLAGS);
+    CGame(char *APP_NAME, Uint16 FLAGS);
+	CGame(char *APP_NAME, Uint32 SCREEN_WIDTH, Uint32 SCREEN_HEIGHT, Uint32 SCREEN_COLORS, Uint16 FLAGS);
     ~CGame();
 
     CLog        *Log;
@@ -71,7 +71,7 @@ public:
 
 
 
-    
+
 };
 
 #endif
