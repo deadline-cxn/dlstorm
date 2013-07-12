@@ -183,31 +183,13 @@ public:
 	// (Use SetFileDescription)
     // `_bIgnoreDescription = true` to ignore the NUK file's description.
     bool Open ( LPSTR fn, bool _bIgnoreDescription = false );
-
 	CGAF();
     CGAF(char *file,int comp);
 	virtual ~CGAF();
-
-
-	bool AddFile_Compress(LPSTR Name,LPSTR filename);
+    bool AddFile_Compress(LPSTR Name,LPSTR filename);
     bool CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel);
 	DWORD CompLevel;
 	int GetFullLength();
-	/*
-	class CDirScanner
-	{
-	public:
-		bool Error();
-		char DirName[GAF_NAMESIZE];
-		WIN32_FIND_DATA FindData;
-		HANDLE Handle;
-		bool GetFile();
-		bool NextIsFirst;
-		void Start(LPSTR dirname);
-		CDirScanner();
-		virtual ~CDirScanner();
-	};
-	*/
 	int FindDirNumber(LPSTR Name);
 	int FindDir(LPSTR Name);
 	int FindFile(LPSTR Name);

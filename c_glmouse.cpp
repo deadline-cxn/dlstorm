@@ -10,14 +10,16 @@
 
 C_MouseCursor::C_MouseCursor() {
     memset(filename,0,1024);
-    Cursor=0;
-    // pLog->_DebugAdd("Mouse cursor created");
+    pTexture=0;
+    pLog=new CLog("mousecursor.log");
+    bCreatedLog=true;
+    pLog->_DebugAdd("Mouse cursor created");
 }
 
-C_MouseCursor::C_MouseCursor(CLog *pInLog)
-{
+C_MouseCursor::C_MouseCursor(CLog *pInLog) {
+    bCreatedLog=false;
     pLog=pInLog;
-    Cursor=0;
+    pTexture=0;
     x_offset=0;
     y_offset=0;
     x=0;
@@ -28,11 +30,11 @@ C_MouseCursor::C_MouseCursor(CLog *pInLog)
 }
 
 
-C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog)
-{
+C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) {
     pGAF=pInGAF;
     pLog=pInLog;
-    Cursor=0;
+    bCreatedLog=false;
+    pTexture=0;
     x_offset=0;
     y_offset=0;
     x=0;
@@ -42,11 +44,9 @@ C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog)
     pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
 }
 
-/*************************************************////////////////////
-C_MouseCursor::C_MouseCursor(char *fn)
-{
+C_MouseCursor::C_MouseCursor(char *fn) {
     memset(filename,0,1024);
-    Cursor=0;
+    pTexture=0;
     x_offset=0;
     y_offset=0;
     x=0;
@@ -54,27 +54,33 @@ C_MouseCursor::C_MouseCursor(char *fn)
     x_hotspot=0;
     y_hotspot=0;
     load(fn);
+    pLog=new CLog("mousecursor.log");
+    bCreatedLog=true;
     pLog->_DebugAdd("Mouse cursor created");
 }
-/*************************************************////////////////////
-C_MouseCursor::~C_MouseCursor()
-{
+
+C_MouseCursor::~C_MouseCursor() {
     kill();
     pLog->_DebugAdd("Mouse cursor destroyed");
+    if(bCreatedLog)
+        DEL(pLog);
 }
-/*************************************************////////////////////
-GLvoid C_MouseCursor::kill()
-{
-    DEL(Cursor);
+GLvoid C_MouseCursor::kill() { DEL(pTexture); }
+
+GLvoid C_MouseCursor::loadGAF(char *file) {
 }
-
-
-
-/*************************************************////////////////////
 GLvoid C_MouseCursor::load(char *file) {
-    if(!strlen(file)) return;
     strcpy(filename,file);
-
+    if(pGAF) {
+        loadGAF(file);
+    }
+    else {
+        pTexture=new CGLTexture(pLog);
+        pTexture->LoadPNG(file);
+        pLog->_Add("MOUSE TEXTURE: %s",pTexture->tfilename);
+    }
+/*  if(!strlen(file)) return;
+    strcpy(filename,file);
     DEL(Cursor);
     Cursor=new CGLTexture(pLog);
     Cursor->pGAF=pGAF;
@@ -83,19 +89,11 @@ GLvoid C_MouseCursor::load(char *file) {
     Cursor->mask=0;
     Cursor->usemask=1;
     Cursor->LoadBMP(pGAF,va("%s.bmp",file),0);
-
 	std::vector <std::string> vs;
-
-	// CxMemFile *hi;
-
-
-
 	if(!pGAF) return;
 	GAF_FileBuffer nfb;
-
 	char fin[1024];    memset(fin,0,1024);
 	nfb=pGAF->GetFile((LPSTR)va("%s.ini",file));
-
 	if(nfb.Size>0) {
 	    vs=explode("\n",nfb.fb);
 		// Log("                    \\--> Point file: %s.ini",file);
@@ -104,20 +102,19 @@ GLvoid C_MouseCursor::load(char *file) {
 		x_hotspot=atoi(vs[2].c_str()); //Log("                       \\--> x_hopspot = %d",x_hotspot);
 		y_hotspot=atoi(vs[3].c_str()); //Log("                       \\--> y_hopspot = %d",y_hotspot);
 	}
+	*/
 }
 /*************************************************////////////////////
-GLvoid C_MouseCursor::draw(void)
-{
-    if(!Cursor) return;
-    if(!Cursor->bmap) load(filename);
-    if(!Cursor->mask) load(filename);
-    if(!Cursor->bmap) return;
-    if(!Cursor->mask) return;
-
+GLvoid C_MouseCursor::draw(void) {
+    if(!pTexture) return;
+    if(!pTexture->bmap) load(filename);
+    //if(!Cursor->mask) load(filename);
+    if(!pTexture->bmap) return;
+    //if(!Cursor->mask) return;
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
 
-    glLoadIdentity();
+/*  glLoadIdentity();
     glColor3f(1.0f,1.0f,1.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_COLOR,GL_ZERO);
@@ -133,7 +130,6 @@ GLvoid C_MouseCursor::draw(void)
     glBindTexture(GL_TEXTURE_2D,Cursor->mask);
     glEnable(GL_TEXTURE_2D);
     glColor3f(1.0f,1.0f,1.0f);
-
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x ),    float(y - 64),    1);
     glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+64),  float(y - 64),    1);
@@ -145,9 +141,10 @@ GLvoid C_MouseCursor::draw(void)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
     glEnable(GL_DEPTH_TEST);
+    */
+
     glLoadIdentity();
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE);
+
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -157,9 +154,23 @@ GLvoid C_MouseCursor::draw(void)
     glPushMatrix();
     glLoadIdentity();
     glTranslated(x,y,0);
-    glBindTexture(GL_TEXTURE_2D,Cursor->bmap);
+
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClearDepth(1.0f);
     glEnable(GL_TEXTURE_2D);
-    glColor3f(1.0f,1.0f,1.0f);
+
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_DEPTH_TEST);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
+    glDisable(GL_COLOR_MATERIAL);
+    glBindTexture(GL_TEXTURE_2D,pTexture->bmap);
+
+    //glColor3f(1.0f,1.0f,1.0f);
+    //glBlendFunc(GL_ONE, GL_ONE);
+    //glDepthMask(false);
+
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x ),    float(y - 64),    1);
@@ -167,6 +178,8 @@ GLvoid C_MouseCursor::draw(void)
     glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+64),  float(y ),        1);
     glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x ),    float(y ),        1);
     glEnd();
+
+    //glDepthMask(true);
 
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -177,35 +190,19 @@ GLvoid C_MouseCursor::draw(void)
 
 }
 
-
-
-/*************************************************//*************************************************/
-/*************************************************//*************************************************/
-/*************************************************//*************************************************/
-
-
-C_Mouse::C_Mouse()
-{
-
-}
-
-C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog)
-{
+C_Mouse::C_Mouse() { }
+C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog) {
     pGAF=pInGAF;
     pLog=pInLog;
-
-    pCursor=new C_MouseCursor(pGAF,pLog);
-    pCursor->load("mouse/0");
+    pCursor=new C_MouseCursor(pLog);
+    pCursor->load("mouse/default.png");
 }
 
-C_Mouse::~C_Mouse()
-{
+C_Mouse::~C_Mouse() {
     DEL(pCursor);
-
 }
 
-void C_Mouse::InitializeInput(void)
-{
+void C_Mouse::InitializeInput(void) {
     bLeftDown             = 0;
     bMiddleDown           = 0;
     bRightDown            = 0;

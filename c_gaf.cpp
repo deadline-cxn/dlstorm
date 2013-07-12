@@ -534,24 +534,6 @@ bool CGAF::Move(LPSTR Name, LPSTR Destination) {
 	}else return false;
 }
 
-/*
-bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs) {
-    CDirScanner DirScanner;
-	DirScanner.Start(indir);
-	while(DirScanner.GetFile()) {
-		if(DirScanner.Error()) return false;
-		if(DirScanner.FindData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY) {
-			if(SubDirs) {
-				if(!CreateDir(DirScanner.FindData.cFileName)) return false;
-                if(!AddDirEx(DirScanner.FindData.cFileName,DirScanner.FindData.cFileName,true)) return false;
-			}
-		}else {
-            if(!AddFile(DirScanner.FindData.cFileName,DirScanner.FindData.cFileName))return false;
-		}
-	}
-    return true;
-}
-*/
 bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs){
 
 #ifdef GAFDEBUG

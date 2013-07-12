@@ -271,27 +271,29 @@ CMantraMap::CMantraMap()
 	FILE *filein;
 	char oneline[255];
 	filein = fopen("world.txt", "rt");				// File To Load World Data From
+	if(filein) {
 
-	readstr(filein,oneline);
+        readstr(filein,oneline);
 
-	sscanf(oneline, "NUMPOLLIES %d\n", &numtriangles);
+        sscanf(oneline, "NUMPOLLIES %d\n", &numtriangles);
 
-	sector1.triangle = new TRIANGLE[numtriangles];
-	sector1.numtriangles = numtriangles;
-	for (int loop = 0; loop < numtriangles; loop++)
-	{
-		for (int vert = 0; vert < 3; vert++)
-		{
-			readstr(filein,oneline);
-			sscanf(oneline, "%f %f %f %f %f", &x, &y, &z, &u, &v);
-			sector1.triangle[loop].vertex[vert].x = x;
-			sector1.triangle[loop].vertex[vert].y = y;
-			sector1.triangle[loop].vertex[vert].z = z;
-			sector1.triangle[loop].vertex[vert].u = u;
-			sector1.triangle[loop].vertex[vert].v = v;
-		}
+        sector1.triangle = new TRIANGLE[numtriangles];
+        sector1.numtriangles = numtriangles;
+        for (int loop = 0; loop < numtriangles; loop++)
+        {
+            for (int vert = 0; vert < 3; vert++)
+            {
+                readstr(filein,oneline);
+                sscanf(oneline, "%f %f %f %f %f", &x, &y, &z, &u, &v);
+                sector1.triangle[loop].vertex[vert].x = x;
+                sector1.triangle[loop].vertex[vert].y = y;
+                sector1.triangle[loop].vertex[vert].z = z;
+                sector1.triangle[loop].vertex[vert].u = u;
+                sector1.triangle[loop].vertex[vert].v = v;
+            }
+        }
+        fclose(filein);
 	}
-	fclose(filein);
 }
 
 CMantraMap::~CMantraMap()

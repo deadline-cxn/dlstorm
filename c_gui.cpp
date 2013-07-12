@@ -180,6 +180,9 @@ void C_GCTRL::attach_default_children(void){
     if(type==FM_GC_BASE_SELECT){
         data.clear();
         listdepth=6;
+
+        /*
+
         for(i=0;i<MAX_BASE_GFX;i++){
             if(pGFX->BaseTexture){
                 if(pGFX->BaseTexture[i].texture){
@@ -187,10 +190,14 @@ void C_GCTRL::attach_default_children(void){
                         put_control_data("what",(char *)va("%d",i));
                     }
                 }
+
             }else{
                 put_control_data("what","NULL");
             }
+
+
         }
+        */
 
         for(i=0;i<listdepth;i++){
            parent_stump->add_control(  this,

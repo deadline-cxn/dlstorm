@@ -1,18 +1,13 @@
 /***************************************************************
  **      EMBER                                                **
  ***************************************************************/
-
 #include "c_gfx.h"
-
 #define X .525731112119133606
 #define Z .850650808352039932
-
 #ifdef _WIN32
 #ifndef _GL_VBO_STUFF
 #define _GL_VBO_STUFF
-
-/*
-PFNGLGENBUFFERSARBPROC            glGenBuffersARB = 0;             // VBO Name Generation Procedure
+/* PFNGLGENBUFFERSARBPROC            glGenBuffersARB = 0;             // VBO Name Generation Procedure
 PFNGLBINDBUFFERARBPROC            glBindBufferARB = 0;             // VBO Bind Procedure
 PFNGLBUFFERDATAARBPROC            glBufferDataARB = 0;             // VBO Data Loading Procedure
 PFNGLBUFFERSUBDATAARBPROC         glBufferSubDataARB = 0;          // VBO Sub Data Loading Procedure
@@ -20,7 +15,6 @@ PFNGLDELETEBUFFERSARBPROC         glDeleteBuffersARB = 0;          // VBO Deleti
 PFNGLGETBUFFERPARAMETERIVARBPROC  glGetBufferParameterivARB = 0;   // return various parameters of VBO
 PFNGLMAPBUFFERARBPROC             glMapBufferARB = 0;              // map VBO procedure
 PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO procedure
-
 #define glGenBuffersARB           pglGenBuffersARB
 #define glBindBufferARB           pglBindBufferARB
 #define glBufferDataARB           pglBufferDataARB
@@ -28,14 +22,9 @@ PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO 
 #define glDeleteBuffersARB        pglDeleteBuffersARB
 #define glGetBufferParameterivARB pglGetBufferParameterivARB
 #define glMapBufferARB            pglMapBufferARB
-#define glUnmapBufferARB          pglUnmapBufferARB
-*/
-
+#define glUnmapBufferARB          pglUnmapBufferARB */
 #endif
-
 #endif
-
-
 // cube ///////////////////////////////////////////////////////////////////////
 //    v6----- v5
 //   /|      /|
@@ -44,15 +33,12 @@ PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO 
 //  | |v7---|-|v4
 //  |/      |/
 //  v2------v3
-
 // vertex coords array for glDrawArrays() =====================================
 // A cube has 6 sides and each side has 2 triangles, therefore, a cube consists
 // of 36 vertices (6 sides * 2 tris * 3 vertices = 36 vertices). And, each
 // vertex is 3 components (x,y,z) of floats, therefore, the size of vertex
 // array is 108 floats (36 * 3 = 108).
-
-GLfloat Cubevertices[]  =
-                      { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,      // v0-v1-v2 (front)
+GLfloat Cubevertices[]  =                       { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,      // v0-v1-v2 (front)
                        -1,-1, 1,   1,-1, 1,   1, 1, 1,      // v2-v3-v0
 
                         1, 1, 1,   1,-1, 1,   1,-1,-1,      // v0-v3-v4 (right)
@@ -69,7 +55,6 @@ GLfloat Cubevertices[]  =
 
                         1,-1,-1,  -1,-1,-1,  -1, 1,-1,      // v4-v7-v6 (back)
                        -1, 1,-1,   1, 1,-1,   1,-1,-1 };    // v6-v5-v4
-
 // normal array
 GLfloat Cubenormals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
                         0, 0, 1,   0, 0, 1,   0, 0, 1,      // v2-v3-v0
@@ -88,7 +73,6 @@ GLfloat Cubenormals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (fro
 
                         0, 0,-1,   0, 0,-1,   0, 0,-1,      // v4-v7-v6 (back)
                         0, 0,-1,   0, 0,-1,   0, 0,-1 };    // v6-v5-v4
-
 // color array
 GLfloat Cubecolors[]    = { 1, 1, 1,   1, 1, 0,   1, 0, 0,      // v0-v1-v2 (front)
                         1, 0, 0,   1, 0, 1,   1, 1, 1,      // v2-v3-v0
@@ -107,10 +91,7 @@ GLfloat Cubecolors[]    = { 1, 1, 1,   1, 1, 0,   1, 0, 0,      // v0-v1-v2 (fro
 
                         0, 0, 1,   0, 0, 0,   0, 1, 0,      // v4-v7-v6 (back)
                         0, 1, 0,   0, 1, 1,   0, 0, 1 };    // v6-v5-v4
-
 //GLfloat mapvertices[1024][1024];
-
-
 static GLfloat vdata[12][3] = {
     {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z},
     {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X},
@@ -121,12 +102,10 @@ static GLuint tindices[20][3] = {
     {8,10,1}, {8,3,10}, {5,3,8}, {5,2,3}, {2,7,3},
     {7,10,3}, {7,6,10}, {7,11,6}, {11,0,6}, {0,1,6},
     {6,1,10}, {9,0,11}, {9,11,2}, {9,2,5}, {7,2,11} };
-
 void normalize(GLfloat *a) {
     GLfloat d=sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
     a[0]/=d; a[1]/=d; a[2]/=d;
 }
-
 void drawtri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb) {
     if (div<=0) {
         glNormal3fv(a); glColor3f(cr,cg,cb); glVertex3f(a[0]*r, a[1]*r, a[2]*r);
@@ -146,18 +125,13 @@ void drawtri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float
         drawtri(ab, bc, ac, div-1, r,cr,cg,cb);  //<--Comment this line and sphere looks really cool!
     }
 }
-
 void drawsphere(int ndiv, float radius, float cr,float cg,float cb) {
     glBegin(GL_TRIANGLES);
     for (int i=0;i<20;i++)
         drawtri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius,cr,cg,cb);
     glEnd();
 }
-
-void drawcube()
-{
-
-
+void drawcube() {
     glBegin(GL_QUADS);
         // Front Face
         glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
@@ -206,21 +180,9 @@ void drawcube()
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);*/
 }
-
-
-
-C_Camera::C_Camera()
-{
-    Initialize();
-}
-
-C_Camera::~C_Camera()
-{
-
-}
-
-void C_Camera::Initialize()
-{
+C_Camera::C_Camera() { Initialize(); }
+C_Camera::~C_Camera() {  }
+void C_Camera::Initialize() {
     cScale = 1.0;
     bounce = 0.0;
     xpos  = 0.0f;
@@ -234,51 +196,29 @@ void C_Camera::Initialize()
     bMovingLeft=0;
     bMovingRight=0;
 }
-
-void C_Camera::Go()
-{
+void C_Camera::Go() {
 	glRotatef(xrot,1.0,0.0,0.0);
 	glRotatef(yrot,0.0,1.0,0.0);
 	glTranslated(-xpos,-ypos,-zpos);
 }
-
-void C_Camera::Rotate_Left()
-{
-}
-
-void C_Camera::Rotate_Right()
-{
-}
-
-void C_Camera::Move_Left_Start()
-{
-    bMovingLeft=true;
-}
-void C_Camera::Move_Left_Stop()
-{
-    bMovingLeft=false;
-}
-
-void C_Camera::Move_Left()
-{
+void C_Camera::Rotate_Left() { }
+void C_Camera::Rotate_Right() { }
+void C_Camera::Move_Left_Start() {     bMovingLeft=true; }
+void C_Camera::Move_Left_Stop() {     bMovingLeft=false; }
+void C_Camera::Move_Left() {
     if(!bMovingLeft) return;
 	float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
 	xpos -= float(cos(yrotrad)) * cScale;
 	zpos -= float(sin(yrotrad)) * cScale;
 }
-
-void C_Camera::Move_Right_Start()
-{
+void C_Camera::Move_Right_Start() {
     bMovingRight=true;
 }
-void C_Camera::Move_Right_Stop()
-{
+void C_Camera::Move_Right_Stop() {
     bMovingRight=false;
 }
-
-void C_Camera::Move_Right()
-{
+void C_Camera::Move_Right() {
     if(!bMovingRight) return;
     float yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
@@ -286,18 +226,13 @@ void C_Camera::Move_Right()
 	zpos += float(sin(yrotrad)) * cScale;
 
 }
-
-void C_Camera::Move_Forward_Start()
-{
+void C_Camera::Move_Forward_Start() {
     bMovingForward=true;
 }
-void C_Camera::Move_Forward_Stop()
-{
+void C_Camera::Move_Forward_Stop() {
     bMovingForward=false;
 }
-
-void C_Camera::Move_Forward()
-{
+void C_Camera::Move_Forward() {
     if(!bMovingForward) return;
 	float xrotrad, yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
@@ -307,18 +242,13 @@ void C_Camera::Move_Forward()
 	ypos -= float(sin(xrotrad)) ;
 	bounce += 0.04;
 }
-
-void C_Camera::Move_Backward_Start()
-{
+void C_Camera::Move_Backward_Start() {
     bMovingBackward=true;
 }
-void C_Camera::Move_Backward_Stop()
-{
+void C_Camera::Move_Backward_Stop() {
     bMovingBackward=false;
 }
-
-void C_Camera::Move_Backward()
-{
+void C_Camera::Move_Backward() {
     if(!bMovingBackward) return;
 	float xrotrad, yrotrad;
 	yrotrad = (yrot / 180 * 3.141592654f);
@@ -328,68 +258,41 @@ void C_Camera::Move_Backward()
 	ypos += float(sin(xrotrad));
 	bounce += 0.04;
 }
-
-void C_Camera::mouseMovement(int x, int y)
-{
+void C_Camera::mouseMovement(int x, int y) {
 	int diffx=x-lastx;
 	int diffy=y-lasty;
-
     //diffx=0;
 	//if(x>lastx) diffx=1;
     //if(x<lastx) diffx=-1;
-
     //diffy=0;
 	//if(y>lasty) diffy=1;
     //if(y<lasty) diffy=-1;
-
 	lastx=x;
 	lasty=y;
-
 	xrot += (float) diffy;
 	yrot += (float) diffx;
-
 	if(xrot < -60.0f) xrot=-60.0f;
 	if(xrot > 60.0f) xrot=60.0f;
-
     if(yrot < -5000.0f) yrot=0.0f;
-
 }
-
-
-/****************************************************************************************************/
-
 // C_GFX::C_GFX() { pCamera = 0; VideoFlags=0; }
-
-/****************************************************************************************************/
-
-C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF){
-    BaseTexture=0;
-    Model=0;
-    FirstModel=0;
-
+C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
+    pDefaultTexture=0;
+    pFirstTexture=0;
+    pFirstModel=0;
     g_pMesh=0;
     pManMap=0;
     pCamera=0;
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
 }
-
-/****************************************************************************************************/
-
-C_GFX::~C_GFX(){
-    ShutDownGFX();
-    SDL_Quit();
-}
-
-/****************************************************************************************************/
+C_GFX::~C_GFX() { ShutDownGFX(); SDL_Quit(); }
 
 bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
 #ifdef __linux__
 	putenv("SDL_VIDEODRIVER=dga");
 #endif
-
     pLog=pUSELOG;
     pGAF=pUSEGAF;
-
     bFullScreen =FullScreen;
     ScreenWidth =w;
     ScreenHeight=h;
@@ -400,11 +303,16 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     SDL_InitSubSystem(SDL_INIT_VIDEO);
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
+
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
-    if(!VideoInfo) {
+
+    if(VideoInfo) {
+    }
+    else {
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
+
     if(VideoInfo->hw_available) {
         VideoFlags |= SDL_HWSURFACE;
         pLog->_Add("Hardware surfaces...");
@@ -417,20 +325,43 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         VideoFlags |= SDL_HWACCEL;
         pLog->_Add("Hardware acceleration enabled!");
     }
+
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
-    pLog->_Add("Video memory:[%d]",VideoInfo->video_mem);
-    if(!SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) pLog->_Add("SDL_VideoModeOK failure");
+
+    if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
+    }
+    else {
+        pLog->_Add("SDL_VideoModeOK failure");
+        return false;
+    }
+
     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
-    if(!pScreen) {
+    if(pScreen) {
+    }
+    else {
         pLog->_Add("Can't set up pScreen! ErroR!");
         return false;
     }
+
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(wincaption);
-    pLog->_Add("SDL_VideoModeOK");
-    if(!InitGL()) return false;
-    pLog->_Add("OpenGL initialized");
+
+    pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
+
+
+    if(InitGL()) {
+        pLog->_Add("OpenGL initialized");
+
+    }
+    else {
+        pLog->_Add("Can't initialize OpenGL");
+        return false;
+    }
+
+
+
+
 #ifdef _WIN32
 /*  glGenBuffersARB     = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffersARB");
 	glBindBufferARB     = (PFNGLBINDBUFFERARBPROC) wglGetProcAddress("glBindBufferARB");
@@ -443,31 +374,61 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pCamera->Move_Right_Stop();
         pCamera->Move_Forward_Stop();
         pCamera->Move_Backward_Stop();
+        pLog->_Add("Camera initialized");
     }
-    pLog->_Add("Camera initialized");
-    BaseTexture=0;
-    if(!InitBaseGFX()) return false;
-    LoadBaseGFX(pGAF);
-    pLog->_Add("Base Textures initialized");
+    else {
+        pLog->_Add("Can't initialize Camera");
+        return false;
+    }
+
+    if(InitBaseGFX()) {
+        pLog->_Add("Base Textures initialized");
+    }
+    else {
+        pLog->_Add("Can't initialize Base Textures");
+        return false;
+    }
+
+    pDefaultTexture=new CGLTexture;
+    if(pDefaultTexture) {
+        pDefaultTexture->LoadPNG("base/default.png");
+        pLog->_Add("Default Texture initialized");
+    }
+    else {
+        pLog->_Add("Can't initialize Default Texture");
+        return false;
+    }
+
+    g_pMesh = new CMesh(pLog, pGAF, pDefaultTexture);
+    if(g_pMesh) {
+        pLog->_Add("Map mesh initialized");
+    }
+    else {
+        pLog->_Add("Can't initialize Map mesh");
+        return false;
+    }
+
+	pManMap = new CMantraMap();
+	if(pManMap) {
+        pLog->_Add("pManMap initialized");
+	}
+	else {
+        pLog->_Add("Can't initialize pManMap");
+        return false;
+	}
+
     //if(!InitModels()) return false;
     //pLog->_Add("Models initialized");
-    g_pMesh = new CMesh(pLog, pGAF, BaseTexture[103].texture);
-	pManMap = new CMantraMap();
-	pLog->_Add("Map mesh initialized");
+
+
     pLog->_Add("GFX Initialized");
     return true;
 }
-
-/****************************************************************************************************/
-
 void C_GFX::SetWindowTitle(char *fmt, ...) {
     char ach[512]; va_list va; va_start( va, fmt ); vsprintf( ach, fmt, va ); va_end( va );
     strcpy(WindowCaption, ach);
     SDL_WM_SetCaption(WindowCaption,0);
 }
-
-/****************************************************************************************************/
-
 void C_GFX::ToggleFullScreen(void){
     // SDL_WM_ToggleFullScreen(pScreen);
     /*
@@ -479,9 +440,6 @@ void C_GFX::ToggleFullScreen(void){
 	pScreen = SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
 	InitGL();	*/
 }
-
-/****************************************************************************************************/
-
 void C_GFX::ShutDownGFX(void) {
     pLog->_DebugAdd("Shutting down SDL/OpenGL GFX subsystem...");
 
@@ -490,6 +448,7 @@ void C_GFX::ShutDownGFX(void) {
     DEL(pManMap);
 
     DestroyBaseGFX();
+    DEL(pDefaultTexture);
     DestroyModels();
 
     glFinish();
@@ -499,9 +458,6 @@ void C_GFX::ShutDownGFX(void) {
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     pLog->_Add("SDL/OpenGL GFX subsystem shutdown...");
 }
-
-/****************************************************************************************************/
-
 int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glViewport(0, 0, SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h);
@@ -511,19 +467,8 @@ int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
     return true; // Initialization Went OK
 }
-
-/****************************************************************************************************/
-void C_GFX::EndScene(void){
-    FlipSurfaces();
-}
-
-void C_GFX::FlipSurfaces(void){
-	glFlush();
-	SDL_GL_SwapBuffers();
-}
-
-/****************************************************************************************************/
-
+void C_GFX::EndScene(void){     FlipSurfaces(); }
+void C_GFX::FlipSurfaces(void) { glFlush(); SDL_GL_SwapBuffers(); }
 void C_GFX::BeginScene(void) {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -644,82 +589,67 @@ void C_GFX::BeginScene(void) {
     }
 		*/
 }
-
-
-/****************************************************************************************************/
-
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs){
 	//ShutDownGFX();
  	//InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
 }
-
-/****************************************************************************************************/ // BASE GFX
-
 bool C_GFX::InitBaseGFX() {
-    // BaseTexture=0;
-	BaseTexture=new CGLTextureList[MAX_BASE_GFX];
-	if(!BaseTexture) {
-		pLog->_Add("BaseTexture initialization failure...");
-		return false;
-	}
-    for(int i=0;i<MAX_BASE_GFX;i++) {
-		BaseTexture[i].texture=0;
-    }
-    pLog->_Add("BaseGFX initialized...");
-	return 1;
+    LoadBaseGFX(pGAF);
+    return true;
 }
-
-/****************************************************************************************************/
-
 bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
-    pLog->_DebugAdd("Begin LoadBaseGFX...");
-    for(int i=0;i<MAX_BASE_GFX;i++) {
-		Load1BaseGFX(pGAF,i);
-	}
-	return 1;
+    CGLTexture *pTexture;
+    DIR *dpdf;
+    struct dirent *epdf;
+    dpdf = opendir("base");
+    if (dpdf != NULL){
+       while (epdf = readdir(dpdf)){
+            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
+                (dlcs_strcasecmp(epdf->d_name,"..")) ) {
+            }
+            else {
+                if(sp_isdir(epdf->d_name)) {
+
+                }
+                else {
+                    pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
+                    pTexture=pFirstTexture;
+                    if(pTexture) {
+                        while(pTexture->pNext) {
+                            pTexture=pTexture->pNext;
+                        }
+                        pTexture->pNext=new CGLTexture;
+                        pTexture=pTexture->pNext;
+                    }
+                    else {
+                        pFirstTexture=new CGLTexture;
+                        pTexture=pFirstTexture;
+                    }
+                    pTexture->LoadPNG(va("base/%s",epdf->d_name));
+                    if(!pTexture->bmap) {
+                        pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
+                        DEL(pTexture);
+                    }
+                    else {
+                        pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
+                    }
+                }
+            }
+        }
+    }
+    closedir(dpdf);
+	return true;
 }
-
-/****************************************************************************************************/
-
-bool C_GFX::Load1BaseGFX(CGAF *pGAF,int which) {
-    pLog->_DebugAdd("Begin Load1BaseGFX...");
-    char fname[1024]; memset(fname,0,1024);
-    sprintf(fname,"base/b%04d.png",which);
-	if(!BaseTexture[which].texture) {
-		BaseTexture[which].texture=new CGLTexture(pLog,pGAF,fname);
-        // BaseTexture[which].texture->usemask=false;
-        BaseTexture[which].texture->LoadPNG(fname); // BMP(pGAF,fname,1);
-        strcpy(BaseTexture[which].texture->name,va("%d",which));
-		return false;
-	}
-
-    if(!BaseTexture[which].texture) {
-		pLog->_DebugAdd("ERROR: texture not valid");
-		return false;
-	}
-
-	// BaseTexture[which].texture->usemask=false;
-   	BaseTexture[which].texture->LoadPNG(fname); //BMP(pGAF,fname,1);
-    strcpy(BaseTexture[which].texture->name,va("%d",which));
-    pLog->_DebugAdd("Loaded base texture [%d]",which);
-    return 1;
-}
-
-/****************************************************************************************************/
-
-CGLTexture *C_GFX::GetBaseGFX(char *name) {
-    if(!BaseTexture) return false;
-    for(int i=0;i<MAX_BASE_GFX;i++)
-        if(BaseTexture[i].texture)
-            if(dlcs_strcasecmp(BaseTexture[i].texture->name,name))
-                return BaseTexture[i].texture;
-    return false;
-}
-
-/****************************************************************************************************/
 
 bool C_GFX::DestroyBaseGFX(void) {
-    pLog->_DebugAdd("Begin BaseTexture destroy...");
+    CGLTexture * pTexture;
+    pTexture=pFirstTexture;
+    while(pTexture) {
+        pFirstTexture=pTexture;
+        pTexture=pTexture->pNext;
+        DEL(pFirstTexture);
+    }
+    /* pLog->_DebugAdd("Begin BaseTexture destroy...");
 
 	if(!BaseTexture) return 0;
 	pLog->_DebugAdd("BaseTexture destroy... 2");
@@ -733,20 +663,14 @@ bool C_GFX::DestroyBaseGFX(void) {
     delete [] BaseTexture; BaseTexture=0;
 
     pLog->_DebugAdd("BaseTexture destroyed..."); return false;
+    */
 }
-
-/****************************************************************************************************/ // MODELS
-
-bool C_GFX::InitModels()
-{
+bool C_GFX::InitModels() {
 	pLog->_DebugAdd("Begin Models init...");
 	LoadModels();
 	pLog->_DebugAdd("Models initialized...");
 	return true;
 }
-
-/****************************************************************************************************/
-
 bool C_GFX::LoadModels(void) {
 /*
 	int i=0;
@@ -778,56 +702,35 @@ bool C_GFX::LoadModels(void) {
 */
 	return true;
 }
-
-/****************************************************************************************************/
-
-bool C_GFX::Load1Model(int i)
-{
-
+bool C_GFX::Load1Model(int i) {
+    /*
     pLog->_DebugAdd("C_GFX::Load1Model() Begin");
-
-	if(!Model) return false;
-
 	pLog->_DebugAdd("C_GFX::Load1Model() Attempting to load [%s]",(char *)va("models/%04d.md2",i));
-
-	if(	!Model->Load((char *)va("models/%04d.md2",i),(char *)va("models/%04d.bmp",i)))
-    {
+	if(	!Model->Load((char *)va("models/%04d.md2",i),(char *)va("models/%04d.bmp",i))) {
         pLog->_DebugAdd("C_GFX::Load1Model() Model [%s] LOAD FAILURE!",(char *)va("models/%04d.md2",i));
         return false;
     }
-
-    if(Model)
-    {
+    if(Model) {
         strcpy(Model->name,va("%d",i));
         pLog->_DebugAdd("C_GFX::Load1Model() Created model [%s]",Model->name);
     }
-
 	pLog->_DebugAdd("C_GFX::Load1Model() End");
-
+	*/
 	return true;
 }
 
-/****************************************************************************************************
-
-CGLModel *C_GFX::GetModel(char *name)
-{
-
-
+/*
+CGLModel *C_GFX::GetModel(char *name) {
 	Model=FirstModel;
-	while(Model)
-	{
+	while(Model) {
 		if(atoi(Model->name)==atoi(name))
 		return Model; Model=Model->next;
 	}
-
 	return false;
 }
-
-/****************************************************************************************************/
-
-bool C_GFX::DestroyModels(void)
-{
-	pLog->_DebugAdd("Begin Models destroy...");
+*/
+bool C_GFX::DestroyModels(void) {
+    /*	pLog->_DebugAdd("Begin Models destroy...");
 	CGLModel *del;
 	Model=FirstModel;
 	while(Model)
@@ -837,18 +740,10 @@ bool C_GFX::DestroyModels(void)
 		DEL(del);
 	}
 	pLog->_DebugAdd("Models destroyed...");
-
+*/
 	return true;
 }
-
-/****************************************************************************************************/
-
-
-
-
-void C_GFX::RenderScene(void) // Render the game scene Frame
-{
-
+void C_GFX::RenderScene(void) { // Render the game scene Frame
    //static float xxx;
 
    //xxx+=.005;
@@ -983,11 +878,7 @@ void C_GFX::RenderScene(void) // Render the game scene Frame
 	//glPopMatrix();
 
 }
-
-void C_GFX::DrawSun(void)
-{
-
-
+void C_GFX::DrawSun(void) {
     static float der;
     static float zpos;
     static float ypos;
@@ -1027,19 +918,22 @@ void C_GFX::DrawSun(void)
 
 	//glDisable(GL_BLEND);
 	//glEnable(GL_TEXTURE_2D);
-    //if(SunTex) glBindTexture(GL_TEXTURE_2D, SunTex->bmap);
 
 	//glTranslatef(0.0f,0.0f,-5.0f);//zpos);//-2.0f);
 
-    if(pCamera)
-    {
+    if(pCamera) {
         pLog->_DebugAdd("%f %f %f",pCamera->xpos,pCamera->ypos,pCamera->zpos);
         pCamera->Go();
     }
 
     glTranslatef(0.0f,ypos,zpos);//-2.0f);
 
-    glBindTexture(GL_TEXTURE_2D,BaseTexture[101].texture->bmap);
+    CGLTexture *pTexture=0;
+    pTexture=GetTexture("base/sun.png");
+    if(!pTexture)
+        pTexture=GetTexture("base/default.png");
+
+    glBindTexture(GL_TEXTURE_2D, pTexture->bmap); // BaseTexture[101].texture->bmap);
     glDisable(GL_BLEND);
 
     drawsphere(2,60.0f,1.0f,1.0f,0.0f);
@@ -1067,45 +961,30 @@ void C_GFX::DrawSun(void)
 	//glPopMatrix();
 
 }
-
-/****************************************************************************************************/
-void C_GFX::DrawRect(RECT rc, long color)
-{
+void C_GFX::DrawRect(RECT rc, long color) {
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
 }
-/****************************************************************************************************/
 void C_GFX::DrawRect(int iX, int iY, int iX2, int iY2, long color) { DrawRectangle(iX,iY,iX2,iY2,color); }
-void C_GFX::DrawRectangle(int iX,int iY,int iX2,int iY2,long color)
-{
+void C_GFX::DrawRectangle(int iX,int iY,int iX2,int iY2,long color) {
     DrawBar(iX,iY,iX+1,iY2,color,color);
     DrawBar(iX,iY,iX2,iY+1,color,color);
     DrawBar(iX2,iY,iX2+1,iY2,color,color);
     DrawBar(iX,iY2,iX2,iY2+1,color,color);
 }
-/****************************************************************************************************/
-void C_GFX::DrawBar(RECT rc, long color)
-{
+void C_GFX::DrawBar(RECT rc, long color) {
     rc.right=rc.right+rc.left;
     rc.bottom=rc.bottom+rc.top;
     DrawBar(rc.left, rc.top, rc.right, rc.bottom, color, color);
 }
-/****************************************************************************************************/
-void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color)
-{
+void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color) {
     DrawBar(iX,iY,iX2,iY2, color, color);
 }
-/****************************************************************************************************/
-void C_GFX::DrawBar(RECT rc, long color1, long color2)
-{
+void C_GFX::DrawBar(RECT rc, long color1, long color2) {
     rc.right=rc.right+rc.left;
     rc.bottom=rc.bottom+rc.top;
     DrawBar(rc.left, rc.top, rc.right, rc.bottom, color1, color2);
 }
-/****************************************************************************************************/
-void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2)
-{
-
-
+void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2) {
     iY=SDL_GetVideoSurface()->h-iY;
     iY2=SDL_GetVideoSurface()->h-iY2;
 
@@ -1139,11 +1018,7 @@ void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2)
     glEnable(GL_DEPTH_TEST);
 
 }
-
-/****************************************************************************************************/
-
-void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2)
-{
+void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2) {
     iY=SDL_GetVideoSurface()->h-iY;
     iY2=SDL_GetVideoSurface()->h-iY2;
     glEnable(GL_BLEND);
@@ -1174,40 +1049,24 @@ void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long co
     glPopMatrix();
     glEnable(GL_DEPTH_TEST);
 }
-
-
-
-/****************************************************************************************************/
-void C_GFX::DrawVertice(int x, int y)
-{
+void C_GFX::DrawVertice(int x, int y) {
     DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255));
 }
+void C_GFX::DrawBaseGFX(int x,int y,int x2,int y2,char * name,u_char r,u_char g,u_char b) {
 
-/****************************************************************************************************/
-
-void C_GFX::DrawBaseGFX(int x,int y,int x2,int y2,int which,u_char r,u_char g,u_char b)
-{
-    if(!BaseTexture)
-	{
-		LoadBaseGFX(pGAF);
-		return;
-	}
-
-    if(!BaseTexture[which].texture)
-	{
+    /* if(!BaseTexture) { LoadBaseGFX(pGAF); return; }
+    if(!BaseTexture[which].texture) {
 		BaseTexture[which].texture = new CGLTexture();
 		return;
 	}
-
     if(!BaseTexture[which].texture->Loaded()) // 		!TOBOOL(BaseTexture[which].texture->bmap))
 	{
 		Load1BaseGFX(pGAF,which);
 		return;
 	}
-
     BaseTexture[which].texture->Draw2d(x,y,x2,y2,r,g,b);
+    */
 }
-
 /****************************************************************************************************
 void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
 {
@@ -1272,8 +1131,7 @@ void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
     glEnable(GL_DEPTH_TEST);
-		*/
-// }
+}		*/
 
 /****************************************************************************************************
 void C_GFX::DrawModels(void)
@@ -1316,8 +1174,7 @@ void C_GFX::DrawModels(void)
 }
 
 /****************************************************************************************************/
-void C_GFX::UpdatePickRay(GLfloat x,GLfloat y)
-{
+void C_GFX::UpdatePickRay(GLfloat x,GLfloat y) {
     GLfloat ray_pnt[4];
     GLfloat ray_vec[4];
     /*
@@ -1378,11 +1235,7 @@ void C_GFX::UpdatePickRay(GLfloat x,GLfloat y)
     // GLdouble gl_z = 100.0 ;  gl_x = mX + ((mZoom - gl_z) * (gl_x - mX) / (mZoom - gl_z - z))) ;  gl_y = mY + ((mZoom - gl_z) * (gl_y - mY) / (mZoom - gl_z - z))) ;
 
 }
-
-
-/****************************************************************************************************/
-u_char C_GFX::GetFade(char cWhichFade)
-{
+u_char C_GFX::GetFade(char cWhichFade) {
     static u_char  cFader1=0;
     static unsigned long dwFadeTimer1=dlcs_get_tickcount();
     static unsigned long dwFadeChangeTime1=400;
@@ -1437,10 +1290,7 @@ u_char C_GFX::GetFade(char cWhichFade)
     if(cWhichFade==4) return cFader4;
     return 0;
 }
-
-
-
-void C_GFX::draw_3d_box(int x, int y, int x2, int y2){
+void C_GFX::draw_3d_box(int x, int y, int x2, int y2) {
     RECT r;
     r.left=x;
     r.top=y;
@@ -1469,4 +1319,14 @@ void C_GFX::draw_3d_box(RECT rect){
                     rect.top+rect.bottom-2,
                     LONGRGB(180,180,180),
                     LONGRGB(180,180,180));
+}
+CGLTexture *C_GFX::GetTexture(char * name) {
+    CGLTexture *pTexture;
+    pTexture=pFirstTexture;
+    while(pTexture) {
+        if(dlcs_strcasecmp(pTexture->tfilename,name)) return pTexture;
+        pTexture=pTexture->pNext;
+    }
+    // TODO: Attempt to load texture
+    return 0;
 }
