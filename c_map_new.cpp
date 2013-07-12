@@ -6,6 +6,14 @@ CMesh :: CMesh() {
     pLog=0;
 }
 
+CMesh::CMesh(CLog *pInLog, CGAF *pInGAF) {
+    pLog=pInLog;
+    pGAF=pInGAF;
+    bMadeLog=false;
+    Initialize();
+    pTexture=0;
+}
+
 CMesh::CMesh(CLog *pInLog, CGAF *pInGAF, CGLTexture *pInTexture) {
     pLog=pInLog;
     pGAF=pInGAF;

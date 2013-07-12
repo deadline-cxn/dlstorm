@@ -399,7 +399,8 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         return false;
     }
 
-    g_pMesh = new CMesh(pLog, pGAF, pDefaultTexture);
+    g_pMesh = new CMesh(pLog,pGAF);
+   // g_pMesh = new CMesh(pLog, pGAF, pDefaultTexture);
     if(g_pMesh) {
         pLog->_Add("Map mesh initialized");
     }
@@ -744,6 +745,9 @@ bool C_GFX::DestroyModels(void) {
 	return true;
 }
 void C_GFX::RenderScene(void) { // Render the game scene Frame
+
+    CGLTexture *pTexture ;
+
    //static float xxx;
 
    //xxx+=.005;
@@ -781,10 +785,10 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
 
     if(pCamera) pCamera->Go();
 
-  glEnable (GL_FOG);  //enable this for fog
-  glFogi (GL_FOG_MODE, GL_LINEAR);
-  glFogf (GL_FOG_START, 484.0f);
-  glFogf (GL_FOG_END, 5880.0f);
+    glEnable (GL_FOG);  //enable this for fog
+    glFogi (GL_FOG_MODE, GL_LINEAR);
+    glFogf (GL_FOG_START, 484.0f);
+    glFogf (GL_FOG_END, 5880.0f);
 
 
 
@@ -792,9 +796,19 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
 	glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
 
-    if(g_pMesh->pTexture)
-    if(g_pMesh->pTexture->bmap)
-	glBindTexture(GL_TEXTURE_2D, g_pMesh->pTexture->bmap);
+    if(g_pMesh->pTexture) {
+        if(g_pMesh->pTexture->bmap)
+            glBindTexture(GL_TEXTURE_2D, g_pMesh->pTexture->bmap);
+    }
+    else {
+        pTexture=GetTexture("base/grass.png");
+        if(pTexture) {
+                if(pTexture->bmap)
+                    glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+        }
+
+    }
+
 
     glVertexPointer( 3, GL_FLOAT, 0, g_pMesh->m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
     glTexCoordPointer( 2, GL_FLOAT, 0, g_pMesh->m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data

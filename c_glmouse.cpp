@@ -167,7 +167,7 @@ GLvoid C_MouseCursor::draw(void) {
     glDisable(GL_COLOR_MATERIAL);
     glBindTexture(GL_TEXTURE_2D,pTexture->bmap);
 
-    //glColor3f(1.0f,1.0f,1.0f);
+    glColor3f(1.0f,1.0f,1.0f);
     //glBlendFunc(GL_ONE, GL_ONE);
     //glDepthMask(false);
 

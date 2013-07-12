@@ -33,6 +33,7 @@ class CMesh
 {
 public:
 	CMesh();													// Mesh Constructor
+	CMesh(CLog *pInLog, CGAF *pInGAF);
 	CMesh(CLog *pInLog, CGAF * pInGAF, CGLTexture *pInTexture);				// Mesh Constructor
 	~CMesh();	     											// Mesh Deconstructor
 

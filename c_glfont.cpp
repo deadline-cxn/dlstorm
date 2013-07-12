@@ -498,11 +498,10 @@ GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int set, u_char r
     if(!pFontTex) return;
     if(!pFontTex->bmap) { pFontTex->LoadPNG(va("%s.png",szFile)); }//BMP(pGAF,va("%s.bmp",szFile),0); }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
-    if(set<2)
-    {
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
+    if(set<2) {
+   //     glMatrixMode(GL_MODELVIEW);
+  //      glPushMatrix();
+   //     glLoadIdentity();
 /*
         glColor3f(1.0f,1.0f,1.0f);
         glBlendFunc(GL_DST_COLOR,GL_ZERO);
@@ -527,7 +526,8 @@ GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int set, u_char r
     */
 
         glColor3ub(r,g,b);
-        glBlendFunc(GL_ONE, GL_ONE);
+        //glBlendFunc(GL_ONE, GL_ONE);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);       // Select Our Font Texture
         glEnable(GL_TEXTURE_2D);
@@ -541,9 +541,9 @@ GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int set, u_char r
         glMatrixMode(GL_MODELVIEW);                         // Select The Modelview Matrix
         glPopMatrix();                                      // Restore The Old Projection Matrix
         glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
-        glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
+        //glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+        //glMatrixMode(GL_MODELVIEW);
+        //glPopMatrix();
     }
 }
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -556,7 +556,7 @@ GLvoid CGLFont::BoldPrint(GLint x,GLint y, const char *string,int set, u_char r,
     if(set<2){
         glPushMatrix();
         glLoadIdentity();
-
+/*
         glColor3f(1.0f,1.0f,1.0f);
         glBlendFunc(GL_DST_COLOR,GL_ZERO);
         glEnable(GL_BLEND);
@@ -580,19 +580,20 @@ GLvoid CGLFont::BoldPrint(GLint x,GLint y, const char *string,int set, u_char r,
 
         glListBase(pFontMaskList-32+(128*set));             // Choose The Font Set (0 or 1)
         glCallLists(strlen(string),GL_BYTE,string);         // Write The Text To The Screen
+*/
 
-        /*
         glColor3ub(r,g,b);
-        glBlendFunc(GL_ONE, GL_ONE);
+        //glBlendFunc(GL_ONE, GL_ONE);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);       // Select Our Font Texture
         glEnable(GL_TEXTURE_2D);
         glLoadIdentity();
-        gluOrtho2D(10,pClientData->ScreenWidth-10,0,pClientData->ScreenHeight);         // Set Up An Ortho Screen
+        gluOrtho2D(10,SDL_GetVideoSurface()->w-10,0,SDL_GetVideoSurface()->h);         // Set Up An Ortho Screen
         glTranslated(x,y-2,0);
         glListBase(pFontList-32+(128*set));                 // Choose The Font Set (0 or 1)
         glCallLists(strlen(string),GL_BYTE,string);         // Write The Text To The Screen
-        */
+
 
         glMatrixMode(GL_PROJECTION);                        // Select The Projection Matrix
         glPopMatrix();                                      // Restore The Old Projection Matrix
