@@ -9,6 +9,7 @@
 // CGLFont Class
 //////////////////////////////////////////////////////////////////////////////////////////
 CGLFont::CGLFont() {
+    pNext=0;
     pFontTex=0;
     r=220;
     g=220;
@@ -22,6 +23,7 @@ CGLFont::CGLFont() {
 
 
 CGLFont::CGLFont(CLog *pInLog){
+    pNext=0;
     pLog=pInLog;
     pFontTex=0;
     r=220;
@@ -35,6 +37,7 @@ CGLFont::CGLFont(CLog *pInLog){
 }
 
 CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog){
+    pNext=0;
     pGAF=pInGAF;
     pLog=pInLog;
     pFontTex=0;
@@ -50,13 +53,12 @@ CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog){
 
 //////////////////////////////////////////////////////////////////////////////////////////
 CGLFont::CGLFont(char *fn){
+    pNext=0;
     pFontTex=0; Load(fn); r=120; g=120; b=120; width=8.5f;
     height=8.5f; memset(Set1,0,64); memset(Set2,0,64); memset(szFile,0,1024);
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-CGLFont::~CGLFont(){
-    Kill();
-}
+CGLFont::~CGLFont(){ Kill(); }
 //////////////////////////////////////////////////////////////////////////////////////////
 bool CGLFont::Load(const char *file) { // Build Our Font Display List
     float   cx,cy;
@@ -67,7 +69,7 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
     pFontTex->pGAF=pGAF;
     if(!pFontTex) return 0;
     pFontTex->usemask=0;
-    pFontTex->LoadPNG(va("%s.png",szFile));
+    pFontTex->LoadPNG(va("%s",szFile));
     pFontList=glGenLists(256);                          // Creating 256 Display Lists
     glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);         // Select Our Font Texture
     for(loop=0; loop<256; loop++) {                      // Loop Through All 256 Lists
@@ -87,25 +89,6 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
             glTranslated(16,0,0);                       // Move To The Right Of The Character
         glEndList();                                    // Done Building The Display List
     }                                                   // Loop Until All 256 Are Built
-    /* pFontMaskList=glGenLists(256);
-    glBindTexture(GL_TEXTURE_2D,pFontTex->mask);
-    for(loop=0;loop<256;loop++) {
-        cx=float(loop%16)/16.0f;
-        cy=float(loop/16)/16.0f;
-        glNewList(pFontMaskList+loop,GL_COMPILE);
-            glBegin(GL_QUADS);
-                glTexCoord2f(cx,1-cy-0.0625f);
-                glVertex2i(0,0);                        // Vertex Coord (Bottom Left)
-                glTexCoord2f(cx+0.0625f,1-cy-0.0625f);  // Texture Coord (Bottom Right)
-                glVertex2i(16,0);                       // Vertex Coord (Bottom Right)
-                glTexCoord2f(cx+0.0625f,1-cy);          // Texture Coord (Top Right)
-                glVertex2i(16,16);                      // Vertex Coord (Top Right)
-                glTexCoord2f(cx,1-cy);                  // Texture Coord (Top Left)
-                glVertex2i(0,16);                       // Vertex Coord (Top Left)
-            glEnd();                                    // Done Building Our Quad (Character)
-            glTranslated(16,0,0);                       // Move To The Right Of The Character
-        glEndList();                                    // Done Building The Display List
-    }                                                   // Loop Until All 256 Are Built   */
     return pFontTex->Loaded();
 }
 //////////////////////////////////////////////////////////////////////////////////////////

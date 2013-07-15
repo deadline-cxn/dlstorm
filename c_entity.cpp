@@ -1,4 +1,5 @@
 #include "c_entity.h"
+
 C_Entity::C_Entity() {
     Initialize();
 }
@@ -15,18 +16,17 @@ C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel
     pGFX=pInGFX;
     pModel=pInModel;
 }
-C_Entity::~C_Entity() {
-}
+
+C_Entity::~C_Entity() { }
+
 void C_Entity::Initialize(void) {
+    pTexture=0;
     pNext=0;
     pPrev=0;
     pLog=0;
     pGAF=0;
     pGFX=0;
     pModel=0;
-    set_defaults();
-}
-void C_Entity::set_defaults() {
     strcpy(name,"unknown");
     type=ENTITY_INVISIBLE;
     life_points=100;
@@ -46,20 +46,23 @@ void C_Entity::set_defaults() {
     respawn_time_min=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
     respawn_time_max=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
 }
-void C_Entity::Draw(void) {
 
+void C_Entity::Draw(void) {
     glTranslatef(Pos.x, Pos.y, Pos.z);  // location
     glRotatef(Rot.x,1.0f,0,0);
     glRotatef(Rot.y,0,1.0f,0);
     glRotatef(Rot.z,0,0,1.0f);       // rotation
     glScalef(Scale.x,Scale.y,Scale.z);  // scale
     glColor3f(1.0f,1.0f,1.0f);
-
-
     if(pModel) {
 
     }
     else {
+        if(pTexture) {
+            if(pTexture->bmap) {
+                glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+            }
+        }
         drawcube();
     }
 
@@ -71,6 +74,7 @@ void C_Entity::Draw(void) {
     CGAF    *pGAF; // pointer to GAF
     C_GFX   *pGFX; // pointer to GFX    */
 }
+
 bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {
     if(!rcv_entity) return false;
     if(!action_entity) action_entity=this;

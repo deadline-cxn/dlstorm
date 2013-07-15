@@ -1171,6 +1171,8 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
 
                 pLog->_DebugAdd("C_GCTRL::draw FM_GC_STATIC_TEXT 3");
 
+                if(font==0) font=1;
+                if(fontbank==0) fontbank=1;
                 pGUI->gPrint(x,y,va("%s",value),font,fontbank);
 
                 pLog->_DebugAdd("C_GCTRL::draw FM_GC_STATIC_TEXT 4");
@@ -1822,6 +1824,7 @@ C_GUI::~C_GUI(){
 }
 
 void C_GUI::init(void){
+    pFirstFont=0;
     bCtrlMoving=0;
     bStmpMoving=0;
     bCtrlSizing=0;
@@ -1900,7 +1903,7 @@ void C_GUI::init(void){
     initFonts();
     initButtons();
     loadButtons("");
-    loadFonts();
+//     loadFonts();
 //    MOUSEMODE=MP_MENU;
     memset(szPromptMsg,0,_MAX_PATH);
     strcpy(szCommand,"nop");
@@ -3245,64 +3248,111 @@ bool C_GUI::destroyButtons(){
 
 bool C_GUI::initFonts(){
     pLog->_DebugAdd("Begin Fonts init...");
-    font=0;
+    loadFonts();
+    return 1;
+    /* font=0;
     font=new CGLFontList[MAX_FONTS];
     if(!font) return false;
     for(int i=0;i<MAX_FONTS;i++)
         font[i].ob=0;
-    pLog->_DebugAdd("Fonts initialized...");
-    return 1;
+    pLog->_DebugAdd("Fonts initialized..."); */
 }
 
 bool C_GUI::loadFonts(void){
     pLog->_DebugAdd("Begin Fonts load...");
-    destroyFonts();
-    if(!initFonts()) return false;
-    bool loaded=false;
-    for(int i=0;i<MAX_FONTS;i++){
-        if(!font[i].ob){
-			font[i].ob=new CGLFont(pGAF, pLog);
-		}
-        if(font[i].ob){
-            if(font[i].ob->Load(va("fonts/fnt%02d",i))){
-                loaded=true;
-			}
-		}
+    CGLFont* pFont;
+    int x=1;
+    DIR *dpdf;
+    struct dirent *epdf;
+    dpdf = opendir("fonts");
+    if (dpdf != NULL){
+       while (epdf = readdir(dpdf)){
+            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
+                (dlcs_strcasecmp(epdf->d_name,"..")) ) {
+            }
+            else {
+                if(sp_isdir(epdf->d_name)) {
+
+                }
+                else {
+                    pLog->AddEntry("Found font texture: font/%s\n",epdf->d_name);
+                    pFont=pFirstFont;
+                    if(pFont) {
+                        while(pFont->pNext) {
+                            pFont=pFont->pNext;
+                        }
+                        pFont->pNext=new CGLFont(pGAF, pLog);
+                        pFont=pFont->pNext;
+                    }
+                    else {
+                        pFirstFont=new CGLFont(pGAF, pLog);
+                        pFont=pFirstFont;
+                    }
+                    pFont->Load(va("fonts/%s",epdf->d_name));
+                    pFont->iWhich=x;
+                    x++;
+                    if(!pFont->pFontTex->bmap) {
+                        pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
+                        DEL(pFont);
+                    }
+                    else {
+                        pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pFont->pFontTex->tfilename,pFont->pFontTex->bmap);
+                    }
+                }
+            }
+        }
     }
-    if(font[2].ob){
-		font[2].ob->r=255;
-		font[2].ob->g=255;
-		font[2].ob->b=255;
-	}
-    if(loaded){
-        pLog->_DebugAdd("Fonts loaded...");
-    }else{
-        pLog->_DebugAdd("Fonts load failure...");
-    }
-    return loaded;
+    closedir(dpdf);
 }
+
 bool C_GUI::destroyFonts(void){
-    pLog->_DebugAdd("Begin Fonts destroy...");
-	if(!font) return false;
-    for(int i=0;i<MAX_FONTS;i++)
-		DEL(font[i].ob);
-    delete [] font; font=0;
-    pLog->_DebugAdd("Fonts destroyed...");
-    return true;
+    CGLFont* pFont;
+    pFont=pFirstFont;
+    while(pFont) {
+        pFirstFont=pFont;
+        pFont=pFont->pNext;
+        DEL(pFirstFont);
+    }
 }
 
-void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt) { gPrint(iX,iY,szText,fnt,1); }
+CGLFont* C_GUI::GetFont(char* szFont) {
+    CGLFont* pFont;
+    pFont=pFirstFont;
+    while(pFont) {
+        if(dlcs_strcasecmp(pFont->pFontTex->tfilename,szFont)) {
+            return pFont;
+        }
+        pFont=pFont->pNext;
+    }
+    return 0;
+}
+CGLFont* C_GUI::GetFont(int iWhich){
+    CGLFont* pFont;
+    pFont=pFirstFont;
+    while(pFont) {
+        if(pFont->iWhich==iWhich) {
+            return pFont;
+        }
+        pFont=pFont->pNext;
+    }
+    return 0;
+}
 
-void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt, int set){ //void gPrintPct(float fX, float fY, char *szText,int fnt)
-    if(fnt<0) return;
-	if(fnt>MAX_FONTS) return;
-	if(!font) return;
-	if(!font[fnt].ob) return;
-	if(! (font[fnt].ob->pFontTex->Loaded())){
-		font[fnt].ob->Load(va("fonts/fnt%02d",fnt));
-		return;
-	}
-	font[fnt].ob->Print(iX-8.5,iY,szText,set);
+void C_GUI::gPrint(int iX,int iY,const char *szText,const char *fnt) { gPrint(iX,iY,szText,fnt,1);}
+void C_GUI::gPrint(int iX,int iY,const char *szText,const char *fnt,int wset) {
+    CGLFont *pFont;
+    pFont=GetFont((char *)fnt);
+    if(pFont) {
+        pFont->Print(iX-8.5,iY,szText,wset);
+    }
+}
+void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt) { gPrint(iX,iY,szText,fnt,1); }
+void C_GUI::gPrint(int iX,int iY,const char *szText,int fnt, int wset){
+    CGLFont *pFont;
+    pFont=GetFont(fnt);
+    if(pFont) {
+        pFont->Print(iX-8.5,iY,szText,wset);
+    }
 }
 
 void C_GUI::drawFPS(int iX,int iY) {
@@ -3345,7 +3395,6 @@ int  C_GUI::processKeyboard(){
     SDLKey ikey;
 
     Uint8 *keystate;//uint8_t *keystate; //__int8 *keystate;
-
 
     pMouse->Refresh();
 

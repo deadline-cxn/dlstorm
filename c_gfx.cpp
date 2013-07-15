@@ -164,22 +164,12 @@ void drawcube() {
         glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
         glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
     glEnd();
-/*  // enable vertex arrays
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_COLOR_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        // before draw, specify vertex arrays
-        glNormalPointer(GL_FLOAT, 0, Cubenormals);
-        glColorPointer(3, GL_FLOAT, 0, Cubecolors);
-        glVertexPointer(3, GL_FLOAT, 0, Cubevertices);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-        glDisableClientState(GL_COLOR_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);*/
 }
+
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
 void C_Camera::Initialize() {
+    pFollowEntity=0;
     cScale = 1.0;
     bounce = 0.0;
     xpos  = 0.0f;
@@ -197,6 +187,20 @@ void C_Camera::Go() {
 	glRotatef(xrot,1.0,0.0,0.0);
 	glRotatef(yrot,0.0,1.0,0.0);
 	glTranslated(-xpos,-ypos,-zpos);
+}
+void C_Camera::Update() {
+    if(pFollowEntity) {
+        xpos=pFollowEntity->Pos.x;
+        ypos=pFollowEntity->Pos.y;
+        zpos=pFollowEntity->Pos.z;
+        // todo add camera angles
+    }
+    else {
+        Move_Left();
+        Move_Right();
+        Move_Forward();
+        Move_Backward();
+    }
 }
 void C_Camera::Rotate_Left() { }
 void C_Camera::Rotate_Right() { }
@@ -442,13 +446,9 @@ void C_GFX::FlipSurfaces(void) { glFlush(); SDL_GL_SwapBuffers(); }
 void C_GFX::BeginScene(void) {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    if(pCamera) {
-        pCamera->Move_Left();
-        pCamera->Move_Right();
-        pCamera->Move_Forward();
-        pCamera->Move_Backward();
-    }
-/*  static stra star[500];
+    if(pCamera) pCamera->Update();
+    /*
+    static stra star[500];
     static bool bstars;
     static float ffy;
     static float fff;
@@ -536,7 +536,7 @@ void C_GFX::BeginScene(void) {
 			}
 
         }
-    }	*/
+    }*/
 }
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs){
 	//ShutDownGFX();
@@ -598,17 +598,6 @@ bool C_GFX::DestroyBaseGFX(void) {
         pTexture=pTexture->pNext;
         DEL(pFirstTexture);
     }
-    /* pLog->_DebugAdd("Begin BaseTexture destroy...");
-	if(!BaseTexture) return 0;
-	pLog->_DebugAdd("BaseTexture destroy... 2");
-    for(int i=0;i<MAX_BASE_GFX;i++)    {
-        pLog->_DebugAdd("BaseTexture destroy... 2.5");
-        DEL(BaseTexture[i].texture);
-        pLog->_DebugAdd("BaseTexture destroy... 3");
-    }
-    pLog->_DebugAdd("BaseTexture destroy... 4");
-    delete [] BaseTexture; BaseTexture=0;
-    pLog->_DebugAdd("BaseTexture destroyed..."); return false;   */
 }
 bool C_GFX::InitModels() {
 	pLog->_DebugAdd("Begin Models init...");

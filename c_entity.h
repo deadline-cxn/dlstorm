@@ -7,6 +7,8 @@
 #include "c_gfx.h"
 #include "c_gl3dmodel.h"
 
+class C_GFX;
+
 #define ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes
 
 enum tEntityActions {
@@ -103,7 +105,11 @@ public:
 
     GLfloat     Transparency; // use this for fading in and out, and for ghost/window effects
     CWayPoint   *pFirstWayPoint;
-    CGLModel    *pModel;   // pointer to model data to use
+
+    CGLTexture* pTexture;
+
+    CGLModel*   pModel;   // pointer to model data to use
+
     CLog        *pLog; // pointer to log
     CGAF        *pGAF; // pointer to GAF
     C_GFX       *pGFX; // pointer to GFX
@@ -127,7 +133,6 @@ resource_min 3, resource_max_9, respawn_min 0, respawn_max 0, respawn_timer_min 
 /*************************************************************************************************************************/
     void    Initialize(void);
     void    Draw(void);
-    void    set_defaults(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
     bool    push_event(C_Entity *rcv_entity, int event, char *args, C_Entity *action_entity);
 /*************************************************************************************************************************

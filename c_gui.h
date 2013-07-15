@@ -290,10 +290,10 @@ public:
     bool    isAStumpSizing(void);
     bool    isAControlSizing(void);
 
-    bool bCtrlMoving;
-    bool bStmpMoving;
-    bool bCtrlSizing;
-    bool bStmpSizing;
+    bool    bCtrlMoving;
+    bool    bStmpMoving;
+    bool    bCtrlSizing;
+    bool    bStmpSizing;
 
     void    draw(void);
     void    draw_ctrls(void);
@@ -331,8 +331,10 @@ public:
     void    drawCStatBar(int iX,int iY, int iW, int iT,int iV,long Color1,long Color2); // iT is total value, iV is current value, will draw percentage bar
     bool    flashCursor(int iX, int iY);
     void    gPrintPct(float fX, float fY,const char *szText,int fnt);
+    void    gPrint(int iX,int iY,const char *szText,const char *fnt);
+    void    gPrint(int iX,int iY,const char *szText,const char *fnt,int wset);
     void    gPrint(int iX,int iY,const char *szText,int font);
-    void    gPrint(int iX,int iY,const char *szText,int font, int set);
+    void    gPrint(int iX,int iY,const char *szText,int font, int wset);
     void    drawOSIcon(int iX,int iY,char *szOS);
     void    drawPrompt(void);
     void    drawFileXferStatus(void);
@@ -388,7 +390,13 @@ public:
 
     CGLTextureList      *ButtonTexture;
     CGLTextureList	    *B9utton;
-    CGLFontList         *font;
+
+
+    CGLFontList*    font;
+
+    CGLFont*            pFirstFont;
+    CGLFont*            GetFont(char* szWhichFont);
+    CGLFont*            GetFont(int iWhich);
 
     bool    bStaticToolTip;
     bool    bDrawToolTip;
