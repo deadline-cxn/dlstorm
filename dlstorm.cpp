@@ -15,7 +15,7 @@
 
 // __stdcall DllMain() { return 0; }
 
-using namespace std;
+//using namespace std;
 
 vector <string> explode(const string &delimiter, const string &str){
 	vector <string> arr;
@@ -46,12 +46,10 @@ vector <string> explode(const string &delimiter, const string &str){
 
 
 bool sp_istrue(char *text) {
-    if( (dlcs_strcasecmp(text,"on")) ||
-        (dlcs_strcasecmp(text,"1")) ||
-        (dlcs_strcasecmp(text,"true")) ||
-        (dlcs_strcasecmp(text,"yes"))
-        )
-        return true;
+    if(dlcs_strcasecmp(text,"on"))      return true;
+    if(dlcs_strcasecmp(text,"1"))       return true;
+    if(dlcs_strcasecmp(text,"true"))    return true;
+    if(dlcs_strcasecmp(text,"yes"))     return true;
     return false;
 }
 
@@ -356,7 +354,7 @@ int dscc(const char *x, const char *y) { return dlcs_strcasecmp(x,y); }
 int dlcs_strcasecmp(const char *szOne,const char *szTwo){
     int rval=0;
 #ifdef _WIN32
-    if(strcmp(szOne,szTwo)==0) rval=1;
+    if(strcasecmp(szOne,szTwo)==0) rval=1;
 #else
     if(strcasecmp(szOne,szTwo)==0) rval=1;
 #endif
@@ -412,56 +410,42 @@ char *dlcs_get_os_version(char *x){
     BOOL bOsVersionInfoEx;
     ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-    if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) )
-    {
+    if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) ) {
         osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
         if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) ){
             strcpy(x,"unknown");
             return x;
         }
     }
-    switch (osvi.dwPlatformId)
-    {
+    switch (osvi.dwPlatformId) {
         case VER_PLATFORM_WIN32_NT:
             if(osvi.dwMajorVersion <= 4 ) strcpy(szTemp,"Windows NT ");
-            if(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0)
-                strcpy(szTemp,"Windows 2000 ");
-            else if(bOsVersionInfoEx)
-            {
-                strcpy(szTemp,"Windows XP (or higher) ");
+            if(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0) strcpy(szTemp,"Windows 2000 ");
+            if(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1) strcpy(szTemp,"Windows XP ");
+            if(osvi.dwMajorVersion == 6 && osvi.dwMinorVersion==0) {
+                    if(osvi.wProductType == VER_NT_WORKSTATION)     strcpy(szTemp,"Windows Server 2008 ");
+                    else                                            strcpy(szTemp,"Windows Vista ");
             }
-            if(osvi.dwMajorVersion == 6)
-                strcpy(szTemp,"Windows 7 ");
+            if(osvi.dwMajorVersion == 6 && osvi.dwMinorVersion==1) {
+                    if(osvi.wProductType == VER_NT_WORKSTATION)     strcpy(szTemp,"Windows Server 2008 R2 ");
+                    else                                            strcpy(szTemp,"Windows 7 ");
+            }
+            if(osvi.dwMajorVersion == 6 && osvi.dwMinorVersion==2) {
+                    if(osvi.wProductType == VER_NT_WORKSTATION)     strcpy(szTemp,"Windows 8 ");
+                    else                                            strcpy(szTemp,"Windows Server 2012 ");
+            }
 
-            //if ( osvi.dwMajorVersion <= 4 )
-            //{0
-                 sprintf(szTemp2,
-                        "version %d.%d %s (Build %d)",
+            sprintf(szTemp2,"version %d.%d %s (Build %d)",
                         (int)osvi.dwMajorVersion,
                         (int)osvi.dwMinorVersion,
                         osvi.szCSDVersion,
                         (int)osvi.dwBuildNumber & 0xFFFF);
                 strcat(szTemp,szTemp2);
-            //}
-            //else
-            //{
-                //sprintf(szTemp2,"%s (Build %d)",osvi.szCSDVersion,(int)osvi.dwBuildNumber & 0xFFFF);
-                //strcat(szTemp,szTemp2);
-            //}
             break;
         case VER_PLATFORM_WIN32_WINDOWS:
-            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0)
-            {
-                sprintf(szTemp,"Windows 95 %s",osvi.szCSDVersion);
-            }
-            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10)
-            {
-                sprintf(szTemp,"Windows 98 %s",osvi.szCSDVersion);
-            }
-            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90)
-            {
-                strcpy(szTemp,"Windows ME");
-            }
+            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0) sprintf(szTemp,"Windows 95 %s",osvi.szCSDVersion);
+            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10)sprintf(szTemp,"Windows 98 %s",osvi.szCSDVersion);
+            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90) strcpy(szTemp,"Windows ME");
             break;
     }
     strcpy(x,szTemp);

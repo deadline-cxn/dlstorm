@@ -168,14 +168,11 @@ void drawcube() {
         glEnableClientState(GL_NORMAL_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
-
         // before draw, specify vertex arrays
         glNormalPointer(GL_FLOAT, 0, Cubenormals);
         glColorPointer(3, GL_FLOAT, 0, Cubecolors);
         glVertexPointer(3, GL_FLOAT, 0, Cubevertices);
-
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
         glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);*/
@@ -297,22 +294,17 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     ScreenWidth =w;
     ScreenHeight=h;
     ScreenColors=c;
-
     pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
-
     SDL_InitSubSystem(SDL_INIT_VIDEO);
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
-
     if(VideoInfo) {
     }
     else {
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
-
     if(VideoInfo->hw_available) {
         VideoFlags |= SDL_HWSURFACE;
         pLog->_Add("Hardware surfaces...");
@@ -325,17 +317,14 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         VideoFlags |= SDL_HWACCEL;
         pLog->_Add("Hardware acceleration enabled!");
     }
-
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
-
     if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
     }
     else {
         pLog->_Add("SDL_VideoModeOK failure");
         return false;
     }
-
     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
     if(pScreen) {
     }
@@ -343,13 +332,9 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't set up pScreen! ErroR!");
         return false;
     }
-
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(wincaption);
-
     pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
-
-
     if(InitGL()) {
         pLog->_Add("OpenGL initialized");
 
@@ -358,10 +343,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize OpenGL");
         return false;
     }
-
-
-
-
 #ifdef _WIN32
 /*  glGenBuffersARB     = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffersARB");
 	glBindBufferARB     = (PFNGLBINDBUFFERARBPROC) wglGetProcAddress("glBindBufferARB");
@@ -380,7 +361,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Camera");
         return false;
     }
-
     if(InitBaseGFX()) {
         pLog->_Add("Base Textures initialized");
     }
@@ -388,7 +368,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Base Textures");
         return false;
     }
-
     pDefaultTexture=new CGLTexture;
     if(pDefaultTexture) {
         pDefaultTexture->LoadPNG("base/default.png");
@@ -398,7 +377,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Default Texture");
         return false;
     }
-
     g_pMesh = new CMesh(pLog,pGAF);
    // g_pMesh = new CMesh(pLog, pGAF, pDefaultTexture);
     if(g_pMesh) {
@@ -408,7 +386,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Map mesh");
         return false;
     }
-
 	pManMap = new CMantraMap();
 	if(pManMap) {
         pLog->_Add("pManMap initialized");
@@ -417,11 +394,8 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize pManMap");
         return false;
 	}
-
     //if(!InitModels()) return false;
     //pLog->_Add("Models initialized");
-
-
     pLog->_Add("GFX Initialized");
     return true;
 }
@@ -432,8 +406,7 @@ void C_GFX::SetWindowTitle(char *fmt, ...) {
 }
 void C_GFX::ToggleFullScreen(void){
     // SDL_WM_ToggleFullScreen(pScreen);
-    /*
-    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
+/*  const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
     if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces..."); }
     else                        { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
 	if(bFullScreen==true) bFullScreen=false;
@@ -443,18 +416,14 @@ void C_GFX::ToggleFullScreen(void){
 }
 void C_GFX::ShutDownGFX(void) {
     pLog->_DebugAdd("Shutting down SDL/OpenGL GFX subsystem...");
-
     DEL(pCamera);
     DEL(g_pMesh);
     DEL(pManMap);
-
     DestroyBaseGFX();
     DEL(pDefaultTexture);
     DestroyModels();
-
     glFinish();
     glFlush();
-
     SDL_FreeSurface(pScreen);
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
     pLog->_Add("SDL/OpenGL GFX subsystem shutdown...");
@@ -473,16 +442,13 @@ void C_GFX::FlipSurfaces(void) { glFlush(); SDL_GL_SwapBuffers(); }
 void C_GFX::BeginScene(void) {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
     if(pCamera) {
         pCamera->Move_Left();
         pCamera->Move_Right();
         pCamera->Move_Forward();
         pCamera->Move_Backward();
     }
-/*
-    static stra star[500];
+/*  static stra star[500];
     static bool bstars;
     static float ffy;
     static float fff;
@@ -490,17 +456,12 @@ void C_GFX::BeginScene(void) {
     int y;
     glClearColor( (0.2f),(0.4f),(1.0f),0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     // change to draw sky here
     DrawBaseGFX(0,0,SDL_GetVideoSurface()->w,SDL_GetVideoSurface()->h,10,155,155,155);
-
     if(GAME_MODE==GAME_ON) { return; }
-    if(!Generic)
-    {
-        if(!bstars)
-        {
-            for(y=0;y<500;y++)
-            {
+    if(!Generic) {
+        if(!bstars){
+            for(y=0;y<500;y++)  {
                 star[y].x=(rand()%900-100);
                 star[y].y= rand()%900-150;
                 star[y].speed=(rand()%24)*0.48f+1.3f;
@@ -511,10 +472,8 @@ void C_GFX::BeginScene(void) {
         fff+=dir;
         if(fff>34)  dir =(-0.405f);
         if(fff<-34) dir =( 0.405f);
-        for(y=0;y<500;y++)
-        {
-            if(GAME_MODE!=GAME_ON)
-            {
+        for(y=0;y<500;y++){
+            if(GAME_MODE!=GAME_ON) {
                 DrawBaseGFX( (int)(star[y].x),
                              (int)(600-star[y].y-30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
                              (int)(star[y].x+2+star[y].speed ),
@@ -530,8 +489,7 @@ void C_GFX::BeginScene(void) {
         y=GetFade(2);
         ffy -= 3.4;
         if(ffy<(-100)) ffy=SDL_GetVideoSurface()->w+100;
-        if(GAME_MODE!=RETRO_INTRO_PLAY)
-        {
+        if(GAME_MODE!=RETRO_INTRO_PLAY){
             DrawBar(0,147+y,SDL_GetVideoSurface()->w,168+y,LONGRGB(0,0,0),LONGRGB(255,255,255));
             DrawBar(0,148+y,SDL_GetVideoSurface()->w,167+y,LONGRGB(255,255,255),LONGRGB(0,0,0));
             DrawBar(0,149+y,SDL_GetVideoSurface()->w,166+y,LONGRGB(0,0,0),LONGRGB(255,255,255));
@@ -543,52 +501,42 @@ void C_GFX::BeginScene(void) {
             WriteText((int)ffy+40,(int)149+y+18*sin((ffy+40)/23),"^+^&^eb",7);
             WriteText((int)ffy+48,(int)149+y+18*sin((ffy+48)/23),"^+^&^ey",7);
         }
-        else
-        {
-            if(!cgltSDL)
-            {
+        else{
+            if(!cgltSDL) {
                 cgltSDL=new CGLTexture();
                 cgltSDL->Load(va("%s%cdata%csdl.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
             }
-            else
-            {
+            else{
                 cgltSDL->Draw(80,SDL_GetVideoSurface()->h-96,80+128,SDL_GetVideoSurface()->h+22,255,255,255,255,255,255);
             }
 
-            if(!cgltFMOD)
-            {
+            if(!cgltFMOD){
                 cgltFMOD=new CGLTexture();
                 cgltFMOD->Load(va("%s%cdata%cfmod.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
             }
-            else
-            {
+            else{
                 cgltFMOD->Draw(218,SDL_GetVideoSurface()->h-74,282,SDL_GetVideoSurface()->h-10,255,255,255,255,255,255);
             }
 
-            if(!cgltOpenGL)
-            {
+            if(!cgltOpenGL){
                 cgltOpenGL=new CGLTexture();
                 cgltOpenGL->Load(va("%s%cdata%copengl.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
             }
-            else
-            {
+            else{
                 cgltOpenGL->Draw(292,SDL_GetVideoSurface()->h-108,292+128,SDL_GetVideoSurface()->h+28,255,255,255,255,255,255);
             }
 
-			if(!cgltBit4ge)
-			{
+			if(!cgltBit4ge){
 				cgltBit4ge=new CGLTexture();
 				cgltBit4ge->Load(va("%s%cdata%cdlstorm.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
 			}
-			else
-			{
+			else{
 				cgltBit4ge->Draw(512,SDL_GetVideoSurface()->h-168,768,SDL_GetVideoSurface()->h+88,255,255,255,255,255,255);
 				//DrawBit4ge(10,SDL_GetVideoSurface()->h-74,74,SDL_GetVideoSurface()->h-10,0);
 			}
 
         }
-    }
-		*/
+    }	*/
 }
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs){
 	//ShutDownGFX();
@@ -651,20 +599,16 @@ bool C_GFX::DestroyBaseGFX(void) {
         DEL(pFirstTexture);
     }
     /* pLog->_DebugAdd("Begin BaseTexture destroy...");
-
 	if(!BaseTexture) return 0;
 	pLog->_DebugAdd("BaseTexture destroy... 2");
-    for(int i=0;i<MAX_BASE_GFX;i++)
-    {
+    for(int i=0;i<MAX_BASE_GFX;i++)    {
         pLog->_DebugAdd("BaseTexture destroy... 2.5");
         DEL(BaseTexture[i].texture);
         pLog->_DebugAdd("BaseTexture destroy... 3");
     }
     pLog->_DebugAdd("BaseTexture destroy... 4");
     delete [] BaseTexture; BaseTexture=0;
-
-    pLog->_DebugAdd("BaseTexture destroyed..."); return false;
-    */
+    pLog->_DebugAdd("BaseTexture destroyed..."); return false;   */
 }
 bool C_GFX::InitModels() {
 	pLog->_DebugAdd("Begin Models init...");
@@ -673,21 +617,16 @@ bool C_GFX::InitModels() {
 	return true;
 }
 bool C_GFX::LoadModels(void) {
-/*
-	int i=0;
+/*	int i=0;
 	pLog->_DebugAdd("C_GFX::LoadModels() Begin Models load...");
 	Model=FirstModel;
 	if(!Model) Model=new CGLModel(pLog);
 	FirstModel=Model;
-	if(Model)
-	{
+	if(Model){
         pLog->_DebugAdd("C_GFX::LoadModels() Begin load model [%d]",i);
-
         Model->pGAF=pGAF;
-		while(i<MAX_MODELS)
-		{
-			if(Load1Model(i))
-			{
+		while(i<MAX_MODELS){
+			if(Load1Model(i)){
 				Model->next = new CGLModel(pLog);//,pGAF);
 				Model->next->prev=Model;
 				Model=Model->next;
@@ -699,13 +638,11 @@ bool C_GFX::LoadModels(void) {
 	Model->prev->next=0;
 	DEL(Model);
 	Model=FirstModel;
-	pLog->_DebugAdd("C_GFX::LoadModels() Models loaded...");
-*/
+	pLog->_DebugAdd("C_GFX::LoadModels() Models loaded...");*/
 	return true;
 }
 bool C_GFX::Load1Model(int i) {
-    /*
-    pLog->_DebugAdd("C_GFX::Load1Model() Begin");
+    /* pLog->_DebugAdd("C_GFX::Load1Model() Begin");
 	pLog->_DebugAdd("C_GFX::Load1Model() Attempting to load [%s]",(char *)va("models/%04d.md2",i));
 	if(	!Model->Load((char *)va("models/%04d.md2",i),(char *)va("models/%04d.bmp",i))) {
         pLog->_DebugAdd("C_GFX::Load1Model() Model [%s] LOAD FAILURE!",(char *)va("models/%04d.md2",i));
@@ -715,84 +652,49 @@ bool C_GFX::Load1Model(int i) {
         strcpy(Model->name,va("%d",i));
         pLog->_DebugAdd("C_GFX::Load1Model() Created model [%s]",Model->name);
     }
-	pLog->_DebugAdd("C_GFX::Load1Model() End");
-	*/
+	pLog->_DebugAdd("C_GFX::Load1Model() End");	*/
 	return true;
 }
 
-/*
-CGLModel *C_GFX::GetModel(char *name) {
+/*CGLModel *C_GFX::GetModel(char *name) {
 	Model=FirstModel;
 	while(Model) {
 		if(atoi(Model->name)==atoi(name))
 		return Model; Model=Model->next;
 	}
 	return false;
-}
-*/
+}*/
 bool C_GFX::DestroyModels(void) {
     /*	pLog->_DebugAdd("Begin Models destroy...");
 	CGLModel *del;
 	Model=FirstModel;
-	while(Model)
-	{
+	while(Model){
 		del=Model;
 		Model=Model->next;
 		DEL(del);
 	}
-	pLog->_DebugAdd("Models destroyed...");
-*/
+	pLog->_DebugAdd("Models destroyed...");*/
 	return true;
 }
 void C_GFX::RenderScene(void) { // Render the game scene Frame
-
     CGLTexture *pTexture ;
-
-   //static float xxx;
-
-   //xxx+=.005;
-
-
-
-    //glClearColor (0.0f, 0.0f, 0.0f, 1.0f);						// Black Background
-	//glClearDepth (1.0f);										// Depth Buffer Setup
-
-
-
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity ();											// Reset The Modelview Matrix
-
-    //glEnable(GL_CULL_FACE);
-    //glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_TEXTURE_2D);//|GL_LIGHTING);
-
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-
 	glDisable (GL_BLEND);
 	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
 	glClearDepth(1.0f);									// Depth Buffer Setup
-
     glEnable(GL_TEXTURE_2D);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
 
     if(pCamera) pCamera->Go();
-
     glEnable (GL_FOG);  //enable this for fog
     glFogi (GL_FOG_MODE, GL_LINEAR);
     glFogf (GL_FOG_START, 484.0f);
-    glFogf (GL_FOG_END, 5880.0f);
-
-
-
-	// Enable Pointers
+    glFogf (GL_FOG_END, 5880.0f); // Enable Pointers
 	glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
 
@@ -806,38 +708,29 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
                 if(pTexture->bmap)
                     glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
         }
-
     }
 
-
-    glVertexPointer( 3, GL_FLOAT, 0, g_pMesh->m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
-    glTexCoordPointer( 2, GL_FLOAT, 0, g_pMesh->m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
-	glDrawArrays( GL_TRIANGLES, 0, g_pMesh->m_nVertexCount );	// Draw All Of The Triangles At Once
-
-	// Disable Pointers
+    glVertexPointer(    3, GL_FLOAT, 0, g_pMesh->m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
+    glTexCoordPointer(  2, GL_FLOAT, 0, g_pMesh->m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
+	glDrawArrays( GL_TRIANGLES, 0, g_pMesh->m_nVertexCount );	// Draw All Of The Triangles At Once // Disable Pointers
 	glDisableClientState( GL_VERTEX_ARRAY );					// Disable Vertex Arrays
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );				// Disable Texture Coord Arrays
-
-
+    glBindTexture(GL_TEXTURE_2D, pDefaultTexture->bmap);
 	pManMap->Draw();
 
 
+
     //if(!camera)      return;
-
     //static float x,y,z;
-
 	//static float lxp=0; lxp=lxp+.000021; if(lxp>360) lxp=0;
 	//static float lyp=0; lyp=lyp+.000021; if(lyp>360) lyp=0;
 	//static float lzp=0; lzp=lzp+.000021; if(lyp>360) lyp=0;
-
 	//static float sxp;
 	//static float syp;
 	//static float szp;
-
 	//sxp=(sin(lxp)/12)*1232;
 	//syp=(cos(lyp)/132)*1232;
 	//szp=(cos(lzp)/12)*1232;
-
 	//glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
 
@@ -857,121 +750,91 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
 
 
                 x <->      y |      z (zoom)
-                             |
-    */
+                             |     */
 
-//    static float tx,ty,tz,rx,ry,rz;
-//glTranslatef((0.0f)+tx,(0.0f)+ty,(0.0f)+tz);
-//    glRotatef(rx,1.0f,0,0);
-//	glRotatef(rz,0,0,1.0f);
-
-
-
+    //static float tx,ty,tz,rx,ry,rz;
+    //glTranslatef((0.0f)+tx,(0.0f)+ty,(0.0f)+tz);
+    //glRotatef(rx,1.0f,0,0);
+    //glRotatef(rz,0,0,1.0f);
 	// glRotatef(camera->ry,0,1.0f,0);
-
-
-    /*
-    glTranslatef(-1.5f,0.0f,-6.0f);
-
+    /* glTranslatef(-1.5f,0.0f,-6.0f);
     glBegin(GL_TRIANGLES);                      // Drawing Using Triangles
         glVertex3f( 0.0f, 1.0f, 0.0f);              // Top
         glVertex3f(-1.0f,-1.0f, 0.0f);              // Bottom Left
         glVertex3f( 1.0f,-1.0f, 0.0f);              // Bottom Right
     glEnd();
-
     glTranslatef(4.0f,0.0f,0.0f);
-
     glBegin(GL_QUADS);                      // Draw A Quad
         glVertex3f(-1.0f, 1.0f, 0.0f);              // Top Left
         glVertex3f( 1.0f, 1.0f, 0.0f);              // Top Right
         glVertex3f( 1.0f,-1.0f, 0.0f);              // Bottom Right
         glVertex3f(-1.0f,-1.0f, 0.0f);              // Bottom Left
-    glEnd();
-    */
-
+    glEnd(); */
 	//glPopMatrix();
+    //static float xxx;
+    //xxx+=.005;
+    //glClearColor (0.0f, 0.0f, 0.0f, 1.0f);						// Black Background
+	//glClearDepth (1.0f);										// Depth Buffer Setup
+    //glEnable(GL_CULL_FACE);
+    //glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_TEXTURE_2D);//|GL_LIGHTING);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 }
 void C_GFX::DrawSun(void) {
     static float der;
     static float zpos;
     static float ypos;
-
     float skycolor_r;
     float skycolor_g;
     float skycolor_b;
-
-
     der+=.0002;
     ypos = sin(der) * 1550;
     zpos = cos(der) * 1550;
-
-    //pLog->_Add("SUN POS X[0.0] Y[%f] Z[%f]",ypos,zpos);
-
-
     skycolor_r=((ypos+300)/1549);
     skycolor_g=((ypos+300)/1549);
     skycolor_b=((ypos+300)/1549);
-
     if(skycolor_r > 0.4f) skycolor_r=0.4f;
     if(skycolor_r < 0.0f) skycolor_r=0.0f;
-
     if(skycolor_g > 0.2f) skycolor_g=0.2f;
     if(skycolor_g < 0.0f) skycolor_g=0.0f;
-
     if(skycolor_b > 1.0f) skycolor_b=1.0f;
     if(skycolor_b < 0.0f) skycolor_b=0.0f;
-
     glClearColor( skycolor_r , skycolor_g, skycolor_b ,0);
-    //glClearColor( (0.2f) , (0.4f), (1.0f) ,0);
-    //if(zpos>5) zpos=5;
-
-
-    //glPushMatrix();
 	glLoadIdentity();
-
-	//glDisable(GL_BLEND);
-	//glEnable(GL_TEXTURE_2D);
-
-	//glTranslatef(0.0f,0.0f,-5.0f);//zpos);//-2.0f);
-
     if(pCamera) {
         pLog->_DebugAdd("%f %f %f",pCamera->xpos,pCamera->ypos,pCamera->zpos);
         pCamera->Go();
     }
-
     glTranslatef(0.0f,ypos,zpos);//-2.0f);
-
     CGLTexture *pTexture=0;
     pTexture=GetTexture("base/sun.png");
     if(!pTexture)
         pTexture=GetTexture("base/default.png");
-
     glBindTexture(GL_TEXTURE_2D, pTexture->bmap); // BaseTexture[101].texture->bmap);
     glDisable(GL_BLEND);
-
     drawsphere(2,60.0f,1.0f,1.0f,0.0f);
 
-
-
+    //pLog->_Add("SUN POS X[0.0] Y[%f] Z[%f]",ypos,zpos);
+    //glClearColor( (0.2f) , (0.4f), (1.0f) ,0);
+    //if(zpos>5) zpos=5;
+    //glPushMatrix();
+	//glDisable(GL_BLEND);
+	//glEnable(GL_TEXTURE_2D);
+	//glTranslatef(0.0f,0.0f,-5.0f);//zpos);//-2.0f);
     //  `666.40f);
-
 	//drawcube();
-
-	//Model=FirstModel;
-	//if(Model)
-	//{
+    //Model=FirstModel;
+	//if(Model) {
         //pLog->_DebugAdd("%s",Model->name);
         //Model->Draw();
 	//}
-
-
 	// drawtri(6.0f,6.0f,1.0f,4,2,255,255,255);
 	//glTranslatef(-syp,-sxp,-szp);
 	//glTranslatef(0,0,10.0f);
 	//glTranslatef(camera->ux,camera->uy,camera->uz);
 	//glMatrixMode(GL_MODELVIEW);
-
 	//glPopMatrix();
 
 }
@@ -1001,14 +864,12 @@ void C_GFX::DrawBar(RECT rc, long color1, long color2) {
 void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2) {
     iY=SDL_GetVideoSurface()->h-iY;
     iY2=SDL_GetVideoSurface()->h-iY2;
-
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
     gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
-
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -1028,9 +889,7 @@ void C_GFX::DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2) {
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
-
     glEnable(GL_DEPTH_TEST);
-
 }
 void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2) {
     iY=SDL_GetVideoSurface()->h-iY;
@@ -1067,45 +926,32 @@ void C_GFX::DrawVertice(int x, int y) {
     DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255));
 }
 void C_GFX::DrawBaseGFX(int x,int y,int x2,int y2,char * name,u_char r,u_char g,u_char b) {
-
     /* if(!BaseTexture) { LoadBaseGFX(pGAF); return; }
     if(!BaseTexture[which].texture) {
 		BaseTexture[which].texture = new CGLTexture();
 		return;
 	}
-    if(!BaseTexture[which].texture->Loaded()) // 		!TOBOOL(BaseTexture[which].texture->bmap))
-	{
+    if(!BaseTexture[which].texture->Loaded()) // 		!TOBOOL(BaseTexture[which].texture->bmap)) {
 		Load1BaseGFX(pGAF,which);
 		return;
 	}
-    BaseTexture[which].texture->Draw2d(x,y,x2,y2,r,g,b);
-    */
+    BaseTexture[which].texture->Draw2d(x,y,x2,y2,r,g,b); */
 }
 /****************************************************************************************************
-void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
-{
-    if(!cgltBit4ge)
-    {
+void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin) {
+    if(!cgltBit4ge) {
         cgltBit4ge=new CGLTexture();
         cgltBit4ge->Load("data/dlstorm.bmp",0);
         return;
     }
-
-
-
     static float fB4;
     int x3=(x2-x);
     int y3=(y2-y);
-
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-
     fB4 +=.5;
-
 	// cgltBit4ge->Draw(x,y,x3,y3,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f);
-
 	// *
-
     // glLoadIdentity();
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
@@ -1113,7 +959,6 @@ void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
     glPushMatrix();
     glLoadIdentity();
     gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-
 	glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -1122,17 +967,13 @@ void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
     glEnable(GL_TEXTURE_2D);
     glColor3f(1.0f,1.0f,1.0f);
     glBegin(GL_QUADS );
-    if(bsin)
-    {
-
-
+    if(bsin) {
         glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x+ 5*sin(fB4/22)),   float(y-y3+ 5*sin(fB4/12)),    1.0f);
         glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+x3+ 5*sin(fB4/15)),  float(y-y3+ 5*sin(fB4/13)),    1.0f);
         glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+x3+ 5*sin(fB4/14)),  float(y+ 5*sin(fB4/25)),    1.0f);
         glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x+ 5*sin(fB4/22)),   float(y+ 5*sin(fB4/12)),    1.0f);
     }
-    else
-    {
+    else {
         glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x),   float(y-y3),    1.0f);
         glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+x3),  float(y-y3),    1.0f);
         glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+x3),  float(y),    1.0f);
@@ -1145,29 +986,22 @@ void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
     glEnable(GL_DEPTH_TEST);
-}		*/
+} */
 
 /****************************************************************************************************
-void C_GFX::DrawModels(void)
-{
-
+void C_GFX::DrawModels(void) {
     static float x,y,z;
-
     x=320.4f;
     y=90.5f;
-
     Model=FirstModel;
-    if(Model)
-    {
+    if(Model) {
         Model->Rotate(x,y,0);
         Model->Scale(1.7f,1.7f,1.7f);
         Model->Locate(-160,-90,-10);
         glDisable(GL_BLEND);
         Model->Draw();
         Model=Model->next;
-
-        if(Model)
-        {
+        if(Model) {
             Model->Rotate(x,y,0);
             Model->Scale(1.7f,1.7f,1.7f);
             Model->Locate(160,-90,-10);
@@ -1175,8 +1009,7 @@ void C_GFX::DrawModels(void)
             Model->Draw();
             Model=Model->next;
 
-            if(Model)
-            {
+            if(Model) {
                 glEnable(GL_BLEND);
                 Model->Rotate(x,y,0);
                 Model->Scale(1.7f,1.7f,1.7f);
@@ -1184,8 +1017,7 @@ void C_GFX::DrawModels(void)
             }
         }
     }
-
-}
+} */
 
 /****************************************************************************************************/
 void C_GFX::UpdatePickRay(GLfloat x,GLfloat y) {

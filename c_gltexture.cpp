@@ -295,7 +295,7 @@ GLuint CGLTexture::LoadPNG(const char *filename) {
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 
 if(pLog)
-    pLog->AddEntry("bit_depth = %d",bit_depth);
+    pLog->AddEntry("filename:%s bit_depth = %d\n",filename,bit_depth);
 
 if(color_type==PNG_COLOR_TYPE_RGB_ALPHA)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, temp_width, temp_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
