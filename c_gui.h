@@ -37,7 +37,7 @@ using namespace std;
 #define FM_GSM_ALPHA_ASCEND  	1
 #define FM_GSM_ALPHA_DESCEND 	2
 #define MAX_BUTTONS		        128 // Button objects
-#define MAX_FONTS               15
+#define MAX_FONTS               11
 typedef void (*G_CBACK)(string whatgui);
 enum eGUILOADMODE{
     FGL_ATTACH=0,
