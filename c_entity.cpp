@@ -48,11 +48,18 @@ void C_Entity::Initialize(void) {
 }
 
 void C_Entity::Draw(void) {
+
+    //glMatrixMode(GL_MODELVIEW);
+    //glEnable(GL_TEXTURE_2D);
+    //glLoadIdentity ();
+    //glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture->bmap);
+
     glTranslatef(Pos.x, Pos.y, Pos.z);  // location
     glRotatef(Rot.x,1.0f,0,0);
     glRotatef(Rot.y,0,1.0f,0);
     glRotatef(Rot.z,0,0,1.0f);       // rotation
-    glScalef(Scale.x,Scale.y,Scale.z);  // scale
+    // glScalef(Scale.x,Scale.y,Scale.z);  // scale
+
     glColor3f(1.0f,1.0f,1.0f);
     if(pModel) {
 
@@ -63,8 +70,10 @@ void C_Entity::Draw(void) {
                 glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
             }
         }
-        drawcube();
+
     }
+
+    drawcube();
 
 /*  CVector3 Pos;       // position of the entity
     CVector3 Dir;       // direction vector (which way the entity is facing)

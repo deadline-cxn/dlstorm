@@ -45,10 +45,11 @@ public:
 	CLog*       pLog;
 	CGAF*       pGAF;
 
-	void        SetPointHeight(int nX,int nY,float fHeight);
+	void        SetPointHeight(int nX,int nZ,float fHeight);
     void        Initialize(void);
 	//bool LoadHeightmap( char* szPath, float flHeightScale, float flResolution ); // Heightmap Loader
 	//float PtHeight( int nX, int nY ); // Single Point Height
+	void        SetPointTexture(int nX, int nZ,CGLTexture* pTex);
 };
 
 typedef struct tagVERTEX {

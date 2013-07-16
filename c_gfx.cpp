@@ -372,15 +372,20 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Base Textures");
         return false;
     }
-    pDefaultTexture=new CGLTexture;
-    if(pDefaultTexture) {
-        pDefaultTexture->LoadPNG("base/default.png");
-        pLog->_Add("Default Texture initialized");
+
+    pDefaultTexture=GetTexture("base/default.png");
+    if(!pDefaultTexture) {
+        pDefaultTexture=new CGLTexture;
+        if(pDefaultTexture) {
+            pDefaultTexture->LoadPNG("base/default.png");
+            pLog->_Add("Default Texture initialized");
+        }
     }
-    else {
+    if(!pDefaultTexture){
         pLog->_Add("Can't initialize Default Texture");
         return false;
     }
+
     g_pMesh = new CMesh(pLog,pGAF);
    // g_pMesh = new CMesh(pLog, pGAF, pDefaultTexture);
     if(g_pMesh) {
@@ -666,6 +671,7 @@ bool C_GFX::DestroyModels(void) {
 	return true;
 }
 void C_GFX::RenderScene(void) { // Render the game scene Frame
+
     CGLTexture *pTexture ;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
@@ -680,10 +686,11 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
 
     if(pCamera) pCamera->Go();
-    glEnable (GL_FOG);  //enable this for fog
+
+    glEnable (GL_FOG);              //enable this for fog
     glFogi (GL_FOG_MODE, GL_LINEAR);
-    glFogf (GL_FOG_START, 484.0f);
-    glFogf (GL_FOG_END, 5880.0f); // Enable Pointers
+    glFogf (GL_FOG_START, 60.0f);
+    glFogf (GL_FOG_END, 5180.0f);   // Enable Pointers
 	glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
 
@@ -692,7 +699,7 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
             glBindTexture(GL_TEXTURE_2D, g_pMesh->pTexture->bmap);
     }
     else {
-        pTexture=GetTexture("base/grass.png");
+        pTexture=GetTexture("base/b0113.png");
         if(pTexture) {
                 if(pTexture->bmap)
                     glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
@@ -704,10 +711,9 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
 	glDrawArrays( GL_TRIANGLES, 0, g_pMesh->m_nVertexCount );	// Draw All Of The Triangles At Once // Disable Pointers
 	glDisableClientState( GL_VERTEX_ARRAY );					// Disable Vertex Arrays
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );				// Disable Texture Coord Arrays
+
     glBindTexture(GL_TEXTURE_2D, pDefaultTexture->bmap);
 	pManMap->Draw();
-
-
 
     //if(!camera)      return;
     //static float x,y,z;
@@ -791,41 +797,15 @@ void C_GFX::DrawSun(void) {
     if(skycolor_b > 1.0f) skycolor_b=1.0f;
     if(skycolor_b < 0.0f) skycolor_b=0.0f;
     glClearColor( skycolor_r , skycolor_g, skycolor_b ,0);
+
 	glLoadIdentity();
-    if(pCamera) {
-        pLog->_DebugAdd("%f %f %f",pCamera->xpos,pCamera->ypos,pCamera->zpos);
-        pCamera->Go();
-    }
-    glTranslatef(0.0f,ypos,zpos);//-2.0f);
+    pCamera->Go();
+    glTranslatef(0.0f,ypos,zpos);
     CGLTexture *pTexture=0;
     pTexture=GetTexture("base/sun.png");
-    if(!pTexture)
-        pTexture=GetTexture("base/default.png");
-    glBindTexture(GL_TEXTURE_2D, pTexture->bmap); // BaseTexture[101].texture->bmap);
+    if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
     glDisable(GL_BLEND);
-    drawsphere(2,60.0f,1.0f,1.0f,0.0f);
-
-    //pLog->_Add("SUN POS X[0.0] Y[%f] Z[%f]",ypos,zpos);
-    //glClearColor( (0.2f) , (0.4f), (1.0f) ,0);
-    //if(zpos>5) zpos=5;
-    //glPushMatrix();
-	//glDisable(GL_BLEND);
-	//glEnable(GL_TEXTURE_2D);
-	//glTranslatef(0.0f,0.0f,-5.0f);//zpos);//-2.0f);
-    //  `666.40f);
-	//drawcube();
-    //Model=FirstModel;
-	//if(Model) {
-        //pLog->_DebugAdd("%s",Model->name);
-        //Model->Draw();
-	//}
-	// drawtri(6.0f,6.0f,1.0f,4,2,255,255,255);
-	//glTranslatef(-syp,-sxp,-szp);
-	//glTranslatef(0,0,10.0f);
-	//glTranslatef(camera->ux,camera->uy,camera->uz);
-	//glMatrixMode(GL_MODELVIEW);
-	//glPopMatrix();
-
+    drawsphere(3,160.0f,1.0f,1.0f,1.0f);
 }
 void C_GFX::DrawRect(RECT rc, long color) {
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
@@ -911,20 +891,13 @@ void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long co
     glPopMatrix();
     glEnable(GL_DEPTH_TEST);
 }
-void C_GFX::DrawVertice(int x, int y) {
-    DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255));
-}
+void C_GFX::DrawVertice(int x, int y) { DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255)); }
 void C_GFX::DrawBaseGFX(int x,int y,int x2,int y2,char * name,u_char r,u_char g,u_char b) {
-    /* if(!BaseTexture) { LoadBaseGFX(pGAF); return; }
-    if(!BaseTexture[which].texture) {
-		BaseTexture[which].texture = new CGLTexture();
-		return;
-	}
-    if(!BaseTexture[which].texture->Loaded()) // 		!TOBOOL(BaseTexture[which].texture->bmap)) {
-		Load1BaseGFX(pGAF,which);
-		return;
-	}
-    BaseTexture[which].texture->Draw2d(x,y,x2,y2,r,g,b); */
+    CGLTexture *pTexture;
+    pTexture=0;
+    pTexture=GetTexture(name);
+    if(pTexture)
+        pTexture->Draw2d(x,y,x2,y2,r,g,b);
 }
 /****************************************************************************************************
 void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin) {

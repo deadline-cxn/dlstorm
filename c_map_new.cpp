@@ -22,6 +22,16 @@ CMesh::CMesh(CLog *pInLog, CGAF *pInGAF, CGLTexture *pInTexture) {
     pTexture=pInTexture;
 }
 
+CMesh :: ~CMesh() {
+    if(bMadeLog) DEL(pLog);
+	if( m_pVertices ) delete [] m_pVertices; // Deallocate Vertex Data
+	m_pVertices = NULL;
+	if( m_pTexCoords ) delete [] m_pTexCoords; // Deallocate Texture Coord Data
+	m_pTexCoords = NULL;
+	if( m_pTex ) delete [] m_pTex;
+	m_pTex = NULL;
+}
+
 void CMesh::Initialize(void) {
     pTexture=0;
 	m_pVertices = NULL;
@@ -122,15 +132,6 @@ void CMesh::Initialize(void) {
     }
 }
 
-CMesh :: ~CMesh() {
-    if(bMadeLog) DEL(pLog);
-	if( m_pVertices ) delete [] m_pVertices; // Deallocate Vertex Data
-	m_pVertices = NULL;
-	if( m_pTexCoords ) delete [] m_pTexCoords; // Deallocate Texture Coord Data
-	m_pTexCoords = NULL;
-	if( m_pTex ) delete [] m_pTex;
-	m_pTex = NULL;
-}
 
 /* bool CMesh :: LoadHeightmap( char* filename, float flHeightScale, float flResolution ) {
 	long size1;
@@ -181,6 +182,14 @@ float CMesh :: PtHeight( int nX, int nY ) {
 	float flB = (float) hrgb.rgbBlue;
 	return ( 0.299f * flR + 0.587f * flG + 0.114f * flB );		// Calculate The Height Using The Luminance Algorithm
 } */
+
+void CMesh::SetPointTexture(int nX, int nZ, CGLTexture* pTex) {
+    int nIndex;
+    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
+    //pLog->_Add("%d %d %d %f",nIndex,nX,nZ,fHeight);
+    if(nIndex > ( x * y * 6 / ( res * res ))) return; if(nIndex < 0) return;
+    m_pTex[nIndex].t =pTex->bmap;
+}
 
 void CMesh::SetPointHeight(int nX, int nZ, float fHeight) {
     int nIndex;

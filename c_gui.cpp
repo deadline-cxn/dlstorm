@@ -1015,7 +1015,9 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                 pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 2");
 
                 if(props & FM_GP_USEBACKGROUND) pGFX->DrawBar(x,y,w,h,LONGRGB(0,0,0),LONGRGB(0,0,50));
-                else                            pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255 );
+                else                            pGFX->DrawBaseGFX(x,y,w,h,
+                                                                  media
+                                                                  ,255,255,255 );
 
                 pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 3");
 
@@ -1067,7 +1069,8 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                     if(data_selected.size()==0) data_selected[1]=true;
                     for(i=0;i<control_data_total;i++){
                         if(data_selected[i]==true){
-                            pGUI->gPrint(x,y,(char *)data[i].c_str(),0);
+                            // pGUI->gPrint(x,y,(char *)data[i].c_str(),1);
+                            pGUI->gPrint(x,y,va("^0%s",(char *)data[i].c_str()),1);
                         }
                     }
                     if(pGUI->focus_control!=this){
@@ -1093,7 +1096,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                                     r1=pGFX->GetFade(2); g1=pGFX->GetFade(3); b1=pGFX->GetFade(1);
                                 }
                                 pGFX->DrawBar(x,y+(j*16)+1,w+1,y+(j*16)+16, LONGRGB(r1,g1,b1),LONGRGB(r2,g2,b2));
-                                pGUI->gPrint(x,y+(j*16),(char *)data[j+listoffset].c_str(),0);
+                                pGUI->gPrint(x,y+(j*16),va("^0%s",(char *)data[j+listoffset].c_str()),1);
                                 j++;
                             }
                         }
@@ -1109,7 +1112,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                     if(pGUI->pMouse->In(x,y,w,h)){
                     }
                     if(props & FM_GP_USEBACKGROUND){
-                        pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255 );
+                        pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
                     }else{
                         pGFX->draw_3d_box(x,y,w,h);
                         pGFX->DrawBar(x+2,y+2,w-2,h-2,LONGRGB(255,255,255),LONGRGB(255,255,255));
@@ -1128,11 +1131,11 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
 
             case FM_GC_LISTBOX:
                     if(props & FM_GP_USEBACKGROUND){
-                        pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255 );
+                        pGFX->DrawBaseGFX(x,y,w,h, media,255,255,255 );
                     }else{
                         pGFX->DrawBar(x,y,w,h,LONGRGB(180,180,180),LONGRGB(180,180,180));
                     }
-                    pGUI->gPrint(x,y,va("^>ffffff%s",name),0);
+                    pGUI->gPrint(x,y,va("^>ffffff%s",name),1);
                     for(j=1;j<listdepth;j++){
                         strcpy(temp, (char *)data[j+listoffset].c_str());
                         while( (strlen(temp)*9) > rect.right){
@@ -1141,7 +1144,8 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                             temp[strlen(temp)-2]='.';
                             temp[strlen(temp)-1]=0;
                         }
-                        pGUI->gPrint(x,y+16+(j*16),temp,0);
+                        pGUI->gPrint(x,y+16+(j*16),va("^0%s",temp),1);
+                        // pGUI->gPrint(x,y+16+(j*16),temp,1);
                     }
 
                     break;
@@ -1149,7 +1153,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
             case FM_GC_GROUPTICK:
             case FM_GC_TICKBOX:
                 if(props & FM_GP_USEBACKGROUND){
-                    pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255 );
+                    pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
                 }else{
                     pGFX->DrawBar(x,y,w,h,LONGRGB(240,240,240),LONGRGB(240,240,240));
                     pGFX->DrawBar(x+1,y+1,w,h,LONGRGB(80,80,80),LONGRGB(80,80,80));
@@ -1160,23 +1164,13 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                 break;
 
             case FM_GC_STATIC_TEXT:
-                pLog->_DebugAdd("C_GCTRL::draw FM_GC_STATIC_TEXT 1");
                 if(props&FM_GP_USEBACKGROUND)
                     pGFX->DrawBar(x,y-2,x+(CGLFont_StrLen(value))*8+24,y+16,background_color,background_color);
-
-                pLog->_DebugAdd("C_GCTRL::draw FM_GC_STATIC_TEXT 2");
-
                 if(props&FM_GP_BORDER)
                     pGFX->DrawRectangle(x,y-2,x+(CGLFont_StrLen(value))*8+24,y+16,border_color);
-
-                pLog->_DebugAdd("C_GCTRL::draw FM_GC_STATIC_TEXT 3");
-
                 if(font==0) font=1;
                 if(fontbank==0) fontbank=1;
                 pGUI->gPrint(x,y,va("%s",value),font,fontbank);
-
-                pLog->_DebugAdd("C_GCTRL::draw FM_GC_STATIC_TEXT 4");
-
                 break;
 
             case FM_GC_TEXTBOX:
@@ -1198,7 +1192,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                             temp[k]='*';
                         }
                     }
-                    pGUI->gPrint(x,y,temp,0);
+                    pGUI->gPrint(x,y,temp,1);
                     if(pGUI->flashCursor(0,0))
                         pGUI->gPrint((int)(x+(CGLFont_StrLen(temp)*8.5)),y,"^1f",2);
                 }else{
@@ -1212,7 +1206,8 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                             temp[k]='*';
                         }
                     }
-                    pGUI->gPrint(x,y,temp,0);
+                    pGUI->gPrint(x,y,va("^0%s",temp),1);
+                    // pGUI->gPrint(x,y,temp,1);
                 }
                 break;
 
@@ -1220,18 +1215,14 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
             case FM_GC_SUBMIT:
             case FM_GC_BUTTON:
             case FM_GC_ACTION:
-                imedia_out=atoi(media);
-                if(imedia_out){
-                    if(pGUI->pMouse->In(x,y,w,h)) {  //x+32,y+32)){
-                         imedia_out=atoi(media_hover);
+                if(strlen(media)) {
+                    if(pGUI->pMouse->In(x,y,w,h)) {
                          if(pGUI->pMouse->ButtonDown(SDL_BUTTON_LEFT)){
-                             imedia_out=atoi(media_click);
                              rect.right=rect.left+32;
                              rect.bottom=32;
                          }
                     }
-                    pGFX->DrawBaseGFX(x,y,w,h, //x+32,y+32,
-                        imedia_out,255,255,255 );
+                    pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
                 }else{
                     if(props&FM_GP_USEBACKGROUND){
                         pGUI->drawBaseGFXGUIButton(this,x,y);
@@ -1242,7 +1233,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                 break;
 
             case FM_GC_STATIC_IMAGE: // draw a base gfx on this spot based on media
-                    pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255 );
+                    pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
                 break;
 
             case FM_GC_SELECTA:
@@ -1268,18 +1259,24 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                     }
                     if(selected){
                         if(imedia_selected){
-                            pGFX->DrawBaseGFX(x,y,w,h,imedia_selected,255,255,255 );
+                            pGFX->DrawBaseGFX(x,y,w,h,
+                                              // imedia_selected
+                                              tctrl2->property["media_selected"].c_str()
+                                              ,255,255,255 );
                         }else{
                             pGFX->DrawBar(x,y,w,h,RGB(r1,g1,b1),RGB(r1,g1,b1) );
                         }
                     }else{
                         if(imedia_unselected){
-                            pGFX->DrawBaseGFX(x,y,w,h,imedia_unselected,255,255,255 );
+                            pGFX->DrawBaseGFX(x,y,w,h,
+                                                // imedia_unselected
+                                                tctrl2->property["media_unselected"].c_str()
+                                              ,255,255,255 );
                         }else{
                             pGFX->DrawBar(x,y,w,h,RGB(r2,g2,b2),RGB(r2,g2,b2) );
                         }
                     }
-                    pGUI->gPrint(x+(rect.right/2)-((strlen(value)*12)/2),y-2+(rect.bottom/2)-12,value,0);
+                    pGUI->gPrint(x+(rect.right/2)-((strlen(value)*12)/2),y-2+(rect.bottom/2)-12,value,1);
                     pGUI->drawB9utton(400,400,580,580);
                 }
                 break;
@@ -1325,7 +1322,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                     if(!parent_stump->get_control(va("%s_list_1",name))) attach_default_children();
                     if(pGUI->focus_control==this){
                         if(props & FM_GP_USEBACKGROUND){
-                            pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255);
+                            pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255);
                         }else{
                             pGFX->draw_3d_box(x,y,w,h);
                         }
@@ -1387,7 +1384,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown){
                 strcpy(temp,va("[%s][%s]", name,temp));
                 pGFX->DrawBar(x,y,w,h,RGB(255,0,0) );
                 pGFX->DrawRectangle(x,y,w,h,RGB(0,0,0));//x+32,y+32,RGB(0,0,0));
-                pGUI->gPrint(x,y,temp,0);
+                pGUI->gPrint(x,y,temp,1);
                 break;
         }
 
@@ -2926,7 +2923,8 @@ void C_GUI::draw_ctrls(void) {
                                 tstump->rect.top,
                                 tstump->rect.left+tstump->rect.right,
                                 tstump->rect.top+tstump->rect.bottom,
-                                atoi(tstump->media),
+                                //atoi(
+                                     tstump->media,
                                  255,255,255 );
         }else{
             pGFX->draw_3d_box(tstump->rect);
@@ -2949,7 +2947,7 @@ void C_GUI::draw_ctrls(void) {
         if(tstump->props & FM_GP_MENU){
             if(focus_stump==tstump) pGFX->DrawBar(tstump->rect.left+1, tstump->rect.top+1, tstump->rect.left+tstump->rect.right-1, tstump->rect.top+18-1, LONGRGB(0,60,160), LONGRGB(60,0,60));
             else                    pGFX->DrawBar(tstump->rect.left+1, tstump->rect.top+1, tstump->rect.left+tstump->rect.right-1, tstump->rect.top+18-1, LONGRGB(60,60,60), LONGRGB(10,10,10));
-            gPrint(	tstump->rect.left+16, tstump->rect.top+1, va("^1%s",tstump->caption), 0);
+            gPrint(	tstump->rect.left+16, tstump->rect.top+1, va("^1%s",tstump->caption), 1);
             gPrint(	tstump->rect.left, tstump->rect.top+1, "R", 2);
         }
         if(tstump->props & FM_GP_MINIMIZE)  drawButton(79,0,(tstump->rect.left+tstump->rect.right)-17-16 ,tstump->rect.top+1);
@@ -2978,7 +2976,7 @@ void C_GUI::drawToolTip(void){
     if(bDrawToolTip){
         pGFX->DrawRect(rectToolTip.left-1,rectToolTip.top-1,rectToolTip.right+1,rectToolTip.bottom+1,RGB(0,0,0));
         pGFX->DrawBar(rectToolTip.left,rectToolTip.top,rectToolTip.right,rectToolTip.bottom,RGB(255,255,0));
-        gPrint(rectToolTip.left+4,rectToolTip.top+4,hover_text,0);
+        gPrint(rectToolTip.left+4,rectToolTip.top+4,hover_text,1);
     }
     bDrawToolTip=false;
     bResetToolTip=false;
@@ -3170,10 +3168,12 @@ int  C_GUI::drawSlicedGUIButton(C_GCTRL *gui_control,int x,int y){
 
 int  C_GUI::drawBaseGFXGUIButton(C_GCTRL *gui_control,int x,int y){
     int j=0;
-    pGFX->DrawBaseGFX(x,y,gui_control->rect.right+x, gui_control->rect.bottom+y,atoi(gui_control->media),255,255,255 );
-    gPrint(gui_control->rect.left+8+x,gui_control->rect.top+8+y,gui_control->get_value(),0);
+    pGFX->DrawBaseGFX(x,y,gui_control->rect.right+x, gui_control->rect.bottom+y,
+                        //atoi(
+                               gui_control->media,255,255,255 );
+    gPrint(gui_control->rect.left+8+x,gui_control->rect.top+8+y,gui_control->get_value(),1);
     if(pMouse->In(gui_control->rect.left+x,gui_control->rect.top+y,gui_control->rect.right+x,gui_control->rect.bottom+y)){
-        gPrint(gui_control->rect.left+8+x,gui_control->rect.top+8+y,va("^g%s",gui_control->get_value()),0);
+        gPrint(gui_control->rect.left+8+x,gui_control->rect.top+8+y,va("^g%s",gui_control->get_value()),1);
     }
     return false;
 }
@@ -3187,7 +3187,7 @@ void C_GUI::prompt(char *szPrompt, char *szCommand){
 
 void C_GUI::drawCPUSTRING(int iX, int iY){
     drawOSIcon(iX,iY,CPUSTRING);
-    gPrint(iX+10,iY,va("^+^1(^5%s^1)",CPUSTRING),0);
+    gPrint(iX+10,iY,va("^+^1(^5%s^1)",CPUSTRING),1);
 }
 
 void C_GUI::drawPrompt(void){
