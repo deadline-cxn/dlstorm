@@ -132,7 +132,10 @@ public:
     void        UpdatePickRay(GLfloat x,GLfloat y);
     u_char      GetFade(char cWhichFade);
     GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
+
     CGLTexture* GetTexture(char *name);
+    int         GetTotalTextures(void); // return number of loaded textures
+    CGLTexture* GetRandomTexture(void);
 
     SDL_Surface* pScreen;
     int         VideoFlags;

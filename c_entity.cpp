@@ -45,22 +45,35 @@ void C_Entity::Initialize(void) {
     respawn_max=0;        // 0 = infinite respawns
     respawn_time_min=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
     respawn_time_max=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
+
+    Pos.x=0;
+    Pos.y=0;
+    Pos.z=0;
+    Rot.x=0;
+    Rot.y=0;
+    Rot.z=0;
+    Scale.x=1.0f;
+    Scale.y=1.0f;
+    Scale.z=1.0f;
+    Color.r=1.0f;
+    Color.g=1.0f;
+    Color.b=1.0f;
+
 }
 
 void C_Entity::Draw(void) {
 
-    //glMatrixMode(GL_MODELVIEW);
-    //glEnable(GL_TEXTURE_2D);
-    //glLoadIdentity ();
-    //glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture->bmap);
+    glLoadIdentity();
+    if(pGFX) pGFX->pCamera->Go();
 
     glTranslatef(Pos.x, Pos.y, Pos.z);  // location
     glRotatef(Rot.x,1.0f,0,0);
     glRotatef(Rot.y,0,1.0f,0);
     glRotatef(Rot.z,0,0,1.0f);       // rotation
-    // glScalef(Scale.x,Scale.y,Scale.z);  // scale
+    glScalef(Scale.x,Scale.y,Scale.z);  // scale
+    glColor3f(Color.r,Color.g,Color.b); // color
 
-    glColor3f(1.0f,1.0f,1.0f);
+
     if(pModel) {
 
     }
@@ -70,10 +83,10 @@ void C_Entity::Draw(void) {
                 glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
             }
         }
-
+        drawcube();
     }
 
-    drawcube();
+
 
 /*  CVector3 Pos;       // position of the entity
     CVector3 Dir;       // direction vector (which way the entity is facing)

@@ -566,26 +566,29 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
 
                 }
                 else {
-                    pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
-                    pTexture=pFirstTexture;
-                    if(pTexture) {
-                        while(pTexture->pNext) {
+                    if (strcmp (".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
+
+                        pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
+                        pTexture=pFirstTexture;
+                        if(pTexture) {
+                            while(pTexture->pNext) {
+                                pTexture=pTexture->pNext;
+                            }
+                            pTexture->pNext=new CGLTexture;
                             pTexture=pTexture->pNext;
                         }
-                        pTexture->pNext=new CGLTexture;
-                        pTexture=pTexture->pNext;
-                    }
-                    else {
-                        pFirstTexture=new CGLTexture;
-                        pTexture=pFirstTexture;
-                    }
-                    pTexture->LoadPNG(va("base/%s",epdf->d_name));
-                    if(!pTexture->bmap) {
-                        pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
-                        DEL(pTexture);
-                    }
-                    else {
-                        pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
+                        else {
+                            pFirstTexture=new CGLTexture;
+                            pTexture=pFirstTexture;
+                        }
+                        pTexture->LoadPNG(va("base/%s",epdf->d_name));
+                        if(!pTexture->bmap) {
+                            pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
+                            DEL(pTexture);
+                        }
+                        else {
+                            pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
+                        }
                     }
                 }
             }
@@ -1128,8 +1131,8 @@ void C_GFX::draw_3d_box(RECT rect){
                     LONGRGB(180,180,180),
                     LONGRGB(180,180,180));
 }
-CGLTexture *C_GFX::GetTexture(char * name) {
-    CGLTexture *pTexture;
+CGLTexture* C_GFX::GetTexture(char * name) {
+    CGLTexture* pTexture;
     pTexture=pFirstTexture;
     while(pTexture) {
         if(dlcs_strcasecmp(pTexture->tfilename,name)) return pTexture;
@@ -1138,3 +1141,28 @@ CGLTexture *C_GFX::GetTexture(char * name) {
     // TODO: Attempt to load texture
     return 0;
 }
+int C_GFX::GetTotalTextures(void) {
+    int n=0;
+    CGLTexture* pTexture;
+    pTexture=pFirstTexture;
+    while(pTexture) {
+        n++;
+        pTexture=pTexture->pNext;
+    }
+    return n;
+}
+CGLTexture* C_GFX::GetRandomTexture(void) {
+    int n=GetTotalTextures();
+    int x=0;
+    int r=(rand()%n)+1;
+    CGLTexture* pTexture;
+    pTexture=pFirstTexture;
+    while(pTexture){
+        x++;
+        if(x>n) return pTexture;
+        if(x==r) return pTexture;
+        pTexture=pTexture->pNext;
+    }
+    return 0;
+}
+

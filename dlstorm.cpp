@@ -44,6 +44,13 @@ vector <string> explode(const string &delimiter, const string &str){
 
 }
 
+char* dlcs_get_filetype(char* x, char* in) {
+    vector <string> ft;
+    ft=explode(".",in);
+    ft.size();
+    strcpy(x,ft[ft.size()].c_str());
+    return x;
+}
 
 bool sp_istrue(char *text) {
     if(dlcs_strcasecmp(text,"on"))      return true;

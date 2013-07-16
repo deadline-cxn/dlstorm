@@ -73,6 +73,8 @@ extern "C"
 	char   *dlcs_convert_time(char *x,struct tm*);
 	char   *dlcs_timestamp(char *x);
 	char   *dlcs_readable_timestamp(char *x,char *in);
+    char*   dlcs_get_filetype(char*x,char*in);
+
 
 #ifdef __cplusplus
 }

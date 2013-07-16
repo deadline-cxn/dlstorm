@@ -98,12 +98,15 @@ public:
     C_Entity    *pNext;
     C_Entity    *pPrev;
     C_Entity    *pTargetEntity;
+
     CVector3    Pos;       // position of the entity
     CVector3    Rot;       // rotation of the entity
     CVector3    Scale;     // vector for the scale matrix
     CVector3    Dir;       // direction vector (which way the entity is facing)
+    CColor3     Color;     // color of the entity;
 
     GLfloat     Transparency; // use this for fading in and out, and for ghost/window effects
+
     CWayPoint   *pFirstWayPoint;
 
     CGLTexture* pTexture;
