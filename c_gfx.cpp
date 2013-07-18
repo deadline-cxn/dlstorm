@@ -718,66 +718,6 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
     glBindTexture(GL_TEXTURE_2D, pDefaultTexture->bmap);
 	pManMap->Draw();
 
-    //if(!camera)      return;
-    //static float x,y,z;
-	//static float lxp=0; lxp=lxp+.000021; if(lxp>360) lxp=0;
-	//static float lyp=0; lyp=lyp+.000021; if(lyp>360) lyp=0;
-	//static float lzp=0; lzp=lzp+.000021; if(lyp>360) lyp=0;
-	//static float sxp;
-	//static float syp;
-	//static float szp;
-	//sxp=(sin(lxp)/12)*1232;
-	//syp=(cos(lyp)/132)*1232;
-	//szp=(cos(lzp)/12)*1232;
-	//glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
-
-    /*
-    ---------------------------
-    |
-    |
-    |
-    |
-    |
-    |
-    |
-    |
-    |
-    |
-    ___________________________
-
-
-                x <->      y |      z (zoom)
-                             |     */
-
-    //static float tx,ty,tz,rx,ry,rz;
-    //glTranslatef((0.0f)+tx,(0.0f)+ty,(0.0f)+tz);
-    //glRotatef(rx,1.0f,0,0);
-    //glRotatef(rz,0,0,1.0f);
-	// glRotatef(camera->ry,0,1.0f,0);
-    /* glTranslatef(-1.5f,0.0f,-6.0f);
-    glBegin(GL_TRIANGLES);                      // Drawing Using Triangles
-        glVertex3f( 0.0f, 1.0f, 0.0f);              // Top
-        glVertex3f(-1.0f,-1.0f, 0.0f);              // Bottom Left
-        glVertex3f( 1.0f,-1.0f, 0.0f);              // Bottom Right
-    glEnd();
-    glTranslatef(4.0f,0.0f,0.0f);
-    glBegin(GL_QUADS);                      // Draw A Quad
-        glVertex3f(-1.0f, 1.0f, 0.0f);              // Top Left
-        glVertex3f( 1.0f, 1.0f, 0.0f);              // Top Right
-        glVertex3f( 1.0f,-1.0f, 0.0f);              // Bottom Right
-        glVertex3f(-1.0f,-1.0f, 0.0f);              // Bottom Left
-    glEnd(); */
-	//glPopMatrix();
-    //static float xxx;
-    //xxx+=.005;
-    //glClearColor (0.0f, 0.0f, 0.0f, 1.0f);						// Black Background
-	//glClearDepth (1.0f);										// Depth Buffer Setup
-    //glEnable(GL_CULL_FACE);
-    //glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_TEXTURE_2D);//|GL_LIGHTING);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
 
 }
 void C_GFX::DrawSun(void) {
