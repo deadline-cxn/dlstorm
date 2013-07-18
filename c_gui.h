@@ -421,6 +421,7 @@ public:
 
     C_CONS  *pCons;
     void    consEntry(char *fmt, ...);
+    void _consExecute(char *cmd);
 
     // CHAT System stuff
 
@@ -616,7 +617,5 @@ void C_CONS::_GlobalIntegers(){
 
 
 */
-/*
-G_CBACK C_GUI::_gcdatafill(string whatgui, string whatdata){
-    pLog->_Add("_gcdatafill whatgui[%s] whatdata[%s]",(char *)whatgui.c_str(),(char *)whatdata.c_str());
-}*/
+
+//G_CBACK C_GUI::_gcdatafill(string whatgui, string whatdata){//    pLog->_Add("_gcdatafill whatgui[%s] whatdata[%s]",(char *)whatgui.c_str(),(char *)whatdata.c_str());}
