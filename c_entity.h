@@ -1,3 +1,9 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef _C_ENTITY
 #define _C_ENTITY
 
@@ -116,35 +122,35 @@ public:
     CLog        *pLog; // pointer to log
     CGAF        *pGAF; // pointer to GAF
     C_GFX       *pGFX; // pointer to GFX
-/************************************************************************************************************************
-RESPAWN EXAMPLES:
-A power up would be:
-resource_min 1, resource_max 1, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
-A mine node would be:
-resource_min 1, resource_max 6, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
-A coin in a scrolling platform game:
-resource_min 1, resource_max 1, respawn_min 1, respawn_max 1, respawn_timer_min 0    , respawn_timer_max 0
-Node on random timer between 5 and 10 minutes:
-resource_min 3, resource_max_9, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 60000
-*************************************************************************************************************************/
+    /************************************************************************************************************************
+    RESPAWN EXAMPLES:
+    A power up would be:
+    resource_min 1, resource_max 1, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
+    A mine node would be:
+    resource_min 1, resource_max 6, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
+    A coin in a scrolling platform game:
+    resource_min 1, resource_max 1, respawn_min 1, respawn_max 1, respawn_timer_min 0    , respawn_timer_max 0
+    Node on random timer between 5 and 10 minutes:
+    resource_min 3, resource_max_9, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 60000
+    *************************************************************************************************************************/
     int     resource_min;       // 0 = infinite resources
     int     resource_max;       // 0 = infinite resources
     int     respawn_min;        // 0 = infinite respawns
     int     respawn_max;        // 0 = infinite respawns
     long    respawn_time_min;   // 0 = default; default is 5 minutes (30000)
     long    respawn_time_max;   // 0 = default; default is 5 minutes (30000)
-/*************************************************************************************************************************/
+    /*************************************************************************************************************************/
     void    Initialize(void);
     void    Draw(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
     bool    push_event(C_Entity *rcv_entity, int event, char *args, C_Entity *action_entity);
-/*************************************************************************************************************************
-   use: push_event(entity,event,event_args,entity_to_take_action_on (if 0 it will action self));
-       example:
-        current_entity->push_event(current_entity->target,G_ENTITY_ATTACK,"243",current_entity);
-        target->exec_event(sending_entity,G_ENTITY_ATTACK,"243",sending_entity);
-        target->on_attack("243",sending_entity);
-**************************************************************************************************************************/
+    /*************************************************************************************************************************
+       use: push_event(entity,event,event_args,entity_to_take_action_on (if 0 it will action self));
+           example:
+            current_entity->push_event(current_entity->target,G_ENTITY_ATTACK,"243",current_entity);
+            target->exec_event(sending_entity,G_ENTITY_ATTACK,"243",sending_entity);
+            target->on_attack("243",sending_entity);
+    **************************************************************************************************************************/
     bool    exec_event(tEntityEvent event, char *args, C_Entity *action_entity);
     void    on_create(char *args,C_Entity *entity);
     void    on_destroy(char *args,C_Entity *entity);

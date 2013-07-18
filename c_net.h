@@ -1,3 +1,8 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
 
 #ifndef _C_NET_HEADER
 #define _C_NET_HEADER
@@ -64,62 +69,61 @@
 #define	NET_NAMELEN 64
 
 #ifdef _WIN32
-static struct stErrorEntry{
-  int iID;
-  const char *pMessage;
-}pErrorList[]=
-{
-  0,                    "no error",
-  WSAEACCES,            "WSAEACCES - permission denied",
-  WSAEADDRINUSE,        "WSAEADDRINUSE - address already in use",
-  WSAEADDRNOTAVAIL,     "WSAEADDRNOTAVAIL - cannot assign requested address",
-  WSAEAFNOSUPPORT,      "WSAEAFNOSUPPORT [Lost internet connection]",
-  WSAEALREADY,          "WSAEALREADY - operation already in progress",
-  WSAECONNABORTED,      "WSAECONNABORTED - software caused connection abort",
-  WSAECONNREFUSED,      "WSAECONNREFUSED - connection refused",
-  WSAECONNRESET,        "WSAECONNRESET - connection reset by peer",
-  WSAEDESTADDRREQ,      "WSAEDESTADDRREQ - destination address required",
-  WSAEFAULT,            "WSAEFAULT - bad address",
-  WSAEHOSTDOWN,         "WSAEHOSTDOWN - host is down",
-  WSAEHOSTUNREACH,      "WSAEHOSTUNREACH - no route to host",
-  WSAEINPROGRESS,       "WSAEINPROGRESS - operation now in progress",
-  WSAEINTR,             "WSAEINTR - interrupted function call",
-  WSAEINVAL,            "WSAEINVAL - invalid argument",
-  WSAEISCONN,           "WSAEISCONN - socket is already connected",
-  WSAEMFILE,            "WSAEMFILE  - too many open files",
-  WSAEMSGSIZE,          "WSAEMSGSIZE - message too long",
-  WSAENETDOWN,          "WSAENETDOWN - network is down",
-  WSAENETRESET,         "WSAENETRESET - network dropped connection on reset",
-  WSAENETUNREACH,       "WSAENETUNREACH - network is unreachable",
-  WSAENOBUFS,           "WSAENOBUFS - no buffer space available",
-  WSAENOPROTOOPT,       "WSAENOPROTOOPT - bad protocol option",
-  WSAENOTCONN,          "WSAENOTCONN - socket is not connected",
-  WSAENOTSOCK,          "WSAENOTSOCK - socket operation on non-socket",
-  WSAEOPNOTSUPP,        "WSAEOPNOTSUPP - operation not supported",
-  WSAEPFNOSUPPORT,      "WSAEPFNOSUPPORT - protocol family not supported",
-  WSAEPROCLIM,          "WSAEPROCLIM - too many processes",
-  WSAEPROTONOSUPPORT,   "WSAEPROTONOSUPPORT - protocol not supported",
-  WSAEPROTOTYPE,        "WSAEPROTOTYPE - protocol wrong type for socket",
-  WSAESHUTDOWN,         "WSAESHUTDOWN - cannot send after socket shutdown",
-  WSAESOCKTNOSUPPORT,   "WSAESOCKTNOSUPPORT - socket type not supported",
-  WSAETIMEDOUT,         "WSAETIMEDOUT - connection timed out",
-  WSATYPE_NOT_FOUND,    "WSATYPE_NOT_FOUND - class type not found",
-  WSAEWOULDBLOCK,       "WSAEWOULDBLOCK - resource temporarily unavailable",
-  WSAHOST_NOT_FOUND,    "WSAHOST_NOT_FOUND - host not found",
-  WSA_INVALID_HANDLE,   "WSA_INVALID_HANDLE - specified event object handle is invalid",
-  WSA_INVALID_PARAMETER,"WSA_INVALID_PARAMETER - one or more parameters are invalid",
-  WSA_IO_INCOMPLETE,    "WSA_IO_INCOMPLETE - overlapped i/o event object not in signaled state",
-  WSA_IO_PENDING,       "WSA_IO_PENDING - overlapped operations will complete later",
-  WSA_NOT_ENOUGH_MEMORY,"WSA_NOT_ENOUGH_MEMORY - insufficient nemory available",
-  WSANOTINITIALISED,    "WSANOTINITIALISED - successful WSASartup() not yet performened",
-  WSANO_DATA,           "WSANO_DATA - valid name, no data record of requested type",
-  WSANO_RECOVERY,       "WSANO_RECOVERY - this is a non-recoverable error",
-  WSASYSCALLFAILURE,    "WSASYSCALLFAILURE - system call failure",
-  WSASYSNOTREADY,       "WSASYSNOTREADY - network subsystem is unavailable",
-  WSATRY_AGAIN,         "WSATRY_AGAIN - non-authoriative host not found",
-  WSAVERNOTSUPPORTED,   "WSAVERNOTSUPPORTED - winsock.dll version out of range",
-  WSAEDISCON,           "WSAEDISCON - graceful shutdown in progress",
-  WSA_OPERATION_ABORTED,"WSA_OPERATION_ABORTED - overlapped operation aborted",
+static struct stErrorEntry {
+    int iID;
+    const char *pMessage;
+} pErrorList[]= {
+    0,                    "no error",
+    WSAEACCES,            "WSAEACCES - permission denied",
+    WSAEADDRINUSE,        "WSAEADDRINUSE - address already in use",
+    WSAEADDRNOTAVAIL,     "WSAEADDRNOTAVAIL - cannot assign requested address",
+    WSAEAFNOSUPPORT,      "WSAEAFNOSUPPORT [Lost internet connection]",
+    WSAEALREADY,          "WSAEALREADY - operation already in progress",
+    WSAECONNABORTED,      "WSAECONNABORTED - software caused connection abort",
+    WSAECONNREFUSED,      "WSAECONNREFUSED - connection refused",
+    WSAECONNRESET,        "WSAECONNRESET - connection reset by peer",
+    WSAEDESTADDRREQ,      "WSAEDESTADDRREQ - destination address required",
+    WSAEFAULT,            "WSAEFAULT - bad address",
+    WSAEHOSTDOWN,         "WSAEHOSTDOWN - host is down",
+    WSAEHOSTUNREACH,      "WSAEHOSTUNREACH - no route to host",
+    WSAEINPROGRESS,       "WSAEINPROGRESS - operation now in progress",
+    WSAEINTR,             "WSAEINTR - interrupted function call",
+    WSAEINVAL,            "WSAEINVAL - invalid argument",
+    WSAEISCONN,           "WSAEISCONN - socket is already connected",
+    WSAEMFILE,            "WSAEMFILE  - too many open files",
+    WSAEMSGSIZE,          "WSAEMSGSIZE - message too long",
+    WSAENETDOWN,          "WSAENETDOWN - network is down",
+    WSAENETRESET,         "WSAENETRESET - network dropped connection on reset",
+    WSAENETUNREACH,       "WSAENETUNREACH - network is unreachable",
+    WSAENOBUFS,           "WSAENOBUFS - no buffer space available",
+    WSAENOPROTOOPT,       "WSAENOPROTOOPT - bad protocol option",
+    WSAENOTCONN,          "WSAENOTCONN - socket is not connected",
+    WSAENOTSOCK,          "WSAENOTSOCK - socket operation on non-socket",
+    WSAEOPNOTSUPP,        "WSAEOPNOTSUPP - operation not supported",
+    WSAEPFNOSUPPORT,      "WSAEPFNOSUPPORT - protocol family not supported",
+    WSAEPROCLIM,          "WSAEPROCLIM - too many processes",
+    WSAEPROTONOSUPPORT,   "WSAEPROTONOSUPPORT - protocol not supported",
+    WSAEPROTOTYPE,        "WSAEPROTOTYPE - protocol wrong type for socket",
+    WSAESHUTDOWN,         "WSAESHUTDOWN - cannot send after socket shutdown",
+    WSAESOCKTNOSUPPORT,   "WSAESOCKTNOSUPPORT - socket type not supported",
+    WSAETIMEDOUT,         "WSAETIMEDOUT - connection timed out",
+    WSATYPE_NOT_FOUND,    "WSATYPE_NOT_FOUND - class type not found",
+    WSAEWOULDBLOCK,       "WSAEWOULDBLOCK - resource temporarily unavailable",
+    WSAHOST_NOT_FOUND,    "WSAHOST_NOT_FOUND - host not found",
+    WSA_INVALID_HANDLE,   "WSA_INVALID_HANDLE - specified event object handle is invalid",
+    WSA_INVALID_PARAMETER,"WSA_INVALID_PARAMETER - one or more parameters are invalid",
+    WSA_IO_INCOMPLETE,    "WSA_IO_INCOMPLETE - overlapped i/o event object not in signaled state",
+    WSA_IO_PENDING,       "WSA_IO_PENDING - overlapped operations will complete later",
+    WSA_NOT_ENOUGH_MEMORY,"WSA_NOT_ENOUGH_MEMORY - insufficient nemory available",
+    WSANOTINITIALISED,    "WSANOTINITIALISED - successful WSASartup() not yet performened",
+    WSANO_DATA,           "WSANO_DATA - valid name, no data record of requested type",
+    WSANO_RECOVERY,       "WSANO_RECOVERY - this is a non-recoverable error",
+    WSASYSCALLFAILURE,    "WSASYSCALLFAILURE - system call failure",
+    WSASYSNOTREADY,       "WSASYSNOTREADY - network subsystem is unavailable",
+    WSATRY_AGAIN,         "WSATRY_AGAIN - non-authoriative host not found",
+    WSAVERNOTSUPPORTED,   "WSAVERNOTSUPPORTED - winsock.dll version out of range",
+    WSAEDISCON,           "WSAEDISCON - graceful shutdown in progress",
+    WSA_OPERATION_ABORTED,"WSA_OPERATION_ABORTED - overlapped operation aborted",
 };
 const int iNumMessages = sizeof(pErrorList) / sizeof(struct stErrorEntry);
 #endif
@@ -191,15 +195,15 @@ public:
 #define MAX_DATAGRAM                1024    // Length of unreliable message
 
 typedef enum {
-	CTL_CONNECT = 1,
-	CTL_PLACEHOLDER,
-	CTL_REJECT,
-	CTL_ACCEPT,
-	CTL_PING,
-	CTL_SERVERINFO,
-	CTL_SERVERINFO_RESET,
-	CTL_SERVERINFO_END,
-	CTL_SERVERINFO_GET
+    CTL_CONNECT = 1,
+    CTL_PLACEHOLDER,
+    CTL_REJECT,
+    CTL_ACCEPT,
+    CTL_PING,
+    CTL_SERVERINFO,
+    CTL_SERVERINFO_RESET,
+    CTL_SERVERINFO_END,
+    CTL_SERVERINFO_GET
 
 } tSocketCtrlMsg;
 
@@ -273,56 +277,56 @@ public:
     unsigned int     iPacketsReceived;
     unsigned int     iDroppedDatagrams;
     unsigned int     iReceivedDuplicateCount;
-	//int               NET_StringToAddr(char *pString, struct sockaddr *pAddr);
-	int               NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr);
-	//int               NET_GetSocketPort(struct sockaddr *pAddr);
-	//int               NET_SetSocketPort(struct sockaddr *pAddr, int iPort);
-	// void              NET_SetPort(int iPort);
-	// int               NET_GetPort(void);
+    //int               NET_StringToAddr(char *pString, struct sockaddr *pAddr);
+    int               NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr);
+    //int               NET_GetSocketPort(struct sockaddr *pAddr);
+    //int               NET_SetSocketPort(struct sockaddr *pAddr, int iPort);
+    // void              NET_SetPort(int iPort);
+    // int               NET_GetPort(void);
     //CCSocket         *pAccept(int iReSocket,struct sockaddr *ReAddr);
-	void              SetRemoteIPAddress(char *iNetAddress);
-	void              SetRemotePort(int iPort);
+    void              SetRemoteIPAddress(char *iNetAddress);
+    void              SetRemotePort(int iPort);
     char              *pGetRemoteIPAddress(void);
     int               iGetRemotePort(void);
     char              *pGetLocalIPAddress(void);
     int               iGetLocalPort(void);
     int               OpenSocket(char *pAddress, int iPort);
-	int               OpenSocket(int iPort);
-	int               zOpenSocket(int iPort);
-	int               zOpenSocket(char *pAddress, int iPort);
-	int               CloseSocket(int iSocket);
-	int               Listen(int iHostPort, int iState);
-	int               CheckNewConnections (void);
-	int               nRecv(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
-	int               nRecv(char *pBuf, int iLen, struct sockaddr *pAddr);
-	int               nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
-	int               nSend(char *pBuf, int iLen, struct sockaddr *pAddr);
+    int               OpenSocket(int iPort);
+    int               zOpenSocket(int iPort);
+    int               zOpenSocket(char *pAddress, int iPort);
+    int               CloseSocket(int iSocket);
+    int               Listen(int iHostPort, int iState);
+    int               CheckNewConnections (void);
+    int               nRecv(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
+    int               nRecv(char *pBuf, int iLen, struct sockaddr *pAddr);
+    int               nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
+    int               nSend(char *pBuf, int iLen, struct sockaddr *pAddr);
     SOCKET             iSocket;
 
     struct sockaddr_in ToAddr;
     struct sockaddr_in FromAddr;
 
-    #pragma pack(1)
+#pragma pack(1)
     struct {
         unsigned int  iLen;
         unsigned int  iSequence;
         char          pData[MAX_DATAGRAM];
     } PacketBuffer;
-    #pragma pack()
+#pragma pack()
 };
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	int     NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName);
-	int     NET_GetAddrFromName(char *pName, struct sockaddr *pAddr);
-    char   *NET_pGetLastError(void);
-    char   *NET_pAddrToString(struct sockaddr *pAddr);
-	int     NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2);
-	void    FinishCtlPacket(CPacket *pPacket);
-	int     NET_Init(void);
-	int     NET_Shutdown(void);
+int     NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName);
+int     NET_GetAddrFromName(char *pName, struct sockaddr *pAddr);
+char   *NET_pGetLastError(void);
+char   *NET_pAddrToString(struct sockaddr *pAddr);
+int     NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2);
+void    FinishCtlPacket(CPacket *pPacket);
+int     NET_Init(void);
+int     NET_Shutdown(void);
 #ifdef __cplusplus
 }
 #endif

@@ -1,3 +1,9 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+
+****************************************************************/
 
 #include "c_gl3dmodel.h"
 
@@ -8,8 +14,8 @@ using namespace std;
 CGLModel::CGLModel() {
     memset(name,0,64);
     memset(skin,0,1024);
-    next=0;
-    prev=0;
+    pNext=0;
+    pPrev=0;
     MD2=0;
     Model=0;
     bMadeLog=1;
@@ -18,12 +24,11 @@ CGLModel::CGLModel() {
     pLog->_DebugAdd("CGLModel::CGLModel()");
 }
 
-CGLModel::CGLModel(CLog *pInLog)
-{
+CGLModel::CGLModel(CLog *pInLog) {
     memset(name,0,64);
     memset(skin,0,1024);
-    next=0;
-    prev=0;
+    pNext=0;
+    pPrev=0;
     MD2=0;
     Model=0;
     bMadeLog=0;
@@ -31,16 +36,14 @@ CGLModel::CGLModel(CLog *pInLog)
     pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
 }
 
-CGLModel::~CGLModel()
-{
+CGLModel::~CGLModel() {
     pLog->_DebugAdd("CGLModel::~CGLModel()");
     if(bMadeLog) DEL(pLog);
     DEL(MD2);
     DEL(Model);
 }
 
-bool CGLModel::Load(char *filename,char *texture)
-{
+bool CGLModel::Load(char *filename,char *texture) {
     pLog->_DebugAdd("CGLModel::Load(char *filename, char *texture)");
     strcpy(skin,texture);
     DEL(MD2);
@@ -48,8 +51,7 @@ bool CGLModel::Load(char *filename,char *texture)
     MD2=new CLoadMD2(pLog);
     MD2->pGAF=pGAF;
     Model=new t3DModel();
-    if(!Model)
-    {
+    if(!Model) {
         DEL(MD2);
         return 0;
     }
@@ -61,8 +63,7 @@ bool CGLModel::Load(char *filename,char *texture)
     return 1;
 }
 
-bool CGLModel::RenderSceneDraw(void)
-{
+bool CGLModel::RenderSceneDraw(void) {
     pLog->_DebugAdd("CGLModel::RenderSceneDraw(void)");
     if(!Model) return 0;
     if(!Model->texture) {
@@ -79,8 +80,7 @@ bool CGLModel::RenderSceneDraw(void)
 
     if(nextFrame == 0) nextFrame=pAnim->startFrame;
 
-    if((int)Model->pObject.size() < (int)nextFrame)
-    {
+    if((int)Model->pObject.size() < (int)nextFrame) {
         Model->currentFrame=pAnim->startFrame + 1;
         nextFrame = (Model->currentFrame + 1) % pAnim->endFrame;
     }
@@ -93,56 +93,51 @@ bool CGLModel::RenderSceneDraw(void)
     //glMatrixMode(GL_MODELVIEW);
     //glPushMatrix();
     //glLoadIdentity();
-	//gluPerspective( 80.0f, 1.333, 1.0f, 9000.0);
-	//gluLookAt(Model->loc.x-100, Model->loc.y-100, Model->loc.z , Model->loc.x, Model->loc.y, Model->loc.z ,Model->loc.x-100, Model->loc.y-100, Model->loc.z-1 );
-	//gluLookAt(camera->px,camera->py,camera->pz,camera->vx,camera->vy,camera->vz,camera->ux,camera->uy,camera->uz	);
+    //gluPerspective( 80.0f, 1.333, 1.0f, 9000.0);
+    //gluLookAt(Model->loc.x-100, Model->loc.y-100, Model->loc.z , Model->loc.x, Model->loc.y, Model->loc.z ,Model->loc.x-100, Model->loc.y-100, Model->loc.z-1 );
+    //gluLookAt(camera->px,camera->py,camera->pz,camera->vx,camera->vy,camera->vz,camera->ux,camera->uy,camera->uz	);
     //glTranslatef(0,0,Model->loc.z);
     //glRotatef(Model->rot.x, 1.0f , 0 ,0 );
     //glRotatef(Model->rot.y, 0, 1.0f , 0 );
     //glRotatef(Model->rot.z, 0, 0, 1.0f  );
     //glScalef(Model->scale.x, Model->scale.y, Model->scale.z);
-	//glScalef(12.44,12.44,12.44);
+    //glScalef(12.44,12.44,12.44);
     //glTranslatef(0.0f,0.0f,-6.0f);
-	//gluLookAt(Model->loc.x,Model->loc.y,1, Model->loc.x, Model->loc.y, Model->loc.z ,  0, 1, 0 ); // WORKS!!!
-	//glColor3f(Model->color.r, Model->color.g, Model->color.b);
+    //gluLookAt(Model->loc.x,Model->loc.y,1, Model->loc.x, Model->loc.y, Model->loc.z ,  0, 1, 0 ); // WORKS!!!
+    //glColor3f(Model->color.r, Model->color.g, Model->color.b);
 
     pLog->_DebugAdd("Hi!");
 
-	glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, Model->texture->bmap);
+    glBindTexture(GL_TEXTURE_2D, Model->texture->bmap);
     glBegin(GL_TRIANGLES);
-        for(int j = 0; j < pFrame->numOfFaces; j++)
-        {
-            for(int whichVertex = 0; whichVertex < 3; whichVertex++)
-            {
-                int vertIndex = pFirstFrame->pFaces[j].vertIndex[whichVertex];
-                int texIndex  = pFirstFrame->pFaces[j].coordIndex[whichVertex];
-                if(pFirstFrame->pTexVerts)
-                {
-                    glTexCoord2f(pFirstFrame->pTexVerts[ texIndex ].x,
-                                 pFirstFrame->pTexVerts[ texIndex ].y);
-                }
-                CVector3 vPoint1 = pFrame->pVerts[ vertIndex ];
-                CVector3 vPoint2 = pNextFrame->pVerts[ vertIndex ];
-                glVertex3f(vPoint1.x + t * (vPoint2.x - vPoint1.x), // Find the interpolated X
-                           vPoint1.y + t * (vPoint2.y - vPoint1.y), // Find the interpolated Y
-                           vPoint1.z + t * (vPoint2.z - vPoint1.z));// Find the interpolated Z
+    for(int j = 0; j < pFrame->numOfFaces; j++) {
+        for(int whichVertex = 0; whichVertex < 3; whichVertex++) {
+            int vertIndex = pFirstFrame->pFaces[j].vertIndex[whichVertex];
+            int texIndex  = pFirstFrame->pFaces[j].coordIndex[whichVertex];
+            if(pFirstFrame->pTexVerts) {
+                glTexCoord2f(pFirstFrame->pTexVerts[ texIndex ].x,
+                             pFirstFrame->pTexVerts[ texIndex ].y);
             }
+            CVector3 vPoint1 = pFrame->pVerts[ vertIndex ];
+            CVector3 vPoint2 = pNextFrame->pVerts[ vertIndex ];
+            glVertex3f(vPoint1.x + t * (vPoint2.x - vPoint1.x), // Find the interpolated X
+                       vPoint1.y + t * (vPoint2.y - vPoint1.y), // Find the interpolated Y
+                       vPoint1.z + t * (vPoint2.z - vPoint1.z));// Find the interpolated Z
         }
+    }
     glEnd();
     return 1;
 }
 
 
-bool CGLModel::Draw(void)
-{
+bool CGLModel::Draw(void) {
     pLog->_DebugAdd("CGLModel::Draw(void) A");
 
     if(!Model) return 0;
 
-    if(!Model->texture)
-    {
+    if(!Model->texture) {
         Model->texture=new CGLTexture(pLog);
         Model->texture->pGAF=pGAF;
         Model->texture->LoadBMP(pGAF,skin,0);
@@ -156,8 +151,7 @@ bool CGLModel::Draw(void)
 
     if(nextFrame == 0) nextFrame=pAnim->startFrame;
 
-    if((int)Model->pObject.size() < (int)nextFrame)
-    {
+    if((int)Model->pObject.size() < (int)nextFrame) {
         Model->currentFrame=pAnim->startFrame + 1;
         nextFrame = (Model->currentFrame + 1) % pAnim->endFrame;
     }
@@ -197,9 +191,9 @@ bool CGLModel::Draw(void)
     pLog->_DebugAdd("CGLModel::Draw(void) C");
 
     if(Model)
-    if(Model->texture)
-    if(Model->texture->bmap)
-        glBindTexture(GL_TEXTURE_2D, Model->texture->bmap);
+        if(Model->texture)
+            if(Model->texture->bmap)
+                glBindTexture(GL_TEXTURE_2D, Model->texture->bmap);
 
 
     pLog->_DebugAdd("CGLModel::Draw(void) D");
@@ -208,21 +202,17 @@ bool CGLModel::Draw(void)
 
     pLog->_DebugAdd("CGLModel::Draw(void) E");
 
-    if(pFrame)
-    {
+    if(pFrame) {
         glBegin(GL_TRIANGLES);
 
-        for(int j = 0; j < pFrame->numOfFaces; j++)
-        {
+        for(int j = 0; j < pFrame->numOfFaces; j++) {
             pLog->_DebugAdd("CGLModel::Draw(void) EE");
-            for(int whichVertex = 0; whichVertex < 3; whichVertex++)
-            {
+            for(int whichVertex = 0; whichVertex < 3; whichVertex++) {
                 pLog->_DebugAdd("CGLModel::Draw(void) EEE");
                 int vertIndex = pFirstFrame->pFaces[j].vertIndex[whichVertex];
                 pLog->_DebugAdd("CGLModel::Draw(void) EEEE");
                 int texIndex  = pFirstFrame->pFaces[j].coordIndex[whichVertex];
-                if(pFirstFrame->pTexVerts)
-                {
+                if(pFirstFrame->pTexVerts) {
                     pLog->_DebugAdd("CGLModel::Draw(void) E5");
                     glTexCoord2f(pFirstFrame->pTexVerts[ texIndex ].x,
                                  pFirstFrame->pTexVerts[ texIndex ].y);
@@ -261,16 +251,14 @@ float CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame) {
     float time = GetTickCount();//SDL_GetTicks();
     this->elapsedTime = time - this->lastTime;
     float t = this->elapsedTime / (1000.0f / kAnimationSpeed);
-    if (elapsedTime >= (1000.0f / kAnimationSpeed) )
-    {
+    if (elapsedTime >= (1000.0f / kAnimationSpeed) ) {
         pModel->currentFrame = nextFrame;
         this->lastTime = time;
     }
     return t;
 }
 
-t3DObject::t3DObject()
-{
+t3DObject::t3DObject() {
     numOfVerts=0;
     numOfFaces=0;
     numTexVertex=0;
@@ -283,12 +271,9 @@ t3DObject::t3DObject()
     pFaces=0;
 }
 
-t3DObject::~t3DObject()
-{
-}
+t3DObject::~t3DObject() {}
 
-t3DModel::t3DModel()
-{
+t3DModel::t3DModel() {
     numOfObjects=0;
     numOfMaterials=0;
     numOfAnimations=0;
@@ -304,13 +289,11 @@ t3DModel::t3DModel()
     pObject.clear();
 
 }
-t3DModel::~t3DModel()
-{
+t3DModel::~t3DModel() {
 
 }
 ////////////////////////////////////////////////////////////////////////
-CLoadMD2::CLoadMD2(CLog *pInLog)
-{
+CLoadMD2::CLoadMD2(CLog *pInLog) {
     pLog=pInLog;
     pLog->_DebugAdd("CLoadMD2::CLoadMD2(CLog *pInLog)");
     memset(&m_Header, 0, sizeof(tMd2Header));
@@ -320,14 +303,12 @@ CLoadMD2::CLoadMD2(CLog *pInLog)
     m_pFrames=NULL;
 }
 ////////////////////////////////////////////////////////////////////////
-bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture)
-{
+bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture) {
     pLog->_DebugAdd("CLoadMD2::ImportMD2()");
-    char strMessage[255] = {0};
+    char strMessage[255] = {0 };
     m_FilePointer = fopen(strFileName, "rb");
 
-    if(!m_FilePointer)
-    {
+    if(!m_FilePointer) {
 
         pLog->_DebugAdd("CLoadMD2::ImportMD2() Unable to find the file: %s!", strFileName);
 
@@ -336,8 +317,7 @@ bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture)
     }
 
     fread(&m_Header, 1, sizeof(tMd2Header), m_FilePointer);
-    if(m_Header.version != 8)
-    {
+    if(m_Header.version != 8) {
 
         pLog->_DebugAdd("CLoadMD2::ImportMD2() Invalid file format (Version not 8): %s!", strFileName);
 
@@ -347,8 +327,7 @@ bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture)
     ReadMD2Data();
 
     ConvertDataStructures(MD2);
-    if(strTexture)
-    {
+    if(strTexture) {
         tMaterialInfo texture;
         strcpy(texture.strFile, strTexture);
         texture.texureId = 0;
@@ -360,8 +339,7 @@ bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture)
     }
     CleanUp();
 
-    if(pGAF)
-    {
+    if(pGAF) {
         pLog->_DebugAdd("CLoadMD2::ImportMD2() md2:%s",strTexture);
 
 
@@ -375,8 +353,7 @@ bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture)
     return true;
 }
 //////////////////////////////////////////////////////////////////
-void CLoadMD2::ReadMD2Data()
-{
+void CLoadMD2::ReadMD2Data() {
     pLog->_DebugAdd("CLoadMD2::ReadMD2Data()");
     unsigned char buffer[MD2_MAX_FRAMESIZE];
     m_pSkins     = new tMd2Skin [m_Header.numSkins];
@@ -390,15 +367,13 @@ void CLoadMD2::ReadMD2Data()
     fseek(m_FilePointer, m_Header.offsetTriangles, SEEK_SET);
     fread(m_pTriangles,  sizeof(tMd2Face), m_Header.numTriangles, m_FilePointer);
     fseek(m_FilePointer, m_Header.offsetFrames, SEEK_SET);
-    for (int i=0; i <    m_Header.numFrames; i++)
-    {
+    for (int i=0; i <    m_Header.numFrames; i++) {
         tMd2AliasFrame *pFrame = (tMd2AliasFrame *) buffer;
         m_pFrames[i].pVertices = new tMd2Triangle [m_Header.numVertices];
         fread(pFrame, 1, m_Header.frameSize, m_FilePointer);
         strcpy(m_pFrames[i].strName, pFrame->name);
         tMd2Triangle *pVertices = m_pFrames[i].pVertices;
-        for (int j=0; j < m_Header.numVertices; j++)
-        {
+        for (int j=0; j < m_Header.numVertices; j++) {
             pVertices[j].vertex[0] = pFrame->aliasVertices[j].vertex[0] * pFrame->scale[0] + pFrame->translate[0];
             pVertices[j].vertex[2] = -1 * (pFrame->aliasVertices[j].vertex[1] * pFrame->scale[1] + pFrame->translate[1]);
             pVertices[j].vertex[1] = pFrame->aliasVertices[j].vertex[2] * pFrame->scale[2] + pFrame->translate[2];
@@ -406,29 +381,23 @@ void CLoadMD2::ReadMD2Data()
     }
 }
 //////////////////////////////////////////////////////////////////
-void CLoadMD2::ParseAnimations(t3DModel *MD2)
-{
+void CLoadMD2::ParseAnimations(t3DModel *MD2) {
     pLog->_DebugAdd("CLoadMD2::ParseAnimations(t3DModel *MD2)");
     tAnimationInfo animation;
     string strLastName = "";
-    for(int i = 0; i < MD2->numOfObjects; i++)
-    {
+    for(int i = 0; i < MD2->numOfObjects; i++) {
         string strName  = m_pFrames[i].strName;
         int frameNum = 0;
-        for(int j = 0; j < (int)strName.length(); j++)
-        {
-            if( (int)(isdigit(strName[j]) && j) >= (int)(strName.length() - 2))
-            {
+        for(int j = 0; j < (int)strName.length(); j++) {
+            if( (int)(isdigit(strName[j]) && j) >= (int)(strName.length() - 2)) {
                 frameNum = atoi(&strName[j]);
                 strName.erase(j, strName.length() - j);
                 break;
             }
         }
         if( (strName != strLastName) ||
-            (i == MD2->numOfObjects - 1) )
-        {
-            if(strLastName != "")
-            {
+                (i == MD2->numOfObjects - 1) ) {
+            if(strLastName != "") {
                 strcpy(animation.strName, strLastName.c_str());
                 animation.endFrame = i;
                 MD2->pAnimations.push_back(animation);
@@ -441,41 +410,35 @@ void CLoadMD2::ParseAnimations(t3DModel *MD2)
     }
 }
 ////////////////////////////////////////////////////////////////
-void CLoadMD2::ConvertDataStructures(t3DModel *MD2)
-{
+void CLoadMD2::ConvertDataStructures(t3DModel *MD2) {
     pLog->_DebugAdd("CLoadMD2::ConvertDataStructures(t3DModel *MD2)");
     int j = 0, i = 0;
     memset(MD2, 0, sizeof(t3DModel));
     MD2->numOfObjects = m_Header.numFrames;
     ParseAnimations(MD2);
-    for (i=0; i < MD2->numOfObjects; i++)
-    {
+    for (i=0; i < MD2->numOfObjects; i++) {
         t3DObject *currentFrame = new t3DObject();// {0};
         currentFrame->numOfVerts   = m_Header.numVertices;
         currentFrame->numTexVertex = m_Header.numTexCoords;
         currentFrame->numOfFaces   = m_Header.numTriangles;
         currentFrame->pVerts    = new CVector3 [currentFrame->numOfVerts];
-        for (j=0; j < currentFrame->numOfVerts; j++)
-        {
+        for (j=0; j < currentFrame->numOfVerts; j++) {
             currentFrame->pVerts[j].x = m_pFrames[i].pVertices[j].vertex[0];
             currentFrame->pVerts[j].y = m_pFrames[i].pVertices[j].vertex[1];
             currentFrame->pVerts[j].z = m_pFrames[i].pVertices[j].vertex[2];
         }
         delete m_pFrames[i].pVertices;
-        if(i > 0)
-        {
+        if(i > 0) {
             MD2->pObject.push_back(*currentFrame);
             continue;   // Go on to the next key frame
         }
         currentFrame->pTexVerts = new CVector2 [currentFrame->numTexVertex];
         currentFrame->pFaces    = new tFace [currentFrame->numOfFaces];
-        for(j=0; j < currentFrame->numTexVertex; j++)
-        {
+        for(j=0; j < currentFrame->numTexVertex; j++) {
             currentFrame->pTexVerts[j].x = m_pTexCoords[j].u / float(m_Header.skinWidth);
             currentFrame->pTexVerts[j].y = 1 - m_pTexCoords[j].v / float(m_Header.skinHeight);
         }
-        for(j=0; j < currentFrame->numOfFaces; j++)
-        {
+        for(j=0; j < currentFrame->numOfFaces; j++) {
             currentFrame->pFaces[j].vertIndex[0]  = m_pTriangles[j].vertexIndices[0];
             currentFrame->pFaces[j].vertIndex[1]  = m_pTriangles[j].vertexIndices[1];
             currentFrame->pFaces[j].vertIndex[2]  = m_pTriangles[j].vertexIndices[2];
@@ -487,8 +450,7 @@ void CLoadMD2::ConvertDataStructures(t3DModel *MD2)
     }
 }
 //////////////////////////////////////////
-void CLoadMD2::CleanUp()
-{
+void CLoadMD2::CleanUp() {
     pLog->_DebugAdd("CLoadMD2::CleanUp()");
 
     fclose(m_FilePointer);                      // Close the current file pointer

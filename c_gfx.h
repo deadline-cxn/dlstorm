@@ -1,6 +1,8 @@
 /***************************************************************
- **      EMBER                                                **
- ***************************************************************/
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
 
 #ifndef _EMBER_GFX_UTIL
 #define _EMBER_GFX_UTIL
@@ -120,8 +122,8 @@ public:
     void        DrawBar(int iX,int iY,int iX2,int iY2,long color);
     void        DrawBar(RECT rc,long color1,long color2);
     void        DrawBar(int iX,int iY,int iX2,int iY2,long color1,long color2);
-	void        DrawRect(RECT rc, long color);
-	void        DrawRect(int iX,int iY,int iX2,int iY2,long color);
+    void        DrawRect(RECT rc, long color);
+    void        DrawRect(int iX,int iY,int iX2,int iY2,long color);
     void        DrawRectangle(int iX,int iY,int iX2,int iY2,long color);
     void        DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2);
     void        draw_3d_box(RECT rect);
@@ -136,6 +138,7 @@ public:
     CGLTexture* GetTexture(char *name);
     int         GetTotalTextures(void); // return number of loaded textures
     CGLTexture* GetRandomTexture(void);
+    CGLModel*   GetModel(char* name);
 
     SDL_Surface* pScreen;
     int         VideoFlags;
@@ -146,6 +149,7 @@ public:
     CGLTexture* pDefaultTexture;
     CGLTexture* pFirstTexture;
     CGLModel*   pFirstModel;
+
     CLog*       pLog;
     CGAF*       pGAF;
     CMesh*      g_pMesh;// = new CMesh();

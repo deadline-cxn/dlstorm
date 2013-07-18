@@ -1,3 +1,12 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+    Class:  C_Entity
+    Description:
+        Entity Object for games
+
+****************************************************************/
 #include "c_entity.h"
 
 C_Entity::C_Entity() {
@@ -76,8 +85,7 @@ void C_Entity::Draw(void) {
 
     if(pModel) {
 
-    }
-    else {
+    } else {
         if(pTexture) {
             if(pTexture->bmap) {
                 glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
@@ -88,13 +96,13 @@ void C_Entity::Draw(void) {
 
 
 
-/*  CVector3 Pos;       // position of the entity
-    CVector3 Dir;       // direction vector (which way the entity is facing)
-    CVector3 Scale;     // vector for the scale matrix
-    CGLModel *pModel;   // pointer to model data to use
-    CLog    *pLog; // pointer to log
-    CGAF    *pGAF; // pointer to GAF
-    C_GFX   *pGFX; // pointer to GFX    */
+    /*  CVector3 Pos;       // position of the entity
+        CVector3 Dir;       // direction vector (which way the entity is facing)
+        CVector3 Scale;     // vector for the scale matrix
+        CGLModel *pModel;   // pointer to model data to use
+        CLog    *pLog; // pointer to log
+        CGAF    *pGAF; // pointer to GAF
+        C_GFX   *pGFX; // pointer to GFX    */
 }
 
 bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {
@@ -107,22 +115,22 @@ bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *ac
 bool C_Entity::exec_event(tEntityEvent event, char *args, C_Entity *action_entity) {
     if(action_entity==0) action_entity=this;
     switch(event) {
-        case ENTITY_EVENT_NONE:
-            return true;
-        case ENTITY_EVENT_ATTACK:
-            on_attack(args,action_entity);
-            break;
-        case ENTITY_EVENT_HEAL:
-            on_heal(args,action_entity);
-            break;
-        case ENTITY_EVENT_TARGET:
-            on_target(args,action_entity);
-            break;
-        case ENTITY_EVENT_DEATH:
-            on_death(args,action_entity);
-            break;
-        default:
-            break;
+    case ENTITY_EVENT_NONE:
+        return true;
+    case ENTITY_EVENT_ATTACK:
+        on_attack(args,action_entity);
+        break;
+    case ENTITY_EVENT_HEAL:
+        on_heal(args,action_entity);
+        break;
+    case ENTITY_EVENT_TARGET:
+        on_target(args,action_entity);
+        break;
+    case ENTITY_EVENT_DEATH:
+        on_death(args,action_entity);
+        break;
+    default:
+        break;
     }
     return true;
 }
@@ -149,12 +157,10 @@ void C_Entity::on_attack(char *args,C_Entity *entity) {
         pLog->AddEntry(va("%s was attacked by %s for %d damage. %s now has %d life points.",name,entity->name,attack_dmg,name,life_points));
         if(life_points==0) {
             push_event(this,ENTITY_EVENT_DEATH,"0",entity);
-        }
-        else {
+        } else {
             push_event(this,ENTITY_EVENT_TARGET,"1",entity);
         }
-    }
-    else {
+    } else {
         pLog->AddEntry(va("%s is dead...",name));
     }
 }

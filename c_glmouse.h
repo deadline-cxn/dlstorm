@@ -1,6 +1,8 @@
-/***************************************************
- ** C_GL_MOUSE                                    **
- ***************************************************/
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
 
 #ifndef C_GLMOUSE
 #define C_GLMOUSE
@@ -92,17 +94,17 @@ public:
     void SetX(int x);
     int  Y(void);
     void SetY(int y);
-	int  WheelUp(void);
-	void SetWheelUp(bool m);
+    int  WheelUp(void);
+    void SetWheelUp(bool m);
     int  WheelDown(void);
-	void SetWheelDown(bool m);
+    void SetWheelDown(bool m);
     bool InX(int x1,int x2);
     bool InY(int y1,int y2);
     bool In( int x1,int y1,int x2,int y2);
-	bool InRect(RECT rc);
+    bool InRect(RECT rc);
     bool InXPct(float fx1,float fx2);
     bool InYPct(float fy1,float fy2);
-	bool InPct( float fx1,float fy1, float fx2,float fy2);
+    bool InPct( float fx1,float fy1, float fx2,float fy2);
     void draw(void);
 };
 

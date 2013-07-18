@@ -1,6 +1,8 @@
 /***************************************************************
- **      DATA CONTAINER CLASS                                 **
- ***************************************************************/
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
 
 #ifndef _SC_DATA_CLASS
 #define _SC_DATA_CLASS
@@ -30,17 +32,17 @@ public:
 
 class CC_Data {
 public:
-	CC_Data(void);
-	CC_Data(CLog *pInLog);
-	~CC_Data(void);
+    CC_Data(void);
+    CC_Data(CLog *pInLog);
+    ~CC_Data(void);
 
-	void Initialize(void);
+    void Initialize(void);
 
-	bool bLoad(void);
-	bool bSave(void);
+    bool bLoad(void);
+    bool bSave(void);
 
-	void CleanUp(void);
-	void SetToDefaults(void);
+    void CleanUp(void);
+    void SetToDefaults(void);
 
     void ClearFavoriteServers(void);
 
@@ -58,26 +60,26 @@ public:
 
     ///////////////////////////////////////////////////////////////
 
-	char			Name[24];
-	char			Password[24];
-	bool			bSavePassword;
-	char			ServerMessage[1024];
-	char			ServerName[1024];
-	char			ServerID[15];           // Server / Mission Identifier
+    char			Name[24];
+    char			Password[24];
+    bool			bSavePassword;
+    char			ServerMessage[1024];
+    char			ServerName[1024];
+    char			ServerID[15];           // Server / Mission Identifier
     char            szServerVersion[15];
-	char			IPAddress[255];
-	char			Port[10];
+    char			IPAddress[255];
+    char			Port[10];
     char            MasterIPAddress[255];
     char            MasterPort[10];
-	bool			bLog;
-	bool			bDownload;
+    bool			bLog;
+    bool			bDownload;
 
     bool            bAudioFailure;
     bool            bSound;					    	// Is sound system present?
     bool			 bMusic;					    	// Play Music? (MIDI only for now)
-	float           fSoundVolume;
-	float           fMusicVolume;
-	char			MouseLeftButtonSound[1024];
+    float           fSoundVolume;
+    float           fMusicVolume;
+    char			MouseLeftButtonSound[1024];
 
     bool            bFullScreen;
     int             ScreenWidth;
@@ -87,7 +89,7 @@ public:
     bool            drawoptions;
 
     ///////////////////////////////////////////////////////////////
-	// Discardable variables:
+    // Discardable variables:
 
     char            cDebug;                         // Debug level 1 = onscreen messages only 2 = log
     bool            bShowPING;			    		// On or Off show PING
@@ -95,14 +97,14 @@ public:
     char			CharacterSlots;			    	// Character slots on selected server
     u_char          SelectedCharacterSlot;	    	// For choosing your character when logging on or creating a character
     char			currentsample;				    // Which sample is positioned
-	char			ServerAuthor[1024];
-	int				ServerListOffset;
-	int				ServerCharacterListOffset;
+    char			ServerAuthor[1024];
+    int				ServerListOffset;
+    int				ServerCharacterListOffset;
 
-	char            session_id[64];
+    char            session_id[64];
 
-	u_char          Access;
-	char			szAccessName[255];
+    u_char          Access;
+    char			szAccessName[255];
 
     //unsigned long  dwKeyPressTimer;
 
@@ -119,9 +121,9 @@ public:
 //  ServerData      *FirstFavoriteServer;
 //	C_ServerInfo    *ServerInfo;
 
-	float		    x;
-	float		    y;
-	float		    z;
+    float		    x;
+    float		    y;
+    float		    z;
 
     float           fCredscroll;
     long            dwScrollTime;

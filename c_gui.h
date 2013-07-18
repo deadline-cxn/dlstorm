@@ -1,5 +1,9 @@
-////////////////////////////////////////////////////
-// OpenGL GUI class by Seth Parson
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef _C_GUI
 #define _C_GUI
 
@@ -39,13 +43,14 @@ using namespace std;
 #define MAX_BUTTONS		        128 // Button objects
 #define MAX_FONTS               11
 typedef void (*G_CBACK)(string whatgui);
-enum eGUILOADMODE{
+enum eGUILOADMODE {
     FGL_ATTACH=0,
     FGL_GUMP,
     FGL_CTRL,
     FGL_CTRL_CHILD,
-    FGL_PROPERTY };
-enum tGUIRelativeTo{
+    FGL_PROPERTY
+};
+enum tGUIRelativeTo {
     GUI_NOT_RELATIVE,
     GUI_TOP_LEFT,
     GUI_TOP_CENTER,
@@ -55,8 +60,9 @@ enum tGUIRelativeTo{
     GUI_MIDDLE_RIGHT,
     GUI_BOTTOM_LEFT,
     GUI_BOTTOM_CENTER,
-    GUI_BOTTOM_RIGHT};
-enum tGUIComponentTypes{
+    GUI_BOTTOM_RIGHT
+};
+enum tGUIComponentTypes {
     FM_GC_BUTTON=1,
     FM_GC_SUBMIT,
     FM_GC_CANCEL,
@@ -90,13 +96,14 @@ enum tGUIComponentTypes{
     FM_GC_BASE_SELECT,
     FM_GC_CLICK_TO_CHANGE,
     FM_GC_FILTER,
-    FM_GC_RECT_GROUP};
+    FM_GC_RECT_GROUP
+};
 
 
 class C_GUI;
 class C_GSTMP;
 class C_GCTRL;
-class C_GCTRL{
+class C_GCTRL {
 public:
     C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog,C_GFX *pInGFX,C_GUI *pInGUI,C_CONS *pInConsole  );
     C_GCTRL(C_GCTRL *pInParentControl);
@@ -203,7 +210,7 @@ private:
     char  value[1024];
 
 };
-class C_GSTMP{
+class C_GSTMP {
 public:
     C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );
     ~C_GSTMP();
@@ -250,7 +257,7 @@ public:
     C_GCTRL *focus_control;
 
 };
-class C_GUI{
+class C_GUI {
 public:
     C_GUI();
     C_GUI(CLog *pUSELog);

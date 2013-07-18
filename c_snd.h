@@ -1,6 +1,11 @@
 /***************************************************************
- ** EMBER Must include the following libs: fmodvc dsound winmm msacm32
- ***************************************************************/
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+    Must include the following libs: fmodvc dsound winmm msacm32
+
+****************************************************************/
+
 #ifndef _EMBER_SOUND_UTIL
 #define _EMBER_SOUND_UTIL
 
@@ -15,7 +20,7 @@ public:
     C_Sound();
     ~C_Sound();
 
-	char *FMODVersion(void);
+    char *FMODVersion(void);
     char InitializeSound();
     void ShutDownSound(void);
     char PlayMusic(char* szFilename);
@@ -29,9 +34,9 @@ public:
     FMUSIC_MODULE * fmusic;
 
     typedef struct
-    samplelist {
+            samplelist {
 
-    FSOUND_SAMPLE *sptr;
+        FSOUND_SAMPLE *sptr;
     };
 
     samplelist *sample;

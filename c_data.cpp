@@ -1,6 +1,14 @@
 /***************************************************************
- **      EMBER                                                **
- ***************************************************************/
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+    Class:  CC_DATA
+    Description:
+        Client Data storage method.
+        Creates a client.ini file that stores basic variable
+        information.
+
+****************************************************************/
 
 #include "c_data.h"
 #include "SDL.h"
@@ -42,16 +50,16 @@ CC_Data::~CC_Data() {
 
 void CC_Data::Initialize(void) {
     //Log("Creating Client Data...");
-	x=0;
-	y=0;
-	z=0;
+    x=0;
+    y=0;
+    z=0;
     //	ServerInfo=new C_ServerInformation;
     //pCharacter = new C_Toon(); //CFM_Character();
-	//ServerCharacter = NULL;
-	//ServerCharacter = new C_Toon[MAX_TOONS]; //CFM_Character[MAX_SERVER_CHARS];
+    //ServerCharacter = NULL;
+    //ServerCharacter = new C_Toon[MAX_TOONS]; //CFM_Character[MAX_SERVER_CHARS];
     //    ClearCharacters();
-	//ChatBuffer = NULL;
-	//ChatBuffer = new CFM_String[MAX_CHAT_BUFFER+1];
+    //ChatBuffer = NULL;
+    //ChatBuffer = new CFM_String[MAX_CHAT_BUFFER+1];
     //ClearChat();
     //    FavoriteServer=NULL;
     //    FirstFavoriteServer=NULL;
@@ -63,11 +71,11 @@ void CC_Data::Initialize(void) {
     Profile = new CFM_Profile;
     FirstProfile=Profile;
     ClearProfiles();
-	memset(szAccessName,0,255);
+    memset(szAccessName,0,255);
     strcpy(szServerVersion,"Unknown");
-	SetToDefaults();
-	//Log("Client Data Created");
-	bLoad();
+    SetToDefaults();
+    //Log("Client Data Created");
+    bLoad();
 }
 /***************************************************************/
 void CC_Data::CleanUp(void) {
@@ -75,7 +83,7 @@ void CC_Data::CleanUp(void) {
     //DEL(pCharacter);
     //if(ServerCharacter)
     //{
-	//	delete [] ServerCharacter;
+    //	delete [] ServerCharacter;
     //      ServerCharacter=NULL;
     //      DLog("ServerCharacter deleted");
     //}
@@ -87,55 +95,55 @@ void CC_Data::CleanUp(void) {
 
 /***************************************************************/
 void CC_Data::SetToDefaults(void) {
-	memset(Name,0,24);
-	memset(Password,0,24);
-	memset(IPAddress,0,255);
-	memset(Port,0,10);
-	memset(MasterPort,0,10);
-	memset(MasterIPAddress,0,255);
-	memset(szServerVersion,0,15);
-	memset(ServerMessage,0,1024);
-	memset(ServerName,0,1024);
+    memset(Name,0,24);
+    memset(Password,0,24);
+    memset(IPAddress,0,255);
+    memset(Port,0,10);
+    memset(MasterPort,0,10);
+    memset(MasterIPAddress,0,255);
+    memset(szServerVersion,0,15);
+    memset(ServerMessage,0,1024);
+    memset(ServerName,0,1024);
 
-	strcpy(Name,"Enter Your Name");
-	bSavePassword=true;
-	strcpy(ServerMessage,"No server message.");
-	strcpy(ServerName,"Ember Server");
+    strcpy(Name,"Enter Your Name");
+    bSavePassword=true;
+    strcpy(ServerMessage,"No server message.");
+    strcpy(ServerName,"Ember Server");
     strcpy(ServerID,"standard"); // default
     strcpy(szServerVersion,"1");
     //    strcpy(IPAddress,NET_DEFAULT_EGS_IP);
     //	strcpy(Port,va("%d",NET_DEFAULT_EGS_PORT));
     //strcpy(MasterIPAddress,NET_DEFAULT_EMS_IP);
     //strcpy(MasterPort,va("%d",NET_DEFAULT_EMS_PORT));
-	bLog=true;
-	bDownload=true;
-	//PlayerChatDelay=4000;
+    bLog=true;
+    bDownload=true;
+    //PlayerChatDelay=4000;
 
-	fSoundVolume=100;
-	fMusicVolume=100;
+    fSoundVolume=100;
+    fMusicVolume=100;
 
     //sprintf(MouseLeftButtonSound,"snd%cmouselb.wav",PATH_SEP);
     cDebug=0;
     bShowPING=false;
     bSound=true;
-	bMusic=true;
-	SelectedServer=0;
-	CharacterSlots=8;
+    bMusic=true;
+    SelectedServer=0;
+    CharacterSlots=8;
     SelectedCharacterSlot=0;
     currentsample=0;
     //    strcpy(LastDirectory,"");
 
 
-	strcpy(ServerAuthor,"");
+    strcpy(ServerAuthor,"");
 
-	ClearFavoriteServers();
+    ClearFavoriteServers();
     //	ClearCharacters();
-	ServerListOffset=0;
-	ServerCharacterListOffset=0;
-	// ID=0;
-	memset(session_id,0,64);
-	Access=0;
-	strcpy(szAccessName,"");
+    ServerListOffset=0;
+    ServerCharacterListOffset=0;
+    // ID=0;
+    memset(session_id,0,64);
+    Access=0;
+    strcpy(szAccessName,"");
     //	strcpy(PlayMouseLB,"");
     //    dwKeyPressTimer=dlcs_get_tickcount();
 
@@ -155,20 +163,20 @@ void CC_Data::SetToDefaults(void) {
 
 //void CC_Data::ClearCharacters(void){
 //    int i;
- //   for(i=0;i<MAX_TOONS;i++)
+//   for(i=0;i<MAX_TOONS;i++)
 //        memset(ServerCharacter[i].t_name,0,32);
 //}
 
 /***************************************************************/
 
-void CC_Data::ClearFavoriteServers(void){
- //   ServerData *DelMe;
+void CC_Data::ClearFavoriteServers(void) {
+//   ServerData *DelMe;
 //    FavoriteServer=FirstFavoriteServer;
 //    while(FavoriteServer)
- //   {
-   //     DelMe=FavoriteServer;
-     //   FavoriteServer=FavoriteServer->pNext;
-       // DEL(DelMe);
+//   {
+    //     DelMe=FavoriteServer;
+    //   FavoriteServer=FavoriteServer->pNext;
+    // DEL(DelMe);
     //}
     //FirstFavoriteServer=NULL;
 }
@@ -189,25 +197,25 @@ void CC_Data::ClearProfiles(void) {
 /***************************************************************/
 
 bool CC_Data::bLoad(void) {
-	SetToDefaults();
+    SetToDefaults();
 
-	FILE *fp;
-	char In[256];
-	char temp[1024];
+    FILE *fp;
+    char In[256];
+    char temp[1024];
     float f;
     vector <string> lin;
 
-	fp=fopen("client.ini","rt");
+    fp=fopen("client.ini","rt");
 
-	if(!fp)
+    if(!fp)
         return false;
 
-	while(1) {
-		if(!fgets(In,255,fp)) break;
+    while(1) {
+        if(!fgets(In,255,fp)) break;
 
-		In[strlen(In)-1]=0;
+        In[strlen(In)-1]=0;
 
-		lin = explode("=",In);
+        lin = explode("=",In);
         if(lin.size()>1) {
 
             pLog->_Add("%s",lin[0].c_str());
@@ -316,111 +324,111 @@ bool CC_Data::bLoad(void) {
                 continue;
             }
         }
-	}
-	fclose(fp);
+    }
+    fclose(fp);
 
-	if(bSavePassword==false) {
-		memset(Password,0,sizeof(Password));
-		bSave();
-	}
-	return true;
+    if(bSavePassword==false) {
+        memset(Password,0,sizeof(Password));
+        bSave();
+    }
+    return true;
 }
 
 /***************************************************************/
 
 bool CC_Data::bSave(void) {
 
-	FILE *fout;
-	char Temp[256];
-	char Temp3[_MAX_PATH];
-	char Temp4[_MAX_PATH];
+    FILE *fout;
+    char Temp[256];
+    char Temp3[_MAX_PATH];
+    char Temp4[_MAX_PATH];
 
-	strcpy(Temp4,"client");//sprintf(Temp4,"%s%cclient",FMDir,PATH_SEP);
-	strcpy(Temp3,Temp4);
-	strcat(Temp3,".tmp");
+    strcpy(Temp4,"client");//sprintf(Temp4,"%s%cclient",FMDir,PATH_SEP);
+    strcpy(Temp3,Temp4);
+    strcat(Temp3,".tmp");
 
-	fout =fopen(Temp3,"w");
-	if(!fout)
-		return false;
+    fout =fopen(Temp3,"w");
+    if(!fout)
+        return false;
 
-	fputs("***************************************************************\n",fout);
-	fputs("** Mantra initialization file                                **\n",fout);
-	fputs("***************************************************************\n",fout);
+    fputs("***************************************************************\n",fout);
+    fputs("** Mantra initialization file                                **\n",fout);
+    fputs("***************************************************************\n",fout);
     fputs("NOTE: If Mantra has problems starting, try renaming this file.\n",fout);
 
-	// set name name
-	sprintf(Temp,"Name=%s\n",Name);
-	fputs(Temp,fout);
+    // set name name
+    sprintf(Temp,"Name=%s\n",Name);
+    fputs(Temp,fout);
 
-	// set password password
-	if(bSavePassword)
-		sprintf(Temp,"Password=%s\n",Password);
-	else
-		strcpy(Temp,"Password=\n");
-	fputs(Temp,fout);
+    // set password password
+    if(bSavePassword)
+        sprintf(Temp,"Password=%s\n",Password);
+    else
+        strcpy(Temp,"Password=\n");
+    fputs(Temp,fout);
 
-	// set savepassword on (or off)
-	strcpy(Temp,"Save Password=");
-	if(bSavePassword==true)
-		strcat(Temp,"on\n");
-	else
-		strcat(Temp,"off\n");
-	fputs(Temp,fout);
+    // set savepassword on (or off)
+    strcpy(Temp,"Save Password=");
+    if(bSavePassword==true)
+        strcat(Temp,"on\n");
+    else
+        strcat(Temp,"off\n");
+    fputs(Temp,fout);
 
-	sprintf(Temp,"Last Server=%s\n",ServerName);
-	fputs(Temp,fout);
+    sprintf(Temp,"Last Server=%s\n",ServerName);
+    fputs(Temp,fout);
 
-	// set IPAddress 127.0.0.1
-	sprintf(Temp,"Last Server IP=%s\n",IPAddress);
-	fputs(Temp,fout);
+    // set IPAddress 127.0.0.1
+    sprintf(Temp,"Last Server IP=%s\n",IPAddress);
+    fputs(Temp,fout);
 
-	// set port 29180
-	sprintf(Temp,"Port=%s\n",Port);
-	fputs(Temp,fout);
+    // set port 29180
+    sprintf(Temp,"Port=%s\n",Port);
+    fputs(Temp,fout);
 
-	// set log on (or off)
-	strcpy(Temp,"Log=");
-	if(bLog==true)
-		strcat(Temp,"on\n");
-	else
-		strcat(Temp,"off\n");
-	fputs(Temp,fout);
+    // set log on (or off)
+    strcpy(Temp,"Log=");
+    if(bLog==true)
+        strcat(Temp,"on\n");
+    else
+        strcat(Temp,"off\n");
+    fputs(Temp,fout);
 
-	// set download on (or off)
-	strcpy(Temp,"Download=");
-	if(bDownload==true)
-		strcat(Temp,"on\n");
-	else
-		strcat(Temp,"off\n");
-	fputs(Temp,fout);
+    // set download on (or off)
+    strcpy(Temp,"Download=");
+    if(bDownload==true)
+        strcat(Temp,"on\n");
+    else
+        strcat(Temp,"off\n");
+    fputs(Temp,fout);
 
-	// set playerchatdelay ####
-	//sprintf(Temp,"Player Chat Delay=%d\n",PlayerChatDelay);
-	//fputs(Temp,fout);
+    // set playerchatdelay ####
+    //sprintf(Temp,"Player Chat Delay=%d\n",PlayerChatDelay);
+    //fputs(Temp,fout);
 
-	// set mouse left button click sound
-	//sprintf(Temp,"Mouse Left Button Sound=%s\n",MouseLeftButtonSound);
-	//fputs(Temp,fout);
+    // set mouse left button click sound
+    //sprintf(Temp,"Mouse Left Button Sound=%s\n",MouseLeftButtonSound);
+    //fputs(Temp,fout);
 
-	strcpy(Temp,"Sound=");
-	if(bSound==true)
-		strcat(Temp,"on\n");
-	else
-		strcat(Temp,"off\n");
-	fputs(Temp,fout);
+    strcpy(Temp,"Sound=");
+    if(bSound==true)
+        strcat(Temp,"on\n");
+    else
+        strcat(Temp,"off\n");
+    fputs(Temp,fout);
 
-	sprintf(Temp,"Sound Volume=%f\n",fSoundVolume);
-	fputs(Temp,fout);
+    sprintf(Temp,"Sound Volume=%f\n",fSoundVolume);
+    fputs(Temp,fout);
 
-	strcpy(Temp,"Music=");
-	if(bMusic==true)
-		strcat(Temp,"on\n");
-	else
-		strcat(Temp,"off\n");
-	fputs(Temp,fout);
+    strcpy(Temp,"Music=");
+    if(bMusic==true)
+        strcat(Temp,"on\n");
+    else
+        strcat(Temp,"off\n");
+    fputs(Temp,fout);
 
-	sprintf(Temp,"Music Volume=%f\n",fMusicVolume);
-	fputs(Temp,fout);
+    sprintf(Temp,"Music Volume=%f\n",fMusicVolume);
+    fputs(Temp,fout);
 
     sprintf(Temp,"Master Server=%s\n",MasterIPAddress);
     fputs(Temp,fout);
@@ -428,12 +436,12 @@ bool CC_Data::bSave(void) {
     sprintf(Temp,"Master Server Port=%s\n",MasterPort);
     fputs(Temp,fout);
 
-	strcpy(Temp,"FullScreen=");
-	if(bFullScreen==true)
-		strcat(Temp,"on\n");
-	else
-		strcat(Temp,"off\n");
-	fputs(Temp,fout);
+    strcpy(Temp,"FullScreen=");
+    if(bFullScreen==true)
+        strcat(Temp,"on\n");
+    else
+        strcat(Temp,"off\n");
+    fputs(Temp,fout);
 
     sprintf(Temp,"Screen Width=%d\n",ScreenWidth);
     fputs(Temp,fout);
@@ -445,14 +453,14 @@ bool CC_Data::bSave(void) {
     fputs(Temp,fout);
 
 
-	fclose(fout);
+    fclose(fout);
 
-	strcpy(Temp3,Temp4);
-	strcat(Temp3,".tmp");
-	strcat(Temp4,".ini");
-	remove(Temp4);
-	rename(Temp3,Temp4);
-	return true;
+    strcpy(Temp3,Temp4);
+    strcat(Temp3,".tmp");
+    strcat(Temp4,".ini");
+    remove(Temp4);
+    rename(Temp3,Temp4);
+    return true;
 }
 
 
@@ -677,8 +685,7 @@ bool CC_Data::AddFavoriteServer(ServerData *pData)
 
 /**************************************************/
 
-bool CC_Data::LoadProfiles(void)
-{
+bool CC_Data::LoadProfiles(void) {
     char szTemp1[1024];
     FILE *fp;
     int j=0;
@@ -686,8 +693,7 @@ bool CC_Data::LoadProfiles(void)
     ClearProfiles();
     sprintf(szTemp1,"servers%cprofiles.txt",PATH_SEP); // Create path to serverlist file
     fp=fopen(szTemp1,"rt"); // Load in favorite server list
-    if(fp)
-    {
+    if(fp) {
 
         fclose(fp);
         return 1;

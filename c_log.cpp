@@ -1,14 +1,35 @@
 /***************************************************************
- Seth's (Log Class)
- ***************************************************************/
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+    Class:  CLog
+    Description: Log class, adds logging to text
+        file capabilities
+
+****************************************************************/
 
 #include "c_log.h"
 
 //////////////////////////////////////////////////////
-CLog::CLog() { memset(logfile,0,_MAX_PATH); strcpy(logfile,"log.log"); Initialize();}
+CLog::CLog() {
+    memset(logfile,0,_MAX_PATH);
+    strcpy(logfile,"log.log");
+    Initialize();
+}
 //////////////////////////////////////////////////////
-CLog::CLog(char *szFilename) { Initialize(); SetName(szFilename); Restart(); LineFeedsOn();}
-CLog::CLog(char *szFilename, bool bQ) { Initialize(); SetName(szFilename); bQuiet=bQ; Restart(); LineFeedsOn();}
+CLog::CLog(char *szFilename) {
+    Initialize();
+    SetName(szFilename);
+    Restart();
+    LineFeedsOn();
+}
+CLog::CLog(char *szFilename, bool bQ) {
+    Initialize();
+    SetName(szFilename);
+    bQuiet=bQ;
+    Restart();
+    LineFeedsOn();
+}
 //////////////////////////////////////////////////////
 CLog::~CLog() { }
 //////////////////////////////////////////////////////
@@ -25,7 +46,7 @@ void CLog::Initialize(void) {
 }
 //////////////////////////////////////////////////////
 void CLog::SetName(char *szFilename) {
-	strcpy(logfile,szFilename);
+    strcpy(logfile,szFilename);
     //if( getcwd( logfile, _MAX_PATH ) != NULL) strcpy(logdir,getcwd("",_MAX_PATH));
     //strcpy(logfile,szFilename);
 }
@@ -46,15 +67,13 @@ void CLog::AddEntry(char *fmt, ...) {
     temp[strlen(temp)-1]=0;
 
     FILE *fp=fopen(logfile,"a+");
-    if(fp)
-    {
-        if(!bLineFeeds){
+    if(fp) {
+        if(!bLineFeeds) {
             fprintf(fp,"%s%s%s%s",szBegin,temp,szEnd,ach);
             if(!bQuiet)
                 printf("%s%s%s%s",szBegin,temp,szEnd,ach);
 
-        }
-        else{
+        } else {
             fprintf(fp,"%s%s%s%s\n",szBegin,temp,szEnd,ach);
             if(!bQuiet)
                 printf("%s%s%s%s\n",szBegin,temp,szEnd,ach);
@@ -65,21 +84,21 @@ void CLog::AddEntry(char *fmt, ...) {
 
 }
 //////////////////////////////////////////////////////
-void CLog::AddEntryNoTime(char *fmt, ...)
-{
-    if(!bActive) return; char ach[512];
-    va_list va; va_start( va, fmt );
-    vsprintf( ach, fmt, va ); va_end( va );
+void CLog::AddEntryNoTime(char *fmt, ...) {
+    if(!bActive) return;
+    char ach[512];
+    va_list va;
+    va_start( va, fmt );
+    vsprintf( ach, fmt, va );
+    va_end( va );
 
     FILE *fp=fopen(logfile,"a+");
-    if(fp)
-    {
-        if(!bLineFeeds){
+    if(fp) {
+        if(!bLineFeeds) {
             fprintf(fp,"%s",ach);
             if(!bQuiet)
-            printf(ach);
-        }
-        else{
+                printf(ach);
+        } else {
             fprintf(fp,"%s\n",ach);
             if(!bQuiet)
                 printf("%s\n",ach);
@@ -89,31 +108,45 @@ void CLog::AddEntryNoTime(char *fmt, ...)
 
 }
 //////////////////////////////////////////////////////
-void CLog::AddLineSep(void)
-{
+void CLog::AddLineSep(void) {
     if(bActive == false) return;
 
     FILE *fp=fopen(logfile,"a+");
-    if(fp) { fprintf(fp,"%s\n",szLineSep); fclose(fp); }
+    if(fp) {
+        fprintf(fp,"%s\n",szLineSep);
+        fclose(fp);
+    }
 
 }
 //////////////////////////////////////////////////////
-void CLog::Off(void) {  bActive = false; }
+void CLog::Off(void) {
+    bActive = false;
+}
 //////////////////////////////////////////////////////
-void CLog::On(void) { bActive = true; }
+void CLog::On(void) {
+    bActive = true;
+}
 //////////////////////////////////////////////////////
-bool CLog::IsActive(void) { return bActive; }
+bool CLog::IsActive(void) {
+    return bActive;
+}
 //////////////////////////////////////////////////////
-bool CLog::Restart(void)
-{
+bool CLog::Restart(void) {
 
     if(!bActive) return false;
     FILE *fp=fopen(logfile,"w+");
-    if(fp) { fclose(fp); return true; }
+    if(fp) {
+        fclose(fp);
+        return true;
+    }
 
     return false;
 }
 //////////////////////////////////////////////////////
-void CLog::LineFeedsOn(void) { bLineFeeds=true; }
+void CLog::LineFeedsOn(void) {
+    bLineFeeds=true;
+}
 //////////////////////////////////////////////////////
-void CLog::LineFeedsOff(void) { bLineFeeds=false; }
+void CLog::LineFeedsOff(void) {
+    bLineFeeds=false;
+}

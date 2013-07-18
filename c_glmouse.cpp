@@ -1,4 +1,10 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
 
+    OpenGL Mouse Class
+
+****************************************************************/
 #include "dlstorm.h"
 #include "c_glmouse.h"
 #include "c_gltexture.h"
@@ -63,7 +69,9 @@ C_MouseCursor::~C_MouseCursor() {
     if(bCreatedLog)
         DEL(pLog);
 }
-GLvoid C_MouseCursor::kill() { DEL(pTexture); }
+GLvoid C_MouseCursor::kill() {
+    DEL(pTexture);
+}
 
 GLvoid C_MouseCursor::loadGAF(char *file) {
 }
@@ -71,36 +79,35 @@ GLvoid C_MouseCursor::load(char *file) {
     strcpy(filename,file);
     if(pGAF) {
         loadGAF(file);
-    }
-    else {
+    } else {
         pTexture=new CGLTexture(pLog);
         pTexture->LoadPNG(file);
         pLog->_Add("MOUSE TEXTURE: %s\n",pTexture->tfilename);
     }
-/*  if(!strlen(file)) return;
-    strcpy(filename,file);
-    DEL(Cursor);
-    Cursor=new CGLTexture(pLog);
-    Cursor->pGAF=pGAF;
-    if(!Cursor) return;
-    Cursor->bmap=0;
-    Cursor->mask=0;
-    Cursor->usemask=1;
-    Cursor->LoadBMP(pGAF,va("%s.bmp",file),0);
-	std::vector <std::string> vs;
-	if(!pGAF) return;
-	GAF_FileBuffer nfb;
-	char fin[1024];    memset(fin,0,1024);
-	nfb=pGAF->GetFile((LPSTR)va("%s.ini",file));
-	if(nfb.Size>0) {
-	    vs=explode("\n",nfb.fb);
-		// Log("                    \\--> Point file: %s.ini",file);
-		x_offset=atoi(vs[0].c_str()); //Log("                       \\--> x_offset = %d",x_offset);
-		y_offset=atoi(vs[1].c_str()); //Log("                       \\--> y_offset = %d",y_offset);
-		x_hotspot=atoi(vs[2].c_str()); //Log("                       \\--> x_hopspot = %d",x_hotspot);
-		y_hotspot=atoi(vs[3].c_str()); //Log("                       \\--> y_hopspot = %d",y_hotspot);
-	}
-	*/
+    /*  if(!strlen(file)) return;
+        strcpy(filename,file);
+        DEL(Cursor);
+        Cursor=new CGLTexture(pLog);
+        Cursor->pGAF=pGAF;
+        if(!Cursor) return;
+        Cursor->bmap=0;
+        Cursor->mask=0;
+        Cursor->usemask=1;
+        Cursor->LoadBMP(pGAF,va("%s.bmp",file),0);
+    	std::vector <std::string> vs;
+    	if(!pGAF) return;
+    	GAF_FileBuffer nfb;
+    	char fin[1024];    memset(fin,0,1024);
+    	nfb=pGAF->GetFile((LPSTR)va("%s.ini",file));
+    	if(nfb.Size>0) {
+    	    vs=explode("\n",nfb.fb);
+    		// Log("                    \\--> Point file: %s.ini",file);
+    		x_offset=atoi(vs[0].c_str()); //Log("                       \\--> x_offset = %d",x_offset);
+    		y_offset=atoi(vs[1].c_str()); //Log("                       \\--> y_offset = %d",y_offset);
+    		x_hotspot=atoi(vs[2].c_str()); //Log("                       \\--> x_hopspot = %d",x_hotspot);
+    		y_hotspot=atoi(vs[3].c_str()); //Log("                       \\--> y_hopspot = %d",y_hotspot);
+    	}
+    	*/
 }
 /*************************************************////////////////////
 GLvoid C_MouseCursor::draw(void) {
@@ -130,10 +137,14 @@ GLvoid C_MouseCursor::draw(void) {
     glBindTexture(GL_TEXTURE_2D,pTexture->bmap);
     glColor3f(1.0f,1.0f,1.0f);
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x ),    float(y - 64),    1);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+64),  float(y - 64),    1);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+64),  float(y ),        1);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x ),    float(y ),        1);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(float(x ),    float(y - 64),    1);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(float(x+64),  float(y - 64),    1);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(float(x+64),  float(y ),        1);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(float(x ),    float(y ),        1);
     glEnd();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
@@ -247,32 +258,32 @@ void C_Mouse::Refresh(void) {
 /*************************************************/
 bool C_Mouse::ButtonDownTick(int iWhich) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            return bLeftDownTick;
-        case SDL_BUTTON_MIDDLE:
-            return bMiddleDownTick;
-        case SDL_BUTTON_RIGHT:
-            return bRightDownTick;
-        default:
-            return 0;
-            break;
+    case SDL_BUTTON_LEFT:
+        return bLeftDownTick;
+    case SDL_BUTTON_MIDDLE:
+        return bMiddleDownTick;
+    case SDL_BUTTON_RIGHT:
+        return bRightDownTick;
+    default:
+        return 0;
+        break;
     }
     return 0;
 }
 /*************************************************/
 void C_Mouse::SetDownTick(int iWhich,bool set) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            bLeftDownTick=set;
-            return;
-        case SDL_BUTTON_MIDDLE:
-            bMiddleDownTick=set;
-            return;
-        case SDL_BUTTON_RIGHT:
-            bRightDownTick=set;
-            return;
-        default:
-            break;
+    case SDL_BUTTON_LEFT:
+        bLeftDownTick=set;
+        return;
+    case SDL_BUTTON_MIDDLE:
+        bMiddleDownTick=set;
+        return;
+    case SDL_BUTTON_RIGHT:
+        bRightDownTick=set;
+        return;
+    default:
+        break;
     }
 }
 /*************************************************/
@@ -290,101 +301,109 @@ bool C_Mouse::RightClick() {
 /*************************************************/
 bool C_Mouse::Click(int iWhich) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            return bLeftRelease;
-        case SDL_BUTTON_MIDDLE:
-            return bMiddleRelease;
-        case SDL_BUTTON_RIGHT:
-            return bRightRelease;
-        default:
-            return 0;
-            break;
+    case SDL_BUTTON_LEFT:
+        return bLeftRelease;
+    case SDL_BUTTON_MIDDLE:
+        return bMiddleRelease;
+    case SDL_BUTTON_RIGHT:
+        return bRightRelease;
+    default:
+        return 0;
+        break;
     }
     return 0;
 }
 /*************************************************/
 void C_Mouse::SetClick(int iWhich,bool set) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            bLeftRelease=set;
-            return;
-        case SDL_BUTTON_MIDDLE:
-            bMiddleRelease=set;
-            return;
-        case SDL_BUTTON_RIGHT:
-            bRightRelease=set;
-            return;
-        default:
-            break;
+    case SDL_BUTTON_LEFT:
+        bLeftRelease=set;
+        return;
+    case SDL_BUTTON_MIDDLE:
+        bMiddleRelease=set;
+        return;
+    case SDL_BUTTON_RIGHT:
+        bRightRelease=set;
+        return;
+    default:
+        break;
     }
 }
 /*************************************************/
 void C_Mouse::SetButtonDown(int iWhich,bool set) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            bLeftDown=set;
-        case SDL_BUTTON_RIGHT:
-            bRightDown=set;
-        case SDL_BUTTON_MIDDLE:
-            bMiddleDown=set;
-        default:
-            return;
+    case SDL_BUTTON_LEFT:
+        bLeftDown=set;
+    case SDL_BUTTON_RIGHT:
+        bRightDown=set;
+    case SDL_BUTTON_MIDDLE:
+        bMiddleDown=set;
+    default:
+        return;
     }
 }
 /*************************************************/
 bool C_Mouse::ButtonDown(int iWhich) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            return bLeftDown;
-        case SDL_BUTTON_RIGHT:
-            return bRightDown;
-        case SDL_BUTTON_MIDDLE:
-            return bMiddleDown;
-        default:
-            return 0;
+    case SDL_BUTTON_LEFT:
+        return bLeftDown;
+    case SDL_BUTTON_RIGHT:
+        return bRightDown;
+    case SDL_BUTTON_MIDDLE:
+        return bMiddleDown;
+    default:
+        return 0;
     }
     return 0;
 }
 /*************************************************/
 bool C_Mouse::DoubleClick(int iWhich) {
     switch(iWhich) {
-        case SDL_BUTTON_LEFT:
-            return bLeftDblClick;
-        case SDL_BUTTON_RIGHT:
-            return bRightDblClick;
-        case SDL_BUTTON_MIDDLE:
-            return bMiddleDblClick;
-        default:
-            return 0;
+    case SDL_BUTTON_LEFT:
+        return bLeftDblClick;
+    case SDL_BUTTON_RIGHT:
+        return bRightDblClick;
+    case SDL_BUTTON_MIDDLE:
+        return bMiddleDblClick;
+    default:
+        return 0;
     }
     return 0;
 }
 /*************************************************/
-int  C_Mouse::X(void){ return ix; }
+int  C_Mouse::X(void) {
+    return ix;
+}
 /*************************************************/
-void C_Mouse::SetX(int x) { ix=x; }
+void C_Mouse::SetX(int x) {
+    ix=x;
+}
 /*************************************************/
-int  C_Mouse::Y(void){return iy;}
+int  C_Mouse::Y(void) {
+    return iy;
+}
 /*************************************************/
-void C_Mouse::SetY(int y) { iy=y; }
+void C_Mouse::SetY(int y) {
+    iy=y;
+}
 /*************************************************/
 bool C_Mouse::InX(int x1,int x2) {
     //float sfx=(float)((float)x1/800)*(float)pClientData->ScreenWidth;
-	//float mfx=(float)((float)GetMouseX()/800)*(float)pClientData->ScreenWidth;
-	//float sfx2=(float)((float)x1/800)*(float)pClientData->ScreenWidth;
-	//if((mfx>sfx) && (mfx<sfx2)) return true;
-	if((X()>x1) && (X()<x2))
-		return true;
-	return false;
+    //float mfx=(float)((float)GetMouseX()/800)*(float)pClientData->ScreenWidth;
+    //float sfx2=(float)((float)x1/800)*(float)pClientData->ScreenWidth;
+    //if((mfx>sfx) && (mfx<sfx2)) return true;
+    if((X()>x1) && (X()<x2))
+        return true;
+    return false;
 }
 /*************************************************/
 bool C_Mouse::InY(int y1,int y2) {
-	//float sfy=(float)((float)y1/600)*(float)pClientData->ScreenHeight;
-	//float mfy=(float)((float)GetMouseY()/600)*(float)pClientData->ScreenHeight;
-	//float sfy2=(float)((float)y1/600)*(float)pClientData->ScreenHeight;
+    //float sfy=(float)((float)y1/600)*(float)pClientData->ScreenHeight;
+    //float mfy=(float)((float)GetMouseY()/600)*(float)pClientData->ScreenHeight;
+    //float sfy2=(float)((float)y1/600)*(float)pClientData->ScreenHeight;
     //if((mfy>sfy) && (mfy<sfy2)) return true;
-	if((Y()>y1) && (Y()<y2)) return true;
-	return false;
+    if((Y()>y1) && (Y()<y2)) return true;
+    return false;
 }
 /*************************************************/
 bool C_Mouse::In( int x1,int y1,int x2,int y2) {
@@ -430,21 +449,21 @@ int  C_Mouse::WheelUp(void) {
     if(bWheelUp) {
         bWheelUp=0;
         return 1;
-    }
-    else {
+    } else {
         return 0;
     }
 }
 /*************************************************/
-void C_Mouse::SetWheelDown(bool m) { bWheelDown=m; }
+void C_Mouse::SetWheelDown(bool m) {
+    bWheelDown=m;
+}
 /*************************************************/
-int  C_Mouse::WheelDown(void){
+int  C_Mouse::WheelDown(void) {
     //return bWheelDown;
     if(bWheelDown) {
         bWheelDown=0;
         return 1;
-    }
-    else {
+    } else {
         return 0;
     }
 }

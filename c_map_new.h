@@ -1,3 +1,9 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #include "dlstorm.h"
 #include "c_gaf.h"
 #include "c_log.h"
@@ -9,16 +15,16 @@
 
 class CVert {   												// Vertex Class;
 public:
-	float x;													// X Component
-	float y;													// Y Component
-	float z;													// Z Component
+    float x;													// X Component
+    float y;													// Y Component
+    float z;													// Z Component
 };
 typedef CVert CVec;												// The Definitions Are Synonymous
 
-class CTexCoord	{												// Texture Coordinate Class;
+class CTexCoord { 												// Texture Coordinate Class;
 public:
-	float u;													// U Component
-	float v;													// V Component
+    float u;													// U Component
+    float v;													// V Component
 };
 
 class CTex {
@@ -28,42 +34,42 @@ public:
 
 class CMesh {
 public:
-	CMesh();													// Mesh Constructor
-	CMesh(CLog *pInLog, CGAF *pInGAF);
-	CMesh(CLog *pInLog, CGAF * pInGAF, CGLTexture *pInTexture);	// Mesh Constructor
-	~CMesh();	     											// Mesh Deconstructor
+    CMesh();													// Mesh Constructor
+    CMesh(CLog *pInLog, CGAF *pInGAF);
+    CMesh(CLog *pInLog, CGAF * pInGAF, CGLTexture *pInTexture);	// Mesh Constructor
+    ~CMesh();	     											// Mesh Deconstructor
 
-	int			m_nVertexCount;								// Vertex Count
-	CVert*		m_pVertices;								// Vertex Data
-	CTexCoord*	m_pTexCoords;								// Texture Coordinates
-	CTex*       m_pTex;
-	bool        bMadeLog;
-	int         x;
-	int         y;
-	float       res;
-	CGLTexture* pTexture;
-	CLog*       pLog;
-	CGAF*       pGAF;
+    int			m_nVertexCount;								// Vertex Count
+    CVert*		m_pVertices;								// Vertex Data
+    CTexCoord*	m_pTexCoords;								// Texture Coordinates
+    CTex*       m_pTex;
+    bool        bMadeLog;
+    int         x;
+    int         y;
+    float       res;
+    CGLTexture* pTexture;
+    CLog*       pLog;
+    CGAF*       pGAF;
 
-	void        SetPointHeight(int nX,int nZ,float fHeight);
+    void        SetPointHeight(int nX,int nZ,float fHeight);
     void        Initialize(void);
-	//bool LoadHeightmap( char* szPath, float flHeightScale, float flResolution ); // Heightmap Loader
-	//float PtHeight( int nX, int nY ); // Single Point Height
-	void        SetPointTexture(int nX, int nZ,CGLTexture* pTex);
+    //bool LoadHeightmap( char* szPath, float flHeightScale, float flResolution ); // Heightmap Loader
+    //float PtHeight( int nX, int nY ); // Single Point Height
+    void        SetPointTexture(int nX, int nZ,CGLTexture* pTex);
 };
 
 typedef struct tagVERTEX {
-	float x, y, z;
-	float u, v;
+    float x, y, z;
+    float u, v;
 } VERTEX;
 
 typedef struct tagTRIANGLE {
-	VERTEX vertex[3];
+    VERTEX vertex[3];
 } TRIANGLE;
 
 typedef struct tagSECTOR {
-	int numtriangles;
-	TRIANGLE* triangle;
+    int numtriangles;
+    TRIANGLE* triangle;
 } SECTOR;
 
 class CMantraMap {

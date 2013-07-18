@@ -1,3 +1,9 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef B4_GL_FONT
 #define B4_GL_FONT
 
@@ -59,7 +65,9 @@ public:
 };
 
 //typedef
-struct CGLFontList { CGLFont *ob; };
+struct CGLFontList {
+    CGLFont *ob;
+};
 extern "C" int CGLFont_StrLen(const char *string);
 
 #endif//B4_GL_FONT

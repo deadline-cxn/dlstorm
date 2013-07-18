@@ -1,3 +1,9 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef B4_GL_ERRORS
 #define B4_GL_ERRORS
 

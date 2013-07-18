@@ -1,3 +1,8 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
 #include "c_hash.h"
 
 #include <iostream>
@@ -7,9 +12,15 @@
 using namespace std;
 
 namespace { // for example only
-    void DoOne() { cout << "One" << endl; }
-    void DoTwo() { cout << "Two" << endl; }
-    void DoNil() { cout << "Nil" << endl; }
+void DoOne() {
+    cout << "One" << endl;
+}
+void DoTwo() {
+    cout << "Two" << endl;
+}
+void DoNil() {
+    cout << "Nil" << endl;
+}
 }
 
 void Mapper() {
@@ -26,17 +37,15 @@ void Mapper() {
 
     call = doit.find("One");
     if (call != doit.end())
-       (*call).second();
+        (*call).second();
     else
-       cout << "Unknown call requested" << endl;
+        cout << "Unknown call requested" << endl;
 }
 
-C_Hash::C_Hash()
-{
+C_Hash::C_Hash() {
     //ctor
 }
 
-C_Hash::~C_Hash()
-{
+C_Hash::~C_Hash() {
     //dtor
 }

@@ -1,4 +1,8 @@
-/* Seth's Timer Class */
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
 
 #ifndef _SETH_TIMER
 #define _SETH_TIMER
@@ -11,8 +15,7 @@
 
 #define TIMER_DEFAULT 200
 
-class CTimer
-{
+class CTimer {
 public:
 
     CTimer();

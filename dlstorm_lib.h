@@ -1,8 +1,12 @@
 /***************************************************************
-	Deadline's Code Storm
- ***************************************************************/
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef _DEADLINE_CODE_STORM_LIB
 #define _DEADLINE_CODE_STORM_LIB
+
 /**********************************************
     C Preprocessor Directives for various OS
 
@@ -194,10 +198,10 @@ void Sys_PumpEvents( void );
 
 #ifndef RECT
 typedef struct tagRECT {
-	long    left;
-	long    top;
-	long    right;
-	long    bottom;
+    long    left;
+    long    top;
+    long    right;
+    long    bottom;
 } RECT;
 #endif
 

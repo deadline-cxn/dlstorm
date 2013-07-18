@@ -1,5 +1,9 @@
-////////////////////////////////////////////////////
-// Console class by Seth Parson
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef _C_CONS
 #define _C_CONS
 using namespace std;
@@ -21,18 +25,18 @@ using namespace std;
 // ul_ = unsigned long
 // f_  = float
 enum ember_convar_types {
-CVAR_NULL=0,
-CVAR_BOOL,
-CVAR_STRING,
-CVAR_CHAR,
-CVAR_UCHAR,
-CVAR_INT,
-CVAR_UINT,
-CVAR_LONG,
-CVAR_ULONG,
-CVAR_FLOAT,
+    CVAR_NULL=0,
+    CVAR_BOOL,
+    CVAR_STRING,
+    CVAR_CHAR,
+    CVAR_UCHAR,
+    CVAR_INT,
+    CVAR_UINT,
+    CVAR_LONG,
+    CVAR_ULONG,
+    CVAR_FLOAT,
 };
-class C_CONS{
+class C_CONS {
 public:
     C_CONS();
     C_CONS(CLog *pInLog);

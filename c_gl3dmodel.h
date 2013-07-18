@@ -1,3 +1,9 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+****************************************************************/
+
 #ifndef DL_OPEN_GL_MODEL
 #define DL_OPEN_GL_MODEL
 
@@ -10,30 +16,19 @@ using namespace std;
 #include "c_gltexture.h"
 #include "c_log.h"
 
-
 /*
-
 #ifndef __MD2MODEL_H__
 #define __MD2MODEL_H__
-
 #include <vector>
 #include <string>
 #include <map>
-
-
-
 // #include "Texture.h"
-
 using std::map;
 using std::vector;
 using std::string;
-
-
 // OpenGL vector types
 typedef GLfloat vec2_t[2];
 typedef GLfloat vec3_t[3];
-
-
 // Md2 header
 struct Md2Header_t
 {
@@ -55,70 +50,47 @@ struct Md2Header_t
   int offset_glcmds;  // offset to OpenGL commands
   int offset_end;     // offset to the end of the file
 };
-
-
 // Skin data
-struct Md2Skin_t
-{
+struct Md2Skin_t{
   char name[64];  // Texture's filename
 };
-
-
 // Texture coords.
-struct Md2TexCoord_t
-{
+struct Md2TexCoord_t{
   short s;
   short t;
 };
-
-
 // Triangle data
-struct Md2Triangle_t
-{
+struct Md2Triangle_t{
   unsigned short vertex[3];  // Triangle's vertex indices
   unsigned short st[3];      // Texture coords. indices
 };
-
-
 // Vertex data
-struct Md2Vertex_t
-{
+struct Md2Vertex_t{
   unsigned char v[3];         // Compressed vertex position
   unsigned char normalIndex;  // Normal vector index
 };
-
-
 // Frame data
-struct Md2Frame_t
-{
+struct Md2Frame_t{
   // Destructor
   ~Md2Frame_t () {
     delete [] verts;
   }
-
   vec3_t scale;        // Scale factors
   vec3_t translate;    // Translation vector
   char name[16];       // Frame name
   Md2Vertex_t *verts;  // Frames's vertex list
 };
-
-
 // OpenGL command packet
-struct Md2Glcmd_t
-{
+struct Md2Glcmd_t{
   float s;    // S texture coord.
   float t;    // T texture coord.
   int index;  // Vertex index
 };
-
-
 // Animation infos
-struct Md2Anim_t
-{
+struct Md2Anim_t{
   int start;  // first frame index
   int end;    // last frame index
 };
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -280,19 +252,26 @@ typedef unsigned char byte;
 #define MD2_MAX_FRAMESIZE       (MD2_MAX_VERTICES * 4 + 128)
 
 // This is our 3D point class.  This will be used to store the vertices of our model.
-class CVector3 { public: float x, y, z; };
-class CColor3  { public: float r, g, b; };
+class CVector3 {
+public:
+    float x, y, z;
+};
+class CColor3  {
+public:
+    float r, g, b;
+};
 
 // This is our 2D point class.  This will be used to store the UV coordinates.
-class CVector2 { public: float x, y; };
-struct tFace
-{
+class CVector2 {
+public:
+    float x, y;
+};
+struct tFace {
     int vertIndex[3];           // indicies for the verts that make up this triangle
     int coordIndex[3];          // indicies for the tex coords to texture this face
 };
 
-class t3DObject
-{
+class t3DObject {
 public:
     t3DObject();
     ~t3DObject();
@@ -311,8 +290,7 @@ public:
 
 // This holds our information for each animation of the Quake model.
 // A STL vector list of this structure is created in our t3DModel structure below.
-struct tAnimationInfo
-{
+struct tAnimationInfo {
     char strName[255];          // This stores the name of the animation (Jump, Pain, etc..)
     int startFrame;             // This stores the first frame number for this animation
     int endFrame;               // This stores the last frame number for this animation
@@ -322,8 +300,7 @@ struct tAnimationInfo
 // Some of these are not used, but I left them because you will want to eventually
 // read in the UV tile ratio and the UV tile offset for some models.
 
-struct tMaterialInfo
-{
+struct tMaterialInfo {
     char  strName[255];         // The texture name
     char  strFile[255];         // The texture file name (If this is set it's a texture map)
     unsigned char color[3];    // The color of the object (R, G, B)
@@ -339,8 +316,7 @@ struct tMaterialInfo
 // We added 4 new variables to our model structure.  These will help us handle
 // the current animation.  As of now, the current animation will continue to loop
 // from it's start from to it's end frame until we right click and change animations.
-class t3DModel
-{
+class t3DModel {
 public:
     t3DModel();
     ~t3DModel();
@@ -371,69 +347,62 @@ public:
 
 
 // This holds the header information that is read in at the beginning of the file
-struct tMd2Header
-{
-   int magic;                   // This is used to identify the file
-   int version;                 // The version number of the file (Must be 8)
-   int skinWidth;               // The skin width in pixels
-   int skinHeight;              // The skin height in pixels
-   int frameSize;               // The size in bytes the frames are
-   int numSkins;                // The number of skins associated with the model
-   int numVertices;             // The number of vertices (constant for each frame)
-   int numTexCoords;            // The number of texture coordinates
-   int numTriangles;            // The number of faces (polygons)
-   int numGlCommands;           // The number of gl commands
-   int numFrames;               // The number of animation frames
-   int offsetSkins;             // The offset in the file for the skin data
-   int offsetTexCoords;         // The offset in the file for the texture data
-   int offsetTriangles;         // The offset in the file for the face data
-   int offsetFrames;            // The offset in the file for the frames data
-   int offsetGlCommands;        // The offset in the file for the gl commands data
-   int offsetEnd;               // The end of the file offset
+struct tMd2Header {
+    int magic;                   // This is used to identify the file
+    int version;                 // The version number of the file (Must be 8)
+    int skinWidth;               // The skin width in pixels
+    int skinHeight;              // The skin height in pixels
+    int frameSize;               // The size in bytes the frames are
+    int numSkins;                // The number of skins associated with the model
+    int numVertices;             // The number of vertices (constant for each frame)
+    int numTexCoords;            // The number of texture coordinates
+    int numTriangles;            // The number of faces (polygons)
+    int numGlCommands;           // The number of gl commands
+    int numFrames;               // The number of animation frames
+    int offsetSkins;             // The offset in the file for the skin data
+    int offsetTexCoords;         // The offset in the file for the texture data
+    int offsetTriangles;         // The offset in the file for the face data
+    int offsetFrames;            // The offset in the file for the frames data
+    int offsetGlCommands;        // The offset in the file for the gl commands data
+    int offsetEnd;               // The end of the file offset
 };
 
 
 // This is used to store the vertices that are read in for the current frame
-struct tMd2AliasTriangle
-{
-   byte vertex[3];
-   byte lightNormalIndex;
+struct tMd2AliasTriangle {
+    byte vertex[3];
+    byte lightNormalIndex;
 };
 
 // This stores the normals and vertices for the frames
-struct tMd2Triangle
-{
-   float vertex[3];
-   float normal[3];
+struct tMd2Triangle {
+    float vertex[3];
+    float normal[3];
 };
 
 // This stores the indices into the vertex and texture coordinate arrays
-struct tMd2Face
-{
-   short vertexIndices[3];
-   short textureIndices[3];
+struct tMd2Face {
+    short vertexIndices[3];
+    short textureIndices[3];
 };
 
 // This stores UV coordinates
-struct tMd2TexCoord
-{
-   short u, v;
+struct tMd2TexCoord {
+    short u, v;
 };
 
 // This stores the animation scale, translation and name information for a frame, plus verts
-struct tMd2AliasFrame
-{
-   float scale[3];
-   float translate[3];
-   char name[16];
-   tMd2AliasTriangle aliasVertices[1];
+struct tMd2AliasFrame {
+    float scale[3];
+    float translate[3];
+    char name[16];
+    tMd2AliasTriangle aliasVertices[1];
 };
 
 // This stores the frames vertices after they have been transformed
-struct tMd2Frame
-{
-   char strName[16];
-   tMd2Triangle *pVertices;
+struct tMd2Frame {
+    char strName[16];
+    tMd2Triangle *pVertices;
 };
 
 // This stores a skin name
@@ -441,8 +410,7 @@ typedef char tMd2Skin[64];
 
 
 // This class handles all of the loading code
-class CLoadMD2
-{
+class CLoadMD2 {
 
 public:
     CLoadMD2(CLog *pInLog);
@@ -468,8 +436,7 @@ public:
 };
 
 
-class CGLModel
-{
+class CGLModel {
 public:
     CGLModel();
     CGLModel(CLog *pInLog);
@@ -485,10 +452,30 @@ public:
     bool Draw(void);
     bool RenderSceneDraw(void);
 
-    void Locate(float nx, float ny, float nz) { if(!Model) return; Model->loc.x=nx;   Model->loc.y=ny;   Model->loc.z=nz; }
-    void Rotate(float nx, float ny, float nz) { if(!Model) return; Model->rot.x=nx;   Model->rot.y=ny;   Model->rot.z=nz; }
-    void Scale(float nx,float ny,float nz)    { if(!Model) return; Model->scale.x=nx; Model->scale.y=ny; Model->scale.z=nz; }
-    void Color(float nr,float ng,float nb)    { if(!Model) return; Model->color.r=nr; Model->color.g=ng; Model->color.b=nb; }
+    void Locate(float nx, float ny, float nz) {
+        if(!Model) return;
+        Model->loc.x=nx;
+        Model->loc.y=ny;
+        Model->loc.z=nz;
+    }
+    void Rotate(float nx, float ny, float nz) {
+        if(!Model) return;
+        Model->rot.x=nx;
+        Model->rot.y=ny;
+        Model->rot.z=nz;
+    }
+    void Scale(float nx,float ny,float nz)    {
+        if(!Model) return;
+        Model->scale.x=nx;
+        Model->scale.y=ny;
+        Model->scale.z=nz;
+    }
+    void Color(float nr,float ng,float nb)    {
+        if(!Model) return;
+        Model->color.r=nr;
+        Model->color.g=ng;
+        Model->color.b=nb;
+    }
 
     float ReturnCurrentTime(t3DModel *pModel, int nextFrame);
     float elapsedTime;
@@ -497,8 +484,8 @@ public:
 
     CLoadMD2 *MD2;
     t3DModel *Model;
-    CGLModel *next;
-    CGLModel *prev;
+    CGLModel *pNext;
+    CGLModel *pPrev;
 };
 
 

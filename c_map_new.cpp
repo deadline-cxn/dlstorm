@@ -1,3 +1,11 @@
+/***************************************************************
+    DLSTORM Deadline's Code Storm Library
+    Author: Seth Parson
+
+    OpenGL Map class
+
+****************************************************************/
+
 #include "c_map_new.h"
 
 CMesh :: CMesh() {
@@ -24,95 +32,95 @@ CMesh::CMesh(CLog *pInLog, CGAF *pInGAF, CGLTexture *pInTexture) {
 
 CMesh :: ~CMesh() {
     if(bMadeLog) DEL(pLog);
-	if( m_pVertices ) delete [] m_pVertices; // Deallocate Vertex Data
-	m_pVertices = NULL;
-	if( m_pTexCoords ) delete [] m_pTexCoords; // Deallocate Texture Coord Data
-	m_pTexCoords = NULL;
-	if( m_pTex ) delete [] m_pTex;
-	m_pTex = NULL;
+    if( m_pVertices ) delete [] m_pVertices; // Deallocate Vertex Data
+    m_pVertices = NULL;
+    if( m_pTexCoords ) delete [] m_pTexCoords; // Deallocate Texture Coord Data
+    m_pTexCoords = NULL;
+    if( m_pTex ) delete [] m_pTex;
+    m_pTex = NULL;
 }
 
 void CMesh::Initialize(void) {
     pTexture=0;
-	m_pVertices = NULL;
-	m_pTexCoords = NULL;
-	m_nVertexCount = 0;
+    m_pVertices = NULL;
+    m_pTexCoords = NULL;
+    m_nVertexCount = 0;
 
     x=1024;
     y=1024;
 
-	m_nVertexCount = (int) (x*y)*6;
+    m_nVertexCount = (int) (x*y)*6;
 
-	m_pVertices     = new CVec[m_nVertexCount];						// Allocate Vertex Data
-	m_pTexCoords    = new CTexCoord[m_nVertexCount];				// Allocate Tex Coord Data
-	m_pTex          = new CTex[m_nVertexCount];
+    m_pVertices     = new CVec[m_nVertexCount];						// Allocate Vertex Data
+    m_pTexCoords    = new CTexCoord[m_nVertexCount];				// Allocate Tex Coord Data
+    m_pTex          = new CTex[m_nVertexCount];
 
     int nX,nZ,nTri,nIndex;
     nIndex=0;
     nTri=0;
     float flX, flZ;
-	for( nZ = 0; nZ < y; nZ++) { // += (int) res )
-		for( nX = 0; nX < x; nX++) { // += (int) res )
-				flX = (float) nX; // + ( ( nTri == 1 || nTri == 2 || nTri == 5 ) ? res : 0.0f ); // Using This Quick Hack, Figure The X,Z Position Of The Point
-				flZ = (float) nZ;// + ( ( nTri == 2 || nTri == 4 || nTri == 5 ) ? res : 0.0f );
+    for( nZ = 0; nZ < y; nZ++) { // += (int) res )
+        for( nX = 0; nX < x; nX++) { // += (int) res )
+            flX = (float) nX; // + ( ( nTri == 1 || nTri == 2 || nTri == 5 ) ? res : 0.0f ); // Using This Quick Hack, Figure The X,Z Position Of The Point
+            flZ = (float) nZ;// + ( ( nTri == 2 || nTri == 4 || nTri == 5 ) ? res : 0.0f );
 
-				m_pVertices[nIndex].x = flX ;  //flX - ( x / 2 );
-				m_pVertices[nIndex].y = 0.0f;  //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
-				m_pVertices[nIndex].z = flZ;   //flZ - ( y / 2 );
-				m_pTexCoords[nIndex].u = 0.0f; //flX / x ;
-				m_pTexCoords[nIndex].v = 1.0f; //flZ / y ;
-				nIndex++; // Increment Our Index
+            m_pVertices[nIndex].x = flX ;  //flX - ( x / 2 );
+            m_pVertices[nIndex].y = 0.0f;  //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
+            m_pVertices[nIndex].z = flZ;   //flZ - ( y / 2 );
+            m_pTexCoords[nIndex].u = 0.0f; //flX / x ;
+            m_pTexCoords[nIndex].v = 1.0f; //flZ / y ;
+            nIndex++; // Increment Our Index
 
-				m_pVertices[nIndex].x = flX+1;  //flX - ( x / 2 );
-				m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
-				m_pVertices[nIndex].z = flZ;   //flZ - ( y / 2 );
-				m_pTexCoords[nIndex].u = 0.0f;// flX / x ;
-				m_pTexCoords[nIndex].v = 0.0f;//flZ / y ;
-				nIndex++; // Increment Our Index
+            m_pVertices[nIndex].x = flX+1;  //flX - ( x / 2 );
+            m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
+            m_pVertices[nIndex].z = flZ;   //flZ - ( y / 2 );
+            m_pTexCoords[nIndex].u = 0.0f;// flX / x ;
+            m_pTexCoords[nIndex].v = 0.0f;//flZ / y ;
+            nIndex++; // Increment Our Index
 
-				m_pVertices[nIndex].x = flX+1;  //flX - ( x / 2 );
-				m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
-				m_pVertices[nIndex].z = flZ+1;   //flZ - ( y / 2 );
-				m_pTexCoords[nIndex].u = 1.0f;//flX / x ;
-				m_pTexCoords[nIndex].v = 0.0f;//flZ / y ;
-				nIndex++; // Increment Our Index\
+            m_pVertices[nIndex].x = flX+1;  //flX - ( x / 2 );
+            m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
+            m_pVertices[nIndex].z = flZ+1;   //flZ - ( y / 2 );
+            m_pTexCoords[nIndex].u = 1.0f;//flX / x ;
+            m_pTexCoords[nIndex].v = 0.0f;//flZ / y ;
+            nIndex++; // Increment Our Index\
 
-                m_pVertices[nIndex].x = flX+1;  //flX - ( x / 2 );
-				m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
-				m_pVertices[nIndex].z = flZ+1;   //flZ - ( y / 2 );
-				m_pTexCoords[nIndex].u = 0.0f;// flX / x ;
-				m_pTexCoords[nIndex].v = 1.0f;//flZ / y ;
-				nIndex++; // Increment Our Index
+            m_pVertices[nIndex].x = flX+1;  //flX - ( x / 2 );
+            m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
+            m_pVertices[nIndex].z = flZ+1;   //flZ - ( y / 2 );
+            m_pTexCoords[nIndex].u = 0.0f;// flX / x ;
+            m_pTexCoords[nIndex].v = 1.0f;//flZ / y ;
+            nIndex++; // Increment Our Index
 
-                m_pVertices[nIndex].x = flX;  //flX - ( x / 2 );
-				m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
-				m_pVertices[nIndex].z = flZ+1;   //flZ - ( y / 2 );
-				m_pTexCoords[nIndex].u = 1.0f;//flX / x ;
-				m_pTexCoords[nIndex].v = 1.0f;//flZ / y ;
-				nIndex++; // Increment Our Index
+            m_pVertices[nIndex].x = flX;  //flX - ( x / 2 );
+            m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
+            m_pVertices[nIndex].z = flZ+1;   //flZ - ( y / 2 );
+            m_pTexCoords[nIndex].u = 1.0f;//flX / x ;
+            m_pTexCoords[nIndex].v = 1.0f;//flZ / y ;
+            nIndex++; // Increment Our Index
 
-                m_pVertices[nIndex].x = flX;  //flX - ( x / 2 );
-				m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
-				m_pVertices[nIndex].z = flZ;   //flZ - ( y / 2 );
-				m_pTexCoords[nIndex].u = 1.0f;//flX / x ;
-				m_pTexCoords[nIndex].v = 0.0f;//flZ / y ;
-				nIndex++; // Increment Our Index
-		}
-	}
-	srand(GetTickCount());
+            m_pVertices[nIndex].x = flX;  //flX - ( x / 2 );
+            m_pVertices[nIndex].y = 0.0f; //PtHeight( (int) flX, (int) flZ ) *  flHeightScale;
+            m_pVertices[nIndex].z = flZ;   //flZ - ( y / 2 );
+            m_pTexCoords[nIndex].u = 1.0f;//flX / x ;
+            m_pTexCoords[nIndex].v = 0.0f;//flZ / y ;
+            nIndex++; // Increment Our Index
+        }
+    }
+    srand(GetTickCount());
 
-	int vx,vy;
-	float vz;
-	int wx;
+    int vx,vy;
+    float vz;
+    int wx;
 
-	int j;
+    int j;
 
     vx=50;
     vy=50;
-	vz=5;
-	wx=(rand()%200);
+    vz=5;
+    wx=(rand()%200);
 
-	for(nZ=0;nZ<353000;nZ++) {
+    for(nZ=0; nZ<353000; nZ++) {
         vx = vx + (rand()%3)-1;
         vy = vy + (rand()%3)-1;
         j++;
@@ -187,7 +195,8 @@ void CMesh::SetPointTexture(int nX, int nZ, CGLTexture* pTex) {
     int nIndex;
     nIndex=((nX % x) + ((nZ % y) * x)) * 6;
     //pLog->_Add("%d %d %d %f",nIndex,nX,nZ,fHeight);
-    if(nIndex > ( x * y * 6 / ( res * res ))) return; if(nIndex < 0) return;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
     m_pTex[nIndex].t =pTex->bmap;
 }
 
@@ -202,45 +211,49 @@ void CMesh::SetPointHeight(int nX, int nZ, float fHeight) {
 
     //pLog->_Add("%d %d %d %f",nIndex,nX,nZ,fHeight);
 
-    if(nIndex > ( x * y * 6 / ( res * res ))) return; if(nIndex < 0) return;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
 
     m_pVertices[nIndex].y=fHeight;
     m_pVertices[nIndex+5].y=fHeight;
     nZ--;
 
     nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    if(nIndex > ( x * y * 6 / ( res * res ))) return; if(nIndex < 0) return;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
 
     m_pVertices[nIndex+4].y=fHeight;
     nX--;
 
     nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    if(nIndex > ( x * y * 6 / ( res * res ))) return; if(nIndex < 0) return;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
 
     m_pVertices[nIndex+2].y=fHeight;
     m_pVertices[nIndex+3].y=fHeight;
     nZ++;
 
     nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    if(nIndex > ( x * y * 6 / ( res * res ))) return; if(nIndex < 0) return;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
 
     m_pVertices[nIndex+1].y=fHeight;
 }
 
 void readstr(FILE *f,char *string) {
-	do {
-		fgets(string, 255, f);
-	} while ((string[0] == '/') || (string[0] == '\n'));
-	return;
+    do {
+        fgets(string, 255, f);
+    } while ((string[0] == '/') || (string[0] == '\n'));
+    return;
 }
 
 CMantraMap::CMantraMap() {
-	float x, y, z, u, v;
-	int numtriangles;
-	FILE *filein;
-	char oneline[255];
-	filein = fopen("world.txt", "rt");				// File To Load World Data From
-	if(filein) {
+    float x, y, z, u, v;
+    int numtriangles;
+    FILE *filein;
+    char oneline[255];
+    filein = fopen("world.txt", "rt");				// File To Load World Data From
+    if(filein) {
         readstr(filein,oneline);
         sscanf(oneline, "NUMPOLLIES %d\n", &numtriangles);
         sector1.triangle = new TRIANGLE[numtriangles];
@@ -257,7 +270,7 @@ CMantraMap::CMantraMap() {
             }
         }
         fclose(filein);
-	}
+    }
 }
 
 CMantraMap::~CMantraMap() {
@@ -265,31 +278,34 @@ CMantraMap::~CMantraMap() {
 
 void CMantraMap::Draw(void) {
     GLfloat x_m, y_m, z_m, u_m, v_m;
-	int numtriangles = sector1.numtriangles;
-	// Process Each Triangle
-	for (int loop_m = 0; loop_m < numtriangles; loop_m++) {
-		glBegin(GL_TRIANGLES);
-			glNormal3f( 0.0f, 0.0f, 1.0f);
-			x_m = sector1.triangle[loop_m].vertex[0].x;
-			y_m = sector1.triangle[loop_m].vertex[0].y;
-			z_m = sector1.triangle[loop_m].vertex[0].z;
-			u_m = sector1.triangle[loop_m].vertex[0].u;
-			v_m = sector1.triangle[loop_m].vertex[0].v;
-			glTexCoord2f(u_m,v_m); glVertex3f(x_m,y_m,z_m);
+    int numtriangles = sector1.numtriangles;
+    // Process Each Triangle
+    for (int loop_m = 0; loop_m < numtriangles; loop_m++) {
+        glBegin(GL_TRIANGLES);
+        glNormal3f( 0.0f, 0.0f, 1.0f);
+        x_m = sector1.triangle[loop_m].vertex[0].x;
+        y_m = sector1.triangle[loop_m].vertex[0].y;
+        z_m = sector1.triangle[loop_m].vertex[0].z;
+        u_m = sector1.triangle[loop_m].vertex[0].u;
+        v_m = sector1.triangle[loop_m].vertex[0].v;
+        glTexCoord2f(u_m,v_m);
+        glVertex3f(x_m,y_m,z_m);
 
-			x_m = sector1.triangle[loop_m].vertex[1].x;
-			y_m = sector1.triangle[loop_m].vertex[1].y;
-			z_m = sector1.triangle[loop_m].vertex[1].z;
-			u_m = sector1.triangle[loop_m].vertex[1].u;
-			v_m = sector1.triangle[loop_m].vertex[1].v;
-			glTexCoord2f(u_m,v_m); glVertex3f(x_m,y_m,z_m);
+        x_m = sector1.triangle[loop_m].vertex[1].x;
+        y_m = sector1.triangle[loop_m].vertex[1].y;
+        z_m = sector1.triangle[loop_m].vertex[1].z;
+        u_m = sector1.triangle[loop_m].vertex[1].u;
+        v_m = sector1.triangle[loop_m].vertex[1].v;
+        glTexCoord2f(u_m,v_m);
+        glVertex3f(x_m,y_m,z_m);
 
-			x_m = sector1.triangle[loop_m].vertex[2].x;
-			y_m = sector1.triangle[loop_m].vertex[2].y;
-			z_m = sector1.triangle[loop_m].vertex[2].z;
-			u_m = sector1.triangle[loop_m].vertex[2].u;
-			v_m = sector1.triangle[loop_m].vertex[2].v;
-			glTexCoord2f(u_m,v_m); glVertex3f(x_m,y_m,z_m);
-		glEnd();
-	}
+        x_m = sector1.triangle[loop_m].vertex[2].x;
+        y_m = sector1.triangle[loop_m].vertex[2].y;
+        z_m = sector1.triangle[loop_m].vertex[2].z;
+        u_m = sector1.triangle[loop_m].vertex[2].u;
+        v_m = sector1.triangle[loop_m].vertex[2].v;
+        glTexCoord2f(u_m,v_m);
+        glVertex3f(x_m,y_m,z_m);
+        glEnd();
+    }
 }
