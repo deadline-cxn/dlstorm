@@ -341,7 +341,7 @@ void C_GCTRL::attach_default_children(void) {
                                             0, "", temp);
 
                 if( parent_stump->get_control(va("%s_list_%d",name,i))) {
-                    parent_stump->get_control(va("%s_list_%d",name,i))->font=1;
+                    parent_stump->get_control(va("%s_list_%d",name,i))->font=5;
                     parent_stump->get_control(va("%s_list_%d",name,i))->fontbank=1;
                     parent_stump->get_control(va("%s_list_%d",name,i))->visible=true;
                 }
@@ -992,7 +992,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                     if(temp[strlen(temp)-1]=='\r') temp[strlen(temp)-1]=0;
                     if(temp[strlen(temp)-1]=='\n') temp[strlen(temp)-1]=0;
                     if(parent_stump->get_control(va("%s_list_%d",name,i))) {
-                        parent_stump->get_control(va("%s_list_%d",name,i))->set_value(va("^>00FF00%s",temp));
+                        parent_stump->get_control(va("%s_list_%d",name,i))->set_value(temp);
                     }
                 }
             }
@@ -1000,33 +1000,38 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
             break;
 
         case FM_GC_CONSOLE:
-            pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 1");
+
             if(!parent_stump->get_control(va("%s_scrollbar",name))) attach_default_children();
 
-            pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 2");
+
 
             if(props & FM_GP_USEBACKGROUND) pGFX->DrawBar(x,y,w,h,LONGRGB(0,0,0),LONGRGB(0,0,50));
             else                            pGFX->DrawBaseGFX(x,y,w,h,
                         media
                         ,255,255,255 );
 
-            pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 3");
+
 
             if(listoffset > (control_data_total - listdepth))
                 listoffset = control_data_total - listdepth;
 
-            pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 4");
+
 
             if(listoffset < 0)   listoffset = 0;
             for(i=0; i<listdepth; i++) {
+
+                // pLog->_Add("C_GCTRL::draw FM_GC_CONSOLE %d",listoffset); pLog->_Add("C_GCTRL::draw FM_GC_CONSOLE %s",temp);
                 strcpy(temp,(char*)pCons->buf[i+listoffset].c_str());
+
                 if(temp[strlen(temp)-1]=='\r') temp[strlen(temp)-1]=0;
                 if(temp[strlen(temp)-1]=='\n') temp[strlen(temp)-1]=0;
+
                 if(parent_stump->get_control(va("%s_list_%d",name,i))) {
-                    parent_stump->get_control(va("%s_list_%d",name,i))->set_value(va("^>00FF00%s",temp));
+                    parent_stump->get_control(va("%s_list_%d",name,i))->set_value(temp);
                 }
+
             }
-            pLog->_DebugAdd("C_GCTRL::draw FM_GC_CONSOLE 5");
+
             break;
 
         case FM_GC_H_SCROLLBAR:
@@ -1142,7 +1147,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
             } else {
                 pGFX->DrawBar(x,y,w,h,LONGRGB(180,180,180),LONGRGB(180,180,180));
             }
-            pGUI->gPrint(x,y,va("^>ffffff%s",name),1);
+            pGUI->gPrint(x,y,va("^>ffffff %s",name),1);
             for(j=1; j<listdepth; j++) {
                 strcpy(temp, (char*)data[j+listoffset].c_str());
                 while( (strlen(temp)*9) > rect.right) {
@@ -1176,7 +1181,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
             if(props&FM_GP_BORDER)
                 pGFX->DrawRectangle(x,y-2,x+(CGLFont_StrLen(value))*8+24,y+16,border_color);
             if(font==0) font=1;
-            if(fontbank==0) fontbank=1;
+            // if(fontbank==0) fontbank=1;
             pGUI->gPrint(x,y,va("%s",value),font,fontbank);
             break;
 
