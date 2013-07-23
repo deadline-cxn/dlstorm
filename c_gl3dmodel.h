@@ -326,11 +326,11 @@ public:
     int currentAnim;                    // The current index into pAnimations list (NEW)
     int currentFrame;                   // The current frame of the current animation (NEW)
 
-    CVector3 loc;
-    CVector3 rot;
-    CVector3 scale;
-    CColor3 color;
-    bool     transparent;
+    CVector3    loc;
+    CVector3    rot;
+    CVector3    scale;
+    CColor3     color;
+    float       transparency;
 
 
     vector<tAnimationInfo>  pAnimations;// The list of animations (NEW)

@@ -112,97 +112,6 @@ void normalize(GLfloat *a) {
     a[1]/=d;
     a[2]/=d;
 }
-void drawtri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb) {
-    if (div<=0) {
-        glNormal3fv(a);
-        glColor3f(cr,cg,cb);
-        glVertex3f(a[0]*r, a[1]*r, a[2]*r);
-        glNormal3fv(b);
-        glColor3f(cr,cg,cb);
-        glVertex3f(b[0]*r, b[1]*r, b[2]*r);
-        glNormal3fv(c);
-        glColor3f(cr,cg,cb);
-        glVertex3f(c[0]*r, c[1]*r, c[2]*r);
-    } else {
-        GLfloat ab[3], ac[3], bc[3];
-        for (int i=0; i<3; i++) {
-            ab[i]=(a[i]+b[i])/2;
-            ac[i]=(a[i]+c[i])/2;
-            bc[i]=(b[i]+c[i])/2;
-        }
-        normalize(ab);
-        normalize(ac);
-        normalize(bc);
-        drawtri(a, ab, ac, div-1, r,cr,cg,cb);
-        drawtri(b, bc, ab, div-1, r,cr,cg,cb);
-        drawtri(c, ac, bc, div-1, r,cr,cg,cb);
-        drawtri(ab, bc, ac, div-1, r,cr,cg,cb);  //<--Comment this line and sphere looks really cool!
-    }
-}
-void drawsphere(int ndiv, float radius, float cr,float cg,float cb) {
-    glBegin(GL_TRIANGLES);
-    for (int i=0; i<20; i++)
-        drawtri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius,cr,cg,cb);
-    glEnd();
-}
-void drawcube() {
-    glBegin(GL_QUADS);
-    // Front Face
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f( 1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Left Of The Texture and Quad
-    // Back Face
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f( 1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
-    // Top Face
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f,  1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f( 1.0f,  1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
-    // Bottom Face
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);  // Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f( 1.0f, -1.0f, -1.0f);  // Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-    // Right face
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f( 1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f( 1.0f,  1.0f,  1.0f);  // Top Left Of The Texture and Quad
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
-    // Left Face
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
-    glEnd();
-}
 
 C_Camera::C_Camera() {
     Initialize();
@@ -324,8 +233,9 @@ C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELO
     pDefaultTexture=0;
     pFirstTexture=0;
     pFirstModel=0;
-    g_pMesh=0;
-    pManMap=0;
+    pMap=0;
+    pFirstMapModel=0;
+
     pCamera=0;
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
 }
@@ -405,7 +315,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Camera");
         return false;
     }
-    if(InitBaseGFX()) {
+    if(LoadBaseGFX(pGAF)) {
         pLog->_Add("Base Textures initialized");
     } else {
         pLog->_Add("Can't initialize Base Textures");
@@ -425,23 +335,25 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         return false;
     }
 
-    g_pMesh = new CMesh(pLog,pGAF);
-    // g_pMesh = new CMesh(pLog, pGAF, pDefaultTexture);
-    if(g_pMesh) {
+    pMap = new CMesh(pLog,pGAF);
+    // pMap = new CMesh(pLog, pGAF, pDefaultTexture);
+    if(pMap) {
         pLog->_Add("Map mesh initialized");
     } else {
         pLog->_Add("Can't initialize Map mesh");
         return false;
     }
-    pManMap = new CMantraMap();
+
+/*  pManMap = new CMantraMap();
     if(pManMap) {
         pLog->_Add("pManMap initialized");
     } else {
         pLog->_Add("Can't initialize pManMap");
         return false;
-    }
-    //if(!InitModels()) return false;
-    //pLog->_Add("Models initialized");
+    } */
+
+    if(!LoadModels()) return false;
+
     pLog->_Add("GFX Initialized");
     return true;
 }
@@ -467,8 +379,8 @@ void C_GFX::ToggleFullScreen(void) {
 void C_GFX::ShutDownGFX(void) {
     pLog->_DebugAdd("Shutting down SDL/OpenGL GFX subsystem...");
     DEL(pCamera);
-    DEL(g_pMesh);
-    DEL(pManMap);
+    DEL(pMap);
+
     DestroyBaseGFX();
     DEL(pDefaultTexture);
     DestroyModels();
@@ -498,8 +410,9 @@ void C_GFX::BeginScene(void) {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(pCamera) pCamera->Update();
-    /*
-    static stra star[500];
+}
+void C_GFX::StarField(int iDir) {
+  /*static stra star[500];
     static bool bstars;
     static float ffy;
     static float fff;
@@ -593,10 +506,7 @@ void C_GFX::SetScreenRes(int x,int y,int cl, bool fs) {
     //ShutDownGFX();
     //InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
 }
-bool C_GFX::InitBaseGFX() {
-    LoadBaseGFX(pGAF);
-    return true;
-}
+
 bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
     CGLTexture *pTexture;
     DIR *dpdf;
@@ -611,7 +521,6 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
 
                 } else {
                     if (strcmp (".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
-
                         pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
                         pTexture=pFirstTexture;
                         if(pTexture) {
@@ -620,7 +529,8 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
                             }
                             pTexture->pNext=new CGLTexture;
                             pTexture=pTexture->pNext;
-                        } else {
+                        }
+                        else {
                             pFirstTexture=new CGLTexture;
                             pTexture=pFirstTexture;
                         }
@@ -628,7 +538,8 @@ bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
                         if(!pTexture->bmap) {
                             pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
                             DEL(pTexture);
-                        } else {
+                        }
+                        else {
                             pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
                         }
                     }
@@ -649,13 +560,9 @@ bool C_GFX::DestroyBaseGFX(void) {
         DEL(pFirstTexture);
     }
 }
-bool C_GFX::InitModels() {
-    pLog->_DebugAdd("Begin Models init...");
-    LoadModels();
-    pLog->_DebugAdd("Models initialized...");
-    return true;
-}
+
 bool C_GFX::LoadModels(void) {
+    pLog->AddEntry("Loading models...\n");
 
     char szModelFilename[1024];
     memset(szModelFilename,0,1024);
@@ -668,7 +575,9 @@ bool C_GFX::LoadModels(void) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-                if(sp_isdir(epdf->d_name)) {
+
+                if(sp_isdir(va("models/%s",epdf->d_name))) {
+
                     strcpy(szModelFilename,va("models/%s/tris.md2",epdf->d_name));
 
                     pLog->AddEntry("Found model: %s\n",szModelFilename);
@@ -694,7 +603,48 @@ bool C_GFX::LoadModels(void) {
     }
 
     closedir(dpdf);
+
+    memset(szModelFilename,0,1024);
+    C_MapModel *pMapModel;
+
+    dpdf = opendir("map");
+    if (dpdf != NULL) {
+        while (epdf = readdir(dpdf)) {
+            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
+                    (dlcs_strcasecmp(epdf->d_name,"..")) ) {
+            } else {
+
+                if (strcmp (".fmo", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
+                    strcpy(szModelFilename,va("map/%s",epdf->d_name));
+                    pLog->AddEntry("Found map model: %s\n",szModelFilename);
+
+                    /*  pModel=pFirstModel;
+                        if(pModel) {
+                            while(pModel->pNext) {
+                                pModel=pModel->pNext;
+                            }
+                            pModel->pNext=new CGLModel;
+                            pModel=pModel->pNext;
+                        }
+                        else {
+                            pFirstModel=new CGLModel;
+                            pModel=pFirstModel;
+                        }
+                        pModel->Load(va("models/%s/tris.md2",epdf->d_name);
+                        */
+
+                }
+            }
+        }
+    }
+
+    closedir(dpdf);
+
+
+
     return true;
+
+
     /*	int i=0;
     	pLog->_DebugAdd("C_GFX::LoadModels() Begin Models load...");
     	Model=FirstModel;
@@ -717,7 +667,7 @@ bool C_GFX::LoadModels(void) {
     	DEL(Model);
     	Model=FirstModel;
     	pLog->_DebugAdd("C_GFX::LoadModels() Models loaded...");*/
-    return true;
+
 }
 
 CGLModel *C_GFX::GetModel(char *name) {
@@ -758,34 +708,39 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
 
     if(pCamera) pCamera->Go();
 
+    GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+    GLfloat density = 0.02; //set the density to 0.3 which isacctually quite thick
+
     glEnable (GL_FOG);              //enable this for fog
-    glFogi (GL_FOG_MODE, GL_LINEAR);
-    glFogf (GL_FOG_START, 60.0f);
-    glFogf (GL_FOG_END, 5180.0f);   // Enable Pointers
+    glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
+    glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
+    glFogf (GL_FOG_DENSITY, density); //set the density to the value above
+    glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
+    //glFogf (GL_FOG_START, 10.0f);
+    //glFogf (GL_FOG_END, 680.0f);   // Enable Pointers
+
+    /* glFogi (GL_FOG_MODE, GL_LINEAR);  */
     glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
 
-    if(g_pMesh->pTexture) {
-        if(g_pMesh->pTexture->bmap)
-            glBindTexture(GL_TEXTURE_2D, g_pMesh->pTexture->bmap);
-    } else {
-        pTexture=GetTexture("base/b0113.png");
-        if(pTexture) {
-            if(pTexture->bmap)
-                glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+    if(pMap) {
+        if(pMap->pTexture) {
+            if(pMap->pTexture->bmap)
+                glBindTexture(GL_TEXTURE_2D, pMap->pTexture->bmap);
+        } else {
+            pTexture=GetTexture("base/b0113.png");
+            if(pTexture) {
+                if(pTexture->bmap)
+                    glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+            }
         }
     }
 
-    glVertexPointer(    3, GL_FLOAT, 0, g_pMesh->m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
-    glTexCoordPointer(  2, GL_FLOAT, 0, g_pMesh->m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
-    glDrawArrays( GL_TRIANGLES, 0, g_pMesh->m_nVertexCount );	// Draw All Of The Triangles At Once // Disable Pointers
+    glVertexPointer(    3, GL_FLOAT, 0, pMap->m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
+    glTexCoordPointer(  2, GL_FLOAT, 0, pMap->m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
+    glDrawArrays( GL_TRIANGLES, 0, pMap->m_nVertexCount );	// Draw All Of The Triangles At Once // Disable Pointers
     glDisableClientState( GL_VERTEX_ARRAY );					// Disable Vertex Arrays
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );				// Disable Texture Coord Arrays
-
-    glBindTexture(GL_TEXTURE_2D, pDefaultTexture->bmap);
-    pManMap->Draw();
-
-
 }
 void C_GFX::DrawSun(void) {
     static float der;
@@ -815,7 +770,7 @@ void C_GFX::DrawSun(void) {
     pTexture=GetTexture("base/sun.png");
     if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
     glDisable(GL_BLEND);
-    drawsphere(3,160.0f,1.0f,1.0f,1.0f);
+    DrawSphere(3,160.0f,1.0f,1.0f,1.0f);
 }
 void C_GFX::DrawRect(RECT rc, long color) {
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
@@ -1179,5 +1134,97 @@ CGLTexture* C_GFX::GetRandomTexture(void) {
         pTexture=pTexture->pNext;
     }
     return 0;
+}
+
+void C_GFX::DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb) {
+    if (div<=0) {
+        glNormal3fv(a);
+        glColor3f(cr,cg,cb);
+        glVertex3f(a[0]*r, a[1]*r, a[2]*r);
+        glNormal3fv(b);
+        glColor3f(cr,cg,cb);
+        glVertex3f(b[0]*r, b[1]*r, b[2]*r);
+        glNormal3fv(c);
+        glColor3f(cr,cg,cb);
+        glVertex3f(c[0]*r, c[1]*r, c[2]*r);
+    } else {
+        GLfloat ab[3], ac[3], bc[3];
+        for (int i=0; i<3; i++) {
+            ab[i]=(a[i]+b[i])/2;
+            ac[i]=(a[i]+c[i])/2;
+            bc[i]=(b[i]+c[i])/2;
+        }
+        normalize(ab);
+        normalize(ac);
+        normalize(bc);
+        DrawTri(a, ab, ac, div-1, r,cr,cg,cb);
+        DrawTri(b, bc, ab, div-1, r,cr,cg,cb);
+        DrawTri(c, ac, bc, div-1, r,cr,cg,cb);
+        DrawTri(ab, bc, ac, div-1, r,cr,cg,cb);  //<--Comment this line and sphere looks really cool!
+    }
+}
+void C_GFX::DrawSphere(int ndiv, float radius, float cr,float cg,float cb) {
+    glBegin(GL_TRIANGLES);
+    for (int i=0; i<20; i++)
+        DrawTri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius,cr,cg,cb);
+    glEnd();
+}
+void C_GFX::DrawCube() {
+    glBegin(GL_QUADS);
+    // Front Face
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f( 1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Left Of The Texture and Quad
+    // Back Face
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f( 1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
+    // Top Face
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(-1.0f,  1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f( 1.0f,  1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
+    // Bottom Face
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(-1.0f, -1.0f, -1.0f);  // Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f( 1.0f, -1.0f, -1.0f);  // Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
+    // Right face
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f( 1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f( 1.0f,  1.0f, -1.0f);  // Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f( 1.0f,  1.0f,  1.0f);  // Top Left Of The Texture and Quad
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f( 1.0f, -1.0f,  1.0f);  // Bottom Left Of The Texture and Quad
+    // Left Face
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f,  1.0f);  // Bottom Right Of The Texture and Quad
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex3f(-1.0f,  1.0f,  1.0f);  // Top Right Of The Texture and Quad
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
+    glEnd();
 }
 

@@ -2,6 +2,8 @@
     DLSTORM Deadline's Code Storm Library
     Author: Seth Parson
 
+    Link Libraries: OpenGL32 GLu32 GLaux SDLmain SDL
+
 ****************************************************************/
 
 #ifndef _EMBER_GFX_UTIL
@@ -13,7 +15,6 @@
 #define _MMEDIA_
 #include <mmsystem.h>
 #include <mmreg.h>
-
 #endif//_MMEDIA
 #endif//_WIN32
 
@@ -23,24 +24,13 @@
 #include <GL/glext.h>
 #include "SDL.h"
 
-
 #include "c_gaf.h"
 #include "c_log.h"
 #include "c_gltexture.h"
 #include "c_gl3dmodel.h"
 #include "c_entity.h"
+#include "c_mapmodel.h"
 #include "c_map_new.h"
-
-/* #ifdef _WIN32
-#pragma comment( lib, "OpenGL32.lib" )
-#pragma comment( lib, "GLu32.lib" )
-#pragma comment( lib, "GLaux.lib" )
-#pragma comment( lib, "SDLmain.lib" )
-#pragma comment( lib, "SDL.lib" )
-#endif */
-
-#define MAX_BASE_GFX				160	    // GFX Index array
-#define MAX_MODELS                  4
 
 class C_Entity;
 
@@ -74,6 +64,7 @@ public:
     void        mouseMovement(int x, int y);
 
     C_Entity*   pFollowEntity;
+
     float       cScale;
     float       bounce;
     float       xpos;
@@ -106,8 +97,8 @@ public:
     void        RestoreGraphics(void);
     void        EndScene(void);
     void        FlipSurfaces(void);
-    bool        InitBaseGFX(void);
-    bool        InitModels(void);
+
+
     bool        LoadBaseGFX(CGAF *pGAF);
     bool        Load1BaseGFX(CGAF *pGAF,int which);
     bool        LoadModels(void);
@@ -134,6 +125,10 @@ public:
     void        UpdatePickRay(GLfloat x,GLfloat y);
     u_char      GetFade(char cWhichFade);
     GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
+    void        StarField(int iDir);
+    void        DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb);
+    void        DrawSphere(int ndiv, float radius, float cr,float cg,float cb);
+    void        DrawCube(void);
 
     CGLTexture* GetTexture(char *name);
     int         GetTotalTextures(void); // return number of loaded textures
@@ -146,24 +141,17 @@ public:
     int         ScreenWidth;
     int         ScreenHeight;
     int         ScreenColors;
+
     CGLTexture* pDefaultTexture;
     CGLTexture* pFirstTexture;
     CGLModel*   pFirstModel;
-
+    CMesh*      pMap;
+    C_MapModel* pFirstMapModel;
+    C_MapModelList* pMapModelList;
+    C_Camera*   pCamera;
     CLog*       pLog;
     CGAF*       pGAF;
-    CMesh*      g_pMesh;// = new CMesh();
-    CMantraMap* pManMap;
-    C_Camera*   pCamera;
     char        WindowCaption[1024];
 };
 
-
-extern "C" void drawtri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb);
-extern "C" void drawsphere(int ndiv, float radius, float cr,float cg,float cb);
-extern "C" void drawcube(void);
-
-
-
 #endif
-

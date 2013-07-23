@@ -1915,7 +1915,8 @@ void C_GUI::init(void) {
     ButtonTexture=0;
     B9utton=0;
     pMouse=0;
-    pMouse=new C_Mouse(pGAF,pLog);
+    pMouse=new C_Mouse(pLog);// (pGAF,pLog);
+    //pMouse=new C_Mouse(pLog);// (pGAF,pLog);
     initFonts();
     initButtons();
     loadButtons("");

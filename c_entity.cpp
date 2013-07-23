@@ -71,9 +71,9 @@ void C_Entity::Initialize(void) {
 }
 
 void C_Entity::Draw(void) {
-
+    if(!pGFX) return;
     glLoadIdentity();
-    if(pGFX) pGFX->pCamera->Go();
+    pGFX->pCamera->Go();
 
     glTranslatef(Pos.x, Pos.y, Pos.z);  // location
     glRotatef(Rot.x,1.0f,0,0);
@@ -82,27 +82,23 @@ void C_Entity::Draw(void) {
     glScalef(Scale.x,Scale.y,Scale.z);  // scale
     glColor3f(Color.r,Color.g,Color.b); // color
 
-
     if(pModel) {
+    // TODO: Add model stuff in here
 
     } else {
         if(pTexture) {
             if(pTexture->bmap) {
                 glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
             }
+            else {
+                glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
+            }
         }
-        drawcube();
+        else {
+            glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
+        }
+        pGFX->DrawCube();
     }
-
-
-
-    /*  CVector3 Pos;       // position of the entity
-        CVector3 Dir;       // direction vector (which way the entity is facing)
-        CVector3 Scale;     // vector for the scale matrix
-        CGLModel *pModel;   // pointer to model data to use
-        CLog    *pLog; // pointer to log
-        CGAF    *pGAF; // pointer to GAF
-        C_GFX   *pGFX; // pointer to GFX    */
 }
 
 bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {

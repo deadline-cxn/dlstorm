@@ -21,6 +21,7 @@ C_MouseCursor::C_MouseCursor() {
     pLog->_DebugAdd("Mouse cursor created");
 }
 C_MouseCursor::C_MouseCursor(CLog *pInLog) {
+    pGAF=0;
     bCreatedLog=false;
     pLog=pInLog;
     pTexture=0;
@@ -154,6 +155,12 @@ GLvoid C_MouseCursor::draw(void) {
     glDisable(GL_TEXTURE_2D);
 }
 C_Mouse::C_Mouse() { }
+C_Mouse::C_Mouse(CLog *pInLog) {
+    pGAF=0;
+    pLog=pInLog;
+    pCursor=new C_MouseCursor(pLog);
+    pCursor->load("mouse/default.png");
+}
 C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog) {
     pGAF=pInGAF;
     pLog=pInLog;
