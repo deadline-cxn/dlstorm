@@ -48,6 +48,8 @@ public:
     int         x;
     int         y;
 
+    CVert       pOffset;
+
     float       res;
 
     CGLTexture* pTexture;
@@ -57,6 +59,8 @@ public:
     void        SetPointHeight(int nX,int nZ,float fHeight);
     void        Initialize(void);
     void        SetPointTexture(int nX, int nZ,CGLTexture* pTex);
+    void        Draw(void);
+
 
     // bool        LoadHeightmap( char* szPath, float flHeightScale, float flResolution ); // Heightmap Loader
     // float       PtHeight( int nX, int nY ); // Single Point Height

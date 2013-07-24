@@ -47,8 +47,12 @@ void CMesh::Initialize(void) {
     m_pTexCoords = NULL;
     m_nVertexCount = 0;
 
-    x=1024;
-    y=1024;
+    x=128;
+    y=128;
+
+    pOffset.x=0;
+    pOffset.y=0;
+    pOffset.z=0;
 
     m_nVertexCount = (int) (x*y)*6;
 
@@ -122,24 +126,25 @@ void CMesh::Initialize(void) {
     vz=5;
     wx=(rand()%200);
 
-    for(nZ=0; nZ<353000; nZ++) {
+    for(nZ=0; nZ<35000; nZ++) {
         vx = vx + (rand()%3)-1;
         vy = vy + (rand()%3)-1;
         j++;
         if(j>wx) {
-            vz +=  (((5.0f)-(-5.0f))*(float)rand()/(float)RAND_MAX)-5.0f;
+            vz = ((float)rand()/(float)RAND_MAX); // ((float)rand()/(float)RAND_MAX)-1.0f; //(((5.0f)-(-5.0f))*(float)rand()/(float)RAND_MAX)-5.0f;
             wx=(rand()%200);
             j=0;
         }
         // vz=( ((float)rand()) / ((float) RAND_MAX)) * 8.3f;
         if(vx < 3)      vx=3;
-        if(vx > 1000)    vx=1000;
+        if(vx > (x-3))  vx=x-3;
         if(vy < 3)      vy=3;
-        if(vy > 1000)    vy=1000;
-        if(vz < 1) vz=1;
-        if(vz > 10) vz=10;
+        if(vy > (y-3))  vy=y-3;
+        //if(vz < 1) vz=1;
+        //if(vz > 10) vz=10;
 
         SetPointHeight(vx,vy,(float)vz);
+
     }
 }
 
@@ -190,7 +195,25 @@ void CMesh::SetPointHeight(int nX, int nZ, float fHeight) {
 }
 
 
+void CMesh::Draw(void) {
 
+    glPushMatrix();
+
+    if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+
+    glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
+
+    glTranslatef(pOffset.x,pOffset.y,pOffset.z);
+
+    glVertexPointer(    3, GL_FLOAT, 0, m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
+    glTexCoordPointer(  2, GL_FLOAT, 0, m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
+    glDrawArrays( GL_TRIANGLES, 0, m_nVertexCount );	// Draw All Of The Triangles At Once // Disable Pointers
+    glDisableClientState( GL_VERTEX_ARRAY );					// Disable Vertex Arrays
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );				// Disable Texture Coord Arrays
+
+    glPopMatrix();
+}
 
 /* bool CMesh :: LoadHeightmap( char* filename, float flHeightScale, float flResolution ) {
 	long size1;

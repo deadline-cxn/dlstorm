@@ -7,16 +7,8 @@
 ****************************************************************/
 
 #include "c_mapmodel.h"
-/*
-void readstr(FILE *f,char *string) {
-    do {
-        fgets(string, 255, f);
-    } while ((string[0] == '/') || (string[0] == '\n'));
-    return;
-}*/
-
 C_MapModel::C_MapModel() {
-
+    pNext=0;
 }
 
 C_MapModel::~C_MapModel() {

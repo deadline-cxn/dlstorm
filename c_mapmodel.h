@@ -40,6 +40,8 @@ public:
     C_MapModel();
     ~C_MapModel();
 
+    C_MapModel* pNext;
+
     SECTOR  sector1;
     char    name[255];
     char    author[255];

@@ -129,6 +129,7 @@ public:
     void        DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb);
     void        DrawSphere(int ndiv, float radius, float cr,float cg,float cb);
     void        DrawCube(void);
+    void        DrawSkyBox(void);
 
     CGLTexture* GetTexture(char *name);
     int         GetTotalTextures(void); // return number of loaded textures
