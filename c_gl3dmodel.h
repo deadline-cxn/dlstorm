@@ -442,16 +442,23 @@ public:
     CGLModel(CLog *pInLog);
     ~CGLModel();
 
-    bool bMadeLog;
-    CLog *pLog;
+    char        name[1024];
+    char        skin[1024];
+    bool        bMadeLog;
+    float       elapsedTime;
+    float       lastTime;
 
-    CGAF *pGAF;
-    char name[64];
+    CLog*       pLog;
+    CLoadMD2*   MD2;
+    t3DModel*   Model;
+    CGLModel*   pNext;
+    CGLModel*   pPrev;
+    CGAF*       pGAF;
 
+    bool Load(char *filename);
     bool Load(char *filename,char *texture);
     bool Draw(void);
     bool RenderSceneDraw(void);
-
     void Locate(float nx, float ny, float nz) {
         if(!Model) return;
         Model->loc.x=nx;
@@ -478,16 +485,8 @@ public:
     }
 
     float ReturnCurrentTime(t3DModel *pModel, int nextFrame);
-    float elapsedTime;
-    float lastTime;
-    char skin[1024];
-
-    CLoadMD2 *MD2;
-    t3DModel *Model;
-    CGLModel *pNext;
-    CGLModel *pPrev;
 };
 
 
 
-#endif//B4_MODEL
+#endif

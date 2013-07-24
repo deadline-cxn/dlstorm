@@ -578,25 +578,25 @@ bool C_GFX::LoadModels(void) {
 
                 if(sp_isdir(va("models/%s",epdf->d_name))) {
 
-                    strcpy(szModelFilename,va("models/%s/tris.md2",epdf->d_name));
+                    strcpy(szModelFilename,va("models/%s",epdf->d_name));
 
                     pLog->AddEntry("Found model: %s\n",szModelFilename);
 
-                    /*  pModel=pFirstModel;
-                        if(pModel) {
-                            while(pModel->pNext) {
-                                pModel=pModel->pNext;
-                            }
-                            pModel->pNext=new CGLModel;
+/*
+                    pModel=pFirstModel;
+                    if(pModel) {
+                        while(pModel->pNext) {
                             pModel=pModel->pNext;
                         }
-                        else {
-                            pFirstModel=new CGLModel;
-                            pModel=pFirstModel;
-                        }
-                        pModel->Load(va("models/%s/tris.md2",epdf->d_name);
-                        */
-
+                        pModel->pNext=new CGLModel;
+                        pModel=pModel->pNext;
+                    }
+                    else {
+                        pFirstModel=new CGLModel;
+                        pModel=pFirstModel;
+                    }
+                    pModel->Load(szModelFilename);
+                    */
                 }
             }
         }
@@ -637,37 +637,8 @@ bool C_GFX::LoadModels(void) {
             }
         }
     }
-
     closedir(dpdf);
-
-
-
     return true;
-
-
-    /*	int i=0;
-    	pLog->_DebugAdd("C_GFX::LoadModels() Begin Models load...");
-    	Model=FirstModel;
-    	if(!Model) Model=new CGLModel(pLog);
-    	FirstModel=Model;
-    	if(Model){
-            pLog->_DebugAdd("C_GFX::LoadModels() Begin load model [%d]",i);
-            Model->pGAF=pGAF;
-    		while(i<MAX_MODELS){
-    			if(Load1Model(i)){
-    				Model->next = new CGLModel(pLog);//,pGAF);
-    				Model->next->prev=Model;
-    				Model=Model->next;
-    				pLog->_DebugAdd("C_GFX::LoadModels() Found model [%d]",i);
-    			}
-    			i++;
-    		}
-    	}
-    	Model->prev->next=0;
-    	DEL(Model);
-    	Model=FirstModel;
-    	pLog->_DebugAdd("C_GFX::LoadModels() Models loaded...");*/
-
 }
 
 CGLModel *C_GFX::GetModel(char *name) {

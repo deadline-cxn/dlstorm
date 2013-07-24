@@ -41,6 +41,7 @@ CMesh :: ~CMesh() {
 }
 
 void CMesh::Initialize(void) {
+
     pTexture=0;
     m_pVertices = NULL;
     m_pTexCoords = NULL;
@@ -59,6 +60,7 @@ void CMesh::Initialize(void) {
     nIndex=0;
     nTri=0;
     float flX, flZ;
+
     for( nZ = 0; nZ < y; nZ++) { // += (int) res )
         for( nX = 0; nX < x; nX++) { // += (int) res )
             flX = (float) nX; // + ( ( nTri == 1 || nTri == 2 || nTri == 5 ) ? res : 0.0f ); // Using This Quick Hack, Figure The X,Z Position Of The Point
@@ -136,9 +138,58 @@ void CMesh::Initialize(void) {
         if(vy > 1000)    vy=1000;
         if(vz < 1) vz=1;
         if(vz > 10) vz=10;
+
         SetPointHeight(vx,vy,(float)vz);
     }
 }
+
+void CMesh::SetPointTexture(int nX, int nZ, CGLTexture* pTex) {
+    int nIndex;
+    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
+    m_pTex[nIndex].t =pTex->bmap;
+}
+
+void CMesh::SetPointHeight(int nX, int nZ, float fHeight) {
+    int nIndex;
+    int tex=105;
+    if(fHeight<0) tex=112;
+    if(fHeight>1) tex=107;
+    if(fHeight>2) tex=104;
+
+    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
+
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
+
+    m_pVertices[nIndex].y=fHeight;
+    m_pVertices[nIndex+5].y=fHeight;
+    nZ--;
+
+    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
+
+    m_pVertices[nIndex+4].y=fHeight;
+    nX--;
+
+    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
+
+    m_pVertices[nIndex+2].y=fHeight;
+    m_pVertices[nIndex+3].y=fHeight;
+    nZ++;
+
+    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
+    if(nIndex > ( x * y * 6 / ( res * res ))) return;
+    if(nIndex < 0) return;
+
+    m_pVertices[nIndex+1].y=fHeight;
+}
+
+
 
 
 /* bool CMesh :: LoadHeightmap( char* filename, float flHeightScale, float flResolution ) {
@@ -190,54 +241,3 @@ float CMesh :: PtHeight( int nX, int nY ) {
 	float flB = (float) hrgb.rgbBlue;
 	return ( 0.299f * flR + 0.587f * flG + 0.114f * flB );		// Calculate The Height Using The Luminance Algorithm
 } */
-
-void CMesh::SetPointTexture(int nX, int nZ, CGLTexture* pTex) {
-    int nIndex;
-    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    //pLog->_Add("%d %d %d %f",nIndex,nX,nZ,fHeight);
-    if(nIndex > ( x * y * 6 / ( res * res ))) return;
-    if(nIndex < 0) return;
-    m_pTex[nIndex].t =pTex->bmap;
-}
-
-void CMesh::SetPointHeight(int nX, int nZ, float fHeight) {
-    int nIndex;
-    int tex=105;
-    if(fHeight<0) tex=112;
-    if(fHeight>1) tex=107;
-    if(fHeight>2) tex=104;
-
-    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-
-    //pLog->_Add("%d %d %d %f",nIndex,nX,nZ,fHeight);
-
-    if(nIndex > ( x * y * 6 / ( res * res ))) return;
-    if(nIndex < 0) return;
-
-    m_pVertices[nIndex].y=fHeight;
-    m_pVertices[nIndex+5].y=fHeight;
-    nZ--;
-
-    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    if(nIndex > ( x * y * 6 / ( res * res ))) return;
-    if(nIndex < 0) return;
-
-    m_pVertices[nIndex+4].y=fHeight;
-    nX--;
-
-    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    if(nIndex > ( x * y * 6 / ( res * res ))) return;
-    if(nIndex < 0) return;
-
-    m_pVertices[nIndex+2].y=fHeight;
-    m_pVertices[nIndex+3].y=fHeight;
-    nZ++;
-
-    nIndex=((nX % x) + ((nZ % y) * x)) * 6;
-    if(nIndex > ( x * y * 6 / ( res * res ))) return;
-    if(nIndex < 0) return;
-
-    m_pVertices[nIndex+1].y=fHeight;
-}
-
-

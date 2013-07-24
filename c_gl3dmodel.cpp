@@ -7,12 +7,8 @@
 
 #include "c_gl3dmodel.h"
 
-//#include "SDL.h"
-
-using namespace std;
-
 CGLModel::CGLModel() {
-    memset(name,0,64);
+    memset(name,0,1024);
     memset(skin,0,1024);
     pNext=0;
     pPrev=0;
@@ -25,7 +21,7 @@ CGLModel::CGLModel() {
 }
 
 CGLModel::CGLModel(CLog *pInLog) {
-    memset(name,0,64);
+    memset(name,0,1024);
     memset(skin,0,1024);
     pNext=0;
     pPrev=0;
@@ -43,7 +39,26 @@ CGLModel::~CGLModel() {
     DEL(Model);
 }
 
-bool CGLModel::Load(char *filename,char *texture) {
+bool CGLModel::Load(char* filename) {
+    strcpy(name,va("%s/tris.md2",filename));
+    strcpy(skin,va("%s/skin.png",filename));
+    DEL(MD2);
+    DEL(Model);
+    MD2=new CLoadMD2(pLog);
+    Model=new t3DModel();
+    if(!Model) {
+        DEL(MD2);
+        return false;
+    }
+    if(!MD2->ImportMD2(Model,name,skin))
+        return false;
+    Model->currentAnim=0;
+    Model->currentFrame=0;
+    Color(1.0f,1.0f,1.0f);
+    return true;
+}
+
+bool CGLModel::Load(char* filename,char* texture) {
     pLog->_DebugAdd("CGLModel::Load(char *filename, char *texture)");
     strcpy(skin,texture);
     DEL(MD2);
@@ -53,14 +68,14 @@ bool CGLModel::Load(char *filename,char *texture) {
     Model=new t3DModel();
     if(!Model) {
         DEL(MD2);
-        return 0;
+        return false;
     }
     if(!MD2->ImportMD2(Model,filename,texture))
-        return 0;
+        return false;
     Model->currentAnim=0;
     Model->currentFrame=0;
     Color(1.0f,1.0f,1.0f);
-    return 1;
+    return true;
 }
 
 bool CGLModel::RenderSceneDraw(void) {
