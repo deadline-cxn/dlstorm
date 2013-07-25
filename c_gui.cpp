@@ -1006,7 +1006,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
 
 
             if(props & FM_GP_USEBACKGROUND) pGFX->DrawBar(x,y,w,h,LONGRGB(0,0,0),LONGRGB(0,0,50));
-            else                            pGFX->DrawBaseGFX(x,y,w,h,
+            else                            pGFX->DrawTexture(x,y,w,h,
                         media
                         ,255,255,255 );
 
@@ -1038,7 +1038,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
         case FM_GC_V_SCROLLBAR:
             if(props & FM_GP_USEBACKGROUND) {
             } else {  // pGFX->DrawBar(x, y, x+15, h, LONGRGB(180,180,180),LONGRGB(180,180,180));
-                pGFX->draw_3d_box(x-1, y+17, w-1, h+1);// , LONGRGB(180,180,180),LONGRGB(180,180,180));
+                pGFX->Draw3DBox(x-1, y+17, w-1, h+1);// , LONGRGB(180,180,180),LONGRGB(180,180,180));
             }
             pGUI->gPrint(x,y, "W", 2);
             if(parent_control) {
@@ -1050,7 +1050,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                 if(iScrollBarThumbSize < 15) iScrollBarThumbSize = 15;
                 iScrollBardrawThumbStart = y + 16 + (((fScrollBarOffset * iScrollBarThumbSize) / fScrollBarSize) * (float)(parent_control->listdepth)) ;// - fScrollBarSize;
                 iScrollBardrawThumbEnd   = iScrollBardrawThumbStart + iScrollBarThumbSize;
-                pGFX->draw_3d_box( x+1, iScrollBardrawThumbStart, x+13, iScrollBardrawThumbEnd );
+                pGFX->Draw3DBox( x+1, iScrollBardrawThumbStart, x+13, iScrollBardrawThumbEnd );
                 if(pGUI->bDebug) pGUI->gPrint( 300, 0, va("%f %f %f %f %d %d %d",fScrollBarRange,fScrollBarSize,fScrollBarPageSize,fScrollBarOffset,iScrollBarThumbSize,iScrollBardrawThumbStart,iScrollBardrawThumbEnd), 1);
             }
             pGUI->gPrint(x,h+1, "V", 2);
@@ -1124,9 +1124,9 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
             if(pGUI->pMouse->In(x,y,w,h)) {
             }
             if(props & FM_GP_USEBACKGROUND) {
-                pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
+                pGFX->DrawTexture(x,y,w,h,media,255,255,255 );
             } else {
-                pGFX->draw_3d_box(x,y,w,h);
+                pGFX->Draw3DBox(x,y,w,h);
                 pGFX->DrawBar(x+2,y+2,w-2,h-2,LONGRGB(255,255,255),LONGRGB(255,255,255));
             }
             if(listoffset > (control_data_total - listdepth)) listoffset = control_data_total - listdepth;
@@ -1143,7 +1143,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
 
         case FM_GC_LISTBOX:
             if(props & FM_GP_USEBACKGROUND) {
-                pGFX->DrawBaseGFX(x,y,w,h, media,255,255,255 );
+                pGFX->DrawTexture(x,y,w,h, media,255,255,255 );
             } else {
                 pGFX->DrawBar(x,y,w,h,LONGRGB(180,180,180),LONGRGB(180,180,180));
             }
@@ -1165,7 +1165,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
         case FM_GC_GROUPTICK:
         case FM_GC_TICKBOX:
             if(props & FM_GP_USEBACKGROUND) {
-                pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
+                pGFX->DrawTexture(x,y,w,h,media,255,255,255 );
             } else {
                 pGFX->DrawBar(x,y,w,h,LONGRGB(240,240,240),LONGRGB(240,240,240));
                 pGFX->DrawBar(x+1,y+1,w,h,LONGRGB(80,80,80),LONGRGB(80,80,80));
@@ -1234,10 +1234,10 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                         rect.bottom=32;
                     }
                 }
-                pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
+                pGFX->DrawTexture(x,y,w,h,media,255,255,255 );
             } else {
                 if(props&FM_GP_USEBACKGROUND) {
-                    pGUI->drawBaseGFXGUIButton(this,x,y);
+                    pGUI->DrawTextureGUIButton(this,x,y);
                 } else {
                     pGUI->drawSlicedGUIButton(this,x,y);
                 }
@@ -1245,7 +1245,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
             break;
 
         case FM_GC_STATIC_IMAGE: // draw a base gfx on this spot based on media
-            pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255 );
+            pGFX->DrawTexture(x,y,w,h,media,255,255,255 );
             break;
 
         case FM_GC_SELECTA:
@@ -1271,7 +1271,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                 }
                 if(selected) {
                     if(imedia_selected) {
-                        pGFX->DrawBaseGFX(x,y,w,h,
+                        pGFX->DrawTexture(x,y,w,h,
                                           // imedia_selected
                                           tctrl2->property["media_selected"].c_str()
                                           ,255,255,255 );
@@ -1280,7 +1280,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                     }
                 } else {
                     if(imedia_unselected) {
-                        pGFX->DrawBaseGFX(x,y,w,h,
+                        pGFX->DrawTexture(x,y,w,h,
                                           // imedia_unselected
                                           tctrl2->property["media_unselected"].c_str()
                                           ,255,255,255 );
@@ -1299,16 +1299,16 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
 
         case FM_GC_3D_BOX:
 
-            pGFX->draw_3d_box(x,y,w,h);
+            pGFX->Draw3DBox(x,y,w,h);
             break;
 
         case FM_GC_FONT_SELECT:
             if(!parent_stump->get_control(va("%s_list_1",name))) attach_default_children();
             if(pGUI->focus_control==this) {
                 if(props & FM_GP_USEBACKGROUND) {
-                    pGFX->DrawBaseGFX(x,y,w,h,atoi(media),255,255,255);
+                    pGFX->DrawTexture(x,y,w,h,atoi(media),255,255,255);
                 } else {
-                    pGFX->draw_3d_box(x,y,w,h);
+                    pGFX->Draw3DBox(x,y,w,h);
                 }
 
                 if(listoffset<0) listoffset=0;
@@ -1334,9 +1334,9 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
             if(!parent_stump->get_control(va("%s_list_1",name))) attach_default_children();
             if(pGUI->focus_control==this) {
                 if(props & FM_GP_USEBACKGROUND) {
-                    pGFX->DrawBaseGFX(x,y,w,h,media,255,255,255);
+                    pGFX->DrawTexture(x,y,w,h,media,255,255,255);
                 } else {
-                    pGFX->draw_3d_box(x,y,w,h);
+                    pGFX->Draw3DBox(x,y,w,h);
                 }
                 if(listoffset<0) listoffset=0;
                 if(listoffset>control_data_total-listdepth) listoffset=control_data_total-listdepth;
@@ -2931,7 +2931,7 @@ void C_GUI::draw_ctrls(void) {
             }
 
         if(tstump->props & FM_GP_USEBACKGROUND) {
-            pGFX->DrawBaseGFX(  tstump->rect.left,
+            pGFX->DrawTexture(  tstump->rect.left,
                                 tstump->rect.top,
                                 tstump->rect.left+tstump->rect.right,
                                 tstump->rect.top+tstump->rect.bottom,
@@ -2939,7 +2939,7 @@ void C_GUI::draw_ctrls(void) {
                                 tstump->media,
                                 255,255,255 );
         } else {
-            pGFX->draw_3d_box(tstump->rect);
+            pGFX->Draw3DBox(tstump->rect);
         }
         //FM_GP_ALWAYS_ON_TOP
         //FM_GP_ALWAYS_ON_BOTTOM
@@ -3181,9 +3181,9 @@ int  C_GUI::drawSlicedGUIButton(C_GCTRL* gui_control,int x,int y) {
     return false;
 }
 
-int  C_GUI::drawBaseGFXGUIButton(C_GCTRL* gui_control,int x,int y) {
+int  C_GUI::DrawTextureGUIButton(C_GCTRL* gui_control,int x,int y) {
     int j=0;
-    pGFX->DrawBaseGFX(x,y,gui_control->rect.right+x, gui_control->rect.bottom+y,
+    pGFX->DrawTexture(x,y,gui_control->rect.right+x, gui_control->rect.bottom+y,
                       //atoi(
                       gui_control->media,255,255,255 );
     gPrint(gui_control->rect.left+8+x,gui_control->rect.top+8+y,gui_control->get_value(),1);

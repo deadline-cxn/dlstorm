@@ -13,6 +13,8 @@
 #include "c_gfx.h"
 #include "c_gl3dmodel.h"
 
+class CGLModel;
+
 class C_GFX;
 
 #define ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes
@@ -105,11 +107,11 @@ public:
     C_Entity    *pPrev;
     C_Entity    *pTargetEntity;
 
-    CVector3    Pos;       // position of the entity
-    CVector3    Rot;       // rotation of the entity
-    CVector3    Scale;     // vector for the scale matrix
-    CVector3    Dir;       // direction vector (which way the entity is facing)
-    CColor3     Color;     // color of the entity;
+    CVector3    loc;       // position of the entity
+    CVector3    rot;       // rotation of the entity
+    CVector3    scale;     // vector for the scale matrix
+    CVector3    dir;       // direction vector (which way the entity is facing)
+    CColor3     color;     // color of the entity;
 
     GLfloat     Transparency; // use this for fading in and out, and for ghost/window effects
 

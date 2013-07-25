@@ -9,6 +9,15 @@
 #ifndef _EMBER_GFX_UTIL
 #define _EMBER_GFX_UTIL
 
+class CVector2 { public: float x, y; };
+class CVector3 { public: float x, y, z; };
+class CColor3  { public: float r, g, b; };
+class CTexCoord { public: float u,v; };
+struct tFace   { int vertIndex[3]; int coordIndex[3]; };
+typedef struct tagVERTEX   { float x, y, z; float u, v; } VERTEX;
+typedef struct tagTRIANGLE { VERTEX  vertex[3]; } TRIANGLE;
+typedef struct tagSECTOR   { int numtriangles; TRIANGLE* triangle; } SECTOR;
+
 #ifdef _WIN32
 #include <winsock2.h>
 #ifndef _MMEDIA_
@@ -33,6 +42,10 @@
 #include "c_map_new.h"
 
 class C_Entity;
+class C_MapModel;
+class C_MapModelList;
+class CGLModel;
+class CMesh;
 
 class C_Camera {
 public:
@@ -65,11 +78,14 @@ public:
 
     C_Entity*   pFollowEntity;
 
-    float       cScale;
     float       bounce;
+
+    float       cScale;
+
     float       xpos;
     float       ypos;
     float       zpos;
+
     float       xrot;
     float       yrot;
 
@@ -87,28 +103,33 @@ class C_GFX {
 public:
     C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
     ~C_GFX();
-
+    // GFX System level functions
     int         InitGL(void);
     void        BeginScene(void);
     void        SetWindowTitle(char *fmt, ...);
     void        ShutDownGFX(void);
     bool        InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
-    void        RenderScene(void);
-    void        RestoreGraphics(void);
-    void        EndScene(void);
+    void        ToggleFullScreen(void);
+    GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
+    void        SetScreenRes(int x,int y,int cl, bool fs);
     void        FlipSurfaces(void);
-
-
-    bool        LoadBaseGFX(CGAF *pGAF);
-    bool        Load1BaseGFX(CGAF *pGAF,int which);
+    void        RenderScene(void);
+    void        _RenderScene(unsigned int iGLRenderMode);
+    void        EndScene(void);
+    // OpenGL Texture Management (CGLTexture Class)
+    bool        LoadTextures(CGAF *pGAF);
+    CGLTexture* GetTexture(char *name);
+    CGLTexture* GetRandomTexture(void);
+    int         GetTotalTextures(void); // return number of loaded textures
+    void        DrawTexture(int x,int y,int x2,int y2,char *name,unsigned char r,unsigned char g,unsigned char b);//long color);
+    bool        DestroyTextures(void);
+    // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
-    bool        Load1Model(int which);
-    bool        DestroyBaseGFX(void);
+    void        DrawModels(void);
+    CGLModel*   GetModel(char* name);
     bool        DestroyModels(void);
-    CGLTexture* GetBaseGFX(char *name);
+    // 2D Draw Functions
     void        DrawVertice(int x, int y);
-    void        DrawBaseGFX(int x,int y,int x2,int y2,char *name,unsigned char r,unsigned char g,unsigned char b);//long color);
-    void        DrawSun(void);
     void        DrawBar(RECT rc,long color);
     void        DrawBar(int iX,int iY,int iX2,int iY2,long color);
     void        DrawBar(RECT rc,long color1,long color2);
@@ -117,38 +138,30 @@ public:
     void        DrawRect(int iX,int iY,int iX2,int iY2,long color);
     void        DrawRectangle(int iX,int iY,int iX2,int iY2,long color);
     void        DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2);
-    void        draw_3d_box(RECT rect);
-    void        draw_3d_box(int x, int y, int x2, int y2);
-    void        DrawModels(void);
-    void        ToggleFullScreen(void);
-    void        SetScreenRes(int x,int y,int cl, bool fs);
-    void        UpdatePickRay(GLfloat x,GLfloat y);
-    u_char      GetFade(char cWhichFade);
-    GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
     void        StarField(int iDir);
+    void        Draw3DBox(RECT rect);
+    void        Draw3DBox(int x, int y, int x2, int y2);
+    // 3D Draw Functions
+    void        DrawSun(void);
     void        DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb);
     void        DrawSphere(int ndiv, float radius, float cr,float cg,float cb);
     void        DrawCube(void);
     void        DrawSkyBox(void);
-
-    CGLTexture* GetTexture(char *name);
-    int         GetTotalTextures(void); // return number of loaded textures
-    CGLTexture* GetRandomTexture(void);
-    CGLModel*   GetModel(char* name);
-
+    // Miscellaneous GFX Functions
+    u_char      GetFade(char cWhichFade);
+    // GFX Class Members
     SDL_Surface* pScreen;
     int         VideoFlags;
     bool        bFullScreen;
     int         ScreenWidth;
     int         ScreenHeight;
     int         ScreenColors;
-
     CGLTexture* pDefaultTexture;
     CGLTexture* pFirstTexture;
     CGLModel*   pFirstModel;
     CMesh*      pMap;
-    C_MapModel* pFirstMapModel;
-    C_MapModelList* pMapModelList;
+    C_MapModel*     pFirstMapModel;
+    C_MapModelList* pFirstMapModelList;
     C_Camera*   pCamera;
     CLog*       pLog;
     CGAF*       pGAF;

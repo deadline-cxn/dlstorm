@@ -139,9 +139,9 @@ void C_Camera::Go() {
 }
 void C_Camera::Update() {
     if(pFollowEntity) {
-        xpos=pFollowEntity->Pos.x;
-        ypos=pFollowEntity->Pos.y;
-        zpos=pFollowEntity->Pos.z;
+        xpos=pFollowEntity->loc.x;
+        ypos=pFollowEntity->loc.y;
+        zpos=pFollowEntity->loc.z;
         // todo add camera angles
     } else {
         Move_Left();
@@ -314,7 +314,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Camera");
         return false;
     }
-    if(LoadBaseGFX(pGAF)) {
+    if(LoadTextures(pGAF)) {
         pLog->_Add("Base Textures initialized");
     } else {
         pLog->_Add("Can't initialize Base Textures");
@@ -349,6 +349,12 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
     if(!LoadModels()) return false;
 
+    pFirstMapModelList =new C_MapModelList;
+    pFirstMapModelList->pMapModel=pFirstMapModel;
+
+    pFirstMapModelList->rot.x=34.0f;
+    pFirstMapModelList->rot.y=314.0f;
+
     pLog->_Add("GFX Initialized");
     return true;
 }
@@ -376,7 +382,7 @@ void C_GFX::ShutDownGFX(void) {
     DEL(pCamera);
     DEL(pMap);
 
-    DestroyBaseGFX();
+    DestroyTextures();
     DEL(pDefaultTexture);
     DestroyModels();
     glFinish();
@@ -439,7 +445,7 @@ void C_GFX::StarField(int iDir) {
     if(fff>34)  dir =(-0.405f);
     if(fff<-34) dir =( 0.405f);
     for(y=0;y<500;y++){
-        DrawBaseGFX( (int)(star[y].x),
+        DrawTexture( (int)(star[y].x),
                      (int)(600-star[y].y-30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
                      (int)(star[y].x+2+star[y].speed ),
                      (int)(600-star[y].y+1+star[y].speed -30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
@@ -457,7 +463,7 @@ void C_GFX::SetScreenRes(int x,int y,int cl, bool fs) {
     //ShutDownGFX();
     //InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
 }
-bool C_GFX::LoadBaseGFX(CGAF *pGAF) { // Load in GFX Base
+bool C_GFX::LoadTextures(CGAF *pGAF) { // Load in GFX Base
     CGLTexture *pTexture;
     DIR *dpdf;
     struct dirent *epdf;
@@ -534,7 +540,7 @@ CGLTexture* C_GFX::GetRandomTexture(void) {
     }
     return 0;
 }
-bool C_GFX::DestroyBaseGFX(void) {
+bool C_GFX::DestroyTextures(void) {
     CGLTexture * pTexture;
     pTexture=pFirstTexture;
     while(pTexture) {
@@ -545,7 +551,6 @@ bool C_GFX::DestroyBaseGFX(void) {
 }
 bool C_GFX::LoadModels(void) {
     pLog->AddEntry("Loading models...\n");
-
     char szModelFilename[1024];
     memset(szModelFilename,0,1024);
     CGLModel *pModel;
@@ -557,15 +562,10 @@ bool C_GFX::LoadModels(void) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-
                 if(sp_isdir(va("models/%s",epdf->d_name))) {
-
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
 
-                    pLog->AddEntry("Found model: %s\n",szModelFilename);
-
-/*
-                    pModel=pFirstModel;
+/*                  pModel=pFirstModel;
                     if(pModel) {
                         while(pModel->pNext) {
                             pModel=pModel->pNext;
@@ -577,29 +577,24 @@ bool C_GFX::LoadModels(void) {
                         pFirstModel=new CGLModel;
                         pModel=pFirstModel;
                     }
-                    pModel->Load(szModelFilename);
-                    */
+                    pModel->Load(szModelFilename);  */
+                    pLog->AddEntry("Found model: %s\n",szModelFilename);
                 }
             }
         }
     }
-
     closedir(dpdf);
 
     memset(szModelFilename,0,1024);
     C_MapModel *pMapModel;
-
     dpdf = opendir("map");
     if (dpdf != NULL) {
         while (epdf = readdir(dpdf)) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-
                 if (strcmp (".fmo", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
                     strcpy(szModelFilename,va("map/%s",epdf->d_name));
-                    pLog->AddEntry("Found map model: %s\n",szModelFilename);
-
                     pMapModel=pFirstMapModel;
                     if(pMapModel) {
                         while(pMapModel->pNext) pMapModel=pMapModel->pNext;
@@ -612,6 +607,7 @@ bool C_GFX::LoadModels(void) {
                     }
                     if(pMapModel) {
                         pMapModel->Load(szModelFilename);
+                        pLog->AddEntry("Map model: %s\n",szModelFilename);
                     }
                 }
             }
@@ -619,6 +615,47 @@ bool C_GFX::LoadModels(void) {
     }
     closedir(dpdf);
     return true;
+}
+void C_GFX::DrawModels(void) {
+
+    C_MapModelList* pMML;
+    pMML=pFirstMapModelList;
+    while(pMML) {
+        glLoadIdentity();
+        pCamera->Go();
+        pMML->Draw();
+        pMML=pMML->pNext;
+    }
+
+    /*
+    static float x,y,z;
+    x=320.4f;
+    y=90.5f;
+    Model=FirstModel;
+    if(Model) {
+        Model->Rotate(x,y,0);
+        Model->Scale(1.7f,1.7f,1.7f);
+        Model->Locate(-160,-90,-10);
+        glDisable(GL_BLEND);
+        Model->Draw();
+        Model=Model->next;
+        if(Model) {
+            Model->Rotate(x,y,0);
+            Model->Scale(1.7f,1.7f,1.7f);
+            Model->Locate(160,-90,-10);
+            glDisable(GL_BLEND);
+            Model->Draw();
+            Model=Model->next;
+
+            if(Model) {
+                glEnable(GL_BLEND);
+                Model->Rotate(x,y,0);
+                Model->Scale(1.7f,1.7f,1.7f);
+                Model->Draw();
+            }
+        }
+    }
+    */
 }
 CGLModel *C_GFX::GetModel(char *name) {
     CGLModel* pModel=pFirstModel;
@@ -682,6 +719,7 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
     if(pCamera) pCamera->Go();
 
     pMap->Draw();
+    DrawModels();
 }
 void C_GFX::DrawSun(void) {
     static float der;
@@ -810,153 +848,12 @@ void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long co
 void C_GFX::DrawVertice(int x, int y) {
     DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255));
 }
-void C_GFX::DrawBaseGFX(int x,int y,int x2,int y2,char * name,u_char r,u_char g,u_char b) {
+void C_GFX::DrawTexture(int x,int y,int x2,int y2,char * name,u_char r,u_char g,u_char b) {
     CGLTexture *pTexture;
     pTexture=0;
     pTexture=GetTexture(name);
     if(pTexture)
         pTexture->Draw2d(x,y,x2,y2,r,g,b);
-}
-/****************************************************************************************************
-void C_GFX::DrawBit4ge(int x,int y,int x2,int y2,bool bsin) {
-    if(!cgltBit4ge) {
-        cgltBit4ge=new CGLTexture();
-        cgltBit4ge->Load("data/dlstorm.bmp",0);
-        return;
-    }
-    static float fB4;
-    int x3=(x2-x);
-    int y3=(y2-y);
-    x=x/2;
-    y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-    fB4 +=.5;
-	// cgltBit4ge->Draw(x,y,x3,y3,1.0f,1.0f,1.0f,1.0f,1.0f,1.0f);
-	// *
-    // glLoadIdentity();
-    glDisable(GL_BLEND);
-    glDisable(GL_DEPTH_TEST);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-	glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    glTranslated(x,y,0);
-    glBindTexture(GL_TEXTURE_2D,cgltBit4ge->bmap);
-    glEnable(GL_TEXTURE_2D);
-    glColor3f(1.0f,1.0f,1.0f);
-    glBegin(GL_QUADS );
-    if(bsin) {
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x+ 5*sin(fB4/22)),   float(y-y3+ 5*sin(fB4/12)),    1.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+x3+ 5*sin(fB4/15)),  float(y-y3+ 5*sin(fB4/13)),    1.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+x3+ 5*sin(fB4/14)),  float(y+ 5*sin(fB4/25)),    1.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x+ 5*sin(fB4/22)),   float(y+ 5*sin(fB4/12)),    1.0f);
-    }
-    else {
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x),   float(y-y3),    1.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x+x3),  float(y-y3),    1.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x+x3),  float(y),    1.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x),   float(y),    1.0f);
-
-    }
-    glEnd();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glEnable(GL_DEPTH_TEST);
-} */
-/****************************************************************************************************
-void C_GFX::DrawModels(void) {
-    static float x,y,z;
-    x=320.4f;
-    y=90.5f;
-    Model=FirstModel;
-    if(Model) {
-        Model->Rotate(x,y,0);
-        Model->Scale(1.7f,1.7f,1.7f);
-        Model->Locate(-160,-90,-10);
-        glDisable(GL_BLEND);
-        Model->Draw();
-        Model=Model->next;
-        if(Model) {
-            Model->Rotate(x,y,0);
-            Model->Scale(1.7f,1.7f,1.7f);
-            Model->Locate(160,-90,-10);
-            glDisable(GL_BLEND);
-            Model->Draw();
-            Model=Model->next;
-
-            if(Model) {
-                glEnable(GL_BLEND);
-                Model->Rotate(x,y,0);
-                Model->Scale(1.7f,1.7f,1.7f);
-                Model->Draw();
-            }
-        }
-    }
-} */
-void C_GFX::UpdatePickRay(GLfloat x,GLfloat y) {
-    GLfloat ray_pnt[4];
-    GLfloat ray_vec[4];
-    /*
-    GLint viewport[4];
-    GLdouble modelview[16];
-    GLdouble projection[16];
-    GLfloat winX, winY, winZ;
-    glGetDoublev(  GL_MODELVIEW_MATRIX, modelview );
-    glGetDoublev(  GL_PROJECTION_MATRIX, projection );
-    glGetIntegerv( GL_VIEWPORT, viewport );
-    winX = x; winY = (GLfloat)viewport[3] - y;
-    glReadPixels( x, GLint(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
-    gluUnProject( winX, winY, 0, modelview, projection, viewport, &posX, &posY, &posZ);
-    gluUnProject( winX, winY, 1, modelview, projection, viewport, &posX2, &posY2, &posZ2);
-    */
-    GLint   mouse_x=x;//GetMouseX();//+x_offset;
-    GLint   mouse_y=y;//GetMouseY();//+y_offset;
-    GLfloat near_height,zNear,zFar,near_distance;
-    GLint   window_width  = SDL_GetVideoSurface()->w;
-    GLint   window_height = SDL_GetVideoSurface()->h;
-    GLfloat aspect = double(window_width)/double(window_height);
-    near_height=1.0f;
-    near_distance=2.0f;
-    zNear=0.0f;
-    zFar=1.0f;
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-near_height * aspect, near_height * aspect, -near_height, near_height, zNear, zFar );
-    // you can build your pick ray vector like this:
-    GLint     window_y    = (window_height - mouse_y) - window_height/2;
-    GLdouble  norm_y      = double(window_y)/double(window_height/2);
-    GLint     window_x    = mouse_x - window_width/2;
-    GLdouble  norm_x      = double(window_x)/double(window_width/2);
-    // (Note that most window systems place the mouse coordinate origin in the upper left of the window instead of the lower left. That's why window_y is calculated the way it is in the above code. When using a glViewport() that doesn't match the window height, the viewport height and viewport Y are used to determine the values for window_y and norm_y.)
-    // The variables norm_x and norm_y are scaled between -1.0 and 1.0. Use them to find the mouse location on your zNear clipping plane like so:
-    //GLfloat y = near_height * norm_y;
-    //GLfloat x = near_height * aspect * norm_x;
-    // Now your pick ray vector is (x, y, -zNear).
-    // To transform this eye coordinate pick ray into object coordinates,
-    // multiply it by the inverse of the ModelView matrix in use when the
-    // scene was rendered. When performing this multiplication, remember
-    // that the pick ray is made up of a vector and a point, and that
-    // vectors and points transform differently. You can translate and
-    // rotate points, but vectors only rotate. The way to guarantee that
-    // this is working correctly is to define your point and vector as
-    // four-element arrays, as the following pseudo-code shows:
-    //PickRayNear.x = ray_pnt[0] = 0.0f;
-    //PickRayNear.y = ray_pnt[1] = 0.0f;
-    //PickRayNear.z = ray_pnt[2] = 0.0f;
-    ray_pnt[3] = 1.0f;
-    //PickRayFar.x = ray_vec[0] = x;
-    //PickRayFar.y =ray_vec[1] = y;
-    //PickRayFar.z =ray_vec[2] = -near_distance;
-    ray_vec[3] = 0.0f;
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glDisable(GL_TEXTURE_2D);
-    // GLdouble gl_z = 100.0 ;  gl_x = mX + ((mZoom - gl_z) * (gl_x - mX) / (mZoom - gl_z - z))) ;  gl_y = mY + ((mZoom - gl_z) * (gl_y - mY) / (mZoom - gl_z - z))) ;
-
 }
 u_char C_GFX::GetFade(char cWhichFade) {
     static u_char  cFader1=0;
@@ -1009,15 +906,15 @@ u_char C_GFX::GetFade(char cWhichFade) {
     if(cWhichFade==4) return cFader4;
     return 0;
 }
-void C_GFX::draw_3d_box(int x, int y, int x2, int y2) {
+void C_GFX::Draw3DBox(int x, int y, int x2, int y2) {
     RECT r;
     r.left=x;
     r.top=y;
     r.right=(x2-x);
     r.bottom=(y2-y);
-    draw_3d_box(r);
+    Draw3DBox(r);
 }
-void C_GFX::draw_3d_box(RECT rect) {
+void C_GFX::Draw3DBox(RECT rect) {
     DrawBar(  rect.left,
               rect.top,
               rect.left+rect.right-2,
@@ -1130,9 +1027,7 @@ void C_GFX::DrawCube() {
     glVertex3f(-1.0f,  1.0f, -1.0f);  // Top Left Of The Texture and Quad
     glEnd();
 }
-
 void C_GFX::DrawSkyBox(void) {
-
   // Store the current matrix
      glPushMatrix();
     // Reset and transform the matrix.
@@ -1220,3 +1115,5 @@ void C_GFX::DrawSkyBox(void) {
     //glPopAttrib();
     glPopMatrix();
 }
+
+

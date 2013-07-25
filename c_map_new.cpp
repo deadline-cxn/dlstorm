@@ -36,8 +36,7 @@ CMesh :: ~CMesh() {
     m_pVertices = NULL;
     if( m_pTexCoords ) delete [] m_pTexCoords; // Deallocate Texture Coord Data
     m_pTexCoords = NULL;
-    if( m_pTex ) delete [] m_pTex;
-    m_pTex = NULL;
+    // if( m_pTex ) delete [] m_pTex;     m_pTex = NULL;
 }
 
 void CMesh::Initialize(void) {
@@ -56,9 +55,9 @@ void CMesh::Initialize(void) {
 
     m_nVertexCount = (int) (x*y)*6;
 
-    m_pVertices     = new CVec[m_nVertexCount];						// Allocate Vertex Data
+    m_pVertices     = new CVector3[m_nVertexCount];						// Allocate Vertex Data
     m_pTexCoords    = new CTexCoord[m_nVertexCount];				// Allocate Tex Coord Data
-    m_pTex          = new CTex[m_nVertexCount];
+    //m_pTex          = new CTex[m_nVertexCount];
 
     int nX,nZ,nTri,nIndex;
     nIndex=0;
@@ -131,20 +130,15 @@ void CMesh::Initialize(void) {
         vy = vy + (rand()%3)-1;
         j++;
         if(j>wx) {
-            vz = ((float)rand()/(float)RAND_MAX); // ((float)rand()/(float)RAND_MAX)-1.0f; //(((5.0f)-(-5.0f))*(float)rand()/(float)RAND_MAX)-5.0f;
+            vz = ((float)rand()/(float)RAND_MAX);
             wx=(rand()%200);
             j=0;
         }
-        // vz=( ((float)rand()) / ((float) RAND_MAX)) * 8.3f;
         if(vx < 3)      vx=3;
         if(vx > (x-3))  vx=x-3;
         if(vy < 3)      vy=3;
         if(vy > (y-3))  vy=y-3;
-        //if(vz < 1) vz=1;
-        //if(vz > 10) vz=10;
-
         SetPointHeight(vx,vy,(float)vz);
-
     }
 }
 
@@ -153,7 +147,7 @@ void CMesh::SetPointTexture(int nX, int nZ, CGLTexture* pTex) {
     nIndex=((nX % x) + ((nZ % y) * x)) * 6;
     if(nIndex > ( x * y * 6 / ( res * res ))) return;
     if(nIndex < 0) return;
-    m_pTex[nIndex].t =pTex->bmap;
+    //m_pTex[nIndex].t =pTex->bmap;
 }
 
 void CMesh::SetPointHeight(int nX, int nZ, float fHeight) {

@@ -7,6 +7,37 @@
 ****************************************************************/
 
 #include "c_mapmodel.h"
+
+C_MapModelList::C_MapModelList() {
+    pMapModel=0;
+    loc.x=0.0f;
+    loc.y=0.0f;
+    loc.z=0.0f;
+    rot.x=0.0f;
+    rot.y=0.0f;
+    rot.z=0.0f;
+    scale.x=1.0f;
+    scale.y=1.0f;
+    scale.z=1.0f;
+    color.r=1.0f;
+    color.g=1.0f;
+    color.b=1.0f;
+    transparency=1.0f;
+    pNext=0;
+}
+C_MapModelList::~C_MapModelList(){
+}
+
+void C_MapModelList::Draw(void) {
+    glTranslatef(loc.x, loc.y, loc.z);  // location
+    glRotatef(rot.x,1.0f,0,0);
+    glRotatef(rot.y,0,1.0f,0);
+    glRotatef(rot.z,0,0,1.0f);       // rotation
+    glScalef(scale.x,scale.y,scale.z);  // scale
+    glColor3f(color.r,color.g,color.b); // color
+    pMapModel->Draw();
+}
+
 C_MapModel::C_MapModel() {
     pNext=0;
 }

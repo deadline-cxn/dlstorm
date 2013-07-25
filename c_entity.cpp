@@ -55,18 +55,18 @@ void C_Entity::Initialize(void) {
     respawn_time_min=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
     respawn_time_max=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
 
-    Pos.x=0;
-    Pos.y=0;
-    Pos.z=0;
-    Rot.x=0;
-    Rot.y=0;
-    Rot.z=0;
-    Scale.x=1.0f;
-    Scale.y=1.0f;
-    Scale.z=1.0f;
-    Color.r=1.0f;
-    Color.g=1.0f;
-    Color.b=1.0f;
+    loc.x=0;
+    loc.y=0;
+    loc.z=0;
+    rot.x=0;
+    rot.y=0;
+    rot.z=0;
+    scale.x=1.0f;
+    scale.y=1.0f;
+    scale.z=1.0f;
+    color.r=1.0f;
+    color.g=1.0f;
+    color.b=1.0f;
 
 }
 
@@ -75,12 +75,16 @@ void C_Entity::Draw(void) {
     glLoadIdentity();
     pGFX->pCamera->Go();
 
-    glTranslatef(Pos.x, Pos.y, Pos.z);  // location
-    glRotatef(Rot.x,1.0f,0,0);
-    glRotatef(Rot.y,0,1.0f,0);
-    glRotatef(Rot.z,0,0,1.0f);       // rotation
-    glScalef(Scale.x,Scale.y,Scale.z);  // scale
-    glColor3f(Color.r,Color.g,Color.b); // color
+    glTranslatef(loc.x,
+                 loc.y,
+                 loc.z);  // location
+    glRotatef(rot.x,1.0f,0,0);
+    glRotatef(rot.y,0,1.0f,0);
+    glRotatef(rot.z,0,0,1.0f);       // rotation
+    glScalef(scale.x,
+             scale.y,
+             scale.z);  // scale
+    glColor3f(color.r,color.g,color.b); // color
 
     if(pModel) {
     // TODO: Add model stuff in here

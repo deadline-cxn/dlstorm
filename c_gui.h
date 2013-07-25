@@ -331,7 +331,7 @@ public:
     void    drawGUIButton(int x, int y,int whichslice,int size);
     void    drawGUIResource(int w,int x,int y,int x2,int y2);
     int     drawSlicedGUIButton(C_GCTRL *gui_control,int x,int y); //int x, int y, int width);
-    int     drawBaseGFXGUIButton(C_GCTRL *gui_control,int x,int y);
+    int     DrawTextureGUIButton(C_GCTRL *gui_control,int x,int y);
     void    drawB9utton(int x,int y, int w, int h);
     void    drawMouse(int iX,int iY,int iMouseMode);
     void    drawStatBar(int iX,int iY, int iW, int iT,int iV); // iT is total value, iV is current value, will draw percentage bar

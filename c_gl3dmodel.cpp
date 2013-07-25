@@ -372,13 +372,13 @@ void CLoadMD2::ReadMD2Data() {
     pLog->_DebugAdd("CLoadMD2::ReadMD2Data()");
     unsigned char buffer[MD2_MAX_FRAMESIZE];
     m_pSkins     = new tMd2Skin [m_Header.numSkins];
-    m_pTexCoords = new tMd2TexCoord [m_Header.numTexCoords];
+    m_pTexCoords = new CTexCoord [m_Header.numTexCoords];
     m_pTriangles = new tMd2Face [m_Header.numTriangles];
     m_pFrames    = new tMd2Frame [m_Header.numFrames];
     fseek(m_FilePointer, m_Header.offsetSkins, SEEK_SET);
     fread(m_pSkins,      sizeof(tMd2Skin), m_Header.numSkins, m_FilePointer);
     fseek(m_FilePointer, m_Header.offsetTexCoords, SEEK_SET);
-    fread(m_pTexCoords,  sizeof(tMd2TexCoord), m_Header.numTexCoords, m_FilePointer);
+    fread(m_pTexCoords,  sizeof(CTexCoord), m_Header.numTexCoords, m_FilePointer);
     fseek(m_FilePointer, m_Header.offsetTriangles, SEEK_SET);
     fread(m_pTriangles,  sizeof(tMd2Face), m_Header.numTriangles, m_FilePointer);
     fseek(m_FilePointer, m_Header.offsetFrames, SEEK_SET);

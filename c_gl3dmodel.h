@@ -1,7 +1,6 @@
 /***************************************************************
     DLSTORM Deadline's Code Storm Library
     Author: Seth Parson
-
 ****************************************************************/
 
 #ifndef DL_OPEN_GL_MODEL
@@ -10,240 +9,17 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
-#include "s_gnu.h"
+#include "c_gfx.h"
 #include "c_gltexture.h"
 #include "c_log.h"
 
-/*
-#ifndef __MD2MODEL_H__
-#define __MD2MODEL_H__
-#include <vector>
-#include <string>
-#include <map>
-// #include "Texture.h"
-using std::map;
-using std::vector;
-using std::string;
-// OpenGL vector types
-typedef GLfloat vec2_t[2];
-typedef GLfloat vec3_t[3];
-// Md2 header
-struct Md2Header_t
-{
-  int ident;          // Magic number, "IDP2"
-  int version;        // Md2 format version, should be 8
-  int skinwidth;      // Texture width
-  int skinheight;     // Texture height
-  int framesize;      // Size of a frame, in bytes
-  int num_skins;      // Number of skins
-  int num_vertices;   // Number of vertices per frame
-  int num_st;         // Number of texture coords
-  int num_tris;       // Number of triangles
-  int num_glcmds;     // Number of OpenGL commands
-  int num_frames;     // Number of frames
-  int offset_skins;   // offset to skin data
-  int offset_st;      // offset to texture coords
-  int offset_tris;    // offset to triangle data
-  int offset_frames;  // offset to frame data
-  int offset_glcmds;  // offset to OpenGL commands
-  int offset_end;     // offset to the end of the file
-};
-// Skin data
-struct Md2Skin_t{
-  char name[64];  // Texture's filename
-};
-// Texture coords.
-struct Md2TexCoord_t{
-  short s;
-  short t;
-};
-// Triangle data
-struct Md2Triangle_t{
-  unsigned short vertex[3];  // Triangle's vertex indices
-  unsigned short st[3];      // Texture coords. indices
-};
-// Vertex data
-struct Md2Vertex_t{
-  unsigned char v[3];         // Compressed vertex position
-  unsigned char normalIndex;  // Normal vector index
-};
-// Frame data
-struct Md2Frame_t{
-  // Destructor
-  ~Md2Frame_t () {
-    delete [] verts;
-  }
-  vec3_t scale;        // Scale factors
-  vec3_t translate;    // Translation vector
-  char name[16];       // Frame name
-  Md2Vertex_t *verts;  // Frames's vertex list
-};
-// OpenGL command packet
-struct Md2Glcmd_t{
-  float s;    // S texture coord.
-  float t;    // T texture coord.
-  int index;  // Vertex index
-};
-// Animation infos
-struct Md2Anim_t{
-  int start;  // first frame index
-  int end;    // last frame index
-};
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// class Md2Model -- MD2 Model Data Class.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class Md2Model
-{
-public:
-  // Constructors/destructor
-  Md2Model (const string &filename);
-//  throw (std::runtime_error);
-  ~Md2Model ();
-
-public:
-  // Internal types
-//  typedef map<string, Texture*> SkinMap;
-  typedef map<string, Md2Anim_t> AnimMap;
-
-public:
-  // Public interface
-  bool loadTexture (const string &filename);
-  void setTexture (const string &filename);
-
-  void renderFrameImmediate (int frame);
-  void drawModelItpImmediate (int frameA, int frameB, float interp);
-
-  void renderFrameWithGLcmds (int frame);
-  void drawModelItpWithGLcmds (int frameA, int frameB, float interp);
-
-  void setScale (GLfloat scale) { _scale = scale; }
-
-  // Accessors
-//  const SkinMap &skins () const { return _skinIds; }
-  const AnimMap &anims () const { return _anims; }
-
-private:
-  // Internal functions
-  void setupAnimations ();
-
-private:
-  // Member variables
-
-  // Constants
-  static vec3_t _kAnorms[162];
-  static int _kMd2Ident;
-  static int _kMd2Version;
-
-  // Model data
-  Md2Header_t _header;
-  Md2Skin_t *_skins;
-  Md2TexCoord_t *_texCoords;
-  Md2Triangle_t *_triangles;
-  Md2Frame_t *_frames;
-  int *_glcmds;
-
-  GLfloat _scale;
-//  Texture *_tex;
-
-//  SkinMap _skinIds;
-  AnimMap _anims;
-};
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// class Md2Object -- MD2 Object Class.
-//
-/////////////////////////////////////////////////////////////////////////////
-
-class Md2Object
-{
-public:
-  // Public internal types/enums
-  enum Md2RenderMode
-    {
-      kDrawImmediate = 0,
-      kDrawGLcmds,
-    };
-
-public:
-  // Constructor/destructor
-  Md2Object ();
-  Md2Object (Md2Model *model);
-  ~Md2Object ();
-
-public:
-  // Public interface
-  void drawObjectItp (bool animated, Md2RenderMode renderMode);
-  void drawObjectFrame (int frame, Md2RenderMode renderMode);
-  void animate (int startFrame, int endFrame, float percent);
-  void animate (float percent);
-
-  void setModel (Md2Model *model);
-  void setScale (float scale) { _scale = scale; }
-  void setAnim (const string &name);
-
-  // Accessors
-  const Md2Model *model () const { return _model; }
-  float scale () const { return _scale; }
-  const string &currentAnim () const { return _currentAnim; }
-
-private:
-  // Member variables
-  Md2Model *_model;
-
-  int _currFrame;
-  int _nextFrame;
-  float _interp;
-
-  float _percent;
-  float _scale;
-
-  // Animation data
-  const Md2Anim_t *_animInfo;
-  string _currentAnim;
-};
-
-#endif // __MD2_H__
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
-
-
-
-
-
-
-// These are the needed defines for the max values when loading .MD2 files
-
 #ifdef __linux__
+#include "s_gnu.h"
 typedef unsigned char byte;
 #endif
 
+// This stores the speed of the animation between each key frame
+#define kAnimationSpeed         5.0f
 #define MD2_MAX_TRIANGLES       4096
 #define MD2_MAX_VERTICES        2048
 #define MD2_MAX_TEXCOORDS       2048
@@ -251,25 +27,6 @@ typedef unsigned char byte;
 #define MD2_MAX_SKINS           32
 #define MD2_MAX_FRAMESIZE       (MD2_MAX_VERTICES * 4 + 128)
 
-// This is our 3D point class.  This will be used to store the vertices of our model.
-class CVector3 {
-public:
-    float x, y, z;
-};
-class CColor3  {
-public:
-    float r, g, b;
-};
-
-// This is our 2D point class.  This will be used to store the UV coordinates.
-class CVector2 {
-public:
-    float x, y;
-};
-struct tFace {
-    int vertIndex[3];           // indicies for the verts that make up this triangle
-    int coordIndex[3];          // indicies for the tex coords to texture this face
-};
 
 class t3DObject {
 public:
@@ -286,7 +43,6 @@ public:
     CVector2  *pTexVerts;       // The texture's UV coordinates
     tFace *pFaces;              // The faces information of the object
 };
-//////////// *** NEW *** ////////// *** NEW *** ///////////// *** NEW *** ////////////////////
 
 // This holds our information for each animation of the Quake model.
 // A STL vector list of this structure is created in our t3DModel structure below.
@@ -312,7 +68,6 @@ struct tMaterialInfo {
     CGLTexture  *texture;
 } ;
 
-
 // We added 4 new variables to our model structure.  These will help us handle
 // the current animation.  As of now, the current animation will continue to loop
 // from it's start from to it's end frame until we right click and change animations.
@@ -325,28 +80,17 @@ public:
     int numOfAnimations;                // The number of animations in this model (NEW)
     int currentAnim;                    // The current index into pAnimations list (NEW)
     int currentFrame;                   // The current frame of the current animation (NEW)
-
     CVector3    loc;
     CVector3    rot;
     CVector3    scale;
     CColor3     color;
     float       transparency;
-
-
     vector<tAnimationInfo>  pAnimations;// The list of animations (NEW)
     vector<tMaterialInfo>   pMaterials; // The list of material information (Textures and colors)
     CGLTexture              *texture;
     vector<t3DObject>       pObject;    // The object list for our model
 };
 
-
-// This stores the speed of the animation between each key frame
-#define kAnimationSpeed         5.0f
-
-//////////// *** NEW *** ////////// *** NEW *** ///////////// *** NEW *** ////////////////////
-
-
-// This holds the header information that is read in at the beginning of the file
 struct tMd2Header {
     int magic;                   // This is used to identify the file
     int version;                 // The version number of the file (Must be 8)
@@ -367,31 +111,21 @@ struct tMd2Header {
     int offsetEnd;               // The end of the file offset
 };
 
-
-// This is used to store the vertices that are read in for the current frame
 struct tMd2AliasTriangle {
     byte vertex[3];
     byte lightNormalIndex;
 };
 
-// This stores the normals and vertices for the frames
 struct tMd2Triangle {
     float vertex[3];
     float normal[3];
 };
 
-// This stores the indices into the vertex and texture coordinate arrays
 struct tMd2Face {
     short vertexIndices[3];
     short textureIndices[3];
 };
 
-// This stores UV coordinates
-struct tMd2TexCoord {
-    short u, v;
-};
-
-// This stores the animation scale, translation and name information for a frame, plus verts
 struct tMd2AliasFrame {
     float scale[3];
     float translate[3];
@@ -399,40 +133,30 @@ struct tMd2AliasFrame {
     tMd2AliasTriangle aliasVertices[1];
 };
 
-// This stores the frames vertices after they have been transformed
 struct tMd2Frame {
     char strName[16];
     tMd2Triangle *pVertices;
 };
 
-// This stores a skin name
 typedef char tMd2Skin[64];
 
-
-// This class handles all of the loading code
 class CLoadMD2 {
-
 public:
     CLoadMD2(CLog *pInLog);
     ~CLoadMD2() {} ;
     CLog *pLog;
-
     bool ImportMD2(t3DModel *pModel, char *strFileName, char *strTexture);
     void ReadMD2Data();
     void ParseAnimations(t3DModel *pModel);
     void ConvertDataStructures(t3DModel *pModel);
     void CleanUp();
-
-
-    CGAF    *pGAF;
-
-    FILE *m_FilePointer;
-
-    tMd2Header              m_Header;           // The header data
-    tMd2Skin                *m_pSkins;          // The skin data
-    tMd2TexCoord            *m_pTexCoords;      // The texture coordinates
-    tMd2Face                *m_pTriangles;      // Face index information
-    tMd2Frame               *m_pFrames;         // The frames of animation (vertices)
+    CGAF*           pGAF;
+    FILE*           m_FilePointer;
+    tMd2Header      m_Header;           // The header data
+    tMd2Skin*       m_pSkins;          // The skin data
+    CTexCoord*      m_pTexCoords;      // The texture coordinates
+    tMd2Face*       m_pTriangles;      // Face index information
+    tMd2Frame*      m_pFrames;         // The frames of animation (vertices)
 };
 
 
@@ -441,20 +165,17 @@ public:
     CGLModel();
     CGLModel(CLog *pInLog);
     ~CGLModel();
-
     char        name[1024];
     char        skin[1024];
     bool        bMadeLog;
     float       elapsedTime;
     float       lastTime;
-
     CLog*       pLog;
     CLoadMD2*   MD2;
     t3DModel*   Model;
     CGLModel*   pNext;
     CGLModel*   pPrev;
     CGAF*       pGAF;
-
     bool Load(char *filename);
     bool Load(char *filename,char *texture);
     bool Draw(void);
@@ -483,10 +204,7 @@ public:
         Model->color.g=ng;
         Model->color.b=nb;
     }
-
     float ReturnCurrentTime(t3DModel *pModel, int nextFrame);
 };
-
-
 
 #endif
