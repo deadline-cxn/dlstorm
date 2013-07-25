@@ -683,122 +683,45 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
 
 
 bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {//Draw(int x,int y,int x2,int y2,long color)
-    if(!bmap) {
-        LoadBMP(pGAF,tfilename,1);
-        return 0;
-    }
-    if(usemask) if(!mask) {
-            LoadBMP(pGAF,tfilename,1);
-            return 0;
-        }
+    if(!bmap) { LoadPNG(tfilename); return 0; }
     int x3=(x2-x);
     int y3=(y2-y);
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
-    if(usemask) { // draw mask
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_DST_COLOR,GL_ZERO);
-        glDisable(GL_DEPTH_TEST);
 
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();  // <------------------- push matrix
-        glLoadIdentity();
-        gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
+    glEnable(GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
 
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();  // <------------------- push matrix
-        glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
 
-        glTranslated(x,y,0);
-        glBindTexture(GL_TEXTURE_2D,mask);
-        glEnable(GL_TEXTURE_2D);
-        glColor3ub(r2,g2,b2);
+    glTranslated(x,y,0);
+    glBindTexture(GL_TEXTURE_2D,bmap);
+    glColor3ub(r,g,b);
 
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 0);
-        glVertex3d(x,y-y3,1);
-        glTexCoord2d(1, 0);
-        glVertex3d(x+x3,y-y3,1);
-        glTexCoord2d(1, 1);
-        glVertex3d(x+x3,y,1);
-        glTexCoord2d(0, 1);
-        glVertex3d(x,y,1);
-        glEnd();
+    glBegin(GL_QUADS);
+    glTexCoord2d(0, 0);
+    glVertex3d(x,y-y3,1);
+    glTexCoord2d(1, 0);
+    glVertex3d(x+x3,y-y3,1);
+    glTexCoord2d(1, 1);
+    glVertex3d(x+x3,y,1);
+    glTexCoord2d(0, 1);
+    glVertex3d(x,y,1);
+    glEnd();
 
-        // draw bmap
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glDisable(GL_DEPTH_TEST);
-
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-        gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glTranslated(x,y,0);
-        glBindTexture(GL_TEXTURE_2D,bmap);
-        glEnable(GL_TEXTURE_2D);
-        glColor3ub(r,g,b);
-
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 0);
-        glVertex3d(x,y-y3,1);
-        glTexCoord2d(1, 0);
-        glVertex3d(x+x3,y-y3,1);
-        glTexCoord2d(1, 1);
-        glVertex3d(x+x3,y,1);
-        glTexCoord2d(0, 1);
-        glVertex3d(x,y,1);
-        glEnd();
-
-        // pop matrices
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-        glEnable(GL_DEPTH_TEST);
-    } else {
-        glDisable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_TEXTURE_2D);
-
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
-
-        gluOrtho2D(0,SDL_GetVideoSurface()->w,0,SDL_GetVideoSurface()->h);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-
-        glTranslated(x,y,0);
-        glBindTexture(GL_TEXTURE_2D,bmap);
-        glColor3ub(r,g,b);
-
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 0);
-        glVertex3d(x,y-y3,1);
-        glTexCoord2d(1, 0);
-        glVertex3d(x+x3,y-y3,1);
-        glTexCoord2d(1, 1);
-        glVertex3d(x+x3,y,1);
-        glTexCoord2d(0, 1);
-        glVertex3d(x,y,1);
-        glEnd();
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-        glEnable(GL_DEPTH_TEST);
-    }
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glEnable(GL_DEPTH_TEST);
     return 1;
 }
 

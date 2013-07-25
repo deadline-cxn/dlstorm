@@ -407,95 +407,51 @@ void C_GFX::BeginScene(void) {
     if(pCamera) pCamera->Update();
 }
 void C_GFX::StarField(int iDir) {
-  /*static stra star[500];
+    struct stra {
+        float x;
+        float y;
+        float speed;
+        char gfx[1024];
+    };
+    static stra star[500];
     static bool bstars;
     static float ffy;
     static float fff;
     static float dir=-.405f;
     int y;
-    glClearColor( (0.2f),(0.4f),(1.0f),0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // change to draw sky here
-    DrawBaseGFX(0,0,SDL_GetVideoSurface()->w,SDL_GetVideoSurface()->h,10,155,155,155);
-    if(GAME_MODE==GAME_ON) { return; }
-    if(!Generic) {
-        if(!bstars){
-            for(y=0;y<500;y++)  {
-                star[y].x=(rand()%900-100);
-                star[y].y= rand()%900-150;
-                star[y].speed=(rand()%24)*0.48f+1.3f;
-                star[y].gfx=rand()%2+12;
-            }
-            bstars=1;
+    // glClearColor( (0.2f),(0.4f),(1.0f),0);    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // DrawBaseGFX(0,0,SDL_GetVideoSurface()->w,SDL_GetVideoSurface()->h,"base/b0121.png",155,155,155);
+    if(!bstars){
+        for(y=0;y<500;y++)  {
+            star[y].x=(rand()%
+                       SDL_GetVideoSurface()->w
+                       -100);
+            star[y].y= rand()%
+            SDL_GetVideoSurface()->h;//            -150;
+            star[y].speed=(rand()%24)*0.48f+1.3f;
+            strcpy(star[y].gfx,"base/star1.png");
+            if((rand()%100)>50)
+                strcpy(star[y].gfx,"base/star2.png");
         }
-        fff+=dir;
-        if(fff>34)  dir =(-0.405f);
-        if(fff<-34) dir =( 0.405f);
-        for(y=0;y<500;y++){
-            if(GAME_MODE!=GAME_ON) {
-                DrawBaseGFX( (int)(star[y].x),
-                             (int)(600-star[y].y-30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
-                             (int)(star[y].x+2+star[y].speed ),
-                             (int)(600-star[y].y+1+star[y].speed -30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
-                             star[y].gfx,
-                             GetFade(3),
-                             GetFade(2),
-                             GetFade(1) );
-            }
-            star[y].x+=star[y].speed;
-            if(star[y].x> SDL_GetVideoSurface()->w+100) star[y].x=0-(50*star[y].speed);
-        }
-        y=GetFade(2);
-        ffy -= 3.4;
-        if(ffy<(-100)) ffy=SDL_GetVideoSurface()->w+100;
-        if(GAME_MODE!=RETRO_INTRO_PLAY){
-            DrawBar(0,147+y,SDL_GetVideoSurface()->w,168+y,LONGRGB(0,0,0),LONGRGB(255,255,255));
-            DrawBar(0,148+y,SDL_GetVideoSurface()->w,167+y,LONGRGB(255,255,255),LONGRGB(0,0,0));
-            DrawBar(0,149+y,SDL_GetVideoSurface()->w,166+y,LONGRGB(0,0,0),LONGRGB(255,255,255));
-            WriteText(ffy   ,149+y+18*sin(ffy/23)     ,"^+^&^1S",7);
-            WriteText((int)ffy+8 ,(int)149+y+18*sin((ffy+8)/23) ,"^+^&^ct",7);
-            WriteText((int)ffy+16,(int)149+y+18*sin((ffy+16)/23),"^+^&^ca",7);
-            WriteText((int)ffy+24,(int)149+y+18*sin((ffy+24)/23),"^+^&^dn",7);
-            WriteText((int)ffy+32,(int)149+y+18*sin((ffy+32)/23),"^+^&^dd",7);
-            WriteText((int)ffy+40,(int)149+y+18*sin((ffy+40)/23),"^+^&^eb",7);
-            WriteText((int)ffy+48,(int)149+y+18*sin((ffy+48)/23),"^+^&^ey",7);
-        }
-        else{
-            if(!cgltSDL) {
-                cgltSDL=new CGLTexture();
-                cgltSDL->Load(va("%s%cdata%csdl.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
-            }
-            else{
-                cgltSDL->Draw(80,SDL_GetVideoSurface()->h-96,80+128,SDL_GetVideoSurface()->h+22,255,255,255,255,255,255);
-            }
+        bstars=1;
+    }
+    fff+=dir;
+    if(fff>34)  dir =(-0.405f);
+    if(fff<-34) dir =( 0.405f);
+    for(y=0;y<500;y++){
+        DrawBaseGFX( (int)(star[y].x),
+                     (int)(600-star[y].y-30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
+                     (int)(star[y].x+2+star[y].speed ),
+                     (int)(600-star[y].y+1+star[y].speed -30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
+                     star[y].gfx,
+                     255,255,255);
+                     //                                          GetFade(3),                     GetFade(2),                     GetFade(1) );
+        star[y].x+=star[y].speed;
+        if(star[y].x > SDL_GetVideoSurface()->w) star[y].x=0;//-(50*star[y].speed);
+    }
+    //y=GetFade(2);
+    //ffy -= 3.4;    if(ffy<(-100)) ffy=SDL_GetVideoSurface()->w+100;
 
-            if(!cgltFMOD){
-                cgltFMOD=new CGLTexture();
-                cgltFMOD->Load(va("%s%cdata%cfmod.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
-            }
-            else{
-                cgltFMOD->Draw(218,SDL_GetVideoSurface()->h-74,282,SDL_GetVideoSurface()->h-10,255,255,255,255,255,255);
-            }
-
-            if(!cgltOpenGL){
-                cgltOpenGL=new CGLTexture();
-                cgltOpenGL->Load(va("%s%cdata%copengl.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
-            }
-            else{
-                cgltOpenGL->Draw(292,SDL_GetVideoSurface()->h-108,292+128,SDL_GetVideoSurface()->h+28,255,255,255,255,255,255);
-            }
-
-    		if(!cgltBit4ge){
-    			cgltBit4ge=new CGLTexture();
-    			cgltBit4ge->Load(va("%s%cdata%cdlstorm.bmp",pClientData->FMDir,PATH_SEP,PATH_SEP),0);
-    		}
-    		else{
-    			cgltBit4ge->Draw(512,SDL_GetVideoSurface()->h-168,768,SDL_GetVideoSurface()->h+88,255,255,255,255,255,255);
-    			//DrawBit4ge(10,SDL_GetVideoSurface()->h-74,74,SDL_GetVideoSurface()->h-10,0);
-    		}
-
-        }
-    }*/
 }
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs) {
     //ShutDownGFX();
@@ -694,7 +650,7 @@ bool C_GFX::DestroyModels(void) {
     return true;
 }
 void C_GFX::RenderScene(void) { // Render the game scene Frame
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity ();											// Reset The Modelview Matrix
 /*  glEnable(GL_DEPTH_TEST);
@@ -720,9 +676,11 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
 
 
 
+    StarField(1);
+    // DrawSkyBox();
 
     if(pCamera) pCamera->Go();
-    DrawSkyBox();
+
     pMap->Draw();
 }
 void C_GFX::DrawSun(void) {
@@ -1178,8 +1136,8 @@ void C_GFX::DrawSkyBox(void) {
   // Store the current matrix
      glPushMatrix();
     // Reset and transform the matrix.
-    glLoadIdentity();
-  gluLookAt(
+    //glLoadIdentity();
+  /*gluLookAt(
         0,0,0,
         pCamera->xpos,
         pCamera->zpos,
@@ -1188,6 +1146,7 @@ void C_GFX::DrawSkyBox(void) {
 
         // camera->x(),camera->y(),camera->z(),
         0,1,0);
+        */
 
     // Enable/Disable features
     //glPushAttrib(GL_ENABLE_BIT);

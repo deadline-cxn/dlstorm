@@ -199,6 +199,8 @@ void CMesh::Draw(void) {
 
     glPushMatrix();
 
+    glColor3f(1.0f,1.0f,1.0f);
+
     if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
 
     glEnableClientState( GL_VERTEX_ARRAY );						// Enable Vertex Arrays
