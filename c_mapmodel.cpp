@@ -35,6 +35,7 @@ void C_MapModelList::Draw(void) {
     glRotatef(rot.z,0,0,1.0f);       // rotation
     glScalef(scale.x,scale.y,scale.z);  // scale
     glColor3f(color.r,color.g,color.b); // color
+
     pMapModel->Draw();
 }
 

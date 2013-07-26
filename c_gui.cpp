@@ -3289,7 +3289,7 @@ bool C_GUI::loadFonts(void) {
                 if(sp_isdir(epdf->d_name)) {
 
                 } else {
-                    pLog->AddEntry("Found font texture: font/%s\n",epdf->d_name);
+                    // pLog->AddEntry("Found font texture: font/%s\n",epdf->d_name);
                     pFont=pFirstFont;
                     if(pFont) {
                         while(pFont->pNext) {
@@ -3308,7 +3308,7 @@ bool C_GUI::loadFonts(void) {
                         pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
                         DEL(pFont);
                     } else {
-                        pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pFont->pFontTex->tfilename,pFont->pFontTex->bmap);
+                        pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->tfilename,pFont->pFontTex->bmap);
                     }
                 }
             }

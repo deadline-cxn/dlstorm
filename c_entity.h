@@ -109,6 +109,7 @@ public:
 
     CVector3    loc;       // position of the entity
     CVector3    rot;       // rotation of the entity
+    CVector3    autorot;   // will continuously rotate based on this setting
     CVector3    scale;     // vector for the scale matrix
     CVector3    dir;       // direction vector (which way the entity is facing)
     CColor3     color;     // color of the entity;

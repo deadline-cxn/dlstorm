@@ -1,12 +1,8 @@
 /***************************************************************
     DLSTORM Deadline's Code Storm Library
     Author: Seth Parson
-
-
 ****************************************************************/
-
 #include "c_gl3dmodel.h"
-
 CGLModel::CGLModel() {
     memset(name,0,1024);
     memset(skin,0,1024);
@@ -19,7 +15,6 @@ CGLModel::CGLModel() {
     pLog->Restart();
     pLog->_DebugAdd("CGLModel::CGLModel()");
 }
-
 CGLModel::CGLModel(CLog *pInLog) {
     memset(name,0,1024);
     memset(skin,0,1024);
@@ -31,14 +26,12 @@ CGLModel::CGLModel(CLog *pInLog) {
     pLog=pInLog;
     pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
 }
-
 CGLModel::~CGLModel() {
     pLog->_DebugAdd("CGLModel::~CGLModel()");
     if(bMadeLog) DEL(pLog);
     DEL(MD2);
     DEL(Model);
 }
-
 bool CGLModel::Load(char* filename) {
     strcpy(name,va("%s/tris.md2",filename));
     strcpy(skin,va("%s/skin.png",filename));
@@ -70,14 +63,12 @@ bool CGLModel::Load(char* filename,char* texture) {
         DEL(MD2);
         return false;
     }
-    if(!MD2->ImportMD2(Model,filename,texture))
-        return false;
+    if(!MD2->ImportMD2(Model,filename,texture)) return false;
     Model->currentAnim=0;
     Model->currentFrame=0;
     Color(1.0f,1.0f,1.0f);
     return true;
 }
-
 bool CGLModel::RenderSceneDraw(void) {
     pLog->_DebugAdd("CGLModel::RenderSceneDraw(void)");
     if(!Model) return 0;
@@ -86,25 +77,18 @@ bool CGLModel::RenderSceneDraw(void) {
         Model->texture->LoadBMP(pGAF,skin,0);
     }
     if(Model->pObject.size() <= 0) return 1;
-
     tAnimationInfo *pAnim = &(Model->pAnimations[Model->currentAnim]);
-
     if(Model->currentFrame>pAnim->endFrame) Model->currentFrame=pAnim->startFrame;
-
     int nextFrame = (Model->currentFrame + 1) % pAnim->endFrame;
-
     if(nextFrame == 0) nextFrame=pAnim->startFrame;
-
     if((int)Model->pObject.size() < (int)nextFrame) {
         Model->currentFrame=pAnim->startFrame + 1;
         nextFrame = (Model->currentFrame + 1) % pAnim->endFrame;
     }
-
     t3DObject *pFrame       = &Model->pObject[Model->currentFrame];
     t3DObject *pNextFrame   = &Model->pObject[nextFrame];
     t3DObject *pFirstFrame  = &Model->pObject[0];
     float t = ReturnCurrentTime(Model, nextFrame);
-
     //glMatrixMode(GL_MODELVIEW);
     //glPushMatrix();
     //glLoadIdentity();
@@ -120,9 +104,6 @@ bool CGLModel::RenderSceneDraw(void) {
     //glTranslatef(0.0f,0.0f,-6.0f);
     //gluLookAt(Model->loc.x,Model->loc.y,1, Model->loc.x, Model->loc.y, Model->loc.z ,  0, 1, 0 ); // WORKS!!!
     //glColor3f(Model->color.r, Model->color.g, Model->color.b);
-
-    pLog->_DebugAdd("Hi!");
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, Model->texture->bmap);
@@ -145,40 +126,25 @@ bool CGLModel::RenderSceneDraw(void) {
     glEnd();
     return 1;
 }
-
-
 bool CGLModel::Draw(void) {
-    pLog->_DebugAdd("CGLModel::Draw(void) A");
-
     if(!Model) return 0;
-
     if(!Model->texture) {
         Model->texture=new CGLTexture(pLog);
         Model->texture->pGAF=pGAF;
         Model->texture->LoadBMP(pGAF,skin,0);
     }
-
     if(Model->pObject.size() <= 0) return 1;
-
     tAnimationInfo *pAnim = &(Model->pAnimations[Model->currentAnim]);
-
     int nextFrame = (Model->currentFrame + 1) % pAnim->endFrame;
-
     if(nextFrame == 0) nextFrame=pAnim->startFrame;
-
     if((int)Model->pObject.size() < (int)nextFrame) {
         Model->currentFrame=pAnim->startFrame + 1;
         nextFrame = (Model->currentFrame + 1) % pAnim->endFrame;
     }
-
     t3DObject *pFrame       = &Model->pObject[Model->currentFrame];
     t3DObject *pNextFrame   = &Model->pObject[nextFrame];
     t3DObject *pFirstFrame  = &Model->pObject[0];
-
     float t = ReturnCurrentTime(Model, nextFrame);
-
-    pLog->_DebugAdd("CGLModel::Draw(void) B");
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);//|GL_LIGHTING);
 
@@ -203,67 +169,38 @@ bool CGLModel::Draw(void) {
     //glRotatef (Model->rot.z, 0, 0, 1.0f  );
     //glScalef  (Model->scale.x, Model->scale.y, Model->scale.z);
 
-    pLog->_DebugAdd("CGLModel::Draw(void) C");
-
     if(Model)
         if(Model->texture)
             if(Model->texture->bmap)
                 glBindTexture(GL_TEXTURE_2D, Model->texture->bmap);
-
-
-    pLog->_DebugAdd("CGLModel::Draw(void) D");
-
     glColor3f (Model->color.r, Model->color.g, Model->color.b);
-
-    pLog->_DebugAdd("CGLModel::Draw(void) E");
-
     if(pFrame) {
         glBegin(GL_TRIANGLES);
-
         for(int j = 0; j < pFrame->numOfFaces; j++) {
-            pLog->_DebugAdd("CGLModel::Draw(void) EE");
             for(int whichVertex = 0; whichVertex < 3; whichVertex++) {
-                pLog->_DebugAdd("CGLModel::Draw(void) EEE");
                 int vertIndex = pFirstFrame->pFaces[j].vertIndex[whichVertex];
-                pLog->_DebugAdd("CGLModel::Draw(void) EEEE");
                 int texIndex  = pFirstFrame->pFaces[j].coordIndex[whichVertex];
                 if(pFirstFrame->pTexVerts) {
-                    pLog->_DebugAdd("CGLModel::Draw(void) E5");
                     glTexCoord2f(pFirstFrame->pTexVerts[ texIndex ].x,
                                  pFirstFrame->pTexVerts[ texIndex ].y);
-                    pLog->_DebugAdd("CGLModel::Draw(void) E6");
                 }
                 CVector3 vPoint1 = pFrame->pVerts[ vertIndex ];
-                pLog->_DebugAdd("CGLModel::Draw(void) E7");
-
                 CVector3 vPoint2 = pNextFrame->pVerts[ vertIndex ];
-                pLog->_DebugAdd("CGLModel::Draw(void) E8");
-
                 glVertex3f(vPoint1.x + t * (vPoint2.x - vPoint1.x), // Find the interpolated X
                            vPoint1.y + t * (vPoint2.y - vPoint1.y), // Find the interpolated Y
                            vPoint1.z + t * (vPoint2.z - vPoint1.z));// Find the interpolated Z
-
-                pLog->_DebugAdd("CGLModel::Draw(void) E9");
             }
         }
-
         glEnd();
-
     }
-
-    pLog->_DebugAdd("CGLModel::Draw(void) F");
-
     //glMatrixMode(GL_PROJECTION);
     //glPopMatrix();
     //glMatrixMode(GL_MODELVIEW);
     //glPopMatrix();
-
     return 1;
 }
-
 float CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame) {
-    pLog->_DebugAdd("CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame)");
-    float time = GetTickCount();//SDL_GetTicks();
+    float time = GetTickCount();
     this->elapsedTime = time - this->lastTime;
     float t = this->elapsedTime / (1000.0f / kAnimationSpeed);
     if (elapsedTime >= (1000.0f / kAnimationSpeed) ) {
@@ -272,7 +209,6 @@ float CGLModel::ReturnCurrentTime(t3DModel *pModel, int nextFrame) {
     }
     return t;
 }
-
 t3DObject::t3DObject() {
     numOfVerts=0;
     numOfFaces=0;
@@ -285,32 +221,24 @@ t3DObject::t3DObject() {
     pTexVerts=0;
     pFaces=0;
 }
-
 t3DObject::~t3DObject() {}
-
 t3DModel::t3DModel() {
     numOfObjects=0;
     numOfMaterials=0;
     numOfAnimations=0;
     currentAnim=0;
     currentFrame=0;
-
     scale.x=1.0f;
     scale.y=1.0f;
     scale.z=1.0f;
-
     pAnimations.clear();
     pMaterials.clear();
     pObject.clear();
-
 }
-t3DModel::~t3DModel() {
-
-}
+t3DModel::~t3DModel() { }
 ////////////////////////////////////////////////////////////////////////
 CLoadMD2::CLoadMD2(CLog *pInLog) {
     pLog=pInLog;
-    pLog->_DebugAdd("CLoadMD2::CLoadMD2(CLog *pInLog)");
     memset(&m_Header, 0, sizeof(tMd2Header));
     m_pSkins=NULL;
     m_pTexCoords=NULL;
@@ -319,28 +247,12 @@ CLoadMD2::CLoadMD2(CLog *pInLog) {
 }
 ////////////////////////////////////////////////////////////////////////
 bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture) {
-    pLog->_DebugAdd("CLoadMD2::ImportMD2()");
     char strMessage[255] = {0 };
     m_FilePointer = fopen(strFileName, "rb");
-
-    if(!m_FilePointer) {
-
-        pLog->_DebugAdd("CLoadMD2::ImportMD2() Unable to find the file: %s!", strFileName);
-
-
-        return 0;
-    }
-
+    if(!m_FilePointer) return 0;
     fread(&m_Header, 1, sizeof(tMd2Header), m_FilePointer);
-    if(m_Header.version != 8) {
-
-        pLog->_DebugAdd("CLoadMD2::ImportMD2() Invalid file format (Version not 8): %s!", strFileName);
-
-        return 0;
-    }
-
+    if(m_Header.version != 8) return 0;
     ReadMD2Data();
-
     ConvertDataStructures(MD2);
     if(strTexture) {
         tMaterialInfo texture;
@@ -348,28 +260,17 @@ bool CLoadMD2::ImportMD2(t3DModel *MD2, char *strFileName, char *strTexture) {
         texture.texureId = 0;
         texture.uTile = texture.uTile = 1;
         MD2->numOfMaterials = 1;
-
         MD2->pMaterials.push_back(texture);
-
     }
     CleanUp();
-
     if(pGAF) {
-        pLog->_DebugAdd("CLoadMD2::ImportMD2() md2:%s",strTexture);
-
-
-
         MD2->texture=new CGLTexture(pLog,pGAF,strTexture,0);
         MD2->texture->LoadBMP(pGAF,strTexture,0);//(pGAF,strTexture,0);
-
     }
-    pLog->_DebugAdd("CLoadMD2::ImportMD2() end");
-
     return true;
 }
 //////////////////////////////////////////////////////////////////
 void CLoadMD2::ReadMD2Data() {
-    pLog->_DebugAdd("CLoadMD2::ReadMD2Data()");
     unsigned char buffer[MD2_MAX_FRAMESIZE];
     m_pSkins     = new tMd2Skin [m_Header.numSkins];
     m_pTexCoords = new CTexCoord [m_Header.numTexCoords];
@@ -397,7 +298,6 @@ void CLoadMD2::ReadMD2Data() {
 }
 //////////////////////////////////////////////////////////////////
 void CLoadMD2::ParseAnimations(t3DModel *MD2) {
-    pLog->_DebugAdd("CLoadMD2::ParseAnimations(t3DModel *MD2)");
     tAnimationInfo animation;
     string strLastName = "";
     for(int i = 0; i < MD2->numOfObjects; i++) {
@@ -426,7 +326,6 @@ void CLoadMD2::ParseAnimations(t3DModel *MD2) {
 }
 ////////////////////////////////////////////////////////////////
 void CLoadMD2::ConvertDataStructures(t3DModel *MD2) {
-    pLog->_DebugAdd("CLoadMD2::ConvertDataStructures(t3DModel *MD2)");
     int j = 0, i = 0;
     memset(MD2, 0, sizeof(t3DModel));
     MD2->numOfObjects = m_Header.numFrames;
@@ -466,8 +365,6 @@ void CLoadMD2::ConvertDataStructures(t3DModel *MD2) {
 }
 //////////////////////////////////////////
 void CLoadMD2::CleanUp() {
-    pLog->_DebugAdd("CLoadMD2::CleanUp()");
-
     fclose(m_FilePointer);                      // Close the current file pointer
     if(m_pSkins)     delete [] m_pSkins;        // Free the skins data
     if(m_pTexCoords) delete m_pTexCoords;       // Free the texture coord data

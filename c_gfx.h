@@ -80,14 +80,18 @@ public:
 
     float       bounce;
 
-    float       cScale;
+    CVector3    loc;
+    CVector3    rot;
+    CVector3    scale;
 
-    float       xpos;
-    float       ypos;
-    float       zpos;
 
-    float       xrot;
-    float       yrot;
+    // float       cScale;
+    //float       xpos;
+    //float       ypos;
+    //float       zpos;
+    //float       xrot;
+    //float       yrot;
+    //float       zrot;
 
     bool        bMovingLeft;
     bool        bMovingRight;

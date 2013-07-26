@@ -61,6 +61,9 @@ void C_Entity::Initialize(void) {
     rot.x=0;
     rot.y=0;
     rot.z=0;
+    autorot.x=0;
+    autorot.y=0;
+    autorot.z=0;
     scale.x=1.0f;
     scale.y=1.0f;
     scale.z=1.0f;
@@ -72,6 +75,11 @@ void C_Entity::Initialize(void) {
 
 void C_Entity::Draw(void) {
     if(!pGFX) return;
+
+    rot.x+=autorot.x;
+    rot.y+=autorot.y;
+    rot.z+=autorot.z;
+
     glLoadIdentity();
     pGFX->pCamera->Go();
 

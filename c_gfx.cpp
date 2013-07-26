@@ -119,13 +119,16 @@ C_Camera::C_Camera() {
 C_Camera::~C_Camera() {  }
 void C_Camera::Initialize() {
     pFollowEntity=0;
-    cScale = 1.0;
-    bounce = 0.0;
-    xpos  = 0.0f;
-    ypos  = 0.0f;
-    zpos  = 15.0f;
-    xrot  = 0;
-    yrot  = 0;
+    bounce=0.0f;
+    loc.x=1.0f;
+    loc.y=1.0f;
+    loc.z=15.0f;
+    rot.x=0.0f;
+    rot.y=0.0f;
+    rot.z=0.0f;
+    scale.x=1.0f;
+    scale.y=1.0f;
+    scale.z=1.0f;
     angle = 0.0;
     bMovingBackward=0;
     bMovingForward=0;
@@ -133,15 +136,17 @@ void C_Camera::Initialize() {
     bMovingRight=0;
 }
 void C_Camera::Go() {
-    glRotatef(xrot,1.0,0.0,0.0);
-    glRotatef(yrot,0.0,1.0,0.0);
-    glTranslated(-xpos,-ypos,-zpos);
+    glRotatef(rot.x,1.0f,0.0f,0.0f);
+    glRotatef(rot.y,0.0f,1.0f,0.0f);
+    glRotatef(rot.z,0.0f,0.0f,1.0f);
+    glTranslated(-loc.x,-loc.y,-loc.z);
 }
 void C_Camera::Update() {
     if(pFollowEntity) {
-        xpos=pFollowEntity->loc.x;
-        ypos=pFollowEntity->loc.y;
-        zpos=pFollowEntity->loc.z;
+
+        loc.x=pFollowEntity->loc.x;
+        loc.y=pFollowEntity->loc.y;
+        loc.z=pFollowEntity->loc.z;
         // todo add camera angles
     } else {
         Move_Left();
@@ -161,9 +166,9 @@ void C_Camera::Move_Left_Stop() {
 void C_Camera::Move_Left() {
     if(!bMovingLeft) return;
     float yrotrad;
-    yrotrad = (yrot / 180 * 3.141592654f);
-    xpos -= float(cos(yrotrad)) * cScale;
-    zpos -= float(sin(yrotrad)) * cScale;
+    yrotrad = (rot.y / 180 * 3.141592654f);
+    loc.x -= float(cos(yrotrad)) * scale.x;
+    loc.z -= float(sin(yrotrad)) * scale.z;
 }
 void C_Camera::Move_Right_Start() {
     bMovingRight=true;
@@ -174,9 +179,9 @@ void C_Camera::Move_Right_Stop() {
 void C_Camera::Move_Right() {
     if(!bMovingRight) return;
     float yrotrad;
-    yrotrad = (yrot / 180 * 3.141592654f);
-    xpos += float(cos(yrotrad)) * cScale;
-    zpos += float(sin(yrotrad)) * cScale;
+    yrotrad = (rot.y / 180 * 3.141592654f);
+    loc.x += float(cos(yrotrad)) * scale.x;
+    loc.z += float(sin(yrotrad)) * scale.z;
 
 }
 void C_Camera::Move_Forward_Start() {
@@ -188,11 +193,11 @@ void C_Camera::Move_Forward_Stop() {
 void C_Camera::Move_Forward() {
     if(!bMovingForward) return;
     float xrotrad, yrotrad;
-    yrotrad = (yrot / 180 * 3.141592654f);
-    xrotrad = (xrot / 180 * 3.141592654f);
-    xpos += float(sin(yrotrad)) * cScale;
-    zpos -= float(cos(yrotrad)) * cScale;
-    ypos -= float(sin(xrotrad)) ;
+    yrotrad = (rot.y / 180 * 3.141592654f);
+    xrotrad = (rot.x / 180 * 3.141592654f);
+    loc.x += float(sin(yrotrad)) * scale.x;
+    loc.z -= float(cos(yrotrad)) * scale.z;
+    loc.y -= float(sin(xrotrad)) ;
     bounce += 0.04;
 }
 void C_Camera::Move_Backward_Start() {
@@ -204,11 +209,11 @@ void C_Camera::Move_Backward_Stop() {
 void C_Camera::Move_Backward() {
     if(!bMovingBackward) return;
     float xrotrad, yrotrad;
-    yrotrad = (yrot / 180 * 3.141592654f);
-    xrotrad = (xrot / 180 * 3.141592654f);
-    xpos -= float(sin(yrotrad)) * cScale;
-    zpos += float(cos(yrotrad)) * cScale;
-    ypos += float(sin(xrotrad));
+    yrotrad = (rot.y / 180 * 3.141592654f);
+    xrotrad = (rot.x / 180 * 3.141592654f);
+    loc.x -= float(sin(yrotrad)) * scale.x;
+    loc.z += float(cos(yrotrad)) * scale.z;
+    loc.y += float(sin(xrotrad));
     bounce += 0.04;
 }
 void C_Camera::mouseMovement(int x, int y) {
@@ -222,11 +227,11 @@ void C_Camera::mouseMovement(int x, int y) {
     //if(y<lasty) diffy=-1;
     lastx=x;
     lasty=y;
-    xrot += (float) diffy;
-    yrot += (float) diffx;
-    if(xrot < -60.0f) xrot=-60.0f;
-    if(xrot > 60.0f) xrot=60.0f;
-    if(yrot < -5000.0f) yrot=0.0f;
+    rot.x += (float) diffy;
+    rot.y += (float) diffx;
+    if(rot.x < -60.0f) rot.x=-60.0f;
+    if(rot.x > 60.0f)  rot.x=60.0f;
+    if(rot.y < -5000.0f) rot.y=0.0f;
 }
 // C_GFX::C_GFX() { pCamera = 0; VideoFlags=0; }
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
@@ -352,8 +357,9 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     pFirstMapModelList =new C_MapModelList;
     pFirstMapModelList->pMapModel=pFirstMapModel;
 
-    pFirstMapModelList->rot.x=34.0f;
-    pFirstMapModelList->rot.y=314.0f;
+    pFirstMapModelList->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
+    pFirstMapModelList->rot.y = (float)rand()/((float)RAND_MAX/360.0f);
+    pFirstMapModelList->rot.z = (float)rand()/((float)RAND_MAX/360.0f);
 
     pLog->_Add("GFX Initialized");
     return true;
@@ -477,7 +483,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) { // Load in GFX Base
 
                 } else {
                     if (strcmp (".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
-                        pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
+                        // pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
                         pTexture=pFirstTexture;
                         if(pTexture) {
                             while(pTexture->pNext) {
@@ -496,7 +502,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) { // Load in GFX Base
                             DEL(pTexture);
                         }
                         else {
-                            pLog->AddEntry("LOAD %s SUCCESS (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
+                            pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
                         }
                     }
                 }
@@ -623,12 +629,15 @@ void C_GFX::DrawModels(void) {
     while(pMML) {
         glLoadIdentity();
         pCamera->Go();
+        if(GetTexture(pMML->pMapModel->texture))
+            glBindTexture(GL_TEXTURE_2D,GetTexture(pMML->pMapModel->texture)->bmap);
+
+        pMML->rot.x+=0.1f;
         pMML->Draw();
         pMML=pMML->pNext;
     }
 
-    /*
-    static float x,y,z;
+/*  static float x,y,z;
     x=320.4f;
     y=90.5f;
     Model=FirstModel;
@@ -688,8 +697,7 @@ bool C_GFX::DestroyModels(void) {
 }
 void C_GFX::RenderScene(void) { // Render the game scene Frame
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();											// Reset The Modelview Matrix
+
 /*  glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
@@ -699,25 +707,22 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
     glEnable(GL_TEXTURE_2D);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
     */
-
-/*  GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+/*
+    GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
     GLfloat density = 0.02; //set the density to 0.3 which isacctually quite thick
     glEnable (GL_FOG);              //enable this for fog
     glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
     glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
     glFogf (GL_FOG_DENSITY, density); //set the density to the value above
     glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
-    //glFogf (GL_FOG_START, 10.0f);
-    //glFogf (GL_FOG_END, 680.0f);   // Enable Pointers
-    //glFogi (GL_FOG_MODE, GL_LINEAR); */
-
-
-
-    StarField(1);
-    // DrawSkyBox();
-
+    glFogf (GL_FOG_START, 10.0f);
+    glFogf (GL_FOG_END, 680.0f);   // Enable Pointers
+    //glFogi (GL_FOG_MODE, GL_LINEAR);
+*/
+    DrawSkyBox();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity ();											// Reset The Modelview Matrix
     if(pCamera) pCamera->Go();
-
     pMap->Draw();
     DrawModels();
 }
@@ -1028,86 +1033,79 @@ void C_GFX::DrawCube() {
     glEnd();
 }
 void C_GFX::DrawSkyBox(void) {
-  // Store the current matrix
-     glPushMatrix();
-    // Reset and transform the matrix.
-    //glLoadIdentity();
-  /*gluLookAt(
-        0,0,0,
-        pCamera->xpos,
-        pCamera->zpos,
-        pCamera->ypos,
 
 
-        // camera->x(),camera->y(),camera->z(),
-        0,1,0);
-        */
-
-    // Enable/Disable features
-    //glPushAttrib(GL_ENABLE_BIT);
-    //glEnable(GL_TEXTURE_2D);
-    //glDisable(GL_DEPTH_TEST);
-    //glDisable(GL_LIGHTING);
-    //glDisable(GL_BLEND);
+    glPushMatrix();
+    gluLookAt(0,0,0,pCamera->loc.x, pCamera->loc.y, pCamera->loc.z,0,1,0);
+/*
+    glPushAttrib(GL_ENABLE_BIT);
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_BLEND);
+    */
 
     // Just in case we set all vertices to white.
-    glColor4f(1,1,1,1);
+    glColor4f(1.0f,1.0f,1.0f,1.0f);
+
+    // glTranslatef(pCamera->loc.x, pCamera->loc.y, pCamera->loc.z);
+    glScalef(1200.0f,1200.0f,1200.0f);
+
 
     // Render the front quad
-
     glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.front.png")->bmap);
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(  1.0f, -1.0f, -1.0f );
-        glTexCoord2f(1, 0); glVertex3f( -1.0f, -1.0f, -1.0f );
-        glTexCoord2f(1, 1); glVertex3f( -1.0f,  1.0f, -1.0f );
-        glTexCoord2f(0, 1); glVertex3f(  1.0f,  1.0f, -1.0f );
+        glTexCoord2f(0, 0); glVertex3f(  0.5f, -0.5f, -0.5f );
+        glTexCoord2f(1, 0); glVertex3f( -0.5f, -0.5f, -0.5f );
+        glTexCoord2f(1, 1); glVertex3f( -0.5f,  0.5f, -0.5f );
+        glTexCoord2f(0, 1); glVertex3f(  0.5f,  0.5f, -0.5f );
+    glEnd();
+
+
+    // Render the back quad
+    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.back.png")->bmap);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex3f( -0.5f, -0.5f,  0.5f );
+        glTexCoord2f(1, 0); glVertex3f(  0.5f, -0.5f,  0.5f );
+        glTexCoord2f(1, 1); glVertex3f(  0.5f,  0.5f,  0.5f );
+        glTexCoord2f(0, 1); glVertex3f( -0.5f,  0.5f,  0.5f );
     glEnd();
 
     // Render the left quad
     glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.left.png")->bmap);
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f(  1.0f, -1.0f,  1.0f );
-        glTexCoord2f(1, 0); glVertex3f(  1.0f, -1.0f, -1.0f );
-        glTexCoord2f(1, 1); glVertex3f(  1.0f,  1.0f, -1.0f );
-        glTexCoord2f(0, 1); glVertex3f(  1.0f,  1.0f,  1.0f );
-    glEnd();
-
-    // Render the back quad
-    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.back.png")->bmap);
-    glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f( -1.0f, -1.0f,  1.0f );
-        glTexCoord2f(1, 0); glVertex3f(  1.0f, -1.0f,  1.0f );
-        glTexCoord2f(1, 1); glVertex3f(  1.0f,  1.0f,  1.0f );
-        glTexCoord2f(0, 1); glVertex3f( -1.0f,  1.0f,  1.0f );
-
+        glTexCoord2f(0, 0); glVertex3f(  0.5f, -0.5f,  0.5f );
+        glTexCoord2f(1, 0); glVertex3f(  0.5f, -0.5f, -0.5f );
+        glTexCoord2f(1, 1); glVertex3f(  0.5f,  0.5f, -0.5f );
+        glTexCoord2f(0, 1); glVertex3f(  0.5f,  0.5f,  0.5f );
     glEnd();
 
     // Render the right quad
     glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.right.png")->bmap);
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex3f( -1.0f, -1.0f, -1.0f );
-        glTexCoord2f(1, 0); glVertex3f( -1.0f, -1.0f,  1.0f );
-        glTexCoord2f(1, 1); glVertex3f( -1.0f,  1.0f,  1.0f );
-        glTexCoord2f(0, 1); glVertex3f( -1.0f,  1.0f, -1.0f );
+        glTexCoord2f(0, 0); glVertex3f( -0.5f, -0.5f, -0.5f );
+        glTexCoord2f(1, 0); glVertex3f( -0.5f, -0.5f,  0.5f );
+        glTexCoord2f(1, 1); glVertex3f( -0.5f,  0.5f,  0.5f );
+        glTexCoord2f(0, 1); glVertex3f( -0.5f,  0.5f, -0.5f );
     glEnd();
 
     // Render the top quad
     glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.top.png")->bmap);
     glBegin(GL_QUADS);
-        glTexCoord2f(0, 1); glVertex3f( -1.0f,  1.0f, -1.0f );
-        glTexCoord2f(0, 0); glVertex3f( -1.0f,  1.0f,  1.0f );
-        glTexCoord2f(1, 0); glVertex3f(  1.0f,  1.0f,  1.0f );
-        glTexCoord2f(1, 1); glVertex3f(  1.0f,  1.0f, -1.0f );
+        glTexCoord2f(0, 1); glVertex3f( -0.5f,  0.5f, -0.5f );
+        glTexCoord2f(0, 0); glVertex3f( -0.5f,  0.5f,  0.5f );
+        glTexCoord2f(1, 0); glVertex3f(  0.5f,  0.5f,  0.5f );
+        glTexCoord2f(1, 1); glVertex3f(  0.5f,  0.5f, -0.5f );
     glEnd();
 
     // Render the bottom quad
     if(GetTexture("base/sb1.bottom.png")) {
         glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.bottom.png")->bmap);
         glBegin(GL_QUADS);
-            glTexCoord2f(0, 0); glVertex3f( -1.0f, -1.0f, -1.0f );
-            glTexCoord2f(0, 1); glVertex3f( -1.0f, -1.0f,  1.0f );
-            glTexCoord2f(1, 1); glVertex3f(  1.0f, -1.0f,  1.0f );
-            glTexCoord2f(1, 0); glVertex3f(  1.0f, -1.0f, -1.0f );
+        glTexCoord2f(0, 0); glVertex3f( -0.5f, -0.5f, -0.5f );
+        glTexCoord2f(0, 1); glVertex3f( -0.5f, -0.5f,  0.5f );
+        glTexCoord2f(1, 1); glVertex3f(  0.5f, -0.5f,  0.5f );
+        glTexCoord2f(1, 0); glVertex3f(  0.5f, -0.5f, -0.5f );
         glEnd();
     }
 

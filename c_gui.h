@@ -7,8 +7,6 @@
 #ifndef _C_GUI
 #define _C_GUI
 
-using namespace std;
-
 #include "c_gui_chat_enum.h"
 #include <map>
 #include <algorithm>
@@ -19,7 +17,6 @@ using namespace std;
 #include "c_gltexture.h"
 #include "c_console.h"
 #include "dlstorm.h"
-
 
 #define FM_GP_ALWAYS_ON_TOP     1
 #define FM_GP_SIZEABLE          2
