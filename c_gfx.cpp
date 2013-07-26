@@ -340,7 +340,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     }
 
     pMap = new CMesh(pLog,pGAF);
-    // pMap = new CMesh(pLog, pGAF, pDefaultTexture);
     if(pMap) {
         pLog->_Add("Map mesh initialized");
     } else {
@@ -350,16 +349,25 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
     pMap->pOffset.x=5.0f;
     pMap->pOffset.z=15.0f;
-    pMap->pTexture=pDefaultTexture;//GetTexture("base/b0113.png");
+    pMap->pTexture=pDefaultTexture;
 
     if(!LoadModels()) return false;
 
-    pFirstMapModelList =new C_MapModelList;
+    pFirstMapModelList = new C_MapModelList;
     pFirstMapModelList->pMapModel=pFirstMapModel;
-
     pFirstMapModelList->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
     pFirstMapModelList->rot.y = (float)rand()/((float)RAND_MAX/360.0f);
     pFirstMapModelList->rot.z = (float)rand()/((float)RAND_MAX/360.0f);
+    pFirstMapModelList->pNext = new C_MapModelList;
+
+    pFirstMapModelList->pNext->pMapModel=pFirstMapModel;
+    pFirstMapModelList->pNext->loc.x = (float)rand()/((float)RAND_MAX/60.0f);
+    pFirstMapModelList->pNext->loc.y = (float)rand()/((float)RAND_MAX/60.0f);
+    pFirstMapModelList->pNext->loc.z = (float)rand()/((float)RAND_MAX/60.0f);
+    pFirstMapModelList->pNext->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
+    pFirstMapModelList->pNext->rot.y = (float)rand()/((float)RAND_MAX/360.0f);
+    pFirstMapModelList->pNext->rot.z = (float)rand()/((float)RAND_MAX/360.0f);
+
 
     pLog->_Add("GFX Initialized");
     return true;
@@ -623,7 +631,6 @@ bool C_GFX::LoadModels(void) {
     return true;
 }
 void C_GFX::DrawModels(void) {
-
     C_MapModelList* pMML;
     pMML=pFirstMapModelList;
     while(pMML) {
@@ -631,8 +638,6 @@ void C_GFX::DrawModels(void) {
         pCamera->Go();
         if(GetTexture(pMML->pMapModel->texture))
             glBindTexture(GL_TEXTURE_2D,GetTexture(pMML->pMapModel->texture)->bmap);
-
-        pMML->rot.x+=0.1f;
         pMML->Draw();
         pMML=pMML->pNext;
     }
