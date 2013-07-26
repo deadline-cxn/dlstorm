@@ -25,19 +25,6 @@ PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO 
 #define glUnmapBufferARB          pglUnmapBufferARB */
 #endif
 #endif
-// cube ///////////////////////////////////////////////////////////////////////
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
-// vertex coords array for glDrawArrays() =====================================
-// A cube has 6 sides and each side has 2 triangles, therefore, a cube consists
-// of 36 vertices (6 sides * 2 tris * 3 vertices = 36 vertices). And, each
-// vertex is 3 components (x,y,z) of floats, therefore, the size of vertex
-// array is 108 floats (36 * 3 = 108).
 GLfloat Cubevertices[]  =                       { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,      // v0-v1-v2 (front)
         -1,-1, 1,   1,-1, 1,   1, 1, 1,      // v2-v3-v0
 
@@ -56,7 +43,6 @@ GLfloat Cubevertices[]  =                       { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,
         1,-1,-1,  -1,-1,-1,  -1, 1,-1,      // v4-v7-v6 (back)
         -1, 1,-1,   1, 1,-1,   1,-1,-1
                                                 };    // v6-v5-v4
-// normal array
 GLfloat Cubenormals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
                             0, 0, 1,   0, 0, 1,   0, 0, 1,      // v2-v3-v0
 
@@ -94,7 +80,6 @@ GLfloat Cubecolors[]    = { 1, 1, 1,   1, 1, 0,   1, 0, 0,      // v0-v1-v2 (fro
                             0, 0, 1,   0, 0, 0,   0, 1, 0,      // v4-v7-v6 (back)
                             0, 1, 0,   0, 1, 1,   0, 0, 1
                           };    // v6-v5-v4
-//GLfloat mapvertices[1024][1024];
 static GLfloat vdata[12][3] = {
     {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z},
     {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X},
@@ -112,10 +97,7 @@ void normalize(GLfloat *a) {
     a[1]/=d;
     a[2]/=d;
 }
-
-C_Camera::C_Camera() {
-    Initialize();
-}
+C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
 void C_Camera::Initialize() {
     pFollowEntity=0;
@@ -157,12 +139,8 @@ void C_Camera::Update() {
 }
 void C_Camera::Rotate_Left() { }
 void C_Camera::Rotate_Right() { }
-void C_Camera::Move_Left_Start() {
-    bMovingLeft=true;
-}
-void C_Camera::Move_Left_Stop() {
-    bMovingLeft=false;
-}
+void C_Camera::Move_Left_Start() { bMovingLeft=true; }
+void C_Camera::Move_Left_Stop() { bMovingLeft=false; }
 void C_Camera::Move_Left() {
     if(!bMovingLeft) return;
     float yrotrad;
@@ -170,12 +148,8 @@ void C_Camera::Move_Left() {
     loc.x -= float(cos(yrotrad)) * scale.x;
     loc.z -= float(sin(yrotrad)) * scale.z;
 }
-void C_Camera::Move_Right_Start() {
-    bMovingRight=true;
-}
-void C_Camera::Move_Right_Stop() {
-    bMovingRight=false;
-}
+void C_Camera::Move_Right_Start() { bMovingRight=true; }
+void C_Camera::Move_Right_Stop() { bMovingRight=false; }
 void C_Camera::Move_Right() {
     if(!bMovingRight) return;
     float yrotrad;
@@ -184,12 +158,8 @@ void C_Camera::Move_Right() {
     loc.z += float(sin(yrotrad)) * scale.z;
 
 }
-void C_Camera::Move_Forward_Start() {
-    bMovingForward=true;
-}
-void C_Camera::Move_Forward_Stop() {
-    bMovingForward=false;
-}
+void C_Camera::Move_Forward_Start() { bMovingForward=true; }
+void C_Camera::Move_Forward_Stop() { bMovingForward=false; }
 void C_Camera::Move_Forward() {
     if(!bMovingForward) return;
     float xrotrad, yrotrad;
@@ -200,12 +170,8 @@ void C_Camera::Move_Forward() {
     loc.y -= float(sin(xrotrad)) ;
     bounce += 0.04;
 }
-void C_Camera::Move_Backward_Start() {
-    bMovingBackward=true;
-}
-void C_Camera::Move_Backward_Stop() {
-    bMovingBackward=false;
-}
+void C_Camera::Move_Backward_Start() { bMovingBackward=true; }
+void C_Camera::Move_Backward_Stop() { bMovingBackward=false; }
 void C_Camera::Move_Backward() {
     if(!bMovingBackward) return;
     float xrotrad, yrotrad;
@@ -239,8 +205,7 @@ C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELO
     pFirstTexture=0;
     pFirstModel=0;
     pMap=0;
-    pFirstMapModel=0;
-
+    pFirstNTT=0;
     pCamera=0;
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
 }
@@ -353,6 +318,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
     if(!LoadModels()) return false;
 
+/*
     pFirstMapModelList = new C_MapModelList;
     pFirstMapModelList->pMapModel=pFirstMapModel;
     pFirstMapModelList->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
@@ -367,7 +333,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     pFirstMapModelList->pNext->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
     pFirstMapModelList->pNext->rot.y = (float)rand()/((float)RAND_MAX/360.0f);
     pFirstMapModelList->pNext->rot.z = (float)rand()/((float)RAND_MAX/360.0f);
-
+*/
 
     pLog->_Add("GFX Initialized");
     return true;
@@ -578,8 +544,7 @@ bool C_GFX::LoadModels(void) {
             } else {
                 if(sp_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
-
-/*                  pModel=pFirstModel;
+                    pModel=pFirstModel;
                     if(pModel) {
                         while(pModel->pNext) {
                             pModel=pModel->pNext;
@@ -591,15 +556,15 @@ bool C_GFX::LoadModels(void) {
                         pFirstModel=new CGLModel;
                         pModel=pFirstModel;
                     }
-                    pModel->Load(szModelFilename);  */
-                    pLog->AddEntry("Found model: %s\n",szModelFilename);
+                    pModel->Load(szModelFilename);
+                    pLog->AddEntry("Found model: %s (%d)\n",szModelFilename,pModel);
                 }
             }
         }
     }
     closedir(dpdf);
 
-    memset(szModelFilename,0,1024);
+/*  memset(szModelFilename,0,1024);
     C_MapModel *pMapModel;
     dpdf = opendir("map");
     if (dpdf != NULL) {
@@ -627,11 +592,11 @@ bool C_GFX::LoadModels(void) {
             }
         }
     }
-    closedir(dpdf);
+    closedir(dpdf);    */
     return true;
 }
 void C_GFX::DrawModels(void) {
-    C_MapModelList* pMML;
+/*  C_MapModelList* pMML;
     pMML=pFirstMapModelList;
     while(pMML) {
         glLoadIdentity();
@@ -640,36 +605,7 @@ void C_GFX::DrawModels(void) {
             glBindTexture(GL_TEXTURE_2D,GetTexture(pMML->pMapModel->texture)->bmap);
         pMML->Draw();
         pMML=pMML->pNext;
-    }
-
-/*  static float x,y,z;
-    x=320.4f;
-    y=90.5f;
-    Model=FirstModel;
-    if(Model) {
-        Model->Rotate(x,y,0);
-        Model->Scale(1.7f,1.7f,1.7f);
-        Model->Locate(-160,-90,-10);
-        glDisable(GL_BLEND);
-        Model->Draw();
-        Model=Model->next;
-        if(Model) {
-            Model->Rotate(x,y,0);
-            Model->Scale(1.7f,1.7f,1.7f);
-            Model->Locate(160,-90,-10);
-            glDisable(GL_BLEND);
-            Model->Draw();
-            Model=Model->next;
-
-            if(Model) {
-                glEnable(GL_BLEND);
-                Model->Rotate(x,y,0);
-                Model->Scale(1.7f,1.7f,1.7f);
-                Model->Draw();
-            }
-        }
-    }
-    */
+    } */
 }
 CGLModel *C_GFX::GetModel(char *name) {
     CGLModel* pModel=pFirstModel;
@@ -682,14 +618,14 @@ CGLModel *C_GFX::GetModel(char *name) {
 }
 bool C_GFX::DestroyModels(void) {
     pLog->_DebugAdd("Begin Models destroy...");
-    CGLModel *pModel;
+    CGLModel* pModel;
     pModel=pFirstModel;
     while(pModel) {
         pFirstModel=pModel;
         pModel=pModel->pNext;
         DEL(pFirstModel);
     }
-
+/*
     C_MapModel* pMapModel;
     pMapModel=pFirstMapModel;
     while(pMapModel) {
@@ -697,12 +633,12 @@ bool C_GFX::DestroyModels(void) {
         pMapModel=pMapModel->pNext;
         DEL(pFirstMapModel);
     }
+    */
     pLog->_DebugAdd("Models destroyed...");
     return true;
 }
 void C_GFX::RenderScene(void) { // Render the game scene Frame
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 /*  glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
@@ -712,8 +648,7 @@ void C_GFX::RenderScene(void) { // Render the game scene Frame
     glEnable(GL_TEXTURE_2D);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
     */
-/*
-    GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+/*  GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
     GLfloat density = 0.02; //set the density to 0.3 which isacctually quite thick
     glEnable (GL_FOG);              //enable this for fog
     glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2

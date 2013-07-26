@@ -14,7 +14,6 @@
 #include "c_gl3dmodel.h"
 
 class CGLModel;
-
 class C_GFX;
 
 #define ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes
@@ -50,10 +49,13 @@ enum tEntityActions {
 enum tEntityType { // Basic entity types
     ENTITY_INVISIBLE,
     ENTITY_STATIC,
+    ENTITY_STATIC_ANIMATED,
     ENTITY_PLAYER,
     ENTITY_NPC,
-    ENTITY_INTERACT,
-    ENTITY_AMBIENT,
+    ENTITY_LIGHT,
+    ENTITY_SOUND,
+    ENTITY_AURA,
+
 };
 
 enum tEntityEvent { // Interaction events
@@ -113,18 +115,19 @@ public:
     CVector3    scale;     // vector for the scale matrix
     CVector3    dir;       // direction vector (which way the entity is facing)
     CColor3     color;     // color of the entity;
-
     GLfloat     Transparency; // use this for fading in and out, and for ghost/window effects
 
-    CWayPoint   *pFirstWayPoint;
+    CWayPoint*  pFirstWayPoint;
 
-    CGLTexture* pTexture;
+    CGLModel*   pModel;          // pointer to model data to use
+    int         iModelAnim;    // The current index into pAnimations list (NEW)
+    int         iModelAnimFrame;   // The current frame of the current animation (NEW)
+    CGLTexture* pTexture;   // use this texture for rendering (overrides pModel texture)
 
-    CGLModel*   pModel;   // pointer to model data to use
+    CLog*       pLog; // pointer to log
+    CGAF*       pGAF; // pointer to GAF
+    C_GFX*      pGFX; // pointer to GFX
 
-    CLog        *pLog; // pointer to log
-    CGAF        *pGAF; // pointer to GAF
-    C_GFX       *pGFX; // pointer to GFX
     /************************************************************************************************************************
     RESPAWN EXAMPLES:
     A power up would be:

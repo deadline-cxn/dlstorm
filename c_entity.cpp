@@ -81,22 +81,27 @@ void C_Entity::Draw(void) {
     rot.z+=autorot.z;
 
     glLoadIdentity();
+
     pGFX->pCamera->Go();
 
-    glTranslatef(loc.x,
-                 loc.y,
-                 loc.z);  // location
-    glRotatef(rot.x,1.0f,0,0);
-    glRotatef(rot.y,0,1.0f,0);
-    glRotatef(rot.z,0,0,1.0f);       // rotation
-    glScalef(scale.x,
-             scale.y,
-             scale.z);  // scale
-    glColor3f(color.r,color.g,color.b); // color
+    glTranslatef(   loc.x,
+                    loc.y,
+                    loc.z); // location
+
+    glRotatef(      rot.x,1.0f,0,0);
+    glRotatef(      rot.y,0,1.0f,0);
+    glRotatef(      rot.z,0,0,1.0f); // rotation
+
+    glScalef(       scale.x,
+                    scale.y,
+                    scale.z);  // scale
+
+    glColor3f(      color.r,
+                    color.g,
+                    color.b); // color
 
     if(pModel) {
-    // TODO: Add model stuff in here
-
+        pModel->Draw();
     } else {
         if(pTexture) {
             if(pTexture->bmap) {

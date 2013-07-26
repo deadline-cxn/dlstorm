@@ -38,7 +38,6 @@ typedef struct tagSECTOR   { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #include "c_gltexture.h"
 #include "c_gl3dmodel.h"
 #include "c_entity.h"
-#include "c_mapmodel.h"
 #include "c_map_new.h"
 
 class C_Entity;
@@ -51,7 +50,6 @@ class C_Camera {
 public:
     C_Camera();
     ~C_Camera();
-
     void        Initialize(void);
     void        Go(void);
     void        Update(void);
@@ -75,29 +73,15 @@ public:
     void        Move_Right_Start(void);
     void        Move_Right_Stop(void);
     void        mouseMovement(int x, int y);
-
     C_Entity*   pFollowEntity;
-
     float       bounce;
-
     CVector3    loc;
     CVector3    rot;
     CVector3    scale;
-
-
-    // float       cScale;
-    //float       xpos;
-    //float       ypos;
-    //float       zpos;
-    //float       xrot;
-    //float       yrot;
-    //float       zrot;
-
     bool        bMovingLeft;
     bool        bMovingRight;
     bool        bMovingForward;
     bool        bMovingBackward;
-
     float       angle;
     float       lastx;
     float       lasty;
@@ -160,15 +144,16 @@ public:
     int         ScreenWidth;
     int         ScreenHeight;
     int         ScreenColors;
-    CGLTexture* pDefaultTexture;
-    CGLTexture* pFirstTexture;
-    CGLModel*   pFirstModel;
-    CMesh*      pMap;
-    C_MapModel*     pFirstMapModel;
-    C_MapModelList* pFirstMapModelList;
     C_Camera*   pCamera;
     CLog*       pLog;
     CGAF*       pGAF;
+    CGLTexture* pDefaultTexture; // default texture storage
+    CGLTexture* pFirstTexture; // texture storage
+    CGLModel*   pFirstModel; // model storage
+    CMesh*      pMap;
+    C_Entity*   pFirstNTT;      // Entities
+    C_Entity*   pFirstMapNTT;   // Map Entities
+
     char        WindowCaption[1024];
 };
 
