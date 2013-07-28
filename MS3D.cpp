@@ -1,12 +1,13 @@
-/***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-****************************************************************/
-#include "c_gl3dmodel.h"
-CGLModel::CGLModel() {
-    memset(name,0,1024);
-    pNext=0;
-    pPrev=0;
+
+#include "ms3d.h"
+#include "jpeg.h"
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//										The Model Class
+/////////////////////////////////////////////////////////////////////////////////////////////////
+Model::Model()
+{
 	m_numMeshes = 0;
 	m_pMeshes = NULL;
 	m_numMaterials = 0;
@@ -15,57 +16,53 @@ CGLModel::CGLModel() {
 	m_pTriangles = NULL;
 	m_numVertices = 0;
 	m_pVertices = NULL;
-    bMadeLog=1;
-    pLog=new CLog("CGLModel.log");
-    pLog->Restart();
-    pLog->_DebugAdd("CGLModel::CGLModel()");
 }
-CGLModel::CGLModel(CLog *pInLog) {
-    memset(name,0,1024);
-    pNext=0;
-    pPrev=0;
-    m_numMeshes = 0;
-	m_pMeshes = NULL;
-	m_numMaterials = 0;
-	m_pMaterials = NULL;
-	m_numTriangles = 0;
-	m_pTriangles = NULL;
-	m_numVertices = 0;
-	m_pVertices = NULL;
-    bMadeLog=0;
-    pLog=pInLog;
-    pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
-}
-CGLModel::~CGLModel() {
-    int i;
-	for ( i = 0; i < m_numMeshes; i++ )     delete[] m_pMeshes[i].m_pTriangleIndices;
-	for ( i = 0; i < m_numMaterials; i++ )  delete[] m_pMaterials[i].m_pTextureFilename;
+
+Model::~Model()
+{
+	int i;
+	for ( i = 0; i < m_numMeshes; i++ )
+		delete[] m_pMeshes[i].m_pTriangleIndices;
+	for ( i = 0; i < m_numMaterials; i++ )
+		delete[] m_pMaterials[i].m_pTextureFilename;
+
 	m_numMeshes = 0;
-	if ( m_pMeshes != NULL ) {
+	if ( m_pMeshes != NULL )
+	{
 		delete[] m_pMeshes;
 		m_pMeshes = NULL;
 	}
+
 	m_numMaterials = 0;
-	if ( m_pMaterials != NULL ) {
+	if ( m_pMaterials != NULL )
+	{
 		delete[] m_pMaterials;
 		m_pMaterials = NULL;
 	}
+
 	m_numTriangles = 0;
-	if ( m_pTriangles != NULL ) {
+	if ( m_pTriangles != NULL )
+	{
 		delete[] m_pTriangles;
 		m_pTriangles = NULL;
 	}
+
 	m_numVertices = 0;
-	if ( m_pVertices != NULL ) {
+	if ( m_pVertices != NULL )
+	{
 		delete[] m_pVertices;
 		m_pVertices = NULL;
 	}
-    if(bMadeLog) DEL(pLog);
 }
-bool CGLModel::Load(char* filename) {
-    // strcpy(name,va("%s/tris.md2",filename));
-    ifstream inputFile( filename, ios::in | ios::binary | ios::nocreate );
-	if ( inputFile.fail()) return false;
+
+
+
+bool Model::loadModelData( const char *filename )
+{
+	ifstream inputFile( filename, ios::in | ios::binary | ios::nocreate );
+	if ( inputFile.fail())
+		return false;	// "Couldn't open the model file."
+
 	char pathTemp[PATH_MAX+1];
 	int pathLength;
 	for ( pathLength = strlen( filename ); pathLength--; ) {
@@ -93,13 +90,14 @@ bool CGLModel::Load(char* filename) {
 	if ( pHeader->m_version < 3 )
 		return false; // "Unhandled file version. Only Milkshape3D Version 1.3 and 1.4 is supported." );
 
-	int nVertices = *( word* )pPtr;
+	int nVertices = *( word* )pPtr; 
 	m_numVertices = nVertices;
 	m_pVertices = new Vertex[nVertices];
 	pPtr += sizeof( word );
 
 	int i;
-	for ( i = 0; i < nVertices; i++ ) {
+	for ( i = 0; i < nVertices; i++ )
+	{
 		MS3DVertex *pVertex = ( MS3DVertex* )pPtr;
 		m_pVertices[i].m_boneID = pVertex->m_boneID;
 		memcpy( m_pVertices[i].m_location, pVertex->m_vertex, sizeof( float )*3 );
@@ -111,7 +109,8 @@ bool CGLModel::Load(char* filename) {
 	m_pTriangles = new Triangle[nTriangles];
 	pPtr += sizeof( word );
 
-	for ( i = 0; i < nTriangles; i++ ) {
+	for ( i = 0; i < nTriangles; i++ )
+	{
 		MS3DTriangle *pTriangle = ( MS3DTriangle* )pPtr;
 		int vertexIndices[3] = { pTriangle->m_vertexIndices[0], pTriangle->m_vertexIndices[1], pTriangle->m_vertexIndices[2] };
 		float t[3] = { 1.0f-pTriangle->m_t[0], 1.0f-pTriangle->m_t[1], 1.0f-pTriangle->m_t[2] };
@@ -122,33 +121,42 @@ bool CGLModel::Load(char* filename) {
 		pPtr += sizeof( MS3DTriangle );
 	}
 
+
+
 	int nGroups = *( word* )pPtr;
 	m_numMeshes = nGroups;
 	m_pMeshes = new Mesh[nGroups];
 	pPtr += sizeof( word );
-	for ( i = 0; i < nGroups; i++ ) {
+	for ( i = 0; i < nGroups; i++ )
+	{
 		pPtr += sizeof( byte );	// flags
 		pPtr += 32;				// name
+
 		word nTriangles = *( word* )pPtr;
 		pPtr += sizeof( word );
 		int *pTriangleIndices = new int[nTriangles];
-		for ( int j = 0; j < nTriangles; j++ ) {
+		for ( int j = 0; j < nTriangles; j++ )
+		{
 			pTriangleIndices[j] = *( word* )pPtr;
 			pPtr += sizeof( word );
 		}
 
 		char materialIndex = *( char* )pPtr;
 		pPtr += sizeof( char );
+	
 		m_pMeshes[i].m_materialIndex = materialIndex;
 		m_pMeshes[i].m_numTriangles = nTriangles;
 		m_pMeshes[i].m_pTriangleIndices = pTriangleIndices;
 	}
 
+
+
 	int nMaterials = *( word* )pPtr;
 	m_numMaterials = nMaterials;
 	m_pMaterials = new Material[nMaterials];
 	pPtr += sizeof( word );
-	for ( i = 0; i < nMaterials; i++ ) {
+	for ( i = 0; i < nMaterials; i++ )
+	{
 		MS3DMaterial *pMaterial = ( MS3DMaterial* )pPtr;
 		memcpy( m_pMaterials[i].m_ambient, pMaterial->m_ambient, sizeof( float )*4 );
 		memcpy( m_pMaterials[i].m_diffuse, pMaterial->m_diffuse, sizeof( float )*4 );
@@ -168,46 +176,55 @@ bool CGLModel::Load(char* filename) {
 		}
 		pPtr += sizeof( MS3DMaterial );
 	}
+
 	reloadTextures();
+
 	delete[] pBuffer;
+
 	return true;
 }
 
-bool CGLModel::Load(char* filename,char* texture) {
-    pLog->_DebugAdd("CGLModel::Load(char *filename, char *texture)");
-    return true;
-}
-bool CGLModel::RenderSceneDraw(void) {
-    pLog->_DebugAdd("CGLModel::RenderSceneDraw(void)");
-    return true;
-}
-bool CGLModel::Draw(void) {
-    GLboolean texEnabled = glIsEnabled( GL_TEXTURE_2D );
-	for ( int i = 0; i < m_numMeshes; i++ ) {
+
+
+void Model::draw() 
+{
+	GLboolean texEnabled = glIsEnabled( GL_TEXTURE_2D );
+	
+	for ( int i = 0; i < m_numMeshes; i++ )			// draw in groups
+	{
 		int materialIndex = m_pMeshes[i].m_materialIndex;
-		if ( materialIndex >= 0 ) {
+		if ( materialIndex >= 0 )
+		{
 			glMaterialfv( GL_FRONT, GL_AMBIENT,   m_pMaterials[materialIndex].m_ambient );
 			glMaterialfv( GL_FRONT, GL_DIFFUSE,   m_pMaterials[materialIndex].m_diffuse );
 			glMaterialfv( GL_FRONT, GL_SPECULAR,  m_pMaterials[materialIndex].m_specular );
 			glMaterialfv( GL_FRONT, GL_EMISSION,  m_pMaterials[materialIndex].m_emissive );
 			glMaterialf(  GL_FRONT, GL_SHININESS, m_pMaterials[materialIndex].m_shininess );
-			if ( m_pMaterials[materialIndex].m_texture > 0 ) {
+
+			if ( m_pMaterials[materialIndex].m_texture > 0 )
+			{
 				glBindTexture( GL_TEXTURE_2D, m_pMaterials[materialIndex].m_texture );
 				glEnable( GL_TEXTURE_2D );
 			}
 			else
 				glDisable( GL_TEXTURE_2D );
 		}
-		else {
+		else
+		{
 			glDisable( GL_TEXTURE_2D );
 		}
 
-		glBegin( GL_TRIANGLES ); {
-			for ( int j = 0; j < m_pMeshes[i].m_numTriangles; j++ ) {
+		glBegin( GL_TRIANGLES );
+		{
+			for ( int j = 0; j < m_pMeshes[i].m_numTriangles; j++ )
+			{
 				int triangleIndex = m_pMeshes[i].m_pTriangleIndices[j];
 				const Triangle* pTri = &m_pTriangles[triangleIndex];
-				for ( int k = 0; k < 3; k++ ) {
+
+				for ( int k = 0; k < 3; k++ )
+				{
 					int index = pTri->m_vertexIndices[k];
+
 					glNormal3fv( pTri->m_vertexNormals[k] );
 					glTexCoord2f( pTri->m_s[k], pTri->m_t[k] );
 					glVertex3fv( m_pVertices[index].m_location );
@@ -221,17 +238,27 @@ bool CGLModel::Draw(void) {
 		glEnable( GL_TEXTURE_2D );
 	else
 		glDisable( GL_TEXTURE_2D );
-    return true;
 }
 
 
-void CGLModel::reloadTextures() {
-	for ( int i = 0; i < m_numMaterials; i++ ) {
-		if ( strlen( m_pMaterials[i].m_pTextureFilename ) > 0 ) {
+
+void Model::reloadTextures()
+{
+	for ( int i = 0; i < m_numMaterials; i++ )
+	{
+		if ( strlen( m_pMaterials[i].m_pTextureFilename ) > 0 )
+		{
 			JPEG_Texture(&m_pMaterials[i].m_texture, m_pMaterials[i].m_pTextureFilename,0);
-        }
-		else {
+		}
+		else
+		{
 			m_pMaterials[i].m_texture = 0;
 		}
 	}
 }
+
+//Ronny André Reierstad
+//www.morrowland.com
+//apron@morrowland.com
+
+

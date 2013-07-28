@@ -1,16 +1,16 @@
-/***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-****************************************************************/
+// Thanks to Brett Porter and Mete Ciragan for help with this MS3D model loading code
 
-#ifndef _DLSTORM_OPENGL_MODEL
-#define _DLSTORM_OPENGL_MODEL
+#ifndef MS3D_H
+#define MS3D_H
 
-#include "c_gfx.h"
-#include "c_gltexture.h"
-#include "c_log.h"
-#include "s_gnu.h"
 
+#include <windows.h>
+#include <gl/gl.h>
+#include <fstream.h>
+
+/*
+	MS3D STRUCTURES
+*/
 #ifdef _MSC_VER							// byte-align structures
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
@@ -23,6 +23,7 @@
 #	error you must byte-align these structures with the appropriate compiler directives
 #endif
 
+typedef unsigned char byte;
 typedef unsigned short word;
 
 struct MS3DHeader						// File Header
@@ -63,6 +64,15 @@ struct MS3DMaterial						// Material info
     char m_alphamap[128];
 } PACK_STRUCT;
 
+#ifdef _MSC_VER							// Default alignment
+#	pragma pack( pop, packing )
+#endif
+
+#undef PACK_STRUCT
+
+
+
+
 struct Mesh								//	Mesh struct
 {
 	int m_materialIndex;
@@ -92,41 +102,44 @@ struct Vertex							//	Vertex struct
 };
 
 
-class CGLModel {
-public:
-    CGLModel();
-    CGLModel(CLog *pInLog);
-    ~CGLModel();
-    char        name[1024];
 
-    bool        bMadeLog;
-    CLog*       pLog;
+//////////////////////////////////////
+//The Model Class
+//////////////////////////////////////
+class Model
+{
+	public:
 
-    CGLModel*   pNext;
-    CGLModel*   pPrev;
-    CGAF*       pGAF;
+		Model();
 
-    int m_numMeshes;
-    Mesh *m_pMeshes;
+		virtual ~Model();
 
-    int m_numMaterials;
-    Material *m_pMaterials;
+		bool loadModelData( const char *filename );
 
-    int m_numTriangles;
-    Triangle *m_pTriangles;
+		void draw();
 
-    int m_numVertices;
-    Vertex *m_pVertices;
+		void reloadTextures();
 
-    bool Load(char *filename);
-    bool Load(char *filename,char *texture);
-    bool Draw(void);
-    void reloadTextures();
-    bool RenderSceneDraw(void);
-    void Locate(float nx, float ny, float nz);
-    void Rotate(float nx, float ny, float nz);
-    void Scale(float nx,float ny,float nz);
-    void Color(float nr,float ng,float nb);
+	protected:
+
+		int m_numMeshes;
+		Mesh *m_pMeshes;
+
+		int m_numMaterials;
+		Material *m_pMaterials;
+
+		int m_numTriangles;
+		Triangle *m_pTriangles;
+
+		int m_numVertices;
+		Vertex *m_pVertices;
 };
 
+
+
 #endif
+
+
+//Ronny André Reierstad
+//www.morrowland.com
+//apron@morrowland.com
