@@ -534,6 +534,7 @@ bool C_GFX::LoadModels(void) {
     char szModelFilename[1024];
     memset(szModelFilename,0,1024);
     CGLModel *pModel;
+    CGLModel *pDELModel;
     DIR *dpdf;
     struct dirent *epdf;
     dpdf = opendir("models");
@@ -542,7 +543,7 @@ bool C_GFX::LoadModels(void) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-                if(sp_isdir(va("models/%s",epdf->d_name))) {
+                if(!sp_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
                     pModel=pFirstModel;
                     if(pModel) {
@@ -556,8 +557,27 @@ bool C_GFX::LoadModels(void) {
                         pFirstModel=new CGLModel;
                         pModel=pFirstModel;
                     }
-                    pModel->Load(szModelFilename);
-                    pLog->AddEntry("Found model: %s (%d)\n",szModelFilename,pModel);
+                    if(!pModel->Load(szModelFilename)) {
+
+                        if(pModel==pFirstModel) {
+                            DEL(pModel);
+                            DEL(pFirstModel);
+                        }
+                        else {
+                            pDELModel=pFirstModel;
+                            while(pDELModel) {
+                                if(pDELModel->pNext==pModel)
+                                    pDELModel->pNext=pDELModel->pNext->pNext;
+                                pDELModel=pDELModel->pNext;
+                            }
+                            DEL(pModel);
+                        }
+                        pLog->AddEntry("Model load error %s\n",szModelFilename);
+
+                    }
+                    else {
+                        pLog->AddEntry("Found model: %s (%d)\n",pModel->name,pModel);
+                    }
                 }
             }
         }
