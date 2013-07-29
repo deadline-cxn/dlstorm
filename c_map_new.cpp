@@ -46,11 +46,11 @@ void CMesh::Initialize(void) {
     m_pTexCoords = NULL;
     m_nVertexCount = 0;
 
-    x=128;
-    y=128;
+    x=528;
+    y=528;
 
     pOffset.x=0;
-    pOffset.y=0;
+    pOffset.y=-0.5f;
     pOffset.z=0;
 
     m_nVertexCount = (int) (x*y)*6;

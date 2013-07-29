@@ -566,6 +566,30 @@ CGLModel *C_GFX::GetModel(char *name) {
     }
     return false;
 }
+int C_GFX::GetTotalModels(void) {
+    int n=0;
+    CGLModel* pModel;
+    pModel=pFirstModel;
+    while(pModel) {
+        n++;
+        pModel=pModel->pNext;
+    }
+    return n;
+}
+CGLModel* C_GFX::GetRandomModel(void) {
+    int n=GetTotalModels();
+    int x=0;
+    int r=(rand()%n)+1;
+    CGLModel* pModel;
+    pModel=pFirstModel;
+    while(pModel) {
+        x++;
+        if(x>n) return pModel;
+        if(x==r) return pModel;
+        pModel=pModel->pNext;
+    }
+    return 0;
+}
 bool C_GFX::DestroyModels(void) {
     pLog->_DebugAdd("Begin Models destroy...");
     CGLModel* pModel;
@@ -1083,7 +1107,39 @@ void C_GFX::InitializeEntities(void) {
         pNTT->color.b = (((float)rand()/(float)RAND_MAX)*5)+1;
         pNTT->type  = ENTITY_STATIC;
         pNTT->pTexture=GetRandomTexture();
+
         if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
+
+        if( (rand()%100)> 50 ) {
+
+                pNTT->pModel=GetRandomModel();
+
+                pLog->_Add(" Entity :%s",pNTT->pModel->name);
+
+
+                if(!dlcs_strcasecmp("models/3ds file.3DS",pNTT->pModel->name)) {
+                    pNTT->pTexture=GetTexture("base/tile00003.png");
+
+                }
+
+
+                //pNTT->loc.x = 0.0f;
+                pNTT->loc.y = 0.0f;
+                //pNTT->loc.z = 0.0f;
+
+                pNTT->scale.x = 0.3f;
+                pNTT->scale.y = 0.3f;
+                pNTT->scale.z = 0.3f;
+
+                pNTT->rot.x = 270.0f;
+                pNTT->rot.y = 0.0f;
+                pNTT->rot.z = 0.0f;
+
+                pNTT->autorot.x = 0.0f;
+                pNTT->autorot.y = 0.0f;
+                pNTT->autorot.z = 0.0f;
+
+        }
     }
     DEL(pNTT);
 }

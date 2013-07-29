@@ -190,11 +190,6 @@ bool   CGLTexture::Loaded(void) {
 
 extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 
-GLuint png_texture_load(const char * file_name, int * width, int * height) {
-
-
-}
-
 /****************************************************************************************************/
 GLuint CGLTexture::LoadPNG(const char *filename) {
 

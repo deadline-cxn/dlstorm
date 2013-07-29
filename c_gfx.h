@@ -135,6 +135,8 @@ public:
     // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
     CGLModel*   GetModel(char* name);
+    CGLModel*   GetRandomModel(void);
+    int         GetTotalModels(void);
     bool        DestroyModels(void);
     // 2D Draw Functions
     void        DrawVertice(int x, int y);

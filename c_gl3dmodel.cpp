@@ -28,7 +28,9 @@ CGLModel::~CGLModel() {
     if(bMadeLog) DEL(pLog);
 }
 bool CGLModel::Load(char* filename) {
+
     strcpy(name,filename);
+
     const aiScene *scene = aiImportFile(filename,aiProcessPreset_TargetRealtime_MaxQuality);
     // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
 
