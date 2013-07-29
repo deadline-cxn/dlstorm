@@ -887,7 +887,7 @@ void C_GFX::DrawCube() {
     glEnd();
 }
 void C_GFX::DrawSkyBox(void) {
-
+    return;
 
     glPushMatrix();
     gluLookAt(0,0,0,pCamera->loc.x, pCamera->loc.y, pCamera->loc.z,0,1,0);
