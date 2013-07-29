@@ -77,7 +77,7 @@ bool CGLModel::Draw(void) {
     glVertexPointer(3,GL_FLOAT,0,vertexArray);
     glNormalPointer(GL_FLOAT,0,normalArray);
 
-    glClientActiveTexture(GL_TEXTURE0_ARB);
+//     glClientActiveTexture(GL_TEXTURE0_ARB);
     glTexCoordPointer(2,GL_FLOAT,0,uvArray);
 
     glDrawArrays(GL_TRIANGLES,0,numTriangles);

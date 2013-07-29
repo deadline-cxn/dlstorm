@@ -97,8 +97,10 @@ void normalize(GLfloat *a) {
     a[1]/=d;
     a[2]/=d;
 }
+//////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
+//////////////////////////////////////////////////////////////// C_Camera FUNCTIONS
 void C_Camera::Initialize() {
     pFollowEntity=0;
     bounce=0.0f;
@@ -199,7 +201,7 @@ void C_Camera::mouseMovement(int x, int y) {
     if(rot.x > 60.0f)  rot.x=60.0f;
     if(rot.y < -5000.0f) rot.y=0.0f;
 }
-// C_GFX::C_GFX() { pCamera = 0; VideoFlags=0; }
+//////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
     pDefaultTexture=0;
     pFirstTexture=0;
@@ -213,11 +215,13 @@ C_GFX::~C_GFX() {
     ShutDownGFX();
     SDL_Quit();
 }
+//////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
 bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
 #ifdef __linux__
     putenv("SDL_VIDEODRIVER=dga");
 #endif
     pLog=pUSELOG;
+    bCreatedLog=false;
     pGAF=pUSEGAF;
     bFullScreen =FullScreen;
     ScreenWidth =w;
@@ -318,22 +322,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
     if(!LoadModels()) return false;
 
-/*
-    pFirstMapModelList = new C_MapModelList;
-    pFirstMapModelList->pMapModel=pFirstMapModel;
-    pFirstMapModelList->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
-    pFirstMapModelList->rot.y = (float)rand()/((float)RAND_MAX/360.0f);
-    pFirstMapModelList->rot.z = (float)rand()/((float)RAND_MAX/360.0f);
-    pFirstMapModelList->pNext = new C_MapModelList;
-
-    pFirstMapModelList->pNext->pMapModel=pFirstMapModel;
-    pFirstMapModelList->pNext->loc.x = (float)rand()/((float)RAND_MAX/60.0f);
-    pFirstMapModelList->pNext->loc.y = (float)rand()/((float)RAND_MAX/60.0f);
-    pFirstMapModelList->pNext->loc.z = (float)rand()/((float)RAND_MAX/60.0f);
-    pFirstMapModelList->pNext->rot.x = (float)rand()/((float)RAND_MAX/360.0f);
-    pFirstMapModelList->pNext->rot.y = (float)rand()/((float)RAND_MAX/360.0f);
-    pFirstMapModelList->pNext->rot.z = (float)rand()/((float)RAND_MAX/360.0f);
-*/
+    InitializeEntities();
 
     pLog->_Add("GFX Initialized");
     return true;
@@ -358,13 +347,23 @@ void C_GFX::ToggleFullScreen(void) {
     	InitGL();	*/
 }
 void C_GFX::ShutDownGFX(void) {
-    pLog->_DebugAdd("Shutting down SDL/OpenGL GFX subsystem...");
+    pLog->_Add("Shutting down SDL/OpenGL GFX subsystem...");
+    C_Entity* pNTT;
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        pFirstNTT=pNTT;
+        pNTT=pNTT->pNext;
+        DEL(pFirstNTT);
+    }
+    pLog->_Add("Entities shut down...");
     DEL(pCamera);
+    pLog->_Add("Camera shut down...");
     DEL(pMap);
-
+    pLog->_Add("Map shut down...");
     DestroyTextures();
-    DEL(pDefaultTexture);
+    pLog->_Add("Textures shut down...");
     DestroyModels();
+    pLog->_Add("Models shut down...");
     glFinish();
     glFlush();
     SDL_FreeSurface(pScreen);
@@ -392,59 +391,14 @@ void C_GFX::BeginScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(pCamera) pCamera->Update();
 }
-void C_GFX::StarField(int iDir) {
-    struct stra {
-        float x;
-        float y;
-        float speed;
-        char gfx[1024];
-    };
-    static stra star[500];
-    static bool bstars;
-    static float ffy;
-    static float fff;
-    static float dir=-.405f;
-    int y;
-    // glClearColor( (0.2f),(0.4f),(1.0f),0);    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // DrawBaseGFX(0,0,SDL_GetVideoSurface()->w,SDL_GetVideoSurface()->h,"base/b0121.png",155,155,155);
-    if(!bstars){
-        for(y=0;y<500;y++)  {
-            star[y].x=(rand()%
-                       SDL_GetVideoSurface()->w
-                       -100);
-            star[y].y= rand()%
-            SDL_GetVideoSurface()->h;//            -150;
-            star[y].speed=(rand()%24)*0.48f+1.3f;
-            strcpy(star[y].gfx,"base/star1.png");
-            if((rand()%100)>50)
-                strcpy(star[y].gfx,"base/star2.png");
-        }
-        bstars=1;
-    }
-    fff+=dir;
-    if(fff>34)  dir =(-0.405f);
-    if(fff<-34) dir =( 0.405f);
-    for(y=0;y<500;y++){
-        DrawTexture( (int)(star[y].x),
-                     (int)(600-star[y].y-30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
-                     (int)(star[y].x+2+star[y].speed ),
-                     (int)(600-star[y].y+1+star[y].speed -30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
-                     star[y].gfx,
-                     255,255,255);
-                     //                                          GetFade(3),                     GetFade(2),                     GetFade(1) );
-        star[y].x+=star[y].speed;
-        if(star[y].x > SDL_GetVideoSurface()->w) star[y].x=0;//-(50*star[y].speed);
-    }
-    //y=GetFade(2);
-    //ffy -= 3.4;    if(ffy<(-100)) ffy=SDL_GetVideoSurface()->w+100;
-
-}
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs) {
     //ShutDownGFX();
     //InitializeGFX(x,y,cl,fs,WindowCaption,pLog,pGAF);
 }
-bool C_GFX::LoadTextures(CGAF *pGAF) { // Load in GFX Base
+//////////////////////////////////////////////////////////////// TEXTURES
+bool C_GFX::LoadTextures(CGAF *pGAF) {
     CGLTexture *pTexture;
+    CGLTexture *pDELTexture;
     DIR *dpdf;
     struct dirent *epdf;
     dpdf = opendir("base");
@@ -457,23 +411,36 @@ bool C_GFX::LoadTextures(CGAF *pGAF) { // Load in GFX Base
 
                 } else {
                     if (strcmp (".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
-                        // pLog->AddEntry("Found base texture: base/%s\n",epdf->d_name);
                         pTexture=pFirstTexture;
                         if(pTexture) {
                             while(pTexture->pNext) {
                                 pTexture=pTexture->pNext;
                             }
-                            pTexture->pNext=new CGLTexture;
+                            pTexture->pNext=new CGLTexture(pLog);
                             pTexture=pTexture->pNext;
                         }
                         else {
-                            pFirstTexture=new CGLTexture;
+                            pFirstTexture=new CGLTexture(pLog);
                             pTexture=pFirstTexture;
                         }
                         pTexture->LoadPNG(va("base/%s",epdf->d_name));
                         if(!pTexture->bmap) {
                             pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
-                            DEL(pTexture);
+                            pDELTexture=pFirstTexture;
+                            if(pTexture==pDELTexture) {
+                                DEL(pTexture);
+                                DEL(pFirstTexture);
+                            }
+                            else {
+                                pDELTexture=pFirstTexture;
+                                while(pDELTexture) {
+                                    if(pDELTexture==pTexture) {
+                                        pDELTexture->pNext=pDELTexture->pNext->pNext;
+                                        DEL(pTexture);
+                                    }
+                                    pDELTexture=pDELTexture->pNext;
+                                }
+                            }
                         }
                         else {
                             pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
@@ -521,14 +488,19 @@ CGLTexture* C_GFX::GetRandomTexture(void) {
     return 0;
 }
 bool C_GFX::DestroyTextures(void) {
-    CGLTexture * pTexture;
+    // pLog->_Add("Destroying textures");
+    CGLTexture* pTexture;
+    CGLTexture* pDELTexture;
     pTexture=pFirstTexture;
     while(pTexture) {
-        pFirstTexture=pTexture;
+        pDELTexture=pTexture;
+        // pLog->_Add("Destroying texture :%s",pTexture->tfilename);
         pTexture=pTexture->pNext;
-        DEL(pFirstTexture);
+        DEL(pDELTexture);
     }
+    return true;
 }
+//////////////////////////////////////////////////////////////// MODELS
 bool C_GFX::LoadModels(void) {
     pLog->AddEntry("Loading models...\n");
     char szModelFilename[1024];
@@ -583,49 +555,7 @@ bool C_GFX::LoadModels(void) {
         }
     }
     closedir(dpdf);
-
-/*  memset(szModelFilename,0,1024);
-    C_MapModel *pMapModel;
-    dpdf = opendir("map");
-    if (dpdf != NULL) {
-        while (epdf = readdir(dpdf)) {
-            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
-                    (dlcs_strcasecmp(epdf->d_name,"..")) ) {
-            } else {
-                if (strcmp (".fmo", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
-                    strcpy(szModelFilename,va("map/%s",epdf->d_name));
-                    pMapModel=pFirstMapModel;
-                    if(pMapModel) {
-                        while(pMapModel->pNext) pMapModel=pMapModel->pNext;
-                        pMapModel->pNext=new C_MapModel();
-                        pMapModel=pMapModel->pNext;
-                    }
-                    else {
-                        pFirstMapModel=new C_MapModel();
-                        pMapModel=pFirstMapModel;
-                    }
-                    if(pMapModel) {
-                        pMapModel->Load(szModelFilename);
-                        pLog->AddEntry("Map model: %s\n",szModelFilename);
-                    }
-                }
-            }
-        }
-    }
-    closedir(dpdf);    */
     return true;
-}
-void C_GFX::DrawModels(void) {
-/*  C_MapModelList* pMML;
-    pMML=pFirstMapModelList;
-    while(pMML) {
-        glLoadIdentity();
-        pCamera->Go();
-        if(GetTexture(pMML->pMapModel->texture))
-            glBindTexture(GL_TEXTURE_2D,GetTexture(pMML->pMapModel->texture)->bmap);
-        pMML->Draw();
-        pMML=pMML->pNext;
-    } */
 }
 CGLModel *C_GFX::GetModel(char *name) {
     CGLModel* pModel=pFirstModel;
@@ -645,77 +575,24 @@ bool C_GFX::DestroyModels(void) {
         pModel=pModel->pNext;
         DEL(pFirstModel);
     }
-/*
-    C_MapModel* pMapModel;
-    pMapModel=pFirstMapModel;
-    while(pMapModel) {
-        pFirstMapModel=pMapModel;
-        pMapModel=pMapModel->pNext;
-        DEL(pFirstMapModel);
-    }
-    */
     pLog->_DebugAdd("Models destroyed...");
     return true;
 }
-void C_GFX::RenderScene(void) { // Render the game scene Frame
+//////////////////////////////////////////////////////////////// RENDER SCENE
+void C_GFX::RenderScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-/*  glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-    glDisable (GL_BLEND);
-    glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
-    glClearDepth(1.0f);									// Depth Buffer Setup
-    glEnable(GL_TEXTURE_2D);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
-    */
-/*  GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
-    GLfloat density = 0.02; //set the density to 0.3 which isacctually quite thick
-    glEnable (GL_FOG);              //enable this for fog
-    glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
-    glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
-    glFogf (GL_FOG_DENSITY, density); //set the density to the value above
-    glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
-    glFogf (GL_FOG_START, 10.0f);
-    glFogf (GL_FOG_END, 680.0f);   // Enable Pointers
-    //glFogi (GL_FOG_MODE, GL_LINEAR);
-*/
-    DrawSkyBox();
+
+    DrawFog();
+    DrawSkyBox(); // TODO: Fix Skybox
+
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();											// Reset The Modelview Matrix
+    glLoadIdentity ();
     if(pCamera) pCamera->Go();
     pMap->Draw();
-    DrawModels();
-}
-void C_GFX::DrawSun(void) {
-    static float der;
-    static float zpos;
-    static float ypos;
-    float skycolor_r;
-    float skycolor_g;
-    float skycolor_b;
-    der+=.0002;
-    ypos = sin(der) * 1550;
-    zpos = cos(der) * 1550;
-    skycolor_r=((ypos+300)/1549);
-    skycolor_g=((ypos+300)/1549);
-    skycolor_b=((ypos+300)/1549);
-    if(skycolor_r > 0.4f) skycolor_r=0.4f;
-    if(skycolor_r < 0.0f) skycolor_r=0.0f;
-    if(skycolor_g > 0.2f) skycolor_g=0.2f;
-    if(skycolor_g < 0.0f) skycolor_g=0.0f;
-    if(skycolor_b > 1.0f) skycolor_b=1.0f;
-    if(skycolor_b < 0.0f) skycolor_b=0.0f;
-    glClearColor( skycolor_r , skycolor_g, skycolor_b ,0);
+    DrawEntities();
 
-    glLoadIdentity();
-    pCamera->Go();
-    glTranslatef(0.0f,ypos,zpos);
-    CGLTexture *pTexture=0;
-    pTexture=GetTexture("base/sun.png");
-    if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
-    glDisable(GL_BLEND);
-    DrawSphere(3,160.0f,1.0f,1.0f,1.0f);
 }
+//////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
 void C_GFX::DrawRect(RECT rc, long color) {
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
 }
@@ -820,57 +697,6 @@ void C_GFX::DrawTexture(int x,int y,int x2,int y2,char * name,u_char r,u_char g,
     if(pTexture)
         pTexture->Draw2d(x,y,x2,y2,r,g,b);
 }
-u_char C_GFX::GetFade(char cWhichFade) {
-    static u_char  cFader1=0;
-    static unsigned long dwFadeTimer1=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime1=400;
-    static char  cFadeDir1=1;
-    static u_char  cFader2=0;
-    static unsigned long dwFadeTimer2=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime2=300;
-    static char  cFadeDir2=1;
-    static u_char  cFader3=0;
-    static unsigned long dwFadeTimer3=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime3=100;
-    static char  cFadeDir3=1;
-
-    static unsigned long dwFadeTimer4=dlcs_get_tickcount();
-    static unsigned long dwFadeChangeTime4=100;
-    static u_char  cFader4=0;
-
-    if(dlcs_get_tickcount()-dwFadeTimer1 > dwFadeChangeTime1) {
-        dwFadeTimer1=dlcs_get_tickcount();
-        if(cFader1==255)
-            cFadeDir1=-1;
-        if(cFader1==0)
-            cFadeDir1=1;
-        cFader1+=cFadeDir1;
-    }
-    if(dlcs_get_tickcount()-dwFadeTimer2 > dwFadeChangeTime2) {
-        dwFadeTimer2=dlcs_get_tickcount();
-        if(cFader2==255)
-            cFadeDir2=-1;
-        if(cFader2==0)
-            cFadeDir2=1;
-        cFader2+=cFadeDir2;
-    }
-    if(dlcs_get_tickcount()-dwFadeTimer3 > dwFadeChangeTime3) {
-        dwFadeTimer3=dlcs_get_tickcount();
-        if(cFader3>=252)
-            cFadeDir3=-3;
-        if(cFader3<=3)
-            cFadeDir3=3;
-        cFader3+=cFadeDir3;
-    }
-    if(dlcs_get_tickcount()-dwFadeTimer4 > dwFadeChangeTime4) {
-        cFader4++;
-    }
-    if(cWhichFade==1) return cFader1;
-    if(cWhichFade==2) return cFader2;
-    if(cWhichFade==3) return cFader3;
-    if(cWhichFade==4) return cFader4;
-    return 0;
-}
 void C_GFX::Draw3DBox(int x, int y, int x2, int y2) {
     RECT r;
     r.left=x;
@@ -900,6 +726,49 @@ void C_GFX::Draw3DBox(RECT rect) {
               rect.top+rect.bottom-2,
               LONGRGB(180,180,180),
               LONGRGB(180,180,180));
+}
+//////////////////////////////////////////////////////////////// MISC 3D DRAW FUNCTIONS
+void C_GFX::DrawFog(void) {
+    /*  GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+    GLfloat density = 0.02; //set the density to 0.3 which isacctually quite thick
+    glEnable (GL_FOG);              //enable this for fog
+    glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
+    glFogfv (GL_FOG_COLOR, fogColor); //set the fog color to our color chosen above
+    glFogf (GL_FOG_DENSITY, density); //set the density to the value above
+    glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
+    glFogf (GL_FOG_START, 10.0f);
+    glFogf (GL_FOG_END, 680.0f);   // Enable Pointers
+    //glFogi (GL_FOG_MODE, GL_LINEAR); */
+}
+void C_GFX::DrawSun(void) {
+    static float der;
+    static float zpos;
+    static float ypos;
+    float skycolor_r;
+    float skycolor_g;
+    float skycolor_b;
+    der+=.0002;
+    ypos = sin(der) * 1550;
+    zpos = cos(der) * 1550;
+    skycolor_r=((ypos+300)/1549);
+    skycolor_g=((ypos+300)/1549);
+    skycolor_b=((ypos+300)/1549);
+    if(skycolor_r > 0.4f) skycolor_r=0.4f;
+    if(skycolor_r < 0.0f) skycolor_r=0.0f;
+    if(skycolor_g > 0.2f) skycolor_g=0.2f;
+    if(skycolor_g < 0.0f) skycolor_g=0.0f;
+    if(skycolor_b > 1.0f) skycolor_b=1.0f;
+    if(skycolor_b < 0.0f) skycolor_b=0.0f;
+    glClearColor( skycolor_r , skycolor_g, skycolor_b ,0);
+
+    glLoadIdentity();
+    pCamera->Go();
+    glTranslatef(0.0f,ypos,zpos);
+    CGLTexture *pTexture=0;
+    pTexture=GetTexture("base/sun.png");
+    if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+    glDisable(GL_BLEND);
+    DrawSphere(3,160.0f,1.0f,1.0f,1.0f);
 }
 void C_GFX::DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb) {
     if (div<=0) {
@@ -1073,5 +942,158 @@ void C_GFX::DrawSkyBox(void) {
     //glPopAttrib();
     glPopMatrix();
 }
+void C_GFX::DrawStarField(int iDir) {
+    struct stra {
+        float x;
+        float y;
+        float speed;
+        char gfx[1024];
+    };
+    static stra star[500];
+    static bool bstars;
+    static float ffy;
+    static float fff;
+    static float dir=-.405f;
+    int y;
+    // glClearColor( (0.2f),(0.4f),(1.0f),0);    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // DrawBaseGFX(0,0,SDL_GetVideoSurface()->w,SDL_GetVideoSurface()->h,"base/b0121.png",155,155,155);
+    if(!bstars){
+        for(y=0;y<500;y++)  {
+            star[y].x=(rand()%
+                       SDL_GetVideoSurface()->w
+                       -100);
+            star[y].y= rand()%
+            SDL_GetVideoSurface()->h;//            -150;
+            star[y].speed=(rand()%24)*0.48f+1.3f;
+            strcpy(star[y].gfx,"base/star1.png");
+            if((rand()%100)>50)
+                strcpy(star[y].gfx,"base/star2.png");
+        }
+        bstars=1;
+    }
+    fff+=dir;
+    if(fff>34)  dir =(-0.405f);
+    if(fff<-34) dir =( 0.405f);
+    for(y=0;y<500;y++){
+        DrawTexture( (int)(star[y].x),
+                     (int)(600-star[y].y-30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
+                     (int)(star[y].x+2+star[y].speed ),
+                     (int)(600-star[y].y+1+star[y].speed -30+180*sin(fff/223)+180*cos((star[y].x-130)/380)),
+                     star[y].gfx,
+                     255,255,255);
+                     //                                          GetFade(3),                     GetFade(2),                     GetFade(1) );
+        star[y].x+=star[y].speed;
+        if(star[y].x > SDL_GetVideoSurface()->w) star[y].x=0;//-(50*star[y].speed);
+    }
+    //y=GetFade(2);
+    //ffy -= 3.4;    if(ffy<(-100)) ffy=SDL_GetVideoSurface()->w+100;
 
+}
+//////////////////////////////////////////////////////////////// OTHER GFX FUNCTIONS
+u_char C_GFX::GetFade(char cWhichFade) {
+    static u_char  cFader1=0;
+    static unsigned long dwFadeTimer1=dlcs_get_tickcount();
+    static unsigned long dwFadeChangeTime1=400;
+    static char  cFadeDir1=1;
+    static u_char  cFader2=0;
+    static unsigned long dwFadeTimer2=dlcs_get_tickcount();
+    static unsigned long dwFadeChangeTime2=300;
+    static char  cFadeDir2=1;
+    static u_char  cFader3=0;
+    static unsigned long dwFadeTimer3=dlcs_get_tickcount();
+    static unsigned long dwFadeChangeTime3=100;
+    static char  cFadeDir3=1;
 
+    static unsigned long dwFadeTimer4=dlcs_get_tickcount();
+    static unsigned long dwFadeChangeTime4=100;
+    static u_char  cFader4=0;
+
+    if(dlcs_get_tickcount()-dwFadeTimer1 > dwFadeChangeTime1) {
+        dwFadeTimer1=dlcs_get_tickcount();
+        if(cFader1==255)
+            cFadeDir1=-1;
+        if(cFader1==0)
+            cFadeDir1=1;
+        cFader1+=cFadeDir1;
+    }
+    if(dlcs_get_tickcount()-dwFadeTimer2 > dwFadeChangeTime2) {
+        dwFadeTimer2=dlcs_get_tickcount();
+        if(cFader2==255)
+            cFadeDir2=-1;
+        if(cFader2==0)
+            cFadeDir2=1;
+        cFader2+=cFadeDir2;
+    }
+    if(dlcs_get_tickcount()-dwFadeTimer3 > dwFadeChangeTime3) {
+        dwFadeTimer3=dlcs_get_tickcount();
+        if(cFader3>=252)
+            cFadeDir3=-3;
+        if(cFader3<=3)
+            cFadeDir3=3;
+        cFader3+=cFadeDir3;
+    }
+    if(dlcs_get_tickcount()-dwFadeTimer4 > dwFadeChangeTime4) {
+        cFader4++;
+    }
+    if(cWhichFade==1) return cFader1;
+    if(cWhichFade==2) return cFader2;
+    if(cWhichFade==3) return cFader3;
+    if(cWhichFade==4) return cFader4;
+    return 0;
+}
+//////////////////////////////////////////////////////////////// ENTITY FUNCTIONS
+void C_GFX::InitializeEntities(void) {
+    C_Entity* pNTT;
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        pFirstNTT=pNTT;
+        pNTT=pNTT->pNext;
+        DEL(pFirstNTT);
+    }
+    int i,numntt;
+    numntt=200;
+    for(i=0; i<numntt; i++) {
+        pNTT=pFirstNTT;
+        if(!pNTT) {
+            pFirstNTT=new C_Entity(pLog,pGAF,this,0);
+            pNTT=pFirstNTT;
+        }
+        else {
+            while(pNTT->pNext) {
+                pNTT=pNTT->pNext;
+            }
+            pNTT->pNext=new C_Entity(pLog,pGAF,this,0);
+            pNTT=pNTT->pNext;
+        }
+        strcpy(pNTT->name,va("Entity %d",i));
+        pNTT->loc.x = ( (float)rand()/(float)RAND_MAX)*550;
+        pNTT->loc.y = (((float)rand()/(float)RAND_MAX)*550)+20;
+        pNTT->loc.z = ( (float)rand()/(float)RAND_MAX)*550;
+        pNTT->rot.x = ( (float)rand()/(float)RAND_MAX)*360;
+        pNTT->rot.y = ( (float)rand()/(float)RAND_MAX)*360;
+        pNTT->rot.z = ( (float)rand()/(float)RAND_MAX)*360;
+        pNTT->autorot.x = ( (float)rand()/(float)RAND_MAX)*1.5f;
+        pNTT->autorot.y = ( (float)rand()/(float)RAND_MAX)*1.5f;
+        pNTT->autorot.z = ( (float)rand()/(float)RAND_MAX)*1.5f;
+        pNTT->scale.x = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+        pNTT->scale.y = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+        pNTT->scale.z = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+        pNTT->color.r = (((float)rand()/(float)RAND_MAX)*5)+1;
+        pNTT->color.g = (((float)rand()/(float)RAND_MAX)*5)+1;
+        pNTT->color.b = (((float)rand()/(float)RAND_MAX)*5)+1;
+        pNTT->type  = ENTITY_STATIC;
+        pNTT->pTexture=GetRandomTexture();
+        if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
+    }
+    DEL(pNTT);
+}
+void C_GFX::DrawEntities(void) {
+    C_Entity* pNTT;
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        glLoadIdentity();
+        pCamera->Go();
+        pNTT->Draw();
+        pNTT=pNTT->pNext;
+    }
+}

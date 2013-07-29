@@ -10,11 +10,14 @@
 #include "SDL.h"
 
 CGLTexture::CGLTexture() {
+    pNext=0;
     Initialize();
 }
 
 CGLTexture::CGLTexture(CLog *pInLog) {
+    pNext=0;
     Initialize();
+    bMadeLog=false;
     pLog=pInLog;
 }
 
@@ -25,6 +28,7 @@ CGLTexture::CGLTexture(CGAF *pGAF,char *fname) {
 
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname) {
     Initialize();
+    bMadeLog=false;
     pLog=pInLog;
     LoadBMP(pGAF,fname,0);
 }
@@ -37,6 +41,7 @@ CGLTexture::CGLTexture(CGAF *pGAF,char *fname, bool fmask) {
 
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
+    bMadeLog=false;
     pLog=pInLog;
     usemask=fmask;
     LoadBMP(pGAF,fname,0);
@@ -51,7 +56,7 @@ CGLTexture::~CGLTexture() {
 
 void CGLTexture::Initialize() {
     pLog=0;
-    bMadeLog=0;
+    bMadeLog=true;
     pNext=0;
     bmap=0;
     mask=0;

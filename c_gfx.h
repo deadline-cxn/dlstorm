@@ -91,6 +91,27 @@ class C_GFX {
 public:
     C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
     ~C_GFX();
+
+    // GFX Class Members
+    SDL_Surface* pScreen;
+    int         VideoFlags;
+    bool        bFullScreen;
+    int         ScreenWidth;
+    int         ScreenHeight;
+    int         ScreenColors;
+
+    C_Camera*   pCamera;
+    bool        bCreatedLog;
+    CLog*       pLog;
+    CGAF*       pGAF;
+    CGLTexture* pDefaultTexture; // default texture storage
+    CGLTexture* pFirstTexture; // texture storage
+    CGLModel*   pFirstModel; // model storage
+    CMesh*      pMap;
+    C_Entity*   pFirstNTT;      // Entities
+    C_Entity*   pFirstMapNTT;   // Map Entities
+
+    char        WindowCaption[1024];
     // GFX System level functions
     int         InitGL(void);
     void        BeginScene(void);
@@ -113,7 +134,6 @@ public:
     bool        DestroyTextures(void);
     // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
-    void        DrawModels(void);
     CGLModel*   GetModel(char* name);
     bool        DestroyModels(void);
     // 2D Draw Functions
@@ -126,35 +146,21 @@ public:
     void        DrawRect(int iX,int iY,int iX2,int iY2,long color);
     void        DrawRectangle(int iX,int iY,int iX2,int iY2,long color);
     void        DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2);
-    void        StarField(int iDir);
     void        Draw3DBox(RECT rect);
     void        Draw3DBox(int x, int y, int x2, int y2);
     // 3D Draw Functions
+    void        DrawFog(void);
     void        DrawSun(void);
     void        DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb);
     void        DrawSphere(int ndiv, float radius, float cr,float cg,float cb);
     void        DrawCube(void);
     void        DrawSkyBox(void);
+    void        DrawStarField(int iDir);
     // Miscellaneous GFX Functions
     u_char      GetFade(char cWhichFade);
-    // GFX Class Members
-    SDL_Surface* pScreen;
-    int         VideoFlags;
-    bool        bFullScreen;
-    int         ScreenWidth;
-    int         ScreenHeight;
-    int         ScreenColors;
-    C_Camera*   pCamera;
-    CLog*       pLog;
-    CGAF*       pGAF;
-    CGLTexture* pDefaultTexture; // default texture storage
-    CGLTexture* pFirstTexture; // texture storage
-    CGLModel*   pFirstModel; // model storage
-    CMesh*      pMap;
-    C_Entity*   pFirstNTT;      // Entities
-    C_Entity*   pFirstMapNTT;   // Map Entities
-
-    char        WindowCaption[1024];
+    // Entity Functions
+    void        InitializeEntities(void);
+    void        DrawEntities(void);
 };
 
 #endif
