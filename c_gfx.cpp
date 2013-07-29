@@ -318,7 +318,8 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 
     pMap->pOffset.x=5.0f;
     pMap->pOffset.z=15.0f;
-    pMap->pTexture=pDefaultTexture;
+    pMap->pTexture=GetTexture("base/grass1.png");
+    // pDefaultTexture;
 
     if(!LoadModels()) return false;
 
@@ -1116,10 +1117,12 @@ void C_GFX::InitializeEntities(void) {
 
                 pLog->_Add(" Entity :%s",pNTT->pModel->name);
 
+                if(dlcs_strcasecmp("models/testhouse.ms3d",pNTT->pModel->name)) {
+                                    pNTT->pTexture=GetTexture("base/tile00003.png");
+                }
 
-                if(!dlcs_strcasecmp("models/3ds file.3DS",pNTT->pModel->name)) {
-                    pNTT->pTexture=GetTexture("base/tile00003.png");
-
+                if(dlcs_strcasecmp("models/testhouse2.ms3d",pNTT->pModel->name)) {
+                                    pNTT->pTexture=GetTexture("base/tile00003.png");
                 }
 
 
@@ -1131,12 +1134,12 @@ void C_GFX::InitializeEntities(void) {
                 pNTT->scale.y = 0.3f;
                 pNTT->scale.z = 0.3f;
 
-                pNTT->rot.x = 270.0f;
+                pNTT->rot.x = 0.0f;
                 pNTT->rot.y = 0.0f;
                 pNTT->rot.z = 0.0f;
 
                 pNTT->autorot.x = 0.0f;
-                pNTT->autorot.y = 0.0f;
+                // pNTT->autorot.y = 0.0f;
                 pNTT->autorot.z = 0.0f;
 
         }
@@ -1149,6 +1152,9 @@ void C_GFX::DrawEntities(void) {
     while(pNTT) {
         glLoadIdentity();
         pCamera->Go();
+        if(pNTT->pTexture)
+            if(pNTT->pTexture->bmap)
+                glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
         pNTT->Draw();
         pNTT=pNTT->pNext;
     }
