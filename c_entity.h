@@ -55,7 +55,6 @@ enum tEntityType { // Basic entity types
     ENTITY_LIGHT,
     ENTITY_SOUND,
     ENTITY_AURA,
-
 };
 
 enum tEntityEvent { // Interaction events
@@ -92,8 +91,13 @@ public:
     C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX);
     C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel);
     ~C_Entity();
+
+    // Basic info
     char        name[1024];
     int         type;
+    bool        hidden;
+
+    // Attributes
     int         life_points;
     int         mana_points;
     int         power_points;
@@ -104,26 +108,36 @@ public:
     int         at_wis;
     int         at_agi;
     int         at_con;
+
     C_Entity    *pParent;
     C_Entity    *pNext;
     C_Entity    *pPrev;
     C_Entity    *pTargetEntity;
 
-    CVector3    loc;       // position of the entity
-    CVector3    rot;       // rotation of the entity
-    CVector3    autorot;   // will continuously rotate based on this setting
-    CVector3    scale;     // vector for the scale matrix
-    CVector3    dir;       // direction vector (which way the entity is facing)
-    CColor3     color;     // color of the entity;
-    GLfloat     Transparency; // use this for fading in and out, and for ghost/window effects
+    // OpenGL Stuff
+    CVector3    loc;        // position of the entity
+    CVector3    rot;        // rotation of the entity
+    CVector3    autorot;    // will continuously rotate based on this setting
+    CVector3    scale;      // vector for the scale matrix
+    CVector3    dir;        // direction vector (which way the entity is facing)
+    CColor3     color;      // color of the entity;
+    GLfloat     trans;      // use this for fading in and out, and for ghost/window effects
+    GLint       glname;     // for picking
+    CGLModel*   pModel;             // pointer to model data to use
+    int         iModelAnim;         // The current index into pAnimations list (NEW)
+    int         iModelAnimFrame;    // The current frame of the current animation (NEW)
+    CGLTexture* pTexture;           // use this texture for rendering (overrides pModel texture)
 
+    // Movement
     CWayPoint*  pFirstWayPoint;
 
-    CGLModel*   pModel;          // pointer to model data to use
-    int         iModelAnim;    // The current index into pAnimations list (NEW)
-    int         iModelAnimFrame;   // The current frame of the current animation (NEW)
-    CGLTexture* pTexture;   // use this texture for rendering (overrides pModel texture)
+    // Sound
+    char        soundname[1024];    // sound filename
+    float       sounddistance;      // how far away the sound can be heard
+    bool        soundloop;
+    float       soundvolume;
 
+    bool        bMadeLog;
     CLog*       pLog; // pointer to log
     CGAF*       pGAF; // pointer to GAF
     C_GFX*      pGFX; // pointer to GFX

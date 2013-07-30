@@ -3404,6 +3404,7 @@ int  C_GUI::doInput() {
 }
 
 int  C_GUI::processKeyboard() {
+
     char temp[1024];
     memset(temp,0,1024);
     SDL_Event event;

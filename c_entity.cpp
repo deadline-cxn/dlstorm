@@ -14,21 +14,26 @@ C_Entity::C_Entity() {
 }
 C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX) {
     Initialize();
+    bMadeLog=false;
     pLog=pInLog;
     pGAF=pInGAF;
     pGFX=pInGFX;
 }
 C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel) {
     Initialize();
+    bMadeLog=false;
     pLog=pInLog;
     pGAF=pInGAF;
     pGFX=pInGFX;
     pModel=pInModel;
 }
 
-C_Entity::~C_Entity() { }
+C_Entity::~C_Entity() {
+    if(bMadeLog) DEL(pLog);
+}
 
 void C_Entity::Initialize(void) {
+    bMadeLog=true;
     pTexture=0;
     pNext=0;
     pPrev=0;

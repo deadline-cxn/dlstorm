@@ -46,11 +46,11 @@ void CMesh::Initialize(void) {
     m_pTexCoords = NULL;
     m_nVertexCount = 0;
 
-    x=528;
-    y=528;
+    x=512;
+    y=512;
 
     pOffset.x=0;
-    pOffset.y=-0.5f;
+    pOffset.y=0;
     pOffset.z=0;
 
     m_nVertexCount = (int) (x*y)*6;
@@ -112,34 +112,32 @@ void CMesh::Initialize(void) {
             nIndex++; // Increment Our Index
         }
     }
+
+    Terraform();
+}
+
+void CMesh::Terraform(void) {
     srand(GetTickCount());
-
-    int vx,vy;
+    int nZ,vx,vy;
     float vz;
-    int wx;
-
-    int j;
-
     vx=50;
     vy=50;
-    vz=5;
-    wx=(rand()%200);
-
     for(nZ=0; nZ<35000; nZ++) {
         vx = vx + (rand()%3)-1;
         vy = vy + (rand()%3)-1;
-        j++;
-        if(j>wx) {
-            vz = ((float)rand()/(float)RAND_MAX);
-            wx=(rand()%200);
-            j=0;
-        }
+        vz =
+        (float)rand()/((float)RAND_MAX/5.0f);
+        //((float)rand()/(float)RAND_MAX) * 5.0f;
         if(vx < 3)      vx=3;
         if(vx > (x-3))  vx=x-3;
         if(vy < 3)      vy=3;
         if(vy > (y-3))  vy=y-3;
         SetPointHeight(vx,vy,(float)vz);
     }
+    // int j;  int wx;
+    // vz=5.0f;
+    // wx=(rand()%50);
+    // j++; if(j>wx) { wx = (rand()%50); =0; }
 }
 
 void CMesh::SetPointTexture(int nX, int nZ, CGLTexture* pTex) {

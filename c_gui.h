@@ -96,7 +96,6 @@ enum tGUIComponentTypes {
     FM_GC_RECT_GROUP
 };
 
-
 class C_GUI;
 class C_GSTMP;
 class C_GCTRL;

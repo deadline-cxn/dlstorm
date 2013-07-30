@@ -111,6 +111,7 @@ public:
     C_Entity*   pFirstNTT;      // Entities
     C_Entity*   pFirstMapNTT;   // Map Entities
 
+
     char        WindowCaption[1024];
     // GFX System level functions
     int         InitGL(void);

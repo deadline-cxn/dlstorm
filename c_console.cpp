@@ -255,21 +255,15 @@ void C_CONS::RegInt(char *name,int x) {
 
 void C_CONS::_Execute(const char *cmd) {
 
-    pLog->_DebugAdd("C_CONS::_Execute 0 > %s...",cmd);
-
     int i,j;
     char temp[1024];
     memset(temp,0,1024);
-
-    pLog->_DebugAdd("C_CONS::_Execute 1 > %s...",cmd);
 
     int cQuoteCount=0;
     bool bQuote2=0;
     char cmd2[1024];
     memset(cmd2,0,1024);
     strcpy(cmd2,cmd);
-
-    pLog->_DebugAdd("C_CONS::_Execute 2 > %s...",cmd);
 
     for(i=0; i<strlen(cmd2); i++) {
         switch(cmd2[i]) {
@@ -293,8 +287,6 @@ void C_CONS::_Execute(const char *cmd) {
         }
     }
 
-    pLog->_DebugAdd("C_CONS::_Execute 3 > %s...",cmd);
-
     if(cQuoteCount&1)  return; // mismatched quote
     vector <string> ncmd=explode(";",cmd2);
     if(ncmd.size()>1) {
@@ -303,7 +295,6 @@ void C_CONS::_Execute(const char *cmd) {
         }
         return;
     }
-    pLog->_DebugAdd("C_CONS::_Execute 4 > %s...",cmd);
 
     for(i=0; i<strlen(cmd2); i++) {
         switch(cmd2[i]) {
@@ -313,46 +304,28 @@ void C_CONS::_Execute(const char *cmd) {
         }
     }
 
-    pLog->_DebugAdd("C_CONS::_Execute 5 > %s...",cmd);
-
     vector <string> narg=explode(" ",cmd2);
 
-    if(narg.size()>1) {
-        pLog->_DebugAdd("C_CONS::_Execute 5 1 > %s...",cmd);
-
+    if(narg.size()>0) {
+        // pLog->_Add("C_CONS::_Execute 5 1 > [%s] %s...",(char *)narg[0].c_str(),cmd);
         if(funcmap.find((char *)narg[0].c_str())!=funcmap.end()) {
-
-            pLog->_DebugAdd("C_CONS::_Execute 5 2 > %s...",cmd);
-
+            // pLog->_Add("C_CONS::_Execute 5 2 > %s...",cmd);
             if(narg.size()>0) {
-
-                pLog->_DebugAdd("C_CONS::_Execute 5 3 > %s...",cmd);
-
                 memset(temp,0,1024);
-
-                pLog->_DebugAdd("C_CONS::_Execute 5 4 > %s...",cmd);
-
                 strcpy(temp, narg[1].c_str());
-
-                pLog->_DebugAdd("C_CONS::_Execute 5 5 > %s...",cmd);
-
                 if(narg.size()>1)
                     for(i=2; i<narg.size(); i++) {
-                        pLog->_DebugAdd("C_CONS::_Execute 5 6 > %s...",cmd);
+                        //pLog->_Add("C_CONS::_Execute 5 6 > %s...",cmd);
                         strcat(temp,va(" %s",narg[i].c_str()));
                     }
-
-                pLog->_DebugAdd("C_CONS::_Execute 5 7 > %s...",cmd);
-
+                else strcpy(temp,"(null)");
+                pLog->_Add("C_CONS::_Execute > [%s] [%s]...",cmd,temp);
                 funcmap.find(narg[0].c_str())->second(temp);
-
-                pLog->_DebugAdd("C_CONS::_Execute 5 8 > %s...",cmd);
             }
             return;
         }
     }
-
-    pLog->_DebugAdd("C_CONS::_Execute 6 > %s...",cmd);
+    pLog->_Add("C_CONS::_Execute 6 > %s...",cmd);
 }
 
 

@@ -316,10 +316,11 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         return false;
     }
 
-    pMap->pOffset.x=5.0f;
-    pMap->pOffset.z=15.0f;
+    pMap->Terraform();
+
+    pMap->pOffset.x=0.0f;
+    pMap->pOffset.z=0.0f;
     pMap->pTexture=GetTexture("base/grass1.png");
-    // pDefaultTexture;
 
     if(!LoadModels()) return false;
 
@@ -349,6 +350,7 @@ void C_GFX::ToggleFullScreen(void) {
 }
 void C_GFX::ShutDownGFX(void) {
     pLog->_Add("Shutting down SDL/OpenGL GFX subsystem...");
+
     C_Entity* pNTT;
     pNTT=pFirstNTT;
     while(pNTT) {
@@ -356,6 +358,7 @@ void C_GFX::ShutDownGFX(void) {
         pNTT=pNTT->pNext;
         DEL(pFirstNTT);
     }
+
     pLog->_Add("Entities shut down...");
     DEL(pCamera);
     pLog->_Add("Camera shut down...");
@@ -605,6 +608,8 @@ bool C_GFX::DestroyModels(void) {
 }
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(void) {
+
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     DrawFog();
@@ -614,6 +619,7 @@ void C_GFX::RenderScene(void) {
     glLoadIdentity ();
     if(pCamera) pCamera->Go();
     pMap->Draw();
+
     DrawEntities();
 
 }
@@ -1075,6 +1081,7 @@ void C_GFX::InitializeEntities(void) {
         pNTT=pNTT->pNext;
         DEL(pFirstNTT);
     }
+    DEL(pFirstNTT);
     int i,numntt;
     numntt=200;
     for(i=0; i<numntt; i++) {
@@ -1135,11 +1142,11 @@ void C_GFX::InitializeEntities(void) {
                 pNTT->scale.z = 0.3f;
 
                 pNTT->rot.x = 0.0f;
-                pNTT->rot.y = 0.0f;
+                // pNTT->rot.y = 0.0f;
                 pNTT->rot.z = 0.0f;
 
                 pNTT->autorot.x = 0.0f;
-                // pNTT->autorot.y = 0.0f;
+                pNTT->autorot.y = 0.0f;
                 pNTT->autorot.z = 0.0f;
 
         }
@@ -1148,10 +1155,47 @@ void C_GFX::InitializeEntities(void) {
 }
 void C_GFX::DrawEntities(void) {
     C_Entity* pNTT;
+/*
     pNTT=pFirstNTT;
     while(pNTT) {
-        glLoadIdentity();
-        pCamera->Go();
+        pNTT->glname=0;
+        pNTT=pNTT->pNext;
+    }
+
+    GLuint buff[64] = {0};
+ 	GLint hits, view[4];
+ 	int id;
+ 	glSelectBuffer(64, buff);
+ 	glGetIntegerv(GL_VIEWPORT, view);
+ 	glInitNames();
+ 	glPushName(0);
+ 	glMatrixMode(GL_PROJECTION);
+ 	glPushMatrix();
+ 	glLoadIdentity();
+ 	gluPickMatrix(pGUI->pMouse->ix, pGUI->pMouse->iy, 1.0, 1.0, view);
+ 	gluPerspective(60, (float)view[2]/(float)view[3], 0.0001, 1000.0);
+ 	glMatrixMode(GL_MODELVIEW);
+
+    glRenderMode(GL_SELECT);
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        if(pNTT->hidden==false) {
+            glLoadIdentity();
+            pCamera->Go();
+            pNTT->Draw();
+        }
+        pNTT=pNTT->pNext;
+    }
+    glMatrixMode(GL_PROJECTION);
+ 	glPopMatrix();
+ 	hits = glRenderMode(GL_RENDER);
+
+    if(hits) pLog->_Add("NUMBER OF HITS: %d",hits);
+*/
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        // glLoadIdentity();
+        // pCamera->Go();
         if(pNTT->pTexture)
             if(pNTT->pTexture->bmap)
                 glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
