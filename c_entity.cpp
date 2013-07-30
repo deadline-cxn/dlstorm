@@ -81,6 +81,33 @@ void C_Entity::Initialize(void) {
 void C_Entity::Draw(void) {
     if(!pGFX) return;
 
+    switch(type) {
+        case ENTITY_PLAYER:
+        case ENTITY_PLAYER_SPAWN:
+        case ENTITY_NPC:
+        case ENTITY_NPC_SPAWN:
+        case ENTITY_NPC_GENERATOR:
+        case ENTITY_LIGHT:
+        case ENTITY_SOUND:
+        case ENTITY_AURA:
+            loc.y=0;
+            rot.x=0;
+            rot.y=0;
+            rot.z=0;
+            autorot.x=0;
+            autorot.y=0;
+            autorot.z=0;
+            scale.x=0.5f;
+            scale.y=0.5f;
+            scale.z=0.5f;
+            color.r=1.0f;
+            color.g=1.0f;
+            color.b=1.0f;
+        default:
+            break;
+    }
+
+
     rot.x+=autorot.x;
     rot.y+=autorot.y;
     rot.z+=autorot.z;
@@ -119,7 +146,33 @@ void C_Entity::Draw(void) {
         else {
             glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
         }
+
+        switch(type) {
+            case ENTITY_PLAYER:
+            case ENTITY_PLAYER_SPAWN:
+            case ENTITY_NPC:
+            case ENTITY_NPC_SPAWN:
+            case ENTITY_NPC_GENERATOR:
+                glBindTexture(GL_TEXTURE_2D, pGFX->GetTexture("base/ntt.ankh.png"));
+                break;
+            case ENTITY_LIGHT:
+                glBindTexture(GL_TEXTURE_2D, pGFX->GetTexture("base/ntt.light.png"));
+                break;
+            case ENTITY_SOUND:
+                glBindTexture(GL_TEXTURE_2D, pGFX->GetTexture("base/ntt.sound.png"));
+                break;
+            case ENTITY_AURA:
+                glBindTexture(GL_TEXTURE_2D, pGFX->GetTexture("base/ntt.aura.png"));
+                break;
+            default:
+                break;
+        }
+
+
+
         pGFX->DrawCube();
+
+
     }
 }
 

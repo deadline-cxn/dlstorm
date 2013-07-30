@@ -1113,7 +1113,14 @@ void C_GFX::InitializeEntities(void) {
         pNTT->color.r = (((float)rand()/(float)RAND_MAX)*5)+1;
         pNTT->color.g = (((float)rand()/(float)RAND_MAX)*5)+1;
         pNTT->color.b = (((float)rand()/(float)RAND_MAX)*5)+1;
+
         pNTT->type  = ENTITY_STATIC;
+
+        if(rand()%100 > 90) pNTT->type=ENTITY_SOUND;
+        if(rand()%100 > 90) pNTT->type=ENTITY_AURA;
+        if(rand()%100 > 90) pNTT->type=ENTITY_NPC;
+        if(rand()%100 > 90) pNTT->type=ENTITY_LIGHT;
+
         pNTT->pTexture=GetRandomTexture();
 
         if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
