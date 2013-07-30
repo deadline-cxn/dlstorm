@@ -58,6 +58,7 @@ enum tEntityType { // Basic entity types
     ENTITY_LIGHT,
     ENTITY_SOUND,
     ENTITY_AURA,
+    ENTITY_MAX_TYPES,
 };
 
 enum tEntityEvent { // Interaction events

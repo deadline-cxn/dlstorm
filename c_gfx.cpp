@@ -521,6 +521,8 @@ bool C_GFX::LoadModels(void) {
             } else {
                 if(!sp_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
+                    pLog->AddEntry("Model found %s\n",szModelFilename);
+
                     pModel=pFirstModel;
                     if(pModel) {
                         while(pModel->pNext) {
@@ -533,10 +535,9 @@ bool C_GFX::LoadModels(void) {
                         pFirstModel=new CGLModel;
                         pModel=pFirstModel;
                     }
-                    if(!pModel->Load(szModelFilename)) {
 
+                    if(!pModel->Load(szModelFilename)) {
                         if(pModel==pFirstModel) {
-                            DEL(pModel);
                             DEL(pFirstModel);
                         }
                         else {
@@ -1114,26 +1115,44 @@ void C_GFX::InitializeEntities(void) {
         pNTT->color.g = (((float)rand()/(float)RAND_MAX)*5)+1;
         pNTT->color.b = (((float)rand()/(float)RAND_MAX)*5)+1;
 
-        pNTT->type  = ENTITY_STATIC;
-
-        if(rand()%100 > 90) pNTT->type=ENTITY_SOUND;
-        if(rand()%100 > 90) pNTT->type=ENTITY_AURA;
-        if(rand()%100 > 90) pNTT->type=ENTITY_NPC;
-        if(rand()%100 > 90) pNTT->type=ENTITY_LIGHT;
-
         pNTT->pTexture=GetRandomTexture();
 
+        pNTT->type  = ENTITY_STATIC;
+        if((rand()%100)>90) pNTT->type=ENTITY_LIGHT;
+        if((rand()%100)>90) pNTT->type=ENTITY_SOUND;
+        if((rand()%100)>90) pNTT->type=ENTITY_AURA;
+        if((rand()%100)>90) pNTT->type=ENTITY_NPC;
+
+
+        switch(pNTT->type) {
+            case ENTITY_PLAYER:
+            case ENTITY_PLAYER_SPAWN:
+            case ENTITY_NPC:
+            case ENTITY_NPC_SPAWN:
+            case ENTITY_NPC_GENERATOR:
+                pNTT->pTexture=GetTexture("base/ntt.ankh.png");
+                break;
+            case ENTITY_LIGHT:
+                pNTT->pTexture=GetTexture("base/ntt.light.png");
+                break;
+            case ENTITY_SOUND:
+                pNTT->pTexture=GetTexture("base/ntt.audio.png");
+                break;
+            case ENTITY_AURA:
+                pNTT->pTexture=GetTexture("base/ntt.aura.png");
+                break;
+            default:
+                break;
+        }
+
         if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
+
 
         if( (rand()%100)> 50 ) {
 
                 pNTT->pModel=GetRandomModel();
 
                 pLog->_Add(" Entity :%s",pNTT->pModel->name);
-
-                if(dlcs_strcasecmp("models/testhouse.ms3d",pNTT->pModel->name)) {
-                                    pNTT->pTexture=GetTexture("base/tile00003.png");
-                }
 
                 if(dlcs_strcasecmp("models/testhouse2.ms3d",pNTT->pModel->name)) {
                                     pNTT->pTexture=GetTexture("base/tile00003.png");

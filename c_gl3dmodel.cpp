@@ -7,6 +7,7 @@ CGLModel::CGLModel() {
     memset(name,0,1024);
     pNext=0;
     pPrev=0;
+    pLog=0;
     bMadeLog=1;
     pLog=new CLog("CGLModel.log");
     pLog->Restart();
@@ -16,15 +17,15 @@ CGLModel::CGLModel(CLog *pInLog) {
     memset(name,0,1024);
     pNext=0;
     pPrev=0;
+    pLog=0;
     bMadeLog=0;
     pLog=pInLog;
     pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
 }
 CGLModel::~CGLModel() {
-
-    delete [] vertexArray;
-    delete [] normalArray;
-    delete [] uvArray;
+    if(vertexArray) delete [] vertexArray;
+    if(normalArray) delete [] normalArray;
+    if(uvArray) delete [] uvArray;
     if(bMadeLog) DEL(pLog);
 }
 bool CGLModel::Load(char* filename) {
