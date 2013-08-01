@@ -46,8 +46,8 @@ void CMesh::Initialize(void) {
     m_pTexCoords = NULL;
     m_nVertexCount = 0;
 
-    x=512;
-    y=512;
+    x=812;
+    y=812;
 
     pOffset.x=0;
     pOffset.y=0;

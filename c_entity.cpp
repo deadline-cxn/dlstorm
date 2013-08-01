@@ -77,7 +77,42 @@ void C_Entity::Initialize(void) {
     color.b=1.0f;
 
 }
+void C_Entity::DrawLight(void) {
 
+
+
+     if(type==ENTITY_LIGHT) {
+
+
+
+        glLoadIdentity();
+        pGFX->pCamera->Go();
+
+        GLfloat ambient[]   = { 0.2f, 0.2f, 0.2f, 1.0f};
+        GLfloat location[]  = { loc.x, loc.y, loc.z, 1.0f};
+        GLfloat diffuse[]   = { 1.0f, 1.0f, 1.0f, 1.0f};
+        GLfloat specular[]  = { 1.0f, 0.5f, 0.5f, 0.5f};
+
+        glLightfv(GL_LIGHT0, GL_AMBIENT,    ambient);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE,    diffuse);
+        glLightfv(GL_LIGHT0, GL_SPECULAR,   specular);
+        glLightfv(GL_LIGHT0, GL_POSITION,   location);
+
+        //glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,    1.5);
+        //glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,      0.5);
+        //glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION,   0.2);
+
+        // GLfloat spot[]      = {autorot.x, autorot.y, autorot.z};
+        GLfloat spot[]      = {0.0f, 0.0f, -132.0f};
+        glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot);
+        glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 15.0);
+        glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 12.0f);
+
+
+    }
+
+
+}
 void C_Entity::Draw(void) {
     if(!pGFX) return;
 
@@ -90,15 +125,12 @@ void C_Entity::Draw(void) {
         case ENTITY_PLAYER_SPAWN:
         case ENTITY_NPC_SPAWN:
         case ENTITY_NPC_GENERATOR:
-
             break;
 
-
-
         case ENTITY_NPC:
-        case ENTITY_LIGHT:
         case ENTITY_SOUND:
         case ENTITY_AURA:
+
             loc.y=3.0f;
             rot.x=0;
             rot.y=0;
@@ -115,6 +147,19 @@ void C_Entity::Draw(void) {
             pModel=0;
             break;
 
+        case ENTITY_LIGHT:
+            pTexture=pGFX->GetTexture("base/ntt.light.png");
+            loc.y=3.0f;
+            scale.x=0.5f;
+            scale.y=0.5f;
+            scale.z=0.5f;
+            color.r=1.0f;
+            color.g=1.0f;
+            color.b=1.0f;
+            pModel=0;
+
+            break;
+
         default:
             break;
     }
@@ -124,8 +169,9 @@ void C_Entity::Draw(void) {
     rot.y+=autorot.y;
     rot.z+=autorot.z;
 
-    glLoadIdentity();
 
+
+    glLoadIdentity();
     pGFX->pCamera->Go();
 
     glTranslatef(   loc.x,
@@ -144,6 +190,7 @@ void C_Entity::Draw(void) {
                     color.g,
                     color.b); // color
 
+
     if(pModel) {
         pModel->Draw();
     } else {
@@ -160,7 +207,9 @@ void C_Entity::Draw(void) {
             glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
         }
 
-        pGFX->DrawCube();
+    pGFX->DrawCube();
+
+
     }
 }
 

@@ -166,6 +166,7 @@ public:
     /*************************************************************************************************************************/
     void    Initialize(void);
     void    Draw(void);
+    void    DrawLight(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
     bool    push_event(C_Entity *rcv_entity, int event, char *args, C_Entity *action_entity);
     /*************************************************************************************************************************

@@ -123,7 +123,7 @@ void C_Camera::Go() {
     glRotatef(rot.x,1.0f,0.0f,0.0f);
     glRotatef(rot.y,0.0f,1.0f,0.0f);
     glRotatef(rot.z,0.0f,0.0f,1.0f);
-    glTranslated(-loc.x,-loc.y,-loc.z);
+    glTranslatef(-loc.x,-loc.y,-loc.z);
 }
 void C_Camera::Update() {
     if(pFollowEntity) {
@@ -381,6 +381,7 @@ int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
     glLoadIdentity();									// Reset The Projection Matrix
     gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
     glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+
     return true; // Initialization Went OK
 }
 void C_GFX::EndScene(void) {
@@ -610,18 +611,14 @@ bool C_GFX::DestroyModels(void) {
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(void) {
 
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     DrawFog();
-    DrawSkyBox(); // TODO: Fix Skybox
+    DrawSkyBox(); // TODO: Fix Skybo
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity ();
-    if(pCamera) pCamera->Go();
+    pCamera->Go();
     pMap->Draw();
-
     DrawEntities();
+
 
 }
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
@@ -794,7 +791,7 @@ void C_GFX::DrawSun(void) {
     glClearColor( skycolor_r , skycolor_g, skycolor_b ,0);
 
     glLoadIdentity();
-    pCamera->Go();
+
     glTranslatef(0.0f,ypos,zpos);
     CGLTexture *pTexture=0;
     pTexture=GetTexture("base/sun.png");
@@ -1181,51 +1178,21 @@ void C_GFX::InitializeEntities(void) {
 }
 void C_GFX::DrawEntities(void) {
     C_Entity* pNTT;
-/*
+
     pNTT=pFirstNTT;
     while(pNTT) {
-        pNTT->glname=0;
-        pNTT=pNTT->pNext;
-    }
-
-    GLuint buff[64] = {0};
- 	GLint hits, view[4];
- 	int id;
- 	glSelectBuffer(64, buff);
- 	glGetIntegerv(GL_VIEWPORT, view);
- 	glInitNames();
- 	glPushName(0);
- 	glMatrixMode(GL_PROJECTION);
- 	glPushMatrix();
- 	glLoadIdentity();
- 	gluPickMatrix(pGUI->pMouse->ix, pGUI->pMouse->iy, 1.0, 1.0, view);
- 	gluPerspective(60, (float)view[2]/(float)view[3], 0.0001, 1000.0);
- 	glMatrixMode(GL_MODELVIEW);
-
-    glRenderMode(GL_SELECT);
-    pNTT=pFirstNTT;
-    while(pNTT) {
-        if(pNTT->hidden==false) {
-            glLoadIdentity();
-            pCamera->Go();
-            pNTT->Draw();
-        }
-        pNTT=pNTT->pNext;
-    }
-    glMatrixMode(GL_PROJECTION);
- 	glPopMatrix();
- 	hits = glRenderMode(GL_RENDER);
-
-    if(hits) pLog->_Add("NUMBER OF HITS: %d",hits);
-*/
-    pNTT=pFirstNTT;
-    while(pNTT) {
-        // glLoadIdentity();
-        // pCamera->Go();
         if(pNTT->pTexture)
             if(pNTT->pTexture->bmap)
                 glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
+
         pNTT->Draw();
         pNTT=pNTT->pNext;
     }
+
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        pNTT->DrawLight();
+        pNTT=pNTT->pNext;
+    }
+
 }
