@@ -76,16 +76,21 @@ void C_Entity::Initialize(void) {
     color.g=1.0f;
     color.b=1.0f;
 
+    iModelAnim=0;
+    iModelAnimFrame=0;
+
 }
 void C_Entity::DrawLight(void) {
+
 
 
 
      if(type==ENTITY_LIGHT) {
 
 
-        glLoadIdentity();
-        pGFX->pCamera->Go();
+        // glLoadIdentity();
+        glPushMatrix();
+        // pGFX->pCamera->Go();
 
         GLfloat ambient[]   = { 0.2f, 0.2f, 0.2f, 1.0f};
         GLfloat location[]  = { loc.x, loc.y, loc.z, 1.0f};
@@ -107,7 +112,7 @@ void C_Entity::DrawLight(void) {
         glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 15.0);
         glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 12.0f);
 
-
+        glPopMatrix();
     }
 
 
@@ -168,10 +173,9 @@ void C_Entity::Draw(void) {
     rot.y+=autorot.y;
     rot.z+=autorot.z;
 
+    // glLoadIdentity();
 
-
-    glLoadIdentity();
-    pGFX->pCamera->Go();
+    glPushMatrix();
 
     glTranslatef(   loc.x,
                     loc.y,
@@ -189,18 +193,13 @@ void C_Entity::Draw(void) {
                     color.g,
                     color.b); // color
 
-
     if(bSelected) {
-
-            glColor3f(1.0f,0.0f,0.0f);
-
-
+        glColor3f(1.0f,0.0f,0.0f);
     }
 
     if(pModel) {
         pModel->Draw();
     } else {
-
         if(pTexture) {
             if(pTexture->bmap) {
                 glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
@@ -212,11 +211,9 @@ void C_Entity::Draw(void) {
         else {
             glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
         }
-
-    pGFX->DrawCube();
-
-
+        pGFX->DrawCube();
     }
+    glPopMatrix();
 }
 
 bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {

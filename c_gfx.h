@@ -38,13 +38,16 @@ typedef struct tagSECTOR   { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #include "c_gltexture.h"
 #include "c_gl3dmodel.h"
 #include "c_entity.h"
-#include "c_map_new.h"
 
 class C_Entity;
-class C_MapModel;
-class C_MapModelList;
 class CGLModel;
-class CMesh;
+
+class C_Terrain {
+public:
+    C_Terrain();
+    ~C_Terrain();
+
+};
 
 class C_Camera {
 public:
@@ -107,7 +110,6 @@ public:
     CGLTexture* pDefaultTexture; // default texture storage
     CGLTexture* pFirstTexture; // texture storage
     CGLModel*   pFirstModel; // model storage
-    CMesh*      pMap;
     C_Entity*   pFirstNTT;      // Entities
     C_Entity*   pFirstMapNTT;   // Map Entities
 

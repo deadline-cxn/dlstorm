@@ -98,6 +98,8 @@ void normalize(GLfloat *a) {
     a[2]/=d;
 }
 //////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
+
+
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
 //////////////////////////////////////////////////////////////// C_Camera FUNCTIONS
@@ -185,28 +187,30 @@ void C_Camera::Move_Backward() {
     bounce += 0.04;
 }
 void C_Camera::mouseMovement(int x, int y) {
-    int diffx=x-lastx;
-    int diffy=y-lasty;
-    //diffx=0;
-    //if(x>lastx) diffx=1;
-    //if(x<lastx) diffx=-1;
-    //diffy=0;
-    //if(y>lasty) diffy=1;
-    //if(y<lasty) diffy=-1;
-    lastx=x;
-    lasty=y;
+    static int lx;
+    static int ly;
+    int diffx=x-lx;
+    int diffy=y-ly;
+    diffx=0;
+    if(x>lx) diffx=1;
+    if(x<lx) diffx=-1;
+    diffy=0;
+    if(y>ly) diffy=1;
+    if(y<ly) diffy=-1;
     rot.x += (float) diffy;
     rot.y += (float) diffx;
     if(rot.x < -60.0f) rot.x=-60.0f;
     if(rot.x > 60.0f)  rot.x=60.0f;
     if(rot.y < -5000.0f) rot.y=0.0f;
+    lx=x;
+    ly=y;
 }
+
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
     pDefaultTexture=0;
     pFirstTexture=0;
     pFirstModel=0;
-    pMap=0;
     pFirstNTT=0;
     pCamera=0;
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
@@ -277,6 +281,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     	glBufferDataARB     = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferDataARB");
     	glDeleteBuffersARB  = (PFNGLDELETEBUFFERSARBPROC) wglGetProcAddress("glDeleteBuffersARB"); */
 #endif
+
     pCamera=new C_Camera();
     if(pCamera) {
         pCamera->Move_Left_Stop();
@@ -288,6 +293,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Camera");
         return false;
     }
+
     if(LoadTextures(pGAF)) {
         pLog->_Add("Base Textures initialized");
     } else {
@@ -307,20 +313,6 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Default Texture");
         return false;
     }
-
-    pMap = new CMesh(pLog,pGAF);
-    if(pMap) {
-        pLog->_Add("Map mesh initialized");
-    } else {
-        pLog->_Add("Can't initialize Map mesh");
-        return false;
-    }
-
-    pMap->Terraform();
-
-    pMap->pOffset.x=0.0f;
-    pMap->pOffset.z=0.0f;
-    pMap->pTexture=GetTexture("base/grass1.png");
 
     if(!LoadModels()) return false;
 
@@ -362,7 +354,9 @@ void C_GFX::ShutDownGFX(void) {
     pLog->_Add("Entities shut down...");
     DEL(pCamera);
     pLog->_Add("Camera shut down...");
-    DEL(pMap);
+
+    // DEL(pMap);
+
     pLog->_Add("Map shut down...");
     DestroyTextures();
     pLog->_Add("Textures shut down...");
@@ -584,9 +578,13 @@ int C_GFX::GetTotalModels(void) {
     return n;
 }
 CGLModel* C_GFX::GetRandomModel(void) {
-    int n=GetTotalModels();
-    int x=0;
-    int r=(rand()%n)+1;
+    int n;
+    n=GetTotalModels();
+    int x;
+    x=0;
+    int r;
+    if(n) r=(rand()%n)+1;
+    else return 0;
     CGLModel* pModel;
     pModel=pFirstModel;
     while(pModel) {
@@ -612,6 +610,7 @@ bool C_GFX::DestroyModels(void) {
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(int mx, int my) {
     int viewport[4];
+
     glRenderMode(_glRendermode);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawFog();
@@ -619,31 +618,11 @@ void C_GFX::RenderScene(int mx, int my) {
 
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
+
     pCamera->Go();
-    pMap->Draw();
 
-    if(_glRendermode==GL_SELECT) {
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-
-        gluPickMatrix(  (GLdouble) mx,
-                        (GLdouble) (viewport[3]-my),
-                      1.0f,
-                      1.0f,
-                      viewport                    );
-        glInitNames();
-        glPushName( 0xffffffff );
-        gluPerspective(45.0f, (GLfloat) (viewport[2]-viewport[0])/(GLfloat) (viewport[3]-viewport[1]), 0.1f, 100.0f);
-        glMatrixMode(GL_MODELVIEW);
-    }
     DrawEntities();
-    if(_glRendermode==GL_SELECT){
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
-        glMatrixMode(GL_MODELVIEW);
 
-    }
 
 }
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
@@ -916,22 +895,21 @@ void C_GFX::DrawCube() {
     glEnd();
 }
 void C_GFX::DrawSkyBox(void) {
-    return;
 
+    return;
     glPushMatrix();
-    gluLookAt(0,0,0,pCamera->loc.x, pCamera->loc.y, pCamera->loc.z,0,1,0);
-/*
+
     glPushAttrib(GL_ENABLE_BIT);
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_LIGHTING);
     glDisable(GL_BLEND);
-    */
+
 
     // Just in case we set all vertices to white.
     glColor4f(1.0f,1.0f,1.0f,1.0f);
 
-    // glTranslatef(pCamera->loc.x, pCamera->loc.y, pCamera->loc.z);
+    glTranslatef(pCamera->loc.x, pCamera->loc.y, pCamera->loc.z);
     glScalef(1200.0f,1200.0f,1200.0f);
 
 
@@ -993,7 +971,7 @@ void C_GFX::DrawSkyBox(void) {
     }
 
     // Restore enable bits and matrix
-    //glPopAttrib();
+    glPopAttrib();
     glPopMatrix();
 }
 void C_GFX::DrawStarField(int iDir) {
@@ -1106,7 +1084,7 @@ void C_GFX::InitializeEntities(void) {
     }
     DEL(pFirstNTT);
     int i,numntt;
-    numntt=200;
+    numntt=100;
     for(i=0; i<numntt; i++) {
         pNTT=pFirstNTT;
         if(!pNTT) {
@@ -1203,18 +1181,11 @@ void C_GFX::InitializeEntities(void) {
 }
 void C_GFX::DrawEntities(void) {
     C_Entity* pNTT;
-
     pNTT=pFirstNTT;
     while(pNTT) {
         if(pNTT->pTexture)
             if(pNTT->pTexture->bmap)
                 glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
-
-        if(_glRendermode==GL_SELECT) {
-            glname++;
-            pNTT->glname=glname;
-        }
-
         pNTT->Draw();
         pNTT=pNTT->pNext;
     }
@@ -1222,14 +1193,7 @@ void C_GFX::DrawEntities(void) {
 }
 
 void C_GFX::SelectEntity(int ch) {
-    C_Entity* pNTT;
-    pNTT=pFirstNTT;
-    while(pNTT) {
-        pNTT->bSelected=0;
-        if(pNTT->glname==ch)
-            pNTT->bSelected=1;
-        pNTT=pNTT->pNext;
-    }
+
 
 }
 

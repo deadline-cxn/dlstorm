@@ -51,7 +51,9 @@ CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname, bool fmask) {
 CGLTexture::~CGLTexture() {
     if(bMadeLog) DEL(pLog);
     glDEL(bmap);
+    bmap=0;
     glDEL(mask);
+    mask=0;
 }
 
 void CGLTexture::Initialize() {

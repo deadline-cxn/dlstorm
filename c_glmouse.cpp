@@ -187,6 +187,7 @@ void C_Mouse::InitializeInput(void) {
     lRightDblClickTimer   = dlcs_get_tickcount();
 }
 void C_Mouse::draw() {
+    if(!bDraw) return;
     pCursor->x=ix+pCursor->x_offset;
     pCursor->y=iy+pCursor->y_offset;
     pCursor->draw();

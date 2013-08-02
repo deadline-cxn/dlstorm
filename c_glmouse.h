@@ -50,6 +50,8 @@ public:
     C_MouseCursor   *pFirstMouseCursor;
     C_MouseCursor   *pCursor;
 
+    bool    bDraw;
+
     void ClearClicks(void);
     bool bLeftDown;
     bool bMiddleDown;

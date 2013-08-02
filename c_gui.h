@@ -10,6 +10,7 @@
 #include "c_gui_chat_enum.h"
 #include <map>
 #include <algorithm>
+#include "sdl.h"
 #include "c_gfx.h"
 #include "c_gaf.h"
 #include "c_glfont.h"
@@ -96,12 +97,15 @@ enum tGUIComponentTypes {
     FM_GC_RECT_GROUP
 };
 
-class C_GUI;
+ class C_GUI;
 class C_GSTMP;
 class C_GCTRL;
 class C_GCTRL {
 public:
-    C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog,C_GFX *pInGFX,C_GUI *pInGUI,C_CONS *pInConsole  );
+    C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog,
+            C_GFX *pInGFX,
+            C_GUI *pInGUI,
+            C_CONS *pInConsole  );
     C_GCTRL(C_GCTRL *pInParentControl);
     ~C_GCTRL();
 
@@ -208,7 +212,9 @@ private:
 };
 class C_GSTMP {
 public:
-    C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );
+    C_GSTMP(CLog *pInLog,
+            C_GFX *pInGFX,
+            C_GUI *pInGUI, C_CONS *pInConsole );
     ~C_GSTMP();
     void    init_stmp(void);
     void    zeroize_stmp(void);
@@ -386,7 +392,10 @@ public:
     map<string, int>    GC_PROP;
     map<string, int>    GC_RELATIVE;
 
-
+    SDLKey              ikey;
+    Uint8*              keystate;
+    SDLMod              modstate;
+    SDL_Event           event;
     map<SDLKey, char *> KeyMap;
     map<SDLKey, bool>   KeyDown;
     long KeyRepeatTimer;
