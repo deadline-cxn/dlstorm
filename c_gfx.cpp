@@ -99,7 +99,6 @@ void normalize(GLfloat *a) {
 }
 //////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
 
-
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
 //////////////////////////////////////////////////////////////// C_Camera FUNCTIONS
@@ -343,21 +342,12 @@ void C_GFX::ToggleFullScreen(void) {
 void C_GFX::ShutDownGFX(void) {
     pLog->_Add("Shutting down SDL/OpenGL GFX subsystem...");
 
-    C_Entity* pNTT;
-    pNTT=pFirstNTT;
-    while(pNTT) {
-        pFirstNTT=pNTT;
-        pNTT=pNTT->pNext;
-        DEL(pFirstNTT);
-    }
-
+    ClearEntities();
     pLog->_Add("Entities shut down...");
+
     DEL(pCamera);
     pLog->_Add("Camera shut down...");
 
-    // DEL(pMap);
-
-    pLog->_Add("Map shut down...");
     DestroyTextures();
     pLog->_Add("Textures shut down...");
     DestroyModels();
@@ -375,7 +365,6 @@ int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
     glLoadIdentity();									// Reset The Projection Matrix
     gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
     glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-    glSelectBuffer (1000, selectbuffer);
 
     return true; // Initialization Went OK
 }
@@ -1192,8 +1181,19 @@ void C_GFX::DrawEntities(void) {
 
 }
 
-void C_GFX::SelectEntity(int ch) {
-
-
+void C_GFX::ClearSelectEntity(void) {
+    pSelectedEntity=0;
+}
+void C_GFX::SelectEntity(C_Entity* pEntity) {
+    pSelectedEntity=pEntity;
 }
 
+void C_GFX::ClearEntities(void) {
+    C_Entity* pNTT;
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        pFirstNTT=pNTT;
+        pNTT=pNTT->pNext;
+        DEL(pFirstNTT);
+    }
+}

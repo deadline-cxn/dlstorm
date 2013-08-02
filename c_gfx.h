@@ -42,13 +42,6 @@ typedef struct tagSECTOR   { int numtriangles; TRIANGLE* triangle; } SECTOR;
 class C_Entity;
 class CGLModel;
 
-class C_Terrain {
-public:
-    C_Terrain();
-    ~C_Terrain();
-
-};
-
 class C_Camera {
 public:
     C_Camera();
@@ -91,6 +84,7 @@ public:
 };
 
 class C_GFX {
+
 public:
     C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
     ~C_GFX();
@@ -102,7 +96,6 @@ public:
     int         ScreenWidth;
     int         ScreenHeight;
     int         ScreenColors;
-
     C_Camera*   pCamera;
     bool        bCreatedLog;
     CLog*       pLog;
@@ -112,12 +105,11 @@ public:
     CGLModel*   pFirstModel; // model storage
     C_Entity*   pFirstNTT;      // Entities
     C_Entity*   pFirstMapNTT;   // Map Entities
-
-    GLuint      selectbuffer[1000];
-    GLuint      glname;
+    C_Entity*   pSelectedEntity;// Selected Entity
     GLuint      _glRendermode;
-
+    CVector3    Sector;
     char        WindowCaption[1024];
+
     // GFX System level functions
     int         InitGL(void);
     void        BeginScene(void);
@@ -131,7 +123,7 @@ public:
     void        RenderScene(int mx, int my);
     void        _RenderScene(unsigned int iGLRenderMode);
     void        EndScene(void);
-    void        SelectEntity(int ch);
+
     // OpenGL Texture Management (CGLTexture Class)
     bool        LoadTextures(CGAF *pGAF);
     CGLTexture* GetTexture(char *name);
@@ -139,12 +131,14 @@ public:
     int         GetTotalTextures(void); // return number of loaded textures
     void        DrawTexture(int x,int y,int x2,int y2,char *name,unsigned char r,unsigned char g,unsigned char b);//long color);
     bool        DestroyTextures(void);
+
     // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
     CGLModel*   GetModel(char* name);
     CGLModel*   GetRandomModel(void);
     int         GetTotalModels(void);
     bool        DestroyModels(void);
+
     // 2D Draw Functions
     void        DrawVertice(int x, int y);
     void        DrawBar(RECT rc,long color);
@@ -157,6 +151,7 @@ public:
     void        DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long color2);
     void        Draw3DBox(RECT rect);
     void        Draw3DBox(int x, int y, int x2, int y2);
+
     // 3D Draw Functions
     void        DrawFog(void);
     void        DrawSun(void);
@@ -165,10 +160,17 @@ public:
     void        DrawCube(void);
     void        DrawSkyBox(void);
     void        DrawStarField(int iDir);
+
     // Miscellaneous GFX Functions
     u_char      GetFade(char cWhichFade);
+
     // Entity Functions
+    void        ClearSelectEntity(void);
+    void        SelectEntity(C_Entity* pEntity);
     void        InitializeEntities(void);
+    void        ClearEntities(void);
+    void        LoadEntities(CVector3 WhichSector);
+    void        SaveEntities(CVector3 WhichSector);
     void        DrawEntities(void);
 };
 
