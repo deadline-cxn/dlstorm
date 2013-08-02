@@ -111,6 +111,9 @@ public:
     C_Entity*   pFirstNTT;      // Entities
     C_Entity*   pFirstMapNTT;   // Map Entities
 
+    GLuint      selectbuffer[1000];
+    GLuint      glname;
+    GLuint      _glRendermode;
 
     char        WindowCaption[1024];
     // GFX System level functions
@@ -123,9 +126,10 @@ public:
     GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
     void        SetScreenRes(int x,int y,int cl, bool fs);
     void        FlipSurfaces(void);
-    void        RenderScene(void);
+    void        RenderScene(int mx, int my);
     void        _RenderScene(unsigned int iGLRenderMode);
     void        EndScene(void);
+    void        SelectEntity(int ch);
     // OpenGL Texture Management (CGLTexture Class)
     bool        LoadTextures(CGAF *pGAF);
     CGLTexture* GetTexture(char *name);

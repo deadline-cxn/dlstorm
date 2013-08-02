@@ -100,6 +100,7 @@ public:
     char        name[1024];
     int         type;
     bool        hidden;
+    bool        bSelected;
 
     // Attributes
     int         life_points;

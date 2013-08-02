@@ -381,6 +381,7 @@ int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
     glLoadIdentity();									// Reset The Projection Matrix
     gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
     glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+    glSelectBuffer (1000, selectbuffer);
 
     return true; // Initialization Went OK
 }
@@ -609,16 +610,40 @@ bool C_GFX::DestroyModels(void) {
     return true;
 }
 //////////////////////////////////////////////////////////////// RENDER SCENE
-void C_GFX::RenderScene(void) {
-
+void C_GFX::RenderScene(int mx, int my) {
+    int viewport[4];
+    glRenderMode(_glRendermode);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawFog();
-    DrawSkyBox(); // TODO: Fix Skybo
+    DrawSkyBox(); // TODO: Fix Skybox
 
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
     pCamera->Go();
     pMap->Draw();
-    DrawEntities();
 
+    if(_glRendermode==GL_SELECT) {
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+
+        gluPickMatrix(  (GLdouble) mx,
+                        (GLdouble) (viewport[3]-my),
+                      1.0f,
+                      1.0f,
+                      viewport                    );
+        glInitNames();
+        glPushName( 0xffffffff );
+        gluPerspective(45.0f, (GLfloat) (viewport[2]-viewport[0])/(GLfloat) (viewport[3]-viewport[1]), 0.1f, 100.0f);
+        glMatrixMode(GL_MODELVIEW);
+    }
+    DrawEntities();
+    if(_glRendermode==GL_SELECT){
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+
+    }
 
 }
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
@@ -1185,14 +1210,26 @@ void C_GFX::DrawEntities(void) {
             if(pNTT->pTexture->bmap)
                 glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
 
+        if(_glRendermode==GL_SELECT) {
+            glname++;
+            pNTT->glname=glname;
+        }
+
         pNTT->Draw();
         pNTT=pNTT->pNext;
     }
 
+}
+
+void C_GFX::SelectEntity(int ch) {
+    C_Entity* pNTT;
     pNTT=pFirstNTT;
     while(pNTT) {
-        pNTT->DrawLight();
+        pNTT->bSelected=0;
+        if(pNTT->glname==ch)
+            pNTT->bSelected=1;
         pNTT=pNTT->pNext;
     }
 
 }
+

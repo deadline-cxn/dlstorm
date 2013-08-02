@@ -84,7 +84,6 @@ void C_Entity::DrawLight(void) {
      if(type==ENTITY_LIGHT) {
 
 
-
         glLoadIdentity();
         pGFX->pCamera->Go();
 
@@ -190,6 +189,13 @@ void C_Entity::Draw(void) {
                     color.g,
                     color.b); // color
 
+
+    if(bSelected) {
+
+            glColor3f(1.0f,0.0f,0.0f);
+
+
+    }
 
     if(pModel) {
         pModel->Draw();

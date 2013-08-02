@@ -46,8 +46,8 @@ void CMesh::Initialize(void) {
     m_pTexCoords = NULL;
     m_nVertexCount = 0;
 
-    x=812;
-    y=812;
+    x=312;
+    y=312;
 
     pOffset.x=0;
     pOffset.y=0;
@@ -199,6 +199,7 @@ void CMesh::Draw(void) {
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );				// Enable Texture Coord Arrays
 
     glTranslatef(pOffset.x,pOffset.y,pOffset.z);
+    glScalef(50.0f,50.0f,50.0f);
 
     glVertexPointer(    3, GL_FLOAT, 0, m_pVertices ); // Set The Vertex Pointer To Our Vertex Data
     glTexCoordPointer(  2, GL_FLOAT, 0, m_pTexCoords ); // Set The Vertex Pointer To Our TexCoord Data
