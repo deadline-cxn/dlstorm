@@ -393,6 +393,8 @@ public:
     map<string, int>    GC_RELATIVE;
 
     SDLKey              ikey;
+    SDLKey              iKeyUp;
+    SDLKey              iKeyDown;
     Uint8*              keystate;
     SDLMod              modstate;
     SDL_Event           event;

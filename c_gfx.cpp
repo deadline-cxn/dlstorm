@@ -116,7 +116,8 @@ void C_Camera::Initialize() {
     scale.z=1.0f;
     angle = 0.0;
     bMovingBackward=0;
-    bMovingForward=0;
+    bMovingForward1=0;
+    bMovingForward2=0;
     bMovingLeft=0;
     bMovingRight=0;
 }
@@ -161,17 +162,21 @@ void C_Camera::Move_Right() {
     loc.z += float(sin(yrotrad)) * scale.z;
 
 }
-void C_Camera::Move_Forward_Start() { bMovingForward=true; }
-void C_Camera::Move_Forward_Stop() { bMovingForward=false; }
+void C_Camera::Move_Forward_Start() { bMovingForward1=true; }
+void C_Camera::Move_Forward_Stop() { bMovingForward1=false; }
 void C_Camera::Move_Forward() {
-    if(!bMovingForward) return;
-    float xrotrad, yrotrad;
-    yrotrad = (rot.y / 180 * 3.141592654f);
-    xrotrad = (rot.x / 180 * 3.141592654f);
-    loc.x += float(sin(yrotrad)) * scale.x;
-    loc.z -= float(cos(yrotrad)) * scale.z;
-    loc.y -= float(sin(xrotrad)) ;
-    bounce += 0.04;
+
+    if((bMovingForward1) ||
+       (bMovingForward2) ) {
+
+        float xrotrad, yrotrad;
+        yrotrad = (rot.y / 180 * 3.141592654f);
+        xrotrad = (rot.x / 180 * 3.141592654f);
+        loc.x += float(sin(yrotrad)) * scale.x;
+        loc.z -= float(cos(yrotrad)) * scale.z;
+        loc.y -= float(sin(xrotrad)) ;
+        bounce += 0.04;
+    }
 }
 void C_Camera::Move_Backward_Start() { bMovingBackward=true; }
 void C_Camera::Move_Backward_Stop() { bMovingBackward=false; }
@@ -1079,6 +1084,7 @@ void C_GFX::InitializeEntities(void) {
         if(!pNTT) {
             pFirstNTT=new C_Entity(pLog,pGAF,this,0);
             pNTT=pFirstNTT;
+            SelectEntity(pNTT);
         }
         else {
             while(pNTT->pNext) {
@@ -1100,9 +1106,10 @@ void C_GFX::InitializeEntities(void) {
         pNTT->scale.x = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
         pNTT->scale.y = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
         pNTT->scale.z = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
-        pNTT->color.r = (((float)rand()/(float)RAND_MAX)*5)+1;
-        pNTT->color.g = (((float)rand()/(float)RAND_MAX)*5)+1;
-        pNTT->color.b = (((float)rand()/(float)RAND_MAX)*5)+1;
+
+        pNTT->color.r =0.8f;
+        pNTT->color.g =0.8f;
+        pNTT->color.b =0.8f;
 
         pNTT->pTexture=GetRandomTexture();
 
@@ -1163,9 +1170,9 @@ void C_GFX::InitializeEntities(void) {
                 pNTT->autorot.x = 0.0f;
                 pNTT->autorot.y = 0.0f;
                 pNTT->autorot.z = 0.0f;
-
         }
     }
+
     DEL(pNTT);
 }
 void C_GFX::DrawEntities(void) {
@@ -1175,17 +1182,50 @@ void C_GFX::DrawEntities(void) {
         if(pNTT->pTexture)
             if(pNTT->pTexture->bmap)
                 glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
-        pNTT->Draw();
+        pNTT->Draw(bEditEntities);
         pNTT=pNTT->pNext;
     }
 
 }
 
+C_Entity* C_GFX::GetSelectedEntity(void) {
+return pSelectedEntity;
+}
 void C_GFX::ClearSelectEntity(void) {
     pSelectedEntity=0;
+    C_Entity* pNTT;
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        pNTT->bSelected=0;
+        pNTT=pNTT->pNext;
+    }
 }
 void C_GFX::SelectEntity(C_Entity* pEntity) {
+    ClearSelectEntity();
     pSelectedEntity=pEntity;
+    pSelectedEntity->bSelected=true;
+}
+
+void C_GFX::SelectClosestEntity(void) {
+    float x,y;
+    C_Entity* pClosestEntity;
+    x=999999.0f;
+    y=999999.0f;
+    C_Entity* pNTT;
+    pNTT=pFirstNTT;
+    while(pNTT) {
+        if((pCamera->loc.x-pNTT->loc.x)>x) {
+            x=(pCamera->loc.x-pNTT->loc.x);
+            pClosestEntity=pNTT;
+        }
+        if((pCamera->loc.y-pNTT->loc.y)>y) {
+            y=(pCamera->loc.y-pNTT->loc.y);
+            pClosestEntity=pNTT;
+        }
+        pNTT=pNTT->pNext;
+    }
+    pSelectedEntity=pClosestEntity;
+    pSelectedEntity->bSelected=true;
 }
 
 void C_GFX::ClearEntities(void) {

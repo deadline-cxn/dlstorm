@@ -76,12 +76,22 @@ public:
     CVector3    scale;
     bool        bMovingLeft;
     bool        bMovingRight;
-    bool        bMovingForward;
+    bool        bMovingForward1;
+    bool        bMovingForward2;
     bool        bMovingBackward;
     float       angle;
     float       lastx;
     float       lasty;
 };
+
+typedef struct {
+    bool        bXp;
+    bool        bXn;
+    bool        bYp;
+    bool        bYn;
+    bool        bZp;
+    bool        bZn;
+} v3ops;
 
 class C_GFX {
 
@@ -109,6 +119,12 @@ public:
     GLuint      _glRendermode;
     CVector3    Sector;
     char        WindowCaption[1024];
+    bool        bEditEntities;
+
+
+    v3ops OpRot;
+    v3ops OpLoc;
+    v3ops OpScale;
 
     // GFX System level functions
     int         InitGL(void);
@@ -165,8 +181,10 @@ public:
     u_char      GetFade(char cWhichFade);
 
     // Entity Functions
+    C_Entity*   GetSelectedEntity(void);
     void        ClearSelectEntity(void);
     void        SelectEntity(C_Entity* pEntity);
+    void        SelectClosestEntity(void);
     void        InitializeEntities(void);
     void        ClearEntities(void);
     void        LoadEntities(CVector3 WhichSector);

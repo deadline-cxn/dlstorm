@@ -33,6 +33,7 @@ C_Entity::~C_Entity() {
 }
 
 void C_Entity::Initialize(void) {
+    pSelectTimer=new CTimer(200);
     bMadeLog=true;
     pTexture=0;
     pNext=0;
@@ -117,8 +118,10 @@ void C_Entity::DrawLight(void) {
 
 
 }
-void C_Entity::Draw(void) {
+void C_Entity::Draw(bool bSelecting) {
     if(!pGFX) return;
+
+
 
     switch(type) {
 
@@ -189,13 +192,19 @@ void C_Entity::Draw(void) {
                     scale.y,
                     scale.z);  // scale
 
-    glColor3f(      color.r,
-                    color.g,
-                    color.b); // color
+    glColor3f( color.r, color.g, color.b); // color
 
-    if(bSelected) {
-        glColor3f(1.0f,0.0f,0.0f);
+    if(bSelecting){
+        if(bSelected) {
+            if(pSelectTimer->Up()) {
+                if(bSelectMode) bSelectMode=false;
+                else bSelectMode=true;
+            }
+            if(bSelectMode)
+                glColor3f(1.0f,1.0f,0.0f);
+        }
     }
+
 
     if(pModel) {
         pModel->Draw();

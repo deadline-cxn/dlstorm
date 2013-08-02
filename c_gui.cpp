@@ -3411,19 +3411,17 @@ int  C_GUI::processKeyboard() {
 
     bool bDone=0;
 
-    static bool bWarped=false;
+    iKeyDown=0;
+    iKeyUp=0;
+    ikey=0;
+
+    static bool bWarped;
     static int ilmx;
     static int ilmy;
+
     if(!pMouse->bRightDown) {
         ilmx=pMouse->X();
         ilmy=pMouse->Y();
-        bWarped=false;
-    } else {
-        if(bWarped==false) {
-            bWarped=true;
-            SDL_WarpMouse(ilmx,ilmy);
-        }
-
     }
 
     pMouse->Refresh();
@@ -3447,6 +3445,7 @@ int  C_GUI::processKeyboard() {
             keystate=SDL_GetKeyState(NULL);
             modstate=SDL_GetModState();
             ikey=event.key.keysym.sym;
+            iKeyUp=ikey;
 
             if( (ikey>='a') &&
                     (ikey<='z') &&
@@ -3525,7 +3524,7 @@ int  C_GUI::processKeyboard() {
                 case SDLK_F5:
                     break;
                 case SDLK_UP:
-                    pGFX->pCamera->Move_Forward_Stop();
+                    pGFX->pCamera->bMovingForward1=false; //Move_Forward_Stop();
                     break;
                 case SDLK_DOWN:
                     pGFX->pCamera->Move_Backward_Stop();
@@ -3553,6 +3552,7 @@ int  C_GUI::processKeyboard() {
             keystate=SDL_GetKeyState(NULL);
             modstate=SDL_GetModState();
             ikey=event.key.keysym.sym;
+            iKeyDown=ikey;
 
             if( (ikey>='a') &&
                     (ikey<='z') &&
@@ -3683,7 +3683,7 @@ int  C_GUI::processKeyboard() {
             if(!focus_control) {
                 switch(ikey) {
                 case SDLK_UP:
-                    pGFX->pCamera->Move_Forward_Start();
+                    pGFX->pCamera->bMovingForward1=true; // Move_Forward_Start();
                     break;
                 case SDLK_DOWN:
                     pGFX->pCamera->Move_Backward_Start();
@@ -3715,54 +3715,30 @@ int  C_GUI::processKeyboard() {
 
 
 
-    pMouse->bDraw=1;
+
     if(pMouse->bRightDown) {
-            pMouse->bDraw=0;
-
-
+        pMouse->bDraw=0;
+        bWarped=0;
         if( (ilmx!=pMouse->ix) ||
             (ilmy!=pMouse->iy) ) {
             pGFX->pCamera->mouseMovement(pMouse->ix,pMouse->iy);
-
         }
 
          if(pMouse->bLeftDown) {
-                pGFX->pCamera->Move_Forward_Start();
+                pGFX->pCamera->bMovingForward2=true; // Move_Forward_Start();
          }
          else {
-            pGFX->pCamera->Move_Forward_Stop();
+            pGFX->pCamera->bMovingForward2=false; //Move_Forward_Stop();
          }
 
-
-
-        //pMouse->SetX(ilmx);
-        //pMouse->SetY(ilmy);
-        /*
-        //pGFX->pCamera->Move_Forward_Start();
-
-        if(pGFX->pCamera->lastx > pMouse->ix)
-            pGFX->pCamera->xrot++;
-
-        if(pGFX->pCamera->lasty > pMouse->iy)
-            pGFX->pCamera->yrot++;
-
-        if(pGFX->pCamera->lastx < pMouse->ix)
-            pGFX->pCamera->xrot--;
-
-        if(pGFX->pCamera->lasty < pMouse->iy)
-            pGFX->pCamera->yrot--;
-
-        //if( ( pGFX->pCamera->lastx != pMouse->ix) ||
-          //  ( pGFX->pCamera->lasty != pMouse->iy) )
-            //    SDL_WarpMouse(pGFX->pCamera->lastx,pGFX->pCamera->lasty);
-
-        pGFX->pCamera->lastx=pMouse->ix;
-        pGFX->pCamera->lasty=pMouse->iy;
-        */
     } else {
-
-        //pGFX->pCamera->Move_Forward_Stop();
+        pMouse->bDraw=1;
+        if(!bWarped) {
+            bWarped=true;
+            SDL_WarpMouse(ilmx,ilmy);
+        }
     }
+
     if((dlcs_get_tickcount()-KeyRepeatTimer)>600) {
         KeyRepeatTimer=dlcs_get_tickcount();
         for(int tkey=0; tkey<255; tkey++) {

@@ -22,6 +22,7 @@ void CTimer::Reset() {
 }
 bool CTimer::Up() {
     if((getticks()-currenttick) > duration) {
+        Reset();
         return true;
     }
     return false;

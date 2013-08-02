@@ -12,6 +12,7 @@
 #include "c_gaf.h"
 #include "c_gfx.h"
 #include "c_gl3dmodel.h"
+#include "c_timer.h";
 
 class CGLModel;
 class C_GFX;
@@ -133,6 +134,9 @@ public:
     int         iModelAnimFrame;    // The current frame of the current animation (NEW)
     CGLTexture* pTexture;           // use this texture for rendering (overrides pModel texture)
 
+    CTimer*     pSelectTimer;
+    bool        bSelectMode;
+
     // Movement
     CWayPoint*  pFirstWayPoint;
 
@@ -166,7 +170,7 @@ public:
     long    respawn_time_max;   // 0 = default; default is 5 minutes (30000)
     /*************************************************************************************************************************/
     void    Initialize(void);
-    void    Draw(void);
+    void    Draw(bool bSelecting);
     void    DrawLight(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
     bool    push_event(C_Entity *rcv_entity, int event, char *args, C_Entity *action_entity);
