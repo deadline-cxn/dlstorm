@@ -129,7 +129,6 @@ void C_Camera::Go() {
 }
 void C_Camera::Update() {
     if(pFollowEntity) {
-
         loc.x=pFollowEntity->loc.x;
         loc.y=pFollowEntity->loc.y;
         loc.z=pFollowEntity->loc.z;
@@ -139,16 +138,29 @@ void C_Camera::Update() {
         Move_Right();
         Move_Forward();
         Move_Backward();
+        Move_Up();
+        Move_Down();
+        Rotate_Left();
+        Rotate_Right();
     }
 }
-void C_Camera::Rotate_Left() { }
-void C_Camera::Rotate_Right() { }
+void C_Camera::Rotate_Left_Start() { bRotatingLeft=true; }
+void C_Camera::Rotate_Left_Stop()  { bRotatingLeft=false; }
+void C_Camera::Rotate_Left() {
+    if(!bRotatingLeft) return;
+    rot.y-=1.0f;
+}
+void C_Camera::Rotate_Right_Start() { bRotatingRight=true; }
+void C_Camera::Rotate_Right_Stop()  { bRotatingRight=false; }
+void C_Camera::Rotate_Right() {
+    if(!bRotatingRight) return;
+    rot.y+=1.0f;
+}
 void C_Camera::Move_Left_Start() { bMovingLeft=true; }
 void C_Camera::Move_Left_Stop() { bMovingLeft=false; }
 void C_Camera::Move_Left() {
     if(!bMovingLeft) return;
-    float yrotrad;
-    yrotrad = (rot.y / 180 * 3.141592654f);
+    float yrotrad = (rot.y / 180 * 3.141592654f);
     loc.x -= float(cos(yrotrad)) * scale.x;
     loc.z -= float(sin(yrotrad)) * scale.z;
 }
@@ -156,8 +168,7 @@ void C_Camera::Move_Right_Start() { bMovingRight=true; }
 void C_Camera::Move_Right_Stop() { bMovingRight=false; }
 void C_Camera::Move_Right() {
     if(!bMovingRight) return;
-    float yrotrad;
-    yrotrad = (rot.y / 180 * 3.141592654f);
+    float yrotrad = (rot.y / 180 * 3.141592654f);
     loc.x += float(cos(yrotrad)) * scale.x;
     loc.z += float(sin(yrotrad)) * scale.z;
 
@@ -190,6 +201,19 @@ void C_Camera::Move_Backward() {
     loc.y += float(sin(xrotrad));
     bounce += 0.04;
 }
+void C_Camera::Move_Up_Start() { bMovingUp=true; }
+void C_Camera::Move_Up_Stop()  { bMovingUp=false; }
+void C_Camera::Move_Up() {
+    if(!bMovingUp) return;
+    loc.y+=1.0f;
+}
+void C_Camera::Move_Down_Start() { bMovingDown=true; }
+void C_Camera::Move_Down_Stop()  { bMovingDown=false; }
+void C_Camera::Move_Down() {
+    if(!bMovingDown) return;
+    loc.y-=1.0f;
+}
+
 void C_Camera::mouseMovement(int x, int y) {
     static int lx;
     static int ly;
@@ -203,9 +227,9 @@ void C_Camera::mouseMovement(int x, int y) {
     if(y<ly) diffy=-1;
     rot.x += (float) diffy;
     rot.y += (float) diffx;
-    if(rot.x < -60.0f) rot.x=-60.0f;
-    if(rot.x > 60.0f)  rot.x=60.0f;
-    if(rot.y < -5000.0f) rot.y=0.0f;
+    //if(rot.x < -60.0f) rot.x=-60.0f;
+    //if(rot.x > 60.0f)  rot.x=60.0f;
+    //if(rot.y < -5000.0f) rot.y=0.0f;
     lx=x;
     ly=y;
 }
@@ -518,12 +542,14 @@ bool C_GFX::LoadModels(void) {
                         while(pModel->pNext) {
                             pModel=pModel->pNext;
                         }
-                        pModel->pNext=new CGLModel;
+                        pModel->pNext=new CGLModel(pLog);
                         pModel=pModel->pNext;
+                        pModel->pGFX=this;
                     }
                     else {
-                        pFirstModel=new CGLModel;
+                        pFirstModel=new CGLModel(pLog);
                         pModel=pFirstModel;
+                        pModel->pGFX=this;
                     }
 
                     if(!pModel->Load(szModelFilename)) {
@@ -1121,11 +1147,11 @@ void C_GFX::InitializeEntities(void) {
 
 
         switch(pNTT->type) {
-            case ENTITY_PLAYER:
+            //case ENTITY_PLAYER:
+            //case ENTITY_NPC:
+            //case ENTITY_NPC_SPAWN:
+            //case ENTITY_NPC_GENERATOR:
             case ENTITY_PLAYER_SPAWN:
-            case ENTITY_NPC:
-            case ENTITY_NPC_SPAWN:
-            case ENTITY_NPC_GENERATOR:
                 pNTT->pTexture=GetTexture("base/ntt.ankh.png");
                 break;
             case ENTITY_LIGHT:

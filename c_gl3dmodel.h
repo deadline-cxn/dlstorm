@@ -14,6 +14,8 @@
 #include "scene.h"
 #include "postprocess.h"
 
+class C_GFX;
+
 class CGLModel {
 public:
     CGLModel();
@@ -27,12 +29,21 @@ public:
     CGLModel*   pNext;
     CGLModel*   pPrev;
     CGAF*       pGAF;
+    C_GFX*      pGFX;
+
+    CGLModel*   nextMesh;
+    CGLTexture* pTexture;
+    char        texturename[1024];
+
+    int         numMeshes;
+    int         numMaterials;
+    int         numTriangles;
+    int         numUvCoords;
+
 
     float*  vertexArray;
     float*  normalArray;
     float*  uvArray;
-    int     numTriangles;
-    int     numUvCoords;
 
     bool Load(char* filename);
 

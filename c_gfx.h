@@ -68,17 +68,30 @@ public:
     void        Move_Right(void);
     void        Move_Right_Start(void);
     void        Move_Right_Stop(void);
+    void        Move_Up(void);
+    void        Move_Up_Start(void);
+    void        Move_Up_Stop(void);
+    void        Move_Down(void);
+    void        Move_Down_Start(void);
+    void        Move_Down_Stop(void);
+
     void        mouseMovement(int x, int y);
     C_Entity*   pFollowEntity;
     float       bounce;
     CVector3    loc;
     CVector3    rot;
     CVector3    scale;
+
     bool        bMovingLeft;
     bool        bMovingRight;
     bool        bMovingForward1;
     bool        bMovingForward2;
     bool        bMovingBackward;
+    bool        bMovingUp;
+    bool        bMovingDown;
+    bool        bRotatingLeft;
+    bool        bRotatingRight;
+
     float       angle;
     float       lastx;
     float       lasty;
@@ -120,7 +133,6 @@ public:
     CVector3    Sector;
     char        WindowCaption[1024];
     bool        bEditEntities;
-
 
     v3ops OpRot;
     v3ops OpLoc;

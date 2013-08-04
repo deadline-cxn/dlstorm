@@ -121,24 +121,20 @@ void C_Entity::DrawLight(void) {
 void C_Entity::Draw(bool bSelecting) {
     if(!pGFX) return;
 
-
-
     switch(type) {
 
         case ENTITY_INVISIBLE:
         case ENTITY_STATIC:
         case ENTITY_STATIC_ANIMATED:
         case ENTITY_PLAYER:
-        case ENTITY_PLAYER_SPAWN:
+        case ENTITY_NPC:
         case ENTITY_NPC_SPAWN:
         case ENTITY_NPC_GENERATOR:
             break;
 
-        case ENTITY_NPC:
+        case ENTITY_PLAYER_SPAWN:
         case ENTITY_SOUND:
         case ENTITY_AURA:
-
-            loc.y=3.0f;
             rot.x=0;
             rot.y=0;
             rot.z=0;
@@ -152,19 +148,16 @@ void C_Entity::Draw(bool bSelecting) {
             color.g=1.0f;
             color.b=1.0f;
             pModel=0;
+            if(!bSelecting) return;
             break;
 
         case ENTITY_LIGHT:
             pTexture=pGFX->GetTexture("base/ntt.light.png");
-            loc.y=3.0f;
             scale.x=0.5f;
             scale.y=0.5f;
             scale.z=0.5f;
-            color.r=1.0f;
-            color.g=1.0f;
-            color.b=1.0f;
             pModel=0;
-
+            if(!bSelecting) return;
             break;
 
         default:
