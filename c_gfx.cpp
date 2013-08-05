@@ -120,6 +120,10 @@ void C_Camera::Initialize() {
     bMovingForward2=0;
     bMovingLeft=0;
     bMovingRight=0;
+    bRotatingLeft=0;
+    bRotatingRight=0;
+    bMovingUp=0;
+    bMovingDown=0;
 }
 void C_Camera::Go() {
     glRotatef(rot.x,1.0f,0.0f,0.0f);
@@ -1095,112 +1099,101 @@ u_char C_GFX::GetFade(char cWhichFade) {
 }
 //////////////////////////////////////////////////////////////// ENTITY FUNCTIONS
 void C_GFX::InitializeEntities(void) {
+    ClearEntities();
+    int numntt;
+    numntt=300;
+    for(int i=0; i<numntt; i++)
+        MakeNewRandomEntity();
+    SelectEntity(pFirstNTT);
+}
+
+void C_GFX::MakeNewRandomEntity(void) {
     C_Entity* pNTT;
     pNTT=pFirstNTT;
-    while(pNTT) {
-        pFirstNTT=pNTT;
-        pNTT=pNTT->pNext;
-        DEL(pFirstNTT);
-    }
-    DEL(pFirstNTT);
-    int i,numntt;
-    numntt=100;
-    for(i=0; i<numntt; i++) {
+    if(!pNTT) {
+        pFirstNTT=new C_Entity(pLog,pGAF,this,0);
         pNTT=pFirstNTT;
-        if(!pNTT) {
-            pFirstNTT=new C_Entity(pLog,pGAF,this,0);
-            pNTT=pFirstNTT;
-            SelectEntity(pNTT);
-        }
-        else {
-            while(pNTT->pNext) {
-                pNTT=pNTT->pNext;
-            }
-            pNTT->pNext=new C_Entity(pLog,pGAF,this,0);
+    }
+    else {
+        while(pNTT->pNext) {
             pNTT=pNTT->pNext;
         }
-        strcpy(pNTT->name,va("Entity %d",i));
-        pNTT->loc.x = ( (float)rand()/(float)RAND_MAX)*550;
-        pNTT->loc.y = (((float)rand()/(float)RAND_MAX)*550)+20;
-        pNTT->loc.z = ( (float)rand()/(float)RAND_MAX)*550;
-        pNTT->rot.x = ( (float)rand()/(float)RAND_MAX)*360;
-        pNTT->rot.y = ( (float)rand()/(float)RAND_MAX)*360;
-        pNTT->rot.z = ( (float)rand()/(float)RAND_MAX)*360;
-        pNTT->autorot.x = ( (float)rand()/(float)RAND_MAX)*1.5f;
-        pNTT->autorot.y = ( (float)rand()/(float)RAND_MAX)*1.5f;
-        pNTT->autorot.z = ( (float)rand()/(float)RAND_MAX)*1.5f;
-        pNTT->scale.x = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
-        pNTT->scale.y = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
-        pNTT->scale.z = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+        pNTT->pNext=new C_Entity(pLog,pGAF,this,0);
+        pNTT=pNTT->pNext;
+    }
+    // strcpy(pNTT->name,va("Entity %d",i));
+    pNTT->loc.x     = (((float)rand()/(float)RAND_MAX)*1250)-625;
+    pNTT->loc.y     = (((float)rand()/(float)RAND_MAX)*500)+20;
+    pNTT->loc.z     = (((float)rand()/(float)RAND_MAX)*1250)-625;
+    pNTT->rot.x     = ( (float)rand()/(float)RAND_MAX)*360;
+    pNTT->rot.y     = ( (float)rand()/(float)RAND_MAX)*360;
+    pNTT->rot.z     = ( (float)rand()/(float)RAND_MAX)*360;
+    pNTT->autorot.x = ( (float)rand()/(float)RAND_MAX)*1.5f;
+    pNTT->autorot.y = ( (float)rand()/(float)RAND_MAX)*1.5f;
+    pNTT->autorot.z = ( (float)rand()/(float)RAND_MAX)*1.5f;
+    pNTT->scale.x   = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+    pNTT->scale.y   = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+    pNTT->scale.z   = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
+    pNTT->color.r   = 0.8f;
+    pNTT->color.g   = 0.8f;
+    pNTT->color.b   = 0.8f;
 
-        pNTT->color.r =0.8f;
-        pNTT->color.g =0.8f;
-        pNTT->color.b =0.8f;
+    pNTT->pTexture=GetRandomTexture();
 
-        pNTT->pTexture=GetRandomTexture();
-
-        pNTT->type  = ENTITY_STATIC;
-        if((rand()%100)>90) pNTT->type=ENTITY_LIGHT;
-        if((rand()%100)>90) pNTT->type=ENTITY_SOUND;
-        if((rand()%100)>90) pNTT->type=ENTITY_AURA;
-        if((rand()%100)>90) pNTT->type=ENTITY_NPC;
-
-
-        switch(pNTT->type) {
-            //case ENTITY_PLAYER:
-            //case ENTITY_NPC:
-            //case ENTITY_NPC_SPAWN:
-            //case ENTITY_NPC_GENERATOR:
-            case ENTITY_PLAYER_SPAWN:
-                pNTT->pTexture=GetTexture("base/ntt.ankh.png");
-                break;
-            case ENTITY_LIGHT:
-                pNTT->pTexture=GetTexture("base/ntt.light.png");
-                break;
-            case ENTITY_SOUND:
-                pNTT->pTexture=GetTexture("base/ntt.audio.png");
-                break;
-            case ENTITY_AURA:
-                pNTT->pTexture=GetTexture("base/ntt.aura.png");
-                break;
-            default:
-                break;
-        }
-
-        if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
+    pNTT->type  = ENTITY_STATIC;
+    if((rand()%100)>90) pNTT->type=ENTITY_LIGHT;
+    if((rand()%100)>90) pNTT->type=ENTITY_SOUND;
+    if((rand()%100)>90) pNTT->type=ENTITY_AURA;
+    if((rand()%100)>90) pNTT->type=ENTITY_NPC;
 
 
-        if( (rand()%100)> 50 ) {
-
-                pNTT->pModel=GetRandomModel();
-
-                pLog->_Add(" Entity :%s",pNTT->pModel->name);
-
-                if(dlcs_strcasecmp("models/testhouse2.ms3d",pNTT->pModel->name)) {
-                                    pNTT->pTexture=GetTexture("base/tile00003.png");
-                }
-
-
-                //pNTT->loc.x = 0.0f;
-                pNTT->loc.y = 0.0f;
-                //pNTT->loc.z = 0.0f;
-
-                pNTT->scale.x = 0.3f;
-                pNTT->scale.y = 0.3f;
-                pNTT->scale.z = 0.3f;
-
-                pNTT->rot.x = 0.0f;
-                // pNTT->rot.y = 0.0f;
-                pNTT->rot.z = 0.0f;
-
-                pNTT->autorot.x = 0.0f;
-                pNTT->autorot.y = 0.0f;
-                pNTT->autorot.z = 0.0f;
-        }
+    switch(pNTT->type) {
+        //case ENTITY_PLAYER:
+        //case ENTITY_NPC:
+        //case ENTITY_NPC_SPAWN:
+        //case ENTITY_NPC_GENERATOR:
+        case ENTITY_PLAYER_SPAWN:
+            pNTT->pTexture=GetTexture("base/ntt.ankh.png");
+            break;
+        case ENTITY_LIGHT:
+            pNTT->pTexture=GetTexture("base/ntt.light.png");
+            break;
+        case ENTITY_SOUND:
+            pNTT->pTexture=GetTexture("base/ntt.audio.png");
+            break;
+        case ENTITY_AURA:
+            pNTT->pTexture=GetTexture("base/ntt.aura.png");
+            break;
+        default:
+            break;
     }
 
-    DEL(pNTT);
+    if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
+
+    if( (rand()%100)> 50 ) {
+
+            pNTT->pModel=GetRandomModel();
+
+            pLog->_Add(" Entity :%s",pNTT->pModel->name);
+
+            if(dlcs_strcasecmp("models/testhouse2.ms3d",pNTT->pModel->name)) {
+                                pNTT->pTexture=GetTexture("base/tile00003.png");
+            }
+            //pNTT->loc.x = 0.0f;
+            pNTT->loc.y = 0.0f;
+            //pNTT->loc.z = 0.0f;
+            pNTT->scale.x = 0.3f;
+            pNTT->scale.y = 0.3f;
+            pNTT->scale.z = 0.3f;
+            pNTT->rot.x = 0.0f;
+            // pNTT->rot.y = 0.0f;
+            pNTT->rot.z = 0.0f;
+            pNTT->autorot.x = 0.0f;
+            pNTT->autorot.y = 0.0f;
+            pNTT->autorot.z = 0.0f;
+    }
 }
+
 void C_GFX::DrawEntities(void) {
     C_Entity* pNTT;
     pNTT=pFirstNTT;
@@ -1233,25 +1226,27 @@ void C_GFX::SelectEntity(C_Entity* pEntity) {
 }
 
 void C_GFX::SelectClosestEntity(void) {
-    float x,y;
+    CVector3 thisloc;
+    CVector3 v;
     C_Entity* pClosestEntity;
-    x=999999.0f;
-    y=999999.0f;
+    thisloc=pCamera->loc;
+    float dist;
+    float closestDist = 1000000000.0f;
+    pClosestEntity=0;
     C_Entity* pNTT;
     pNTT=pFirstNTT;
     while(pNTT) {
-        if((pCamera->loc.x-pNTT->loc.x)>x) {
-            x=(pCamera->loc.x-pNTT->loc.x);
-            pClosestEntity=pNTT;
-        }
-        if((pCamera->loc.y-pNTT->loc.y)>y) {
-            y=(pCamera->loc.y-pNTT->loc.y);
+        v.x=pNTT->loc.x-thisloc.x;
+        v.y=pNTT->loc.y-thisloc.y;
+        v.z=pNTT->loc.z-thisloc.z;
+        dist = (v.x * v.x) + (v.y * v.y) + (v.z * v.z); //Squared distance
+        if (dist < closestDist) {
+            closestDist = dist;
             pClosestEntity=pNTT;
         }
         pNTT=pNTT->pNext;
     }
-    pSelectedEntity=pClosestEntity;
-    pSelectedEntity->bSelected=true;
+    return pClosestEntity;
 }
 
 void C_GFX::ClearEntities(void) {

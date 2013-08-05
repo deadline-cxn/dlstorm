@@ -79,7 +79,7 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
     pFontTex=new CGLTexture(pLog);
     pFontTex->pGAF=pGAF;
     if(!pFontTex) return 0;
-    pFontTex->usemask=0;
+    // pFontTex->usemask=0;
     pFontTex->LoadPNG(va("%s",szFile));
     pFontList=glGenLists(256);                          // Creating 256 Display Lists
     glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);         // Select Our Font Texture
@@ -108,10 +108,12 @@ GLvoid CGLFont::Kill() {
         glDeleteLists(pFontList,256);
         pFontList=0;
     }
+    /*
     if(pFontMaskList)    {
         glDeleteLists(pFontMaskList,256);
         pFontMaskList=0;
     }
+    */
     DEL(pFontTex);
 }
 

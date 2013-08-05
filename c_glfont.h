@@ -44,8 +44,11 @@ public:
     u_char      g;                   // default g color
     u_char      b;                   // default b color
     GLuint      pFontList;          // Base Display List For The Font
-    GLuint      pFontMaskList;      // Base Display List For The Font
+
+    // GLuint      pFontMaskList;      // Base Display List For The Font
+
     CGLTexture* pFontTex;
+
     //GLuint    pFontTexture;       // Storage For Our Font Texture
     //GLuint    pFontMaskTexture;   // Storage For Our Font Texture
 

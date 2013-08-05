@@ -3073,7 +3073,7 @@ void C_GUI::drawB9utton(int x,int y, int w, int h) {
             B9utton[i].texture->pGAF=pGAF;
         }
         if(!B9utton[i].texture->Loaded()) {
-            B9utton[i].texture->usemask=0;
+            // B9utton[i].texture->usemask=0;
             B9utton[i].texture->LoadBMP(pGAF,va("buttons/b9_%03d.bmp",i),0);
             return;
         }
@@ -3097,7 +3097,7 @@ void C_GUI::drawGUIButton(int x, int y, int which, int size) {
         return;
     }
     if(!ButtonTexture[which].texture->Loaded()) {
-        ButtonTexture[which].texture->usemask=1;
+        // ButtonTexture[which].texture->usemask=1;
         ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }
@@ -3117,7 +3117,7 @@ void C_GUI::drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,u_char r, u
         return;
     }
     if(!ButtonTexture[which].texture->Loaded()) {
-        ButtonTexture[which].texture->usemask=1;
+        // ButtonTexture[which].texture->usemask=1;
         ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }
@@ -3154,7 +3154,7 @@ void C_GUI::drawButton(int which, int updown, int x, int y,int w, int h) {
         return;
     }
     if(!ButtonTexture[which].texture->Loaded()) {
-        ButtonTexture[which].texture->usemask=0;
+        // ButtonTexture[which].texture->usemask=0;
         ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
         return;
     }

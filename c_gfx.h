@@ -198,6 +198,7 @@ public:
     void        SelectEntity(C_Entity* pEntity);
     void        SelectClosestEntity(void);
     void        InitializeEntities(void);
+    void        MakeNewRandomEntity(void);
     void        ClearEntities(void);
     void        LoadEntities(CVector3 WhichSector);
     void        SaveEntities(CVector3 WhichSector);

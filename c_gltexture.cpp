@@ -8,66 +8,56 @@
 #include "c_gltexture.h"
 #include "glerrors.h"
 #include "SDL.h"
+extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 
 CGLTexture::CGLTexture() {
     pNext=0;
     Initialize();
 }
-
 CGLTexture::CGLTexture(CLog *pInLog) {
     pNext=0;
     Initialize();
     bMadeLog=false;
     pLog=pInLog;
 }
-
 CGLTexture::CGLTexture(CGAF *pGAF,char *fname) {
     Initialize();
     LoadBMP(pGAF,fname,0);
 }
-
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname) {
     Initialize();
     bMadeLog=false;
     pLog=pInLog;
     LoadBMP(pGAF,fname,0);
 }
-
 CGLTexture::CGLTexture(CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
-    usemask=fmask;
+//    usemask=fmask;
     LoadBMP(pGAF,fname,0);
 }
-
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
     bMadeLog=false;
     pLog=pInLog;
-    usemask=fmask;
+    // usemask=fmask;
     LoadBMP(pGAF,fname,0);
 }
-
-/****************************************************************************************************/
 CGLTexture::~CGLTexture() {
     if(bMadeLog) DEL(pLog);
     glDEL(bmap);
     bmap=0;
-    glDEL(mask);
-    mask=0;
+    // glDEL(mask);    mask=0;
 }
-
-void CGLTexture::Initialize() {
+void    CGLTexture::Initialize() {
     pLog=0;
     bMadeLog=true;
     pNext=0;
     bmap=0;
-    mask=0;
-    usemask=0;
+    // mask=0; usemask=0;
     memset(tfilename,0,1024);
     memset(name,0,1024);
 }
-
-bool CGLTexture::Create(int x, int y) {
+bool    CGLTexture::Create(int x, int y) {
     width=x;
     height=y;
     glDEL(bmap);
@@ -84,7 +74,7 @@ bool CGLTexture::Create(int x, int y) {
     if(pLog) pLog->_DebugAdd("CGLTexture::Create() -> created a texture!");
     return 1;
 }
-bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
+bool    CGLTexture::Clear(u_char R,u_char G,u_char B) {
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
@@ -119,7 +109,8 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
     return 1;
 }
 
-bool CGLTexture::ClearMask(u_char R,u_char G,u_char B) {
+/*
+bool    CGLTexture::ClearMask(u_char R,u_char G,u_char B) {
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
@@ -153,14 +144,17 @@ bool CGLTexture::ClearMask(u_char R,u_char G,u_char B) {
     glEnable(GL_DEPTH_TEST);
     return 1;
 }
+*/
 
-bool CGLTexture::Transparent(bool trans) {
+/*
+bool    CGLTexture::Transparent(bool trans) {
+
     if(trans) {
         if((width==0)||(height==0)) {
             width=1024;
             height=1024;
         }
-        mask=0;
+        // mask=0;
         unsigned int* data;
         data = (unsigned int*)new GLuint[((width * height)* 4 * sizeof(unsigned int))];
         memset(data,((width * height)* 4 * sizeof(unsigned int)),0);
@@ -177,23 +171,16 @@ bool CGLTexture::Transparent(bool trans) {
         usemask=0;
         if(pLog) pLog->_DebugAdd("CGLTexture::Transparent() set texture to not use transparency...");
     }
+
     return 1;
 }
-
-/****************************************************************************************************/
-
-bool   CGLTexture::Loaded(void) {
-    if(bmap) {
-        if(usemask) if(!mask) return 0;
-        return 1;
-    }
-    return 0;
+  */
+bool    CGLTexture::Loaded(void) {
+    if(bmap) return true;
+    // {     if(usemask) if(!mask) return 0;        return 1;    }    return 0;
+    return false;
 }
-
-extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
-
-/****************************************************************************************************/
-GLuint CGLTexture::LoadPNG(const char *filename) {
+GLuint  CGLTexture::LoadPNG(const char *filename) {
 
     strcpy(tfilename,filename);
     int width;
@@ -331,9 +318,7 @@ GLuint CGLTexture::LoadPNG(const char *filename) {
     return bmap;
 
 }
-
-/****************************************************************************************************/
-GLuint CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
+GLuint  CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
     /*
         pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> Start");
 
@@ -486,44 +471,34 @@ GLuint CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
     if(!pGAF)               return 0;
     char filename2[1024];
     memset(filename2,0,1024);
-    char maskfile[1024];
-    memset(maskfile,0,1024);
+    //     char maskfile[1024];    memset(maskfile,0,1024);
     char ax,ay,az;
     int x, y;
     GAF_FileBuffer nfbuf1;
     nfbuf1.fb=0;
     nfbuf1.Size=0;
-    GAF_FileBuffer nfbuf2;
-    nfbuf2.fb=0;
-    nfbuf2.Size=0;
+    // GAF_FileBuffer nfbuf2;    nfbuf2.fb=0;     nfbuf2.Size=0; //     glDEL(mask);
     glDEL(bmap);
-    glDEL(mask);
     ax=filename[strlen(filename)-3];
     ay=filename[strlen(filename)-2];
     az=filename[strlen(filename)-1];
     strcpy(filename2,filename);
     filename2[strlen(filename2)-4]=0;
-    sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
+    // sprintf(maskfile,"%smask.%c%c%c",filename2,ax,ay,az);
     nfbuf1=pGAF->GetFile((LPSTR)filename);
-
     if(nfbuf1.fb) {
-
         x=nfbuf1.fb[18]+nfbuf1.fb[19]*256+nfbuf1.fb[20]*512+nfbuf1.fb[21]*1024;
         y=nfbuf1.fb[22]+nfbuf1.fb[23]*256+nfbuf1.fb[24]*512+nfbuf1.fb[25]*1024;
-
         pLog->_DebugAdd("GAF INFO: nfbuf1.Size= %d nfbuf1.fb  = %d(address)\n",nfbuf1.Size,nfbuf1.fb);
         pLog->_DebugAdd("IMAGE   : Filename   = %s     OPENGL[%d] WIDTH: %d  HEIGHT: %d \n",filename,bmap,x,y);
-
         glGenTextures(1, &bmap);
         glBindTexture(GL_TEXTURE_2D, bmap);
         glTexImage2D( GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, nfbuf1.fb+54);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFlush();
-
-
-
     }
+    /*
     nfbuf2=pGAF->GetFile(maskfile);
     if(nfbuf2.fb) {
         x=nfbuf2.fb[18]+nfbuf2.fb[19]*256+nfbuf2.fb[20]*512+nfbuf2.fb[22]*1024;
@@ -536,39 +511,34 @@ GLuint CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
         if(pLog) pLog->_DebugAdd("      \\--> Mask found: %s OPENGL[%d] WIDTH:%d HEIGHT:%d",maskfile,mask,x,y);
         usemask=1;
     }
+    */
     return 1;
 
 }
-/****************************************************************************************************/
-bool CGLTexture::ReLoad(void) {
+bool    CGLTexture::ReLoad(void) {
     if(!strlen(tfilename)) {
         if(pLog) pLog->_DebugAdd("CGLTexture::ReLoad() (could not produce tfilename)");
         return 0;
     }
     return (LoadBMP(pGAF,tfilename,0)?0:1);
 }
-
-bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) {
+bool    CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) {
     return Draw2d(x,y,x2,y2,r,g,b,255,255,255);
 }
-
-bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) {
+bool    CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) {
     return Draw(x,y,x2,y2,r,g,b,255,255,255);
 }
-
-bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
+bool    CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
     if(!bmap) {
         LoadBMP(pGAF,tfilename,1);
         return 0;
     }
-    if(usemask) if(!mask) {
-            LoadBMP(pGAF,tfilename,1);
-            return 0;
-        }
+    //     if(usemask) if(!mask) {            LoadBMP(pGAF,tfilename,1);            return 0;        }
     int x3=(x2-x);
     int y3=(y2-y);
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
+    /*
     if(usemask) {
         ////////////////////////////////////////////////////////
         // draw mask
@@ -643,6 +613,7 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
         glPopMatrix();
         glEnable(GL_DEPTH_TEST);
     } else {
+    */
         glDisable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE);
         glDisable(GL_DEPTH_TEST);
@@ -677,13 +648,12 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
         glEnable(GL_DEPTH_TEST);
-    }
+
+    /// }
 
     return 1;
 }
-
-
-bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {//Draw(int x,int y,int x2,int y2,long color)
+bool    CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {//Draw(int x,int y,int x2,int y2,long color)
     if(!bmap) { LoadPNG(tfilename); return 0; }
     int x3=(x2-x);
     int y3=(y2-y);
@@ -725,8 +695,7 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
     glEnable(GL_DEPTH_TEST);
     return 1;
 }
-
-bool CGLTexture::DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
+bool    CGLTexture::DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
     int x3=(x2-x);
     int y3=(y2-y);
     x=x/2;
