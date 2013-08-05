@@ -3,186 +3,253 @@
     Author: Seth Parson
 ****************************************************************/
 #include "c_gl3dmodel.h"
-CGLModel::CGLModel() {
-    memset(name,0,1024);
-    nextMesh=0;
+
+
+CGLMaterial::CGLMaterial() { Initialize(); }
+CGLMaterial::~CGLMaterial() {}
+void CGLMaterial::Initialize() {
+    iMaterialIndex=0;
     pNext=0;
-    pPrev=0;
-    pLog=0;
+    memset(DiffuseTexture,0,1024);
+    memset(NormalTexture,0,1024);
+    memset(HeightTexture,0,1024);
+    memset(OpacityTexture,0,1024);
+    memset(ShininessTexture,0,1024);
+    memset(SpecularTexture,0,1024);
+}
+
+CGLMesh::CGLMesh() { Initialize(); }
+CGLMesh::~CGLMesh() {
+    if(vertexArray) delete [] vertexArray;
+    if(normalArray) delete [] normalArray;
+    if(uvArray)     delete [] uvArray;
+}
+void CGLMesh::Initialize(){
+    pNext=0;
+    iMeshIndex=0;
+    numTriangles=0;
+    numUvCoords=0;
+    vertexArray=0;
+    normalArray=0;
+    uvArray=0;
+}
+
+CGLModel::CGLModel() {
+    Initialize();
     bMadeLog=1;
     pLog=new CLog("CGLModel.log");
     pLog->Restart();
     pLog->_DebugAdd("CGLModel::CGLModel()");
 }
-CGLModel::CGLModel(CLog *pInLog) {
-    memset(name,0,1024);
-    nextMesh=0;
-    pNext=0;
-    pPrev=0;
-    pLog=0;
+CGLModel::CGLModel(C_GFX* pinGFX, CLog *pInLog) {
+    Initialize();
+    pGFX=pinGFX;
     bMadeLog=0;
     pLog=pInLog;
     pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
 }
 CGLModel::~CGLModel() {
-    DEL(nextMesh);
-    if(vertexArray) delete [] vertexArray;
-    if(normalArray) delete [] normalArray;
-    if(uvArray) delete [] uvArray;
-    if(bMadeLog) DEL(pLog);
+
+    if(bMadeLog)    DEL(pLog);
+}
+void CGLModel::Initialize() {
+    memset(name,0,1024);
+    pNext=0;
+    pPrev=0;
+    pLog=0;
+    pGAF=0;
+    bMadeLog=0;
+    pFirstMesh=0;
+    pFirstMaterial=0;
+    numMeshes=0;
+    numMaterials=0;
 
 }
 bool CGLModel::Load(char* filename) {
 
-
-    CGLModel* whichModel;
-    whichModel=this;
-    memset(texturename,0,1024);
+    pLog->_Add("============================================================");
+    CGLMaterial* pMat;
+    CGLMesh*     pMesh;
     strcpy(name,filename);
-
     const aiScene *scene = aiImportFile(filename,aiProcessPreset_TargetRealtime_MaxQuality); // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
-
-    if(!scene) return false;
+    if(!scene) {
+        pLog->_Add("Model load error %s",filename);
+        pLog->_Add("============================================================");
+        return false;
+    }
 
     numMaterials=scene->mNumMaterials;
     numMeshes=scene->mNumMeshes;
-
-    pLog->_Add(" MESHES[%d] MATERIALS[%d]\n",numMeshes,numMaterials);
-
+    pLog->_Add("MODEL[%s] MESHES[%d] MATERIALS[%d]",name,numMeshes,numMaterials);
 
     for(int i=0;i<numMaterials;i++) {
+        pMat=pFirstMaterial;
+        if(pMat) {
+            while(pMat->pNext) {
+                pMat=pMat->pNext;
+            }
+            pMat->pNext=new CGLMaterial;
+            pMat=pMat->pNext;
 
-        aiMaterial *material = scene->mMaterials[i];
-
-
-        aiString name;
-        material->Get(AI_MATKEY_NAME ,name);
-
-
-        aiString l_difTexName;
-        aiString l_nmlTexName;
-        aiString l_hgtTexName;
-        aiString l_opaTexName;
-        aiString l_shnTexName;
-        aiString l_spcTexName;
-
-        material->Get( AI_MATKEY_TEXTURE( aiTextureType_DIFFUSE,	0 ), l_difTexName	);
-		material->Get( AI_MATKEY_TEXTURE( aiTextureType_NORMALS,	0 ), l_nmlTexName	);
-		material->Get( AI_MATKEY_TEXTURE( aiTextureType_HEIGHT,	    0 ), l_hgtTexName	);
-		material->Get( AI_MATKEY_TEXTURE( aiTextureType_OPACITY,	0 ), l_opaTexName	);
-		material->Get( AI_MATKEY_TEXTURE( aiTextureType_SHININESS,	0 ), l_shnTexName	);
-		material->Get( AI_MATKEY_TEXTURE( aiTextureType_SPECULAR,	0 ), l_spcTexName	);
-
-        pLog->_Add(" MATERIALS[%d] [%s]\nDIFFUSE  [%s]\nNORMALS  [%s]\nHEIGHT   [%s]\nOPACITY  [%s]\nSHININESS[%s]\nSPECULAR [%s] \n",i,
-        name.C_Str(),
-        l_difTexName.C_Str(),
-        l_nmlTexName.C_Str(),
-        l_hgtTexName.C_Str(),
-        l_opaTexName.C_Str(),
-        l_shnTexName.C_Str(),
-        l_spcTexName.C_Str() );
-
-
-        if(texturename[0]==0) {
-            strcpy(texturename,l_difTexName.C_Str()+3);
-            for(int i=0;i<strlen(texturename);i++)
-                if(texturename[i]=='\\')
-                texturename[i]='/';
-            pLog->_Add(" TEXTURE: [%s]",texturename);
+        } else {
+            pFirstMaterial=new CGLMaterial;
+            pMat=pFirstMaterial;
         }
-
-
+        pMat->iMaterialIndex=i;
+        aiMaterial *material = scene->mMaterials[i];
+        aiString mname;
+        material->Get(AI_MATKEY_NAME , mname);
+        strcpy(pMat->name,mname.C_Str());
+        mname.Clear();
+        material->Get( AI_MATKEY_TEXTURE( aiTextureType_DIFFUSE,	0 ), mname	);
+        strcpy(pMat->DiffuseTexture,mname.C_Str());
+        while(  (pMat->DiffuseTexture[0]=='.')  ||
+                (pMat->DiffuseTexture[0]=='\\') )
+            for(int z=0;z<strlen(pMat->DiffuseTexture);z++)
+                pMat->DiffuseTexture[z]=pMat->DiffuseTexture[z+1];
+        dlcs_charreplace(pMat->DiffuseTexture,'\\','/');
+        mname.Clear();
+/*
+        pLog->_Add(" MATERIAL[%s][%d] DIFFUSETEXTURE:[%s] ",pMat->name,i,pMat->DiffuseTexture);
+        material->Get( AI_MATKEY_TEXTURE( aiTextureType_NORMALS,	0 ), mname	);
+        strcpy(pMat->NormalTexture,mname.C_Str()+3);
+        mname.Clear();
+        pLog->_Add(" MATERIAL[%s][%d] NORMALTEXTURE:[%s] ",pMat->name,i,pMat->NormalTexture);
+        material->Get( AI_MATKEY_TEXTURE( aiTextureType_HEIGHT,	    0 ), mname	);
+        strcpy(pMat->HeightTexture,mname.C_Str()+3);
+        mname.Clear();
+        pLog->_Add(" MATERIAL[%s][%d] HEIGHTTEXTURE:[%s] ",pMat->name,i,pMat->HeightTexture);
+        material->Get( AI_MATKEY_TEXTURE( aiTextureType_OPACITY,	0 ), mname	);
+        strcpy(pMat->OpacityTexture,mname.C_Str()+3);
+        pLog->_Add(" MATERIAL[%s][%d] OPACITYTEXTURE:[%s] ",pMat->name,i,pMat->OpacityTexture);
+        material->Get( AI_MATKEY_TEXTURE( aiTextureType_SHININESS,	0 ), mname	);
+        strcpy(pMat->ShininessTexture,mname.C_Str()+3);
+        pLog->_Add(" MATERIAL[%s][%d] SHININESSTEXTURE:[%s] ",pMat->name,i,pMat->ShininessTexture);
+        material->Get( AI_MATKEY_TEXTURE( aiTextureType_SPECULAR,	0 ), mname	);
+        strcpy(pMat->SpecularTexture,mname.C_Str()+3);
+        pLog->_Add(" MATERIAL[%s][%d] SPECULARTEXTURE:[%s] ",pMat->name,i,pMat->SpecularTexture);
+        */
     }
+
 
 
     for(int i=0;i<numMeshes;i++) {
 
-        aiMesh *mesh = scene->mMeshes[i];
-
-        //mesh->mFaces
-        //mesh->mVertices
-
-        pLog->_Add(" MESH[%s][%d] MATERIAL INDEX[%d]",mesh->mName.C_Str(),i,mesh->mMaterialIndex);
-
-
-        if(whichModel) {
-
-            whichModel->numTriangles = mesh->mNumFaces*3;
-            int index=0;
-            whichModel->numUvCoords = mesh->GetNumUVChannels();
-
-            whichModel->vertexArray = new float[mesh->mNumFaces*3*3];
-            whichModel->normalArray = new float[mesh->mNumFaces*3*3];
-            whichModel->uvArray     = new float[mesh->mNumFaces*3*2];
-
-            for(unsigned int i=0;i<mesh->mNumFaces;i++) {
-                const aiFace& face = mesh->mFaces[i];
-                for(int j=0;j<3;j++) {
-                    aiVector3D uv = mesh->mTextureCoords[0][face.mIndices[j]];
-                    memcpy(whichModel->uvArray,&uv,sizeof(float)*2);
-                    whichModel->uvArray+=2;
-
-                    aiVector3D normal = mesh->mNormals[face.mIndices[j]];
-                    memcpy(whichModel->normalArray,&normal,sizeof(float)*3);
-                    whichModel->normalArray+=3;
-
-                    aiVector3D pos = mesh->mVertices[face.mIndices[j]];
-                    memcpy(whichModel->vertexArray,&pos,sizeof(float)*3);
-                    whichModel->vertexArray+=3;
-                }
+        pMesh=pFirstMesh;
+        if(pMesh) {
+            while(pMesh->pNext) {
+                pMesh=pMesh->pNext;
             }
+            pMesh->pNext=new CGLMesh;
+            pMesh=pMesh->pNext;
 
-            whichModel->uvArray     -= mesh->mNumFaces*3*2;
-            whichModel->normalArray -= mesh->mNumFaces*3*3;
-            whichModel->vertexArray -= mesh->mNumFaces*3*3;
+        } else {
+            pFirstMesh=new CGLMesh;
+            pMesh=pFirstMesh;
+        }
 
-            if(i<numMeshes) {
-                whichModel->nextMesh=new CGLModel;
-                whichModel=whichModel->nextMesh;
+        aiMesh *inMesh = scene->mMeshes[i];
+
+        pMesh->iMeshIndex       = i;
+        pMesh->iMaterialIndex   = inMesh->mMaterialIndex;
+        pMesh->numTriangles     = inMesh->mNumFaces*3;
+        pMesh->numUvCoords      = inMesh->GetNumUVChannels();
+
+
+        pLog->_Add("Meshindex[%d] MaterialIndex[%d] NumTri[%d] NumUV[%d]",
+                        pMesh->iMeshIndex,
+                        pMesh->iMaterialIndex,
+                        pMesh->numTriangles,
+                        pMesh->numUvCoords
+                   );
+
+        pMesh->vertexArray  = new float[inMesh->mNumFaces*3*3];
+        pMesh->normalArray  = new float[inMesh->mNumFaces*3*3];
+        pMesh->uvArray      = new float[inMesh->mNumFaces*3*2];
+
+        for(unsigned int k=0;k<inMesh->mNumFaces;k++) {
+            const aiFace& face = inMesh->mFaces[k];
+            for(int j=0;j<3;j++) {
+                aiVector3D uv = inMesh->mTextureCoords[0][face.mIndices[j]];
+                memcpy(pMesh->uvArray,&uv,sizeof(float)*2);
+                pMesh->uvArray+=2;
+
+                aiVector3D normal = inMesh->mNormals[face.mIndices[j]];
+                memcpy(pMesh->normalArray,&normal,sizeof(float)*3);
+                pMesh->normalArray+=3;
+
+                aiVector3D pos = inMesh->mVertices[face.mIndices[j]];
+                memcpy(pMesh->vertexArray,&pos,sizeof(float)*3);
+                pMesh->vertexArray+=3;
             }
         }
-    }
-}
 
-bool CGLModel::RenderSceneDraw(void) {
-    pLog->_DebugAdd("CGLModel::RenderSceneDraw(void)");
+        pMesh->uvArray      -= inMesh->mNumFaces*3*2;
+        pMesh->normalArray  -= inMesh->mNumFaces*3*3;
+        pMesh->vertexArray  -= inMesh->mNumFaces*3*3;
+
+    }
+
+    pLog->_Add("Model loaded: %s (%d)",name,this);
+    pLog->_Add("============================================================");
     return true;
 }
+
+CGLMesh* CGLModel::GetMesh(int x){
+    CGLMesh* pMesh;
+    pMesh=pFirstMesh;
+    while(pMesh) {
+        if(pMesh->iMeshIndex==x) return pMesh;
+        pMesh=pMesh->pNext;
+    }
+    return 0;
+}
+CGLMaterial* CGLModel::GetMaterial(int x){
+    CGLMaterial* pMat;
+    pMat=pFirstMaterial;
+    while(pMat) {
+        if(pMat->iMaterialIndex==x) return pMat;
+        pMat=pMat->pNext;
+    }
+    return 0;
+}
+CGLMaterial* CGLModel::GetMaterial(char* inDiffuseTex){
+    CGLMaterial* pMat;
+    pMat=pFirstMaterial;
+    while(pMat) {
+        if(dlcs_strcasecmp(pMat->DiffuseTexture,inDiffuseTex)) return pMat;
+        pMat=pMat->pNext;
+    }
+    return 0;
+}
+
+
 bool CGLModel::Draw(void) {
+    if(!pGFX) return 0;
+    CGLMesh* pMesh;
+    CGLMaterial* pMat;
 
-    CGLModel* wModel;
-    wModel=this;
+    pMesh=pFirstMesh;
+    while(pMesh) {
 
-    while(wModel){
-
-        //  glClientActiveTexture(GL_TEXTURE0_ARB);
-        if(pGFX) {
-            //pLog->_Add("pGFX=[%d]",pGFX);
-            if(pGFX->GetTexture(texturename)) {
-                //pLog->_Add("texturename=[%s] pGFX->GetTexture(texturename)=[%d]",texturename,pGFX->GetTexture(texturename));
-                if(pGFX->GetTexture(texturename)->bmap) {
-                    //pLog->_Add("TEXTURE BIND [%s] OPENGL[%d]",texturename,pGFX->GetTexture(texturename)->bmap);
-                    glBindTexture(GL_TEXTURE_2D,pGFX->GetTexture(texturename)->bmap);
-                }
-            }
-        }
+        pMat=GetMaterial(pMesh->iMaterialIndex);
+        if(pGFX->GetTexture(pMat->DiffuseTexture))
+           if(pGFX->GetTexture(pMat->DiffuseTexture)->bmap)
+                glBindTexture(GL_TEXTURE_2D,pGFX->GetTexture(pMat->DiffuseTexture)->bmap);
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);   //  glClientActiveTexture(GL_TEXTURE0_ARB);
 
-        glVertexPointer(3,GL_FLOAT,0,wModel->vertexArray);
-        glNormalPointer(GL_FLOAT,0,wModel->normalArray);
-
-
-        glTexCoordPointer(2,GL_FLOAT,0,wModel->uvArray);
-
-        glDrawArrays(GL_TRIANGLES,0,wModel->numTriangles);
-
+        glVertexPointer(3,GL_FLOAT,0,   pMesh->vertexArray);
+        glNormalPointer(GL_FLOAT,0,     pMesh->normalArray);
+        glTexCoordPointer(2,GL_FLOAT,0, pMesh->uvArray);
+        glDrawArrays(GL_TRIANGLES,0,    pMesh->numTriangles);
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_NORMAL_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-        wModel=wModel->nextMesh;
+
+        pMesh=pMesh->pNext;
     }
     return true;
 }

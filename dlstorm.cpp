@@ -174,6 +174,15 @@ inline int length(const char* s) {
     return s?strlen(s):0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+char *dlcs_charreplace(char *str, char cold,char cnew) {
+    for(int i=0; i<(int)strlen(str); i++) {
+        if(str[i]==cold)
+            str[i]=cnew;
+    }
+    return (str);
+}
+
 char* dlcs_strreplace(char *str, const char* what, const char* to) {
     int i, j, k, m, n, delta;
     int n1, n2, n3;
@@ -239,14 +248,6 @@ char *encrypt(char *text) {
 char *decrypt(char *text) {
 
     return (text);
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_charreplace(char *str, char cold,char cnew) {
-    for(int i=0; i<(int)strlen(str); i++) {
-        if(str[i]==cold)
-            str[i]=cnew;
-    }
-    return (str);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 char *dlcs_get_time(char *x) {

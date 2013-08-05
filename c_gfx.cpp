@@ -539,21 +539,19 @@ bool C_GFX::LoadModels(void) {
             } else {
                 if(!sp_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
-                    pLog->AddEntry("Model found %s\n",szModelFilename);
+                    // pLog->AddEntry("Model found %s\n",szModelFilename);
 
                     pModel=pFirstModel;
                     if(pModel) {
                         while(pModel->pNext) {
                             pModel=pModel->pNext;
                         }
-                        pModel->pNext=new CGLModel(pLog);
+                        pModel->pNext=new CGLModel(this,pLog);
                         pModel=pModel->pNext;
-                        pModel->pGFX=this;
                     }
                     else {
-                        pFirstModel=new CGLModel(pLog);
+                        pFirstModel=new CGLModel(this,pLog);
                         pModel=pFirstModel;
-                        pModel->pGFX=this;
                     }
 
                     if(!pModel->Load(szModelFilename)) {
@@ -569,11 +567,11 @@ bool C_GFX::LoadModels(void) {
                             }
                             DEL(pModel);
                         }
-                        pLog->AddEntry("Model load error %s\n",szModelFilename);
+
 
                     }
                     else {
-                        pLog->AddEntry("Found model: %s (%d)\n",pModel->name,pModel);
+
                     }
                 }
             }

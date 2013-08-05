@@ -119,6 +119,7 @@ void C_Entity::DrawLight(void) {
 
 }
 void C_Entity::Draw(bool bSelecting) {
+
     if(!pGFX) return;
 
     switch(type) {
@@ -168,8 +169,6 @@ void C_Entity::Draw(bool bSelecting) {
     rot.x+=autorot.x;
     rot.y+=autorot.y;
     rot.z+=autorot.z;
-
-    // glLoadIdentity();
 
     glPushMatrix();
 

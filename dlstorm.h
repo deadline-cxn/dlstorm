@@ -70,6 +70,7 @@ int		dlcs_str2mem(char *string, char &mem);
 
 char   *sp_charreplace(char *str, char cold,char cnew);
 char   *dlcs_charreplace(char *str, char cold,char cnew);
+char*  dlcs_strreplace(char *str, const char* what, const char* to);
 
 char   *dlcs_get_time(char *x);
 char   *dlcs_convert_time(char *x,struct tm*);
