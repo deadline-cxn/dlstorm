@@ -9,8 +9,8 @@
 #ifndef _EMBER_GFX_UTIL
 #define _EMBER_GFX_UTIL
 
-class CVector2 { public: float x, y; };
-class CVector3 { public: float x, y, z; };
+typedef struct CVector2 { float x, y; };
+typedef struct CVector3 { float x, y, z; };
 class CColor3  { public: float r, g, b; };
 class CTexCoord { public: float u,v; };
 struct tFace   { int vertIndex[3]; int coordIndex[3]; };
@@ -198,7 +198,8 @@ public:
     void        SelectEntity(C_Entity* pEntity);
     void        SelectClosestEntity(void);
     void        InitializeEntities(void);
-    void        MakeNewRandomEntity(void);
+    C_Entity*   MakeEntity(char* name,float x, float y, float z);
+    void        DeleteEntity(C_Entity* pEntity);
     void        ClearEntities(void);
     void        LoadEntities(CVector3 WhichSector);
     void        SaveEntities(CVector3 WhichSector);
