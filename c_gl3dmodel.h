@@ -72,7 +72,7 @@ public:
 
     void         Initialize(void);
     bool         Load(char* filename);
-    bool         Draw(void);
+    bool         Draw(CGLTexture* pTexture);
     CGLMesh*     GetMesh(int x);
     CGLMaterial* GetMaterial(int x);
     CGLMaterial* GetMaterial(char* inDiffuseTex);

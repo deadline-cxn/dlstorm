@@ -1149,7 +1149,6 @@ C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
         if((rand()%100)>90) pNTT->type=ENTITY_AURA;
         if((rand()%100)>90) pNTT->type=ENTITY_NPC;
 
-
         switch(pNTT->type) {
             //case ENTITY_PLAYER:
             //case ENTITY_NPC:
@@ -1176,12 +1175,10 @@ C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
         if( (rand()%100)> 50 ) {
 
                 pNTT->pModel=GetRandomModel();
+                pNTT->pTexture=0;
 
                 pLog->_Add(" Entity :%s",pNTT->pModel->name);
 
-                if(dlcs_strcasecmp("models/testhouse2.ms3d",pNTT->pModel->name)) {
-                                    pNTT->pTexture=GetTexture("base/tile00003.png");
-                }
                 //pNTT->loc.x = 0.0f;
                 pNTT->loc.y = 0.0f;
                 //pNTT->loc.z = 0.0f;

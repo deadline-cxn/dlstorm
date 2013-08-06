@@ -199,7 +199,7 @@ void C_Entity::Draw(bool bSelecting) {
 
 
     if(pModel) {
-        pModel->Draw();
+        pModel->Draw(pTexture);
     } else {
         if(pTexture) {
             if(pTexture->bmap) {

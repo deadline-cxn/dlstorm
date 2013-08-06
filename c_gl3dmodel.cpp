@@ -49,8 +49,22 @@ CGLModel::CGLModel(C_GFX* pinGFX, CLog *pInLog) {
     pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
 }
 CGLModel::~CGLModel() {
-
-    if(bMadeLog)    DEL(pLog);
+    CGLMesh* pMesh;
+    CGLMaterial* pMat;
+    pMesh=pFirstMesh;
+    while(pMesh) {
+        pFirstMesh=pMesh;
+        pMesh=pMesh->pNext;
+        DEL(pFirstMesh);
+    }
+    pMat=pFirstMaterial;
+    while(pMat) {
+        pFirstMaterial=pMat;
+        pMat=pMat->pNext;
+        DEL(pFirstMaterial);
+    }
+    if(bMadeLog)
+        DEL(pLog);
 }
 void CGLModel::Initialize() {
     memset(name,0,1024);
@@ -224,18 +238,31 @@ CGLMaterial* CGLModel::GetMaterial(char* inDiffuseTex){
 }
 
 
-bool CGLModel::Draw(void) {
+bool CGLModel::Draw(CGLTexture* pTexture) {
     if(!pGFX) return 0;
+    bool bMatFound;
     CGLMesh* pMesh;
     CGLMaterial* pMat;
 
     pMesh=pFirstMesh;
     while(pMesh) {
-
+        bMatFound=false;
         pMat=GetMaterial(pMesh->iMaterialIndex);
-        if(pGFX->GetTexture(pMat->DiffuseTexture))
-           if(pGFX->GetTexture(pMat->DiffuseTexture)->bmap)
+        if(pGFX->GetTexture(pMat->DiffuseTexture)) {
+           if(pGFX->GetTexture(pMat->DiffuseTexture)->bmap) {
                 glBindTexture(GL_TEXTURE_2D,pGFX->GetTexture(pMat->DiffuseTexture)->bmap);
+                bMatFound=true;
+           }
+        }
+        if(pTexture) {
+            if(pTexture->bmap) {
+                glBindTexture(GL_TEXTURE_2D,pTexture->bmap);
+                bMatFound=true;
+            }
+        }
+        if(!bMatFound) {
+            glBindTexture(GL_TEXTURE_2D,pGFX->pDefaultTexture->bmap);
+        }
 
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);
