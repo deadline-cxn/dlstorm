@@ -26,7 +26,8 @@ struct Image {
     int type;
     char *data;
 }; // Image;
-#define glDEL(x) if(glIsTexture(x)) { glDeleteTextures(1,&x); x=0; }
+
+
 class CGLTexture {
 public:
     CGLTexture();

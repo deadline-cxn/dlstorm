@@ -38,6 +38,7 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #include "c_gltexture.h"
 #include "c_gl3dmodel.h"
 #include "c_entity.h"
+#include <fstream>
 
 class C_Entity;
 class CGLModel;

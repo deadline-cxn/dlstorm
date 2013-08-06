@@ -7,6 +7,8 @@
 #ifndef _C_ENTITY
 #define _C_ENTITY
 
+#include "dlstorm.h"
+
 #include "c_waypoint.h"
 #include "c_log.h"
 #include "c_gaf.h"
@@ -98,12 +100,12 @@ public:
     ~C_Entity();
 
     // Basic info
-    char        name[1024];
+    char        name[TEXTNAME_SIZE];
     int         type;
     bool        hidden;
     bool        bSelected;
 
-    // Attributes
+/*    // Attributes
     int         life_points;
     int         mana_points;
     int         power_points;
@@ -114,8 +116,8 @@ public:
     int         at_wis;
     int         at_agi;
     int         at_con;
-
-    C_Entity    *pParent;
+*/
+// C_Entity    *pParent;
     C_Entity    *pNext;
     C_Entity    *pPrev;
     C_Entity    *pTargetEntity;
@@ -141,7 +143,7 @@ public:
     CWayPoint*  pFirstWayPoint;
 
     // Sound
-    char        soundname[1024];    // sound filename
+    char        soundname[FILENAME_SIZE];    // sound filename
     float       sounddistance;      // how far away the sound can be heard
     bool        soundloop;
     float       soundvolume;
@@ -170,6 +172,10 @@ public:
     long    respawn_time_max;   // 0 = default; default is 5 minutes (30000)
     /*************************************************************************************************************************/
     void    Initialize(void);
+    void    Save(void); // save to individual file
+    void    Save(char* filename); // append into this file
+    void    Load(void); // load (based on entity name)
+    void    Load(char* filename); // load from file
     void    Draw(bool bSelecting);
     void    DrawLight(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle

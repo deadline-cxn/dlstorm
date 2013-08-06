@@ -49,7 +49,7 @@ void CCSocket::initSocket(void) {
 
     pReceiveBuffer = (char *)malloc(iCurReceiveSize);
     if(!pReceiveBuffer)    {
-        FREE(pSendBuffer);
+        dlcsm_free(pSendBuffer);
         return;
     }
 
@@ -71,8 +71,8 @@ void CCSocket::initSocket(void) {
 
 CCSocket::~CCSocket() {
     CloseSocket(iSocket);
-    FREE(pSendBuffer);
-    FREE(pReceiveBuffer);
+    dlcsm_free(pSendBuffer);
+    dlcsm_free(pReceiveBuffer);
 }
 
 //////////////////////////////////////////////////////////////

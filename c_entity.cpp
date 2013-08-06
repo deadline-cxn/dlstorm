@@ -29,7 +29,8 @@ C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel
 }
 
 C_Entity::~C_Entity() {
-    if(bMadeLog) DEL(pLog);
+    if(bMadeLog)
+        dlcsm_delete(pLog);
 }
 
 void C_Entity::Initialize(void) {
@@ -44,7 +45,7 @@ void C_Entity::Initialize(void) {
     pModel=0;
     strcpy(name,"unknown");
     type=ENTITY_INVISIBLE;
-    life_points=100;
+/*    life_points=100;
     mana_points=100;
     power_points=100;
     rage_points=100;
@@ -53,7 +54,7 @@ void C_Entity::Initialize(void) {
     at_spi=15;
     at_wis=15;
     at_agi=15;
-    at_con=15;
+    at_con=15; */
     resource_min=0;       // 0 = infinite resources
     resource_max=0;       // 0 = infinite resources
     respawn_min=0;        // 0 = infinite respawns
@@ -83,39 +84,28 @@ void C_Entity::Initialize(void) {
 }
 void C_Entity::DrawLight(void) {
 
-
-
-
      if(type==ENTITY_LIGHT) {
-
-
         // glLoadIdentity();
         glPushMatrix();
         // pGFX->pCamera->Go();
-
         GLfloat ambient[]   = { 0.2f, 0.2f, 0.2f, 1.0f};
         GLfloat location[]  = { loc.x, loc.y, loc.z, 1.0f};
         GLfloat diffuse[]   = { 1.0f, 1.0f, 1.0f, 1.0f};
         GLfloat specular[]  = { 1.0f, 0.5f, 0.5f, 0.5f};
-
         glLightfv(GL_LIGHT0, GL_AMBIENT,    ambient);
         glLightfv(GL_LIGHT0, GL_DIFFUSE,    diffuse);
         glLightfv(GL_LIGHT0, GL_SPECULAR,   specular);
         glLightfv(GL_LIGHT0, GL_POSITION,   location);
-
         //glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,    1.5);
         //glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,      0.5);
         //glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION,   0.2);
-
         // GLfloat spot[]      = {autorot.x, autorot.y, autorot.z};
         GLfloat spot[]      = {0.0f, 0.0f, -132.0f};
         glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, spot);
         glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 15.0);
         glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 12.0f);
-
         glPopMatrix();
     }
-
 
 }
 void C_Entity::Draw(bool bSelecting) {
@@ -217,6 +207,49 @@ void C_Entity::Draw(bool bSelecting) {
     glPopMatrix();
 }
 
+
+
+void C_Entity::Save() {
+    /*
+    dlcsm_make_filename(filename);
+    ifstream myFile ("data.bin", ios::out | ios::binary);
+    if(myFile) {
+
+/*  char        name[TEXTNAME_SIZE];
+    int         type;
+    bool        hidden;
+    bool        bSelected;
+    CVector3    loc;        // position of the entity
+    CVector3    rot;        // rotation of the entity
+    CVector3    autorot;    // will continuously rotate based on this setting
+    CVector3    scale;      // vector for the scale matrix
+    CVector3    dir;        // direction vector (which way the entity is facing)
+    CColor3     color;      // color of the entity;
+    GLfloat     trans;      // use this for fading in and out, and for ghost/window effects
+    if(pModel) pModel->name
+    if(pTexture) pTexture->name
+
+    char        soundname[FILENAME_SIZE];    // sound filename
+    float       sounddistance;      // how far away the sound can be heard
+    bool        soundloop;
+    float       soundvolume;
+    int     resource_min;       // 0 = infinite resources
+    int     resource_max;       // 0 = infinite resources
+    int     respawn_min;        // 0 = infinite respawns
+    int     respawn_max;        // 0 = infinite respawns
+    long    respawn_time_min;   // 0 = default; default is 5 minutes (30000)
+    long    respawn_time_max;   // 0 = de
+    CWayPoint*  pFirstWayPoint; // leave out waypoints for now
+    */
+
+/*
+        myFile.close();
+    }
+    */
+}
+
+
+
 bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {
     if(!rcv_entity) return false;
     if(!action_entity) action_entity=this;
@@ -262,6 +295,7 @@ void C_Entity::on_target(char *args,C_Entity *entity) {
 
 void C_Entity::on_attack(char *args,C_Entity *entity) {
     if(entity==0) return;
+    /*
     int attack_dmg=atoi(args);
     if(life_points>0) {
         life_points-=attack_dmg;
@@ -275,11 +309,14 @@ void C_Entity::on_attack(char *args,C_Entity *entity) {
     } else {
         pLog->AddEntry(va("%s is dead...",name));
     }
+    */
 }
 
 void C_Entity::on_heal(char *args,C_Entity *entity) {
     if(entity==0) return;
+    /*
     int heal;
     heal=atoi(args);
     pLog->AddEntry(va("%s healed %s for %d...",entity->name,name,heal));
+    */
 }

@@ -57,7 +57,7 @@ char* dlcs_get_filetype(char* x, char* in) {
     return x;
 }
 
-bool sp_istrue(char *text) {
+bool dlcs_istrue(char *text) {
     if(dlcs_strcasecmp(text,"on"))      return true;
     if(dlcs_strcasecmp(text,"1"))       return true;
     if(dlcs_strcasecmp(text,"true"))    return true;
@@ -283,15 +283,13 @@ char *dlcs_readable_timestamp(char *x,char *in) {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char _vx[1024];
+char _vx[1024]; // keep this in the global space TODO: improve this
 const char *va(const char *format, ...) {
     memset(_vx,0,1024);
     va_list argptr;
     va_start (argptr, format);
-    //vsprintf (string, format,argptr);
     vsprintf (_vx, format,argptr);
     va_end (argptr);
-    //return (string);
     return (_vx);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,30 +331,29 @@ int dlcs_bin_to_dec(char *pa) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void dlcs_suspend_power_management(void) {
-#ifdef _WIN32
-    //  TCHAR szPath[MAX_PATH];
-    //  HINSTANCE hInstKernel32 = NULL;
-    //typedef EXECUTION_STATE
-    // __typeof__ (*WINAPI LPSETTHREADEXECUTIONSTATE) EXECUTION_STATE
-    //( EXECUTION_STATE esFlags );
-    //.static LPSETTHREADEXECUTIONSTATE pSetThreadExecutionState = NULL;
-    //GetSystemDirectory(szPath, MAX_PATH);
-    //lstrcat(szPath, TEXT("\\kernel32.dll"));
-    //  hInstKernel32 = LoadLibrary("kernel32.dll");//szPath);
-//   if (hInstKernel32 != NULL)
-//   {
-    //pSetThreadExecutionState = (LPSETTHREADEXECUTIONSTATE)GetProcAddress(hInstKernel32, "SetThreadExecutionState");
-    //if( pSetThreadExecutionState != NULL ) p
-//        SetThreadExecutionState( ES_SYSTEM_REQUIRED | ES_CONTINUOUS );
-//       FreeLibrary(hInstKernel32);
-    //  }
-    // Log("Power management suspended");
+#ifdef DLCSM_WINDOWS
+/*
+    TCHAR szPath[MAX_PATH];
+    HINSTANCE hInstKernel32 = NULL;
+    typedef EXECUTION_STATE
+     __typeof__ (*WINAPI LPSETTHREADEXECUTIONSTATE) EXECUTION_STATE
+    ( EXECUTION_STATE esFlags );
+    .static LPSETTHREADEXECUTIONSTATE pSetThreadExecutionState = NULL;
+    GetSystemDirectory(szPath, MAX_PATH);
+    lstrcat(szPath, TEXT("\\kernel32.dll"));
+      hInstKernel32 = LoadLibrary("kernel32.dll");//szPath);
+  if (hInstKernel32 != NULL)
+   {
+    pSetThreadExecutionState = (LPSETTHREADEXECUTIONSTATE)GetProcAddress(hInstKernel32, "SetThreadExecutionState");
+    if( pSetThreadExecutionState != NULL ) p
+        SetThreadExecutionState( ES_SYSTEM_REQUIRED | ES_CONTINUOUS );
+       FreeLibrary(hInstKernel32);
+      }
+    */
+    // Power management suspended
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-long getticks(void) {
-    return dlcs_get_tickcount();
-}
 long dlcs_get_tickcount(void) {
 #ifdef _WIN32
     return GetTickCount();
@@ -375,12 +372,6 @@ long dlcs_get_tickcount(void) {
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int sp_strcmp(char *szOne, char *szTwo) {
-    return dlcs_strcasecmp(szOne,szTwo);
-}
-int dscc(const char *x, const char *y) {
-    return dlcs_strcasecmp(x,y);
-}
 int dlcs_strcasecmp(const char *szOne,const char *szTwo) {
     int rval=0;
 #ifdef _WIN32
@@ -391,8 +382,7 @@ int dlcs_strcasecmp(const char *szOne,const char *szTwo) {
     return rval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool sp_isdir(char *dir) {
+bool dlcs_isdir(char *dir) {
     struct stat st;
     if(stat(dir,&st) == -1) return false;
     if (st.st_mode & S_IFDIR) return true;
@@ -434,9 +424,6 @@ char *dlcs_getcwd(char *x) {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *getos(char *x) {
-    return dlcs_get_os_version(x);
-}
 char *dlcs_get_os_version(char *x) {
 #ifdef _WIN32
     char szTemp[128];
@@ -491,6 +478,10 @@ char *dlcs_get_os_version(char *x) {
     strcpy(x,CPUSTRING);
     return x;
 #endif
+}
+char *dlcs_get_hostname(char *x) {
+    gethostname(x, HOST_NAME_MAX);
+    return x;
 }
 
 /* MD5 converted to C++ class by Frank Thilo (thilo@unix-ag.org)

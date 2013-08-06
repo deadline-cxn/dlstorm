@@ -1,11 +1,19 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
+    File:       DLSTORM Deadline's Code Storm library header file
+    Author:     Seth Parson
+    Twitter:    @Sethcoder
+    Website:    www.sethcoder.com
+    Email:      defectiveseth@gmail.com
 
-****************************************************************/
+ ***************************************************************
 
-#ifndef _DEADLINE_CODE_STORM_LIB
-#define _DEADLINE_CODE_STORM_LIB
+    Notes: This file will set up macros and defines based
+    on the system you are compiling with.
+
+ ***************************************************************/
+
+#ifndef DLCS_DEADLINE_CODE_STORM_LIB
+#define DLCS_DEADLINE_CODE_STORM_LIB
 
 /**********************************************
     C Preprocessor Directives for various OS
@@ -390,14 +398,21 @@
             __WINDOWS__	Defined by Watcom C/C++
 */
 #ifdef _WIN16
-#define _WINDOWS
+#define DLCSM_WINDOWS
 #endif
 #ifdef _WIN32
-#define _WINDOWS
+#define DLCSM_WINDOWS
 #endif
 #ifdef _WIN64
-#define _WINDOWS
+#define DLCSM_WINDOWS
 #endif
+#ifdef DLCSM_WINDOWS
+#include <windows.h>
+#include <winbase.h>
+#include <stdio.h>
+#include <tchar.h>
+#endif
+
 /*
 
     Windows CE
@@ -501,7 +516,7 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////
 // WIN32 Defines
 
-#ifdef WIN32
+#ifdef DLCSM_WINDOWS
 #define byte unsigned char
 #define sbyte char
 #define _word unsigned short
@@ -635,49 +650,57 @@ typedef unsigned int   UINT;
 #endif
 
 typedef DWORD          COLORREF;
-
-#define GetRValue(rgb)      ((BYTE)(rgb))
-#define GetGValue(rgb)      ((BYTE)(((WORD)(rgb)) >> 8))
-#define GetBValue(rgb)      ((BYTE)((rgb)>>16))
-#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
-
-//#define	RGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
-//#define	RGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
-
-#endif
+#endif // _WIN32
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Other Defines
 
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
 #ifndef _MAX_PATH
 #define _MAX_PATH 1024
 #endif
+#define TINYNAME_SIZE 32
+#define TEXTNAME_SIZE 256
+#define FILENAME_SIZE 1024
+// STUFF
+#define GetRValue(rgb)      ((BYTE)(rgb))
+#define GetGValue(rgb)      ((BYTE)(((WORD)(rgb)) >> 8))
+#define GetBValue(rgb)      ((BYTE)((rgb)>>16))
+#define RGB(r,g,b)          ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+//#define	RGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
+//#define	RGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// Macros
+// DATA CONVERSION MACROS
+#define dlcsm_to_dword(a,b,c,d)   ((a)+(b<<8)+(c<<16)+(d<<24))
+#define dlcsm_to_word(a,b)        ((a)+(b<<8))
+// MEMORY MACROS
+#define dlcsm_release(x)         if(x) { x->Release(); x=NULL; }
+#define dlcsm_delete(x)          if(x) { delete x; x=NULL;}
+#define dlcsm_delete_array(x)    if(x) { delete [] x; x=NULL; }
+#define dlcsm_malloc(x,y)        (x*) malloc(sizeof(x) * y);
+#define dlcsm_free(x)            if(x) { free(x); x=NULL; }
+// GFX MACROS
+#define dlcsm_gl_delete(x)       if(glIsTexture(x)) { glDeleteTextures(1,&x); x=0; }
+#define LONGRGB(r,g,b)           ((long)(((u_char)(r)|((u_short)((u_char)(g))<<8))|(((long)(u_char)(b))<<16)))
+// MATH MACROS
+#define dlcsm_pi                 3.14159265359f
+#define dlcsm_deg_to_rad(a)      (((a) * dlcsm_pi)/180.0F)
+#define dlcsm_rad_to_deg(a)      (((a) * 180.0f)/dlcsm_pi)
+#define dlcsm_randomize()        srand((unsigned int) time(NULL))
+#define dlcsm_crandom()	         (2.0 * (random() - 0.5))
+#define dlcsm_range(x,min,max)   ((x= (x<min  ? min : x<max ? x : max)))
+#define dlcsm_sq(number)         (number*number)
+#define dlcsm_min(a,b)           ((a<b)?a:b)
+#define dlcsm_max(a,b)           ((a>b)?a:b)
+#define dlcsm_tobool(x)          (x?1:0)
+// STRING MACROS
+#define dlcsm_make_tinyname(x)   char x[TINYNAME_SIZE]; memset(x,0,TINYNAME_SIZE);
+#define dlcsm_make_filename(x)   char x[FILENAME_SIZE]; memset(x,0,FILENAME_SIZE);
+#define dlcsm_make_str(x)        char x[TEXTNAME_SIZE]; memset(x,0,TEXTNAME_SIZE);
+#define dlcsm_make_lstr(x,y)     char x[y]; memset(x,0,y);
+#define dlcsm_zero(x)            memset(x,0,sizeof(x));
 
-#define s_MAKEDWORD(a,b,c,d)     ((a)+(b<<8)+(c<<16)+(d<<24))
-#define s_MAKEWORD(a,b)          ((a)+(b<<8))
-#define PI                     3.145f
-#define DEG2RAD(a)             (((a) * PI)/180.0F)
-#define RAD2DEG(a)             (((a) * 180.0f)/PI)
-#define SQUARE(number)         (number*number)
-#define randomize()            srand((unsigned int) time(NULL))
-#define crandom()	           (2.0 * (random() - 0.5))
-#define dMIN(a,b)               ((a<b)?a:b)
-#define dMAX(a,b)               ((a>b)?a:b)
-#define TOBOOL(x)              (x?1:0)
-#define REL(x)                 if(x!=NULL){x->Release();x=NULL;}
-#define DEL(x)                 if(x!=NULL){delete x;x=NULL;}
-#define MAL(x,y)               (x*)malloc(sizeof(x) * y);
-#define FREE(x)                if(x!=NULL){free(x);x=NULL;}
-#define CHECK_RANGE(x,min,max) ((x= (x<min  ? min : x<max ? x : max)))
-#define MapCoord(x)            (x/GMP_MAPSIZE)
-#define RealCoord(x,y)         ((x*GMP_MAPSIZE)+y)
-#define CamCoord(x)            (x-(GMP_MAPSIZE*(x/GMP_MAPSIZE)))
-#define LONGRGB(r,g,b)         ((long)(((u_char)(r)|((u_short)((u_char)(g))<<8))|(((long)(u_char)(b))<<16)))
-#define _PS PATH_SEP
-#define DLSTR(x)				char x[1024]; memset(x,0,1024);
-#define fold_block
 
-#endif // _DEADLINE_CODE_STORM_LIB
+#endif // DLCS_DEADLINE_CODE_STORM_LIB

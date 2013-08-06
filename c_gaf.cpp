@@ -99,7 +99,7 @@ bool CGAF::ReadFile(bool _bIgnoreDescription) {
     if(Header.Size!=sizeof(Header))return false;
     // Ignore the header if the user want's us to.
     if ( _bIgnoreDescription == false ) {
-        if(dscc(Header.Description,FileDesc)==0)return false;
+        if(dlcs_strcasecmp(Header.Description,FileDesc)==0)return false;
     }                                   // EO: if
     NumElements=0;
     SetAmount(Header.NumElements);
@@ -570,7 +570,7 @@ bool CGAF::AddDirFilesToRoot(LPSTR indir, bool SubDirs) {
 #ifdef GAFDEBUG
                 CabLog->AddEntry(va("Filename: %s",epdf->d_name));
 #endif
-                if(sp_isdir(epdf->d_name)) {
+                if(dlcs_isdir(epdf->d_name)) {
                     if(SubDirs) {
                         if(!CreateDir(va("%s/%s",indir,epdf->d_name))) {
 #ifdef GAFDEBUG
@@ -679,7 +679,7 @@ bool CGAF::AddDirEx(LPSTR Dest, LPSTR dirname, bool SubDirs) {
                 }
 
                 strcat(IndexName,epdf->d_name);
-                if(sp_isdir(epdf->d_name)) {
+                if(dlcs_isdir(epdf->d_name)) {
                     if(SubDirs) {
                         if(!CreateDir(IndexName)) {
 #ifdef GAFDEBUG
@@ -751,7 +751,7 @@ int CGAF::Find(LPSTR Name) {
     char FullName[GAF_NAMESIZE];
     for(int n=0; n<NumElements; n++) {
         GetFullPath(n,FullName);
-        if(dscc(FullName,Name)!=0)return n;
+        if(dlcs_strcasecmp(FullName,Name)!=0)return n;
     }
     return -1;
 }
@@ -762,7 +762,7 @@ int CGAF::FindDir(LPSTR Name) {
     for(int n=0; n<NumElements; n++) {
         if(Elements[n].Type==GAFELMTYPE_DIR) {
             GetFullPath(n,FullName);
-            if(dscc(FullName,Name)!=0)return n;
+            if(dlcs_strcasecmp(FullName,Name)!=0)return n;
         }
     }
     return -1;
@@ -774,7 +774,7 @@ int CGAF::FindFile(LPSTR Name) {
     for(int n=0; n<NumElements; n++) {
         if(Elements[n].Type==GAFELMTYPE_FILE) {
             GetFullPath(n,FullName);
-            if(dscc(FullName,Name)!=0)return n;
+            if(dlcs_strcasecmp(FullName,Name)!=0)return n;
         }
     }
     return -1;
@@ -782,7 +782,7 @@ int CGAF::FindFile(LPSTR Name) {
 
 int CGAF::FindDirNumber(LPSTR Name) {
     if(Name==NULL)return 0;
-    if(dscc(Name,"")!=0)return 0;
+    if(dlcs_strcasecmp(Name,"")!=0)return 0;
     int dn=FindDir(Name);
     if(dn>=0)return Elements[dn].DirNumber;
     return -1;

@@ -35,20 +35,41 @@ CC_Data::CC_Data() {
     pLog=new CLog("cdata.log");
     bCreatedLog=true;
     Initialize();
+    bLoad();
 }
 CC_Data::CC_Data(CLog *pInLog) {
     bCreatedLog=false;
     pLog=pInLog;
     Initialize();
+    bLoad();
 }
+
+CC_Data::CC_Data(char* infilename) {
+    pLog=new CLog("cdata.log");
+    bCreatedLog=true;
+    Initialize();
+    strcpy(filename,infilename);
+    bLoad();
+}
+
+CC_Data::CC_Data(char* infilename, CLog* pInLog) {
+    bCreatedLog=false;
+    pLog=pInLog;
+    Initialize();
+    strcpy(filename,infilename);
+    bLoad();
+}
+
 
 /***************************************************************/
 CC_Data::~CC_Data() {
     CleanUp();
-    if(bCreatedLog) DEL(pLog);
+    if(bCreatedLog)
+        dlcsm_delete(pLog);
 }
 
 void CC_Data::Initialize(void) {
+    strcpy(filename,"client.ini");
     //Log("Creating Client Data...");
     x=0;
     y=0;
@@ -75,7 +96,6 @@ void CC_Data::Initialize(void) {
     strcpy(szServerVersion,"Unknown");
     SetToDefaults();
     //Log("Client Data Created");
-    bLoad();
 }
 /***************************************************************/
 void CC_Data::CleanUp(void) {
@@ -189,7 +209,7 @@ void CC_Data::ClearProfiles(void) {
     while(Profile) {
         DelMe=Profile;
         Profile=Profile->pNext;
-        DEL(DelMe);
+        dlcsm_delete(DelMe);
     }
     FirstProfile=NULL;
 }
@@ -199,13 +219,16 @@ void CC_Data::ClearProfiles(void) {
 bool CC_Data::bLoad(void) {
     SetToDefaults();
 
+
+    pLog->_Add("LOADING CONFIG FROM %s",filename);
+
     FILE *fp;
     char In[256];
     char temp[1024];
     float f;
     vector <string> lin;
 
-    fp=fopen("client.ini","rt");
+    fp=fopen(filename,"rt");
 
     if(!fp)
         return false;
@@ -235,7 +258,7 @@ bool CC_Data::bLoad(void) {
             }
 
             if(dlcs_strcasecmp(lin[0].c_str(),"save password")) {
-                bSavePassword=sp_istrue(lin[1].c_str());
+                bSavePassword=dlcs_istrue(lin[1].c_str());
                 continue;
             }
 
@@ -255,12 +278,12 @@ bool CC_Data::bLoad(void) {
             }
 
             if(dlcs_strcasecmp(lin[0].c_str(),"log")) {
-                bLog=sp_istrue(temp);
+                bLog=dlcs_istrue(temp);
                 continue;
             }
 
             if(dlcs_strcasecmp(lin[0].c_str(),"download")) {
-                bDownload=sp_istrue(lin[1].c_str());
+                bDownload=dlcs_istrue(lin[1].c_str());
                 continue;
             }
 
@@ -281,12 +304,12 @@ bool CC_Data::bLoad(void) {
             }
 
             if(dlcs_strcasecmp(lin[0].c_str(),"sound")) {
-                bSound=sp_istrue(lin[1].c_str());
+                bSound=dlcs_istrue(lin[1].c_str());
                 continue;
             }
 
             if(dlcs_strcasecmp(lin[0].c_str(),"music")) {
-                bMusic=sp_istrue(lin[1].c_str());
+                bMusic=dlcs_istrue(lin[1].c_str());
                 continue;
             }
 
@@ -301,7 +324,7 @@ bool CC_Data::bLoad(void) {
             }
 
             if(dlcs_strcasecmp(lin[0].c_str(),"fullscreen")) {
-                bFullScreen=sp_istrue(temp);
+                bFullScreen=dlcs_istrue(temp);
                 pLog->_Add(" bFullScreen [%d]",bFullScreen);
                 continue;
             }
@@ -343,11 +366,10 @@ bool CC_Data::bSave(void) {
     char Temp3[_MAX_PATH];
     char Temp4[_MAX_PATH];
 
-    strcpy(Temp4,"client");//sprintf(Temp4,"%s%cclient",FMDir,PATH_SEP);
-    strcpy(Temp3,Temp4);
-    strcat(Temp3,".tmp");
+    // strcpy(Temp4,filename);//sprintf(Temp4,"%s%cclient",FMDir,PATH_SEP);
+    // strcpy(Temp3,Temp4); strcat(Temp3,".tmp");
 
-    fout =fopen(Temp3,"w");
+    fout =fopen(filename,"w");
     if(!fout)
         return false;
 
@@ -454,12 +476,13 @@ bool CC_Data::bSave(void) {
 
 
     fclose(fout);
-
+/*
     strcpy(Temp3,Temp4);
     strcat(Temp3,".tmp");
     strcat(Temp4,".ini");
     remove(Temp4);
     rename(Temp3,Temp4);
+    */
     return true;
 }
 

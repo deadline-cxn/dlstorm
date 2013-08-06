@@ -68,10 +68,10 @@ C_MouseCursor::~C_MouseCursor() {
     kill();
     pLog->_DebugAdd("Mouse cursor destroyed");
     if(bCreatedLog)
-        DEL(pLog);
+        dlcsm_delete(pLog);
 }
 GLvoid C_MouseCursor::kill() {
-    DEL(pTexture);
+    dlcsm_delete(pTexture);
 }
 
 GLvoid C_MouseCursor::loadGAF(char *file) {
@@ -168,7 +168,7 @@ C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog) {
     pCursor->load("mouse/default.png");
 }
 C_Mouse::~C_Mouse() {
-    DEL(pCursor);
+    dlcsm_delete(pCursor);
 }
 void C_Mouse::InitializeInput(void) {
     bLeftDown             = 0;
@@ -208,9 +208,9 @@ void C_Mouse::Refresh(void) {
     int butt;
     unsigned long current_tick=dlcs_get_tickcount();
     butt       = SDL_GetMouseState(&ix,&iy);
-    bLeft      = TOBOOL((SDL_BUTTON(SDL_BUTTON_LEFT)      & butt));
-    bMiddle    = TOBOOL((SDL_BUTTON(SDL_BUTTON_MIDDLE)    & butt));
-    bRight     = TOBOOL((SDL_BUTTON(SDL_BUTTON_RIGHT)     & butt));
+    bLeft      = dlcsm_tobool((SDL_BUTTON(SDL_BUTTON_LEFT)      & butt));
+    bMiddle    = dlcsm_tobool((SDL_BUTTON(SDL_BUTTON_MIDDLE)    & butt));
+    bRight     = dlcsm_tobool((SDL_BUTTON(SDL_BUTTON_RIGHT)     & butt));
     bLeftRelease=0;
     bRightRelease=0;
     bMiddleRelease=0;

@@ -18,10 +18,10 @@ CTimer::CTimer(long dur) {
 }
 CTimer::~CTimer() { }
 void CTimer::Reset() {
-    currenttick=getticks();
+    currenttick=dlcs_get_tickcount();
 }
 bool CTimer::Up() {
-    if((getticks()-currenttick) > duration) {
+    if((dlcs_get_tickcount()-currenttick) > duration) {
         Reset();
         return true;
     }

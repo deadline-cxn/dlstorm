@@ -28,54 +28,30 @@ extern "C"
 {
 #endif
 
-bool    sp_istrue(char *text);
 
 vector  <string> Dir2Vector(char *szDir, char *szWildCard);
 bool	Dir2File(char *szDir,char *szFile,char *szWildCard);
-
 void    md5_digest(char *str, char *text); // md5 digest of the text
 
+bool    dlcs_istrue(char *text);
 void    dlcs_suspend_power_management(void);
-
-int     h2d(char *pa);
 int     dlcs_hex_to_dec(char *pa);
-
-int     b2d(char *pa);
 int     dlcs_bin_to_dec(char *pa);
-
-long    getticks(void);
 long    dlcs_get_tickcount(void);
-
-char   *getos(char *x);
-char   *dlcs_get_os_version(char *x);
-
-
-bool    sp_isdir(char *dir);
-
-int     sp_mkdir(char *szdir);
+char*   dlcs_get_os_version(char *x);
+char*   dlcs_get_hostname(char *x);
+bool    dlcs_isdir(char *dir);
 int     dlcs_mkdir(char *szDirectoryName);
-
-int     sp_chdir(char *szdir);
 int     dlcs_chdir(char *szDirectory);
-
-char   *sp_getcwd(char *x);
-char   *dlcs_getcwd(char *x);
-
-int     sp_strcmp(char *sz1, char *sz2);
-
-int     dscc(const char* x,const char *y);
+char*   dlcs_getcwd(char *x);
 int     dlcs_strcasecmp(const char *szOne,const char *szTwo);
-
-int		dlcs_str2mem(char *string, char &mem);
-
-char   *sp_charreplace(char *str, char cold,char cnew);
-char   *dlcs_charreplace(char *str, char cold,char cnew);
-char*  dlcs_strreplace(char *str, const char* what, const char* to);
-
-char   *dlcs_get_time(char *x);
-char   *dlcs_convert_time(char *x,struct tm*);
-char   *dlcs_timestamp(char *x);
-char   *dlcs_readable_timestamp(char *x,char *in);
+int     dlcs_str2mem(char *string, char &mem);
+char*   dlcs_charreplace(char *str, char cold,char cnew);
+char*   dlcs_strreplace(char *str, const char* what, const char* to);
+char*   dlcs_get_time(char *x);
+char*   dlcs_convert_time(char *x,struct tm*);
+char*   dlcs_timestamp(char *x);
+char*   dlcs_readable_timestamp(char *x,char *in);
 char*   dlcs_get_filetype(char*x,char*in);
 
 

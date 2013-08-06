@@ -240,11 +240,6 @@ void C_Camera::mouseMovement(int x, int y) {
 
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
-    pDefaultTexture=0;
-    pFirstTexture=0;
-    pFirstModel=0;
-    pFirstNTT=0;
-    pCamera=0;
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
 }
 C_GFX::~C_GFX() {
@@ -256,6 +251,11 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
 #ifdef __linux__
     putenv("SDL_VIDEODRIVER=dga");
 #endif
+    pDefaultTexture=0;
+    pFirstTexture=0;
+    pFirstModel=0;
+    pFirstNTT=0;
+    pCamera=0;
     pLog=pUSELOG;
     bCreatedLog=false;
     pGAF=pUSEGAF;
@@ -326,7 +326,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         return false;
     }
 
-    if(LoadTextures(pGAF)) {
+    if( LoadTextures(pGAF)) {
         pLog->_Add("Base Textures initialized");
     } else {
         pLog->_Add("Can't initialize Base Textures");
@@ -378,7 +378,7 @@ void C_GFX::ShutDownGFX(void) {
     ClearEntities();
     pLog->_Add("Entities shut down...");
 
-    DEL(pCamera);
+    dlcsm_delete(pCamera);
     pLog->_Add("Camera shut down...");
 
     DestroyTextures();
@@ -419,22 +419,33 @@ void C_GFX::SetScreenRes(int x,int y,int cl, bool fs) {
 }
 //////////////////////////////////////////////////////////////// TEXTURES
 bool C_GFX::LoadTextures(CGAF *pGAF) {
+    pLog->_Add("Loading textures");
     CGLTexture *pTexture;
+    pTexture=0;
     CGLTexture *pDELTexture;
+    pDELTexture=0;
     DIR *dpdf;
+    pLog->_Add("Loading textures 2");
     struct dirent *epdf;
     dpdf = opendir("base");
     if (dpdf != NULL) {
+            pLog->_Add("Loading textures 3");
         while (epdf = readdir(dpdf)) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-                if(sp_isdir(epdf->d_name)) {
+                if(dlcs_isdir(epdf->d_name)) {
+                        pLog->_Add("Loading textures 4");
 
                 } else {
-                    if (strcmp (".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
+                    pLog->_Add("Loading textures 5");
+                    if (strcmp(".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
+
+                        pLog->_Add("Loading textures 5.1");
+
                         pTexture=pFirstTexture;
                         if(pTexture) {
+                                pLog->_Add("Loading textures 5.2");
                             while(pTexture->pNext) {
                                 pTexture=pTexture->pNext;
                             }
@@ -442,23 +453,31 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
                             pTexture=pTexture->pNext;
                         }
                         else {
+                            pLog->_Add("Loading textures 5.2.1");
                             pFirstTexture=new CGLTexture(pLog);
                             pTexture=pFirstTexture;
+                            pLog->_Add("Loading textures 5.2.2");
                         }
+                        pLog->_Add("Loading textures 5.3");
+
                         pTexture->LoadPNG(va("base/%s",epdf->d_name));
+                        pLog->_Add("Loading textures 5.4");
                         if(!pTexture->bmap) {
+                                pLog->_Add("Loading textures 5.6");
                             pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
                             pDELTexture=pFirstTexture;
                             if(pTexture==pDELTexture) {
-                                DEL(pTexture);
-                                DEL(pFirstTexture);
+                                dlcsm_delete(pTexture);
+                                dlcsm_delete(pFirstTexture);
                             }
+
                             else {
+                                    pLog->_Add("Loading textures 5.7");
                                 pDELTexture=pFirstTexture;
                                 while(pDELTexture) {
                                     if(pDELTexture==pTexture) {
                                         pDELTexture->pNext=pDELTexture->pNext->pNext;
-                                        DEL(pTexture);
+                                        dlcsm_delete(pTexture);
                                     }
                                     pDELTexture=pDELTexture->pNext;
                                 }
@@ -472,6 +491,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
             }
         }
     }
+    pLog->_Add("Loading textures 6");
     closedir(dpdf);
     return true;
 }
@@ -518,7 +538,7 @@ bool C_GFX::DestroyTextures(void) {
         pDELTexture=pTexture;
         // pLog->_Add("Destroying texture :%s",pTexture->tfilename);
         pTexture=pTexture->pNext;
-        DEL(pDELTexture);
+        dlcsm_delete(pDELTexture);
     }
     return true;
 }
@@ -537,7 +557,7 @@ bool C_GFX::LoadModels(void) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-                if(!sp_isdir(va("models/%s",epdf->d_name))) {
+                if(!dlcs_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
                     // pLog->AddEntry("Model found %s\n",szModelFilename);
 
@@ -556,7 +576,7 @@ bool C_GFX::LoadModels(void) {
 
                     if(!pModel->Load(szModelFilename)) {
                         if(pModel==pFirstModel) {
-                            DEL(pFirstModel);
+                            dlcsm_delete(pFirstModel);
                         }
                         else {
                             pDELModel=pFirstModel;
@@ -565,7 +585,7 @@ bool C_GFX::LoadModels(void) {
                                     pDELModel->pNext=pDELModel->pNext->pNext;
                                 pDELModel=pDELModel->pNext;
                             }
-                            DEL(pModel);
+                            dlcsm_delete(pModel);
                         }
 
 
@@ -624,7 +644,7 @@ bool C_GFX::DestroyModels(void) {
     while(pModel) {
         pFirstModel=pModel;
         pModel=pModel->pNext;
-        DEL(pFirstModel);
+        dlcsm_delete(pFirstModel);
     }
     pLog->_DebugAdd("Models destroyed...");
     return true;
@@ -1104,8 +1124,7 @@ void C_GFX::InitializeEntities(void) {
         MakeEntity(va("Entity %d",i),0,0,0);
     SelectEntity(pFirstNTT);
 
-    CVector3 sec;
-    //LoadEntities(sec);
+
 }
 
 C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
@@ -1267,7 +1286,7 @@ void C_GFX::DeleteEntity(C_Entity* pEntity) {
             if(pLastEntity) {
                 if(pNTT->pNext)
                     pLastEntity->pNext=pNTT->pNext;
-                DEL(pEntity);
+                dlcsm_delete(pEntity);
                 return;
             }
         }
@@ -1282,7 +1301,7 @@ void C_GFX::ClearEntities(void) {
     while(pNTT) {
         pFirstNTT=pNTT;
         pNTT=pNTT->pNext;
-        DEL(pFirstNTT);
+        dlcsm_delete(pFirstNTT);
     }
 }
 
@@ -1290,33 +1309,10 @@ void C_GFX::ClearEntities(void) {
 void C_GFX::LoadEntities(CVector3 WhichSector) {
     C_Entity* pNTT;
     ClearEntities();
-    pFirstNTT=new C_Entity(pLog,pGAF,this,0);
-    pNTT=pFirstNTT;
-    FILE* fp = fopen("map/ntt","rb");
-    if(fp)  {
-        while(fread(pNTT,1,sizeof(C_Entity),fp) ) {
-            pNTT->pNext=new C_Entity(pLog,pGAF,this,0);
-            pNTT=pNTT->pNext;
-        }
-        fclose(fp);
-    }
-    DEL(pNTT);
-
 }
 
 void C_GFX::SaveEntities(CVector3 WhichSector){
-
     C_Entity* pNTT;
-
-    FILE *fp = fopen("map/ntt","wb");
-    if(fp) {
-        pNTT=pFirstNTT;
-        while(pNTT) {
-            fwrite(pNTT,1,sizeof(C_Entity),fp);
-            pNTT=pNTT->pNext;
-        }
-        fclose(fp);
-    }
 }
 
 

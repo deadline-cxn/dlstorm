@@ -24,16 +24,18 @@ class CFM_Profile {
 public:
     CFM_Profile();
     ~CFM_Profile();
-    char name[32];
+    char name[TINYNAME_SIZE];
     bool savepw;
-    char passwd[32];
+    char passwd[TINYNAME_SIZE];
     CFM_Profile *pNext;
 };
 
 class CC_Data {
 public:
     CC_Data(void);
-    CC_Data(CLog *pInLog);
+    CC_Data(CLog* pInLog);
+    CC_Data(char* filename);
+    CC_Data(char* filename,CLog *pLog);
     ~CC_Data(void);
 
     void Initialize(void);
@@ -59,18 +61,18 @@ public:
     bool AddProfile(void);
 
     ///////////////////////////////////////////////////////////////
-
-    char			Name[24];
-    char			Password[24];
+    char            filename[FILENAME_SIZE];
+    char			Name[TINYNAME_SIZE];
+    char			Password[TINYNAME_SIZE];
     bool			bSavePassword;
-    char			ServerMessage[1024];
-    char			ServerName[1024];
-    char			ServerID[15];           // Server / Mission Identifier
-    char            szServerVersion[15];
-    char			IPAddress[255];
-    char			Port[10];
-    char            MasterIPAddress[255];
-    char            MasterPort[10];
+    char			ServerMessage[FILENAME_SIZE];
+    char			ServerName[FILENAME_SIZE];
+    char			ServerID[TINYNAME_SIZE];           // Server / Mission Identifier
+    char            szServerVersion[TINYNAME_SIZE];
+    char			IPAddress[TEXTNAME_SIZE];
+    char			Port[TINYNAME_SIZE];
+    char            MasterIPAddress[TEXTNAME_SIZE];
+    char            MasterPort[TINYNAME_SIZE];
     bool			bLog;
     bool			bDownload;
 
@@ -79,7 +81,7 @@ public:
     bool			 bMusic;					    	// Play Music? (MIDI only for now)
     float           fSoundVolume;
     float           fMusicVolume;
-    char			MouseLeftButtonSound[1024];
+    char			MouseLeftButtonSound[FILENAME_SIZE];
 
     bool            bFullScreen;
     int             ScreenWidth;
@@ -97,14 +99,14 @@ public:
     char			CharacterSlots;			    	// Character slots on selected server
     u_char          SelectedCharacterSlot;	    	// For choosing your character when logging on or creating a character
     char			currentsample;				    // Which sample is positioned
-    char			ServerAuthor[1024];
+    char			ServerAuthor[FILENAME_SIZE];
     int				ServerListOffset;
     int				ServerCharacterListOffset;
 
-    char            session_id[64];
+    char            session_id[TEXTNAME_SIZE];
 
     u_char          Access;
-    char			szAccessName[255];
+    char			szAccessName[TEXTNAME_SIZE];
 
     //unsigned long  dwKeyPressTimer;
 
@@ -112,7 +114,7 @@ public:
     bool            bDrawMapObjects;
     bool            bBlockGlow;
     bool            bVertice;
-    bool            bServerInfoUpdated[64];
+    bool            bServerInfoUpdated[TEXTNAME_SIZE];
 
     CFM_Profile     *Profile;
     CFM_Profile     *FirstProfile;

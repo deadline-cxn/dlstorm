@@ -4,18 +4,17 @@
 ****************************************************************/
 #include "c_gl3dmodel.h"
 
-
 CGLMaterial::CGLMaterial() { Initialize(); }
 CGLMaterial::~CGLMaterial() {}
 void CGLMaterial::Initialize() {
     iMaterialIndex=0;
     pNext=0;
-    memset(DiffuseTexture,0,1024);
-    memset(NormalTexture,0,1024);
-    memset(HeightTexture,0,1024);
-    memset(OpacityTexture,0,1024);
-    memset(ShininessTexture,0,1024);
-    memset(SpecularTexture,0,1024);
+    memset(DiffuseTexture,0,FILENAME_SIZE);
+    memset(NormalTexture,0,FILENAME_SIZE);
+    memset(HeightTexture,0,FILENAME_SIZE);
+    memset(OpacityTexture,0,FILENAME_SIZE);
+    memset(ShininessTexture,0,FILENAME_SIZE);
+    memset(SpecularTexture,0,FILENAME_SIZE);
 }
 
 CGLMesh::CGLMesh() { Initialize(); }
@@ -55,19 +54,19 @@ CGLModel::~CGLModel() {
     while(pMesh) {
         pFirstMesh=pMesh;
         pMesh=pMesh->pNext;
-        DEL(pFirstMesh);
+        dlcsm_delete(pFirstMesh);
     }
     pMat=pFirstMaterial;
     while(pMat) {
         pFirstMaterial=pMat;
         pMat=pMat->pNext;
-        DEL(pFirstMaterial);
+        dlcsm_delete(pFirstMaterial);
     }
     if(bMadeLog)
-        DEL(pLog);
+        dlcsm_delete(pLog);
 }
 void CGLModel::Initialize() {
-    memset(name,0,1024);
+    memset(name,0,FILENAME_SIZE);
     pNext=0;
     pPrev=0;
     pLog=0;

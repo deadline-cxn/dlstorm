@@ -32,36 +32,31 @@ CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname) {
 }
 CGLTexture::CGLTexture(CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
-//    usemask=fmask;
-    LoadBMP(pGAF,fname,0);
+   //  LoadBMP(pGAF,fname,0);
 }
 CGLTexture::CGLTexture(CLog *pInLog, CGAF *pGAF,char *fname, bool fmask) {
     Initialize();
     bMadeLog=false;
     pLog=pInLog;
-    // usemask=fmask;
-    LoadBMP(pGAF,fname,0);
+    // LoadBMP(pGAF,fname,0);
 }
 CGLTexture::~CGLTexture() {
-    if(bMadeLog) DEL(pLog);
-    glDEL(bmap);
-    bmap=0;
-    // glDEL(mask);    mask=0;
+    if(bMadeLog)
+        dlcsm_delete(pLog);
+    dlcsm_gl_delete(bmap);
 }
 void    CGLTexture::Initialize() {
-    pLog=0;
     bMadeLog=true;
+    pLog=0;
     pNext=0;
     bmap=0;
-    // mask=0; usemask=0;
-    memset(tfilename,0,1024);
-    memset(name,0,1024);
+    dlcsm_zero(tfilename);
+    dlcsm_zero(name);
 }
 bool    CGLTexture::Create(int x, int y) {
     width=x;
     height=y;
-    glDEL(bmap);
-    bmap=0;
+    dlcsm_gl_delete(bmap);
     unsigned int* data;
     data = (unsigned int*)new GLuint[((width * height)* 4 * sizeof(unsigned int))];
     memset(data,((width * height)* 4 * sizeof(unsigned int)),0);
@@ -464,21 +459,19 @@ GLuint  CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
     	pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> End");
 
         return 1;
-        */
+
 
     pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> Start");
     if(!strlen(filename))   return 0;
     if(!pGAF)               return 0;
-    char filename2[1024];
-    memset(filename2,0,1024);
-    //     char maskfile[1024];    memset(maskfile,0,1024);
+
+    dlcsm_make_filename(filename2);
     char ax,ay,az;
     int x, y;
     GAF_FileBuffer nfbuf1;
-    nfbuf1.fb=0;
-    nfbuf1.Size=0;
-    // GAF_FileBuffer nfbuf2;    nfbuf2.fb=0;     nfbuf2.Size=0; //     glDEL(mask);
-    glDEL(bmap);
+    dlcsm_zero(nfbuf1.fb);
+    dlcsm_zero(nfbuf1.Size);
+    dlcsm_gl_delete(bmap);
     ax=filename[strlen(filename)-3];
     ay=filename[strlen(filename)-2];
     az=filename[strlen(filename)-1];
@@ -498,7 +491,7 @@ GLuint  CGLTexture::LoadBMP(CGAF *pGAF,const char *filename,bool which) {
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFlush();
     }
-    /*
+
     nfbuf2=pGAF->GetFile(maskfile);
     if(nfbuf2.fb) {
         x=nfbuf2.fb[18]+nfbuf2.fb[19]*256+nfbuf2.fb[20]*512+nfbuf2.fb[22]*1024;

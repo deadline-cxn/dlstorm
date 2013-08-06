@@ -32,7 +32,7 @@ C_GCTRL::~C_GCTRL() {
     while(child_control) {
         dc=child_control;
         child_control=child_control->next;
-        DEL(dc);
+        dlcsm_delete(dc);
     }
 }
 void C_GCTRL::init_ctrl() {
@@ -762,13 +762,13 @@ void C_GCTRL::checkMouseClicks(bool bMouseWheelUp, bool bMouseWheelDown) {
                 if(pMouse->In(x,y,w,h)) {
                     pMouse->ClearClicks();
                     if(type==FM_GC_TICKBOX) {
-                        if(dscc(value,"on"))
+                        if(dlcs_strcasecmp(value,"on"))
                             set_value("off");
                         else
                             set_value("on");
                     }
                     if(type==FM_GC_GROUPTICK) {
-                        if(dscc(value,"on")) {
+                        if(dlcs_strcasecmp(value,"on")) {
                             parent_stump->clear_grouptick(group);
                             set_value("off");
                         } else {
@@ -1171,7 +1171,7 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                 pGFX->DrawBar(x+1,y+1,w,h,LONGRGB(80,80,80),LONGRGB(80,80,80));
                 pGFX->DrawBar(x+2,y+2,w-2,h-2,LONGRGB(180,180,180),LONGRGB(180,180,180));
             }
-            if(dscc(value,"on"))
+            if(dlcs_strcasecmp(value,"on"))
                 pGUI->gPrint(x,y,"^+H",2);
             break;
 
@@ -1428,9 +1428,9 @@ C_GSTMP::~C_GSTMP() {
     while(gui_control) {
         del_gui_control=gui_control;
         gui_control=gui_control->next;
-        DEL(del_gui_control);
+        dlcsm_delete(del_gui_control);
     }
-    DEL(del_gui_control);
+    dlcsm_delete(del_gui_control);
 }
 
 void C_GSTMP::init_stmp() {
@@ -1470,7 +1470,7 @@ void C_GSTMP::set_group_selecta(C_GCTRL* sgc) {
     C_GCTRL* tgc;
     tgc=first_gui_control;
     while(tgc) {
-        if(dscc(sgc->group,tgc->group))
+        if(dlcs_strcasecmp(sgc->group,tgc->group))
             tgc->selected=0;
         tgc=tgc->next;
     }
@@ -1565,11 +1565,11 @@ C_GCTRL* C_GSTMP::get_control(const char* name) {
     C_GCTRL* childctl;
     gui_control=first_gui_control;
     while(gui_control) {
-        if(dscc(name,gui_control->name))
+        if(dlcs_strcasecmp(name,gui_control->name))
             return gui_control;
         childctl=gui_control->first_child_control;
         while(childctl) {
-            if(dscc(name,childctl->name))
+            if(dlcs_strcasecmp(name,childctl->name))
                 return childctl;
             childctl=childctl->next;
         }
@@ -1581,7 +1581,7 @@ C_GCTRL* C_GSTMP::get_control(const char* name) {
 void C_GSTMP::size_control(char* name,int x,int y,int x2,int y2) {
     gui_control=first_gui_control;
     while(gui_control) {
-        if(dscc(gui_control->name,name)) {
+        if(dlcs_strcasecmp(gui_control->name,name)) {
             gui_control->rect.left=x;
             gui_control->rect.top=y;
             gui_control->rect.right=x2;
@@ -1599,14 +1599,14 @@ void C_GSTMP::del_control(char* name) {
         pcontrol->next->prev=pcontrol->prev;
     if(pcontrol->prev)
         pcontrol->prev->next=pcontrol->next;
-    DEL(pcontrol);
+    dlcsm_delete(pcontrol);
 }
 
 void C_GSTMP::clear_grouptick(char* grp) {
     C_GCTRL* cg=0;
     cg=first_gui_control;
     while(cg) {
-        if(dscc(cg->group,grp)) {
+        if(dlcs_strcasecmp(cg->group,grp)) {
             if(cg->type==FM_GC_GROUPTICK) {
                 cg->set_value("off");
                 pLog->_DebugAdd("Control [%s] a member of group [%s] was turned off",cg->name,grp);
@@ -1830,9 +1830,9 @@ C_GUI::C_GUI(C_GFX* pInGFX, CGAF* pInGAF, CLog* pinLog) {
 
 C_GUI::~C_GUI() {
     pLog->_DebugAdd("C_GUI:~C_GUI()");
-    if(bMadeLog) DEL(pLog);
-    DEL(pCons);
-    DEL(pMouse);
+    if(bMadeLog) dlcsm_delete(pLog);
+    dlcsm_delete(pCons);
+    dlcsm_delete(pMouse);
     clear();
     destroyFonts();
     destroyButtons();
@@ -1986,7 +1986,7 @@ void C_GUI::clear() {
     while(gui_stump) {
         del_gui_stump=gui_stump;
         gui_stump=gui_stump->next;
-        DEL(del_gui_stump);
+        dlcsm_delete(del_gui_stump);
     }
     gui_stump=0;
     stump_count=0;
@@ -2067,7 +2067,7 @@ void C_GUI::del_stump(C_GSTMP* tstump) {
             focus_control=0;
         }
         strcpy(temp,va("C_GUI::del_stump(C_GSTMP* tstump) -> stump deleted [%s] stump",tstump->name));
-        DEL(tstump);
+        dlcsm_delete(tstump);
         pLog->_DebugAdd("%s (stump count [%d])",temp,stump_count);
     }
 }
@@ -2094,7 +2094,7 @@ void C_GUI::del_stumps(void) {
 C_GSTMP* C_GUI::get_stump(char* name) {
     C_GSTMP* gui_stump=first_gui_stump;
     while(gui_stump) {
-        if(dscc(gui_stump->name,name)) break;
+        if(dlcs_strcasecmp(gui_stump->name,name)) break;
         gui_stump=gui_stump->next;
     }
     return gui_stump;
@@ -2104,7 +2104,7 @@ C_GSTMP* C_GUI::get_prev_stump(char* name) {
     C_GSTMP* gui_stump=first_gui_stump;
     while(gui_stump) {
         if(gui_stump->next)
-            if(dscc(gui_stump->next->name,name)) break;
+            if(dlcs_strcasecmp(gui_stump->next->name,name)) break;
         gui_stump=gui_stump->next;
     }
     return gui_stump;
@@ -2158,27 +2158,27 @@ void C_GUI::call_do_line(char* line) {
 
         // determine mode
 
-        if(dscc((char*)vin[0].c_str(),"[ATTACH]")) {
+        if(dlcs_strcasecmp((char*)vin[0].c_str(),"[ATTACH]")) {
             mode=FGL_ATTACH;
             return;
         }
 
-        if(dscc((char*)vin[0].c_str(),"[GUMP]")) {
+        if(dlcs_strcasecmp((char*)vin[0].c_str(),"[GUMP]")) {
             mode=FGL_GUMP;
             return;
         }
 
-        if(dscc((char*)vin[0].c_str(),"[CTRL]")) {
+        if(dlcs_strcasecmp((char*)vin[0].c_str(),"[CTRL]")) {
             mode=FGL_CTRL;
             return;
         }
 
-        if(dscc((char*)vin[0].c_str(),"[CTRL_CHILD]")) {
+        if(dlcs_strcasecmp((char*)vin[0].c_str(),"[CTRL_CHILD]")) {
             mode=FGL_CTRL_CHILD;
             return;
         }
 
-        if(dscc((char*)vin[0].c_str(),"[PROPERTY]")) {
+        if(dlcs_strcasecmp((char*)vin[0].c_str(),"[PROPERTY]")) {
             mode=FGL_PROPERTY;
             return;
         }
@@ -2190,7 +2190,7 @@ void C_GUI::call_do_line(char* line) {
                 if(cab_loading) {
                     cab_call((char*)vin[1].c_str());
                 } else {
-                    if(dscc((char*)vin[0].c_str(),"name")) {
+                    if(dlcs_strcasecmp((char*)vin[0].c_str(),"name")) {
                         dlcs_getcwd(temp);
                         pLog->_DebugAdd("Loading GUI file -> %s",
                                         va("%s%cgumps%c%s",temp,PATH_SEP,PATH_SEP,vin[1].c_str()) );
@@ -2213,7 +2213,7 @@ void C_GUI::call_do_line(char* line) {
 
         case FGL_GUMP:
             pLog->_DebugAdd("mode: FGL_GUMP define gump");
-            if(dscc((char*)vin[0].c_str(),"name")) {
+            if(dlcs_strcasecmp((char*)vin[0].c_str(),"name")) {
                 pLog->_DebugAdd("name:%s",vin[1].c_str());
                 strcpy(cur_gump,(char*)vin[1].c_str());
                 add_stump(cur_gump,810,610,10,10,0,"0");
@@ -2222,11 +2222,11 @@ void C_GUI::call_do_line(char* line) {
             }
 
             if(stump) {
-                if(dscc((char*)vin[0].c_str(),"gamemode")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"gamemode")) {
                     strcpy(stump->gamemode,vin[1].c_str());
                     return;
                 }
-                if(dscc((char*)vin[0].c_str(),"relativeto")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"relativeto")) {
                     stump->iRelativeTo=GC_RELATIVE[(char*)vin[1].c_str()];
                     switch(stump->iRelativeTo) {
                     case GUI_TOP_CENTER:
@@ -2270,9 +2270,9 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"x")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"x")) {
                     stump->x=0;
-                    if(dscc(vsb,"width")) {
+                    if(dlcs_strcasecmp(vsb,"width")) {
                         stump->x=SDL_GetVideoSurface()->w-1;
                     }
                     if((int)vsb[vsbl-1]==(int)'*') {
@@ -2285,9 +2285,9 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"y")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"y")) {
                     stump->y=0;
-                    if(dscc(vsb,"height")) {
+                    if(dlcs_strcasecmp(vsb,"height")) {
                         stump->y=SDL_GetVideoSurface()->h;
                     }
                     if((int)vsb[vsbl-1]==(int)'*') {
@@ -2300,7 +2300,7 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"w")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"w")) {
                     stump->rect.right=0;
                     if((int)vsb[vsbl-1]==(int)'*') {
                         vsb[vsbl-1]=0;
@@ -2308,15 +2308,15 @@ void C_GUI::call_do_line(char* line) {
                     } else {
                         stump->rect.right=atoi(vin[1].c_str());
                     }
-                    if(dscc(vsb,"width")) {
+                    if(dlcs_strcasecmp(vsb,"width")) {
                         stump->rect.right=SDL_GetVideoSurface()->w-1;
                     }
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"h")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"h")) {
                     stump->rect.bottom=0;
-                    if(dscc(vsb,"height")) {
+                    if(dlcs_strcasecmp(vsb,"height")) {
                         stump->rect.bottom=SDL_GetVideoSurface()->h;
                     }
                     if((int)vsb[vsbl-1]==(int)'*') {
@@ -2328,7 +2328,7 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"props")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"props")) {
                     stump->props=0;
                     vs=explode("|",vin[1]);
                     for(i=0; i<(int)vs.size(); i++) {
@@ -2337,22 +2337,22 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"action")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"action")) {
                     strcpy(stump->action,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"caption")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"caption")) {
                     strcpy(stump->caption,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"media")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"media")) {
                     strcpy(stump->media,vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"default_focus_control")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"default_focus_control")) {
                     strcpy(stump->default_focus_control,vin[1].c_str());
                     return;
                 }
@@ -2362,7 +2362,7 @@ void C_GUI::call_do_line(char* line) {
 
         case FGL_CTRL_CHILD:
             if(stump) {
-                if(dscc((char*)vin[0].c_str(),"name")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"name")) {
                     ctrl=stump->get_control(cur_ctrl);
                     if(!ctrl) return;
                     strcpy(cur_ctrl,(char*)vin[1].c_str());
@@ -2375,14 +2375,14 @@ void C_GUI::call_do_line(char* line) {
 
         case FGL_CTRL:
             if(stump) {
-                if(dscc((char*)vin[0].c_str(),"name")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"name")) {
                     strcpy(cur_ctrl,(char*)vin[1].c_str());
                     stump->add_control(cur_ctrl,0,0,0,32,32,0,"","");
                     return;
                 }
                 ctrl=stump->get_control(cur_ctrl);
                 if(!ctrl) return;
-                if(dscc((char*)vin[0].c_str(),"value")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"value")) {
 
                     if( (ctrl->type==FM_GC_LISTBOX) ||
                             (ctrl->type==FM_GC_DROPBOX) ) {
@@ -2399,12 +2399,12 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"group")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"group")) {
                     strcpy(ctrl->group,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"props")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"props")) {
                     ctrl->props=0;
                     vs=explode("|",vin[1]);
                     for(i=0; i<(int)vs.size(); i++) {
@@ -2413,7 +2413,7 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"border_color")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"border_color")) {
                     vs=explode(",",vin[1]);
                     if(vs.size()>2) {
                         r=atoi(vs[0].c_str());
@@ -2426,7 +2426,7 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"background_color")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"background_color")) {
                     vs=explode(",",vin[1]);
                     if(vs.size()>1) {
                         r=atoi(vs[0].c_str());
@@ -2439,70 +2439,70 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"listdepth")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"listdepth")) {
                     ctrl->listdepth=atoi(vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"nexttabfocus")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"nexttabfocus")) {
                     strcpy(ctrl->nexttabfocus,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"console")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"console")) {
                     strcpy(ctrl->console,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"action")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"action")) {
                     strcpy(ctrl->action,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"datafill")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"datafill")) {
                     strcpy(ctrl->datafill,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"datafilltarget")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"datafilltarget")) {
                     strcpy(ctrl->datafilltarget,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"media")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"media")) {
                     strcpy(ctrl->media,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"media_hover")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"media_hover")) {
                     strcpy(ctrl->media_hover,(char*)vin[1].c_str());
                     return;
                 }
 
 
-                if(dscc((char*)vin[0].c_str(),"media_click")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"media_click")) {
                     strcpy(ctrl->media_click,(char*)vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"hover_text")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"hover_text")) {
                     strcpy(ctrl->hover_text,vin[1].c_str());
                     //strcpy(ctrl->hover_text,ctrl->name);
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"x")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"x")) {
                     ctrl->rect.left=atoi(vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"y")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"y")) {
                     ctrl->rect.top=atoi(vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"w")) {
-                    if(dscc((char*)vin[1].c_str(),"width")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"w")) {
+                    if(dlcs_strcasecmp((char*)vin[1].c_str(),"width")) {
                         ctrl->rect.right=SDL_GetVideoSurface()->w-1;
                     } else {
                         ctrl->rect.right=atoi(vin[1].c_str());
@@ -2510,28 +2510,28 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"h")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"h")) {
                     ctrl->rect.bottom=atoi(vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"relativeto")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"relativeto")) {
                     ctrl->iRelativeTo=GC_RELATIVE[(char*)vin[1].c_str()];
                     pLog->_DebugAdd("GUI CONTROL: %s relative to %s (%d) (%d)",ctrl->name,vin[1].c_str(),ctrl->iRelativeTo,GC_RELATIVE[(char*)vin[1].c_str()]);
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"font")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"font")) {
                     ctrl->font=atoi(vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"fontbank")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"fontbank")) {
                     ctrl->fontbank=atoi(vin[1].c_str());
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"type")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"type")) {
                     ctrl->type=GC_TYPE[(char*)vin[1].c_str()];
                     if(ctrl->type==FM_GC_SELECTA_PROPS) {
                         ctrl->visible=false;
@@ -2547,18 +2547,18 @@ void C_GUI::call_do_line(char* line) {
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"visible")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"visible")) {
                     ctrl->visible=false;
-                    if(dscc((char*)vin[1].c_str(),"yes") )
+                    if(dlcs_strcasecmp((char*)vin[1].c_str(),"yes") )
                         ctrl->visible=true;
-                    if(dscc((char*)vin[1].c_str(),"true") )
+                    if(dlcs_strcasecmp((char*)vin[1].c_str(),"true") )
                         ctrl->visible=true;
-                    if(dscc((char*)vin[1].c_str(),"1") )
+                    if(dlcs_strcasecmp((char*)vin[1].c_str(),"1") )
                         ctrl->visible=true;
                     return;
                 }
 
-                if(dscc((char*)vin[0].c_str(),"[CTRL]")) {
+                if(dlcs_strcasecmp((char*)vin[0].c_str(),"[CTRL]")) {
                 } else {
                     return;
                 }
@@ -2645,7 +2645,7 @@ void C_GUI::cab_call(char* file) {
             vs = explode("\r",fin);
             if(vs.size()) call_do_line((char *)vs[0].c_str());
         }
-        DEL(hi); */
+        dlcsm_delete(hi); */
     }
     pLog->_DebugAdd("   GUI->call(gumps/%s) end",file);
 }
@@ -2658,7 +2658,7 @@ void C_GUI::bcall(char* file) {
     char fin[1024];
     memset(fin,0,1024);
     nfb=pGAF->GetFile((char*)va("gumps/%s",file));
-    //hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);	DEL(hi);
+    //hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);	dlcsm_delete(hi);
 }
 
 void C_GUI::bstore(char* file) {
@@ -3260,11 +3260,11 @@ bool C_GUI::loadButtons(char* szFilename) {
 bool C_GUI::destroyButtons() {
     int i;
     for(i=0; i<9; i++)
-        DEL(B9utton[i].texture);
+        dlcsm_delete(B9utton[i].texture);
     delete [] B9utton;
     B9utton=0;
     for(i=0; i<MAX_BUTTONS; i++)
-        DEL(ButtonTexture[i].texture);
+        dlcsm_delete(ButtonTexture[i].texture);
     delete [] ButtonTexture;
     ButtonTexture=0;
     return true;
@@ -3288,7 +3288,7 @@ bool C_GUI::loadFonts(void) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-                if(sp_isdir(epdf->d_name)) {
+                if(dlcs_isdir(epdf->d_name)) {
 
                 } else {
                     // pLog->AddEntry("Found font texture: font/%s\n",epdf->d_name);
@@ -3308,7 +3308,7 @@ bool C_GUI::loadFonts(void) {
                     x++;
                     if(!pFont->pFontTex->bmap) {
                         pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
-                        DEL(pFont);
+                        dlcsm_delete(pFont);
                     } else {
                         pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->tfilename,pFont->pFontTex->bmap);
                     }
@@ -3325,7 +3325,7 @@ bool C_GUI::destroyFonts(void) {
     while(pFont) {
         pFirstFont=pFont;
         pFont=pFont->pNext;
-        DEL(pFirstFont);
+        dlcsm_delete(pFirstFont);
     }
 }
 

@@ -75,7 +75,7 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
     float   cx,cy;
     int     loop;
     strcpy(szFile,file);
-    DEL(pFontTex);
+    dlcsm_delete(pFontTex);
     pFontTex=new CGLTexture(pLog);
     pFontTex->pGAF=pGAF;
     if(!pFontTex) return 0;
@@ -114,7 +114,7 @@ GLvoid CGLFont::Kill() {
         pFontMaskList=0;
     }
     */
-    DEL(pFontTex);
+    dlcsm_delete(pFontTex);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

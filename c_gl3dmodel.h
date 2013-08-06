@@ -6,7 +6,6 @@
 #ifndef _DLSTORM_OPENGL_MODEL
 #define _DLSTORM_OPENGL_MODEL
 
-
 #include "dlstorm.h"
 #include "c_gfx.h"
 #include "c_gltexture.h"
@@ -23,14 +22,14 @@ public:
     CGLMaterial();
     ~CGLMaterial();
     CGLMaterial* pNext;
-    char    name[1024];
+    char    name[FILENAME_SIZE];
     int     iMaterialIndex;
-    char    DiffuseTexture[1024];
-    char    NormalTexture[1024];
-    char    HeightTexture[1024];
-    char    OpacityTexture[1024];
-    char    ShininessTexture[1024];
-    char    SpecularTexture[1024];
+    char    DiffuseTexture[FILENAME_SIZE];
+    char    NormalTexture[FILENAME_SIZE];
+    char    HeightTexture[FILENAME_SIZE];
+    char    OpacityTexture[FILENAME_SIZE];
+    char    ShininessTexture[FILENAME_SIZE];
+    char    SpecularTexture[FILENAME_SIZE];
     void    Initialize(void);
 };
 
@@ -39,7 +38,7 @@ public:
     CGLMesh();
     ~CGLMesh();
     CGLMesh* pNext;
-    char    name[1024];
+    char    name[FILENAME_SIZE];
     int     iMeshIndex;
     int     iMaterialIndex;
     int     numTriangles;
@@ -56,7 +55,7 @@ public:
     CGLModel();
     CGLModel(C_GFX* pGFX, CLog *pInLog);
     ~CGLModel();
-    char        name[1024];
+    char        name[FILENAME_SIZE];
     bool        bMadeLog;
     CLog*       pLog;
     CGLModel*   pNext;

@@ -80,7 +80,7 @@ void C_CONS::set_cvar(char *name, char *value) {
 
     bFound=0;
     for( svm_i=varmap.begin(); svm_i!=varmap.end(); ++svm_i) {
-        if( dscc( ((*svm_i).first.c_str()), name) ) {
+        if( dlcs_strcasecmp( ((*svm_i).first.c_str()), name) ) {
             bFound=1;
             break;
         }
@@ -220,15 +220,15 @@ int C_CONS::get_cvartype(const char * s) {
     vector <string> vt;
     vt=explode("_",s);
     if(vt.size()>1) {
-        if(dscc(vt[0].c_str(),"b"))  return CVAR_BOOL;
-        if(dscc(vt[0].c_str(),"s"))  return CVAR_STRING;
-        if(dscc(vt[0].c_str(),"c"))  return CVAR_CHAR;
-        if(dscc(vt[0].c_str(),"uc")) return CVAR_UCHAR;
-        if(dscc(vt[0].c_str(),"i"))  return CVAR_INT;
-        if(dscc(vt[0].c_str(),"ui")) return CVAR_UINT;
-        if(dscc(vt[0].c_str(),"l"))  return CVAR_LONG;
-        if(dscc(vt[0].c_str(),"ul")) return CVAR_ULONG;
-        if(dscc(vt[0].c_str(),"f"))  return CVAR_FLOAT;
+        if(dlcs_strcasecmp(vt[0].c_str(),"b"))  return CVAR_BOOL;
+        if(dlcs_strcasecmp(vt[0].c_str(),"s"))  return CVAR_STRING;
+        if(dlcs_strcasecmp(vt[0].c_str(),"c"))  return CVAR_CHAR;
+        if(dlcs_strcasecmp(vt[0].c_str(),"uc")) return CVAR_UCHAR;
+        if(dlcs_strcasecmp(vt[0].c_str(),"i"))  return CVAR_INT;
+        if(dlcs_strcasecmp(vt[0].c_str(),"ui")) return CVAR_UINT;
+        if(dlcs_strcasecmp(vt[0].c_str(),"l"))  return CVAR_LONG;
+        if(dlcs_strcasecmp(vt[0].c_str(),"ul")) return CVAR_ULONG;
+        if(dlcs_strcasecmp(vt[0].c_str(),"f"))  return CVAR_FLOAT;
     }
     return CVAR_NULL;
 }
