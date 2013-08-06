@@ -145,9 +145,13 @@ bool CGLModel::Load(char* filename) {
         */
     }
 
+    pLog->_Add("Materials loaded");
 
+int l;
 
     for(int i=0;i<numMeshes;i++) {
+
+        pLog->_Add("Mesh load A");
 
         pMesh=pFirstMesh;
         if(pMesh) {
@@ -162,6 +166,8 @@ bool CGLModel::Load(char* filename) {
             pMesh=pFirstMesh;
         }
 
+        pLog->_Add("Mesh load B");
+
         aiMesh *inMesh = scene->mMeshes[i];
 
         pMesh->iMeshIndex       = i;
@@ -169,6 +175,7 @@ bool CGLModel::Load(char* filename) {
         pMesh->numTriangles     = inMesh->mNumFaces*3;
         pMesh->numUvCoords      = inMesh->GetNumUVChannels();
 
+        pLog->_Add("Mesh load C");
 
         pLog->_Add("Meshindex[%d] MaterialIndex[%d] NumTri[%d] NumUV[%d]",
                         pMesh->iMeshIndex,
@@ -177,9 +184,12 @@ bool CGLModel::Load(char* filename) {
                         pMesh->numUvCoords
                    );
 
+        pMesh->uvArray      = new float[inMesh->mNumFaces*3*2];
         pMesh->vertexArray  = new float[inMesh->mNumFaces*3*3];
         pMesh->normalArray  = new float[inMesh->mNumFaces*3*3];
-        pMesh->uvArray      = new float[inMesh->mNumFaces*3*2];
+
+
+        pLog->_Add("Mesh load D");
 
         for(unsigned int k=0;k<inMesh->mNumFaces;k++) {
             const aiFace& face = inMesh->mFaces[k];
@@ -187,20 +197,21 @@ bool CGLModel::Load(char* filename) {
                 aiVector3D uv = inMesh->mTextureCoords[0][face.mIndices[j]];
                 memcpy(pMesh->uvArray,&uv,sizeof(float)*2);
                 pMesh->uvArray+=2;
-
                 aiVector3D normal = inMesh->mNormals[face.mIndices[j]];
                 memcpy(pMesh->normalArray,&normal,sizeof(float)*3);
                 pMesh->normalArray+=3;
-
                 aiVector3D pos = inMesh->mVertices[face.mIndices[j]];
                 memcpy(pMesh->vertexArray,&pos,sizeof(float)*3);
                 pMesh->vertexArray+=3;
             }
         }
 
+
         pMesh->uvArray      -= inMesh->mNumFaces*3*2;
         pMesh->normalArray  -= inMesh->mNumFaces*3*3;
         pMesh->vertexArray  -= inMesh->mNumFaces*3*3;
+
+        pLog->_Add("Mesh load F");
 
     }
 
