@@ -33,6 +33,7 @@ int     dlcs_bin_to_dec(char *pa);
 long    dlcs_get_tickcount(void);
 char*   dlcs_get_os_version(char *x);
 char*   dlcs_get_hostname(char *x);
+char*   dlcs_get_ipaddress(char *x);
 bool    dlcs_isdir(char *dir);
 int     dlcs_mkdir(char *szDirectoryName);
 int     dlcs_chdir(char *szDirectory);

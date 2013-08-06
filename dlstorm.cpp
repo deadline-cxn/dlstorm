@@ -303,9 +303,6 @@ int dlcs_hex_to_dec(char *pa) {
     return result;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int b2d(char *pa) {
-    return dlcs_bin_to_dec(pa);
-}
 int dlcs_bin_to_dec(char *pa) {
     if(!pa) return 0;
     if(!strlen(pa)) return 0;
@@ -466,7 +463,30 @@ char *dlcs_get_hostname(char *x) {
     gethostname(x, HOST_NAME_MAX);
     return x;
 }
+////////////////////////////////////////////////////////////////////////////////////////////////
+char *dlcs_get_ipaddress(char *x) {
+    strcpy(x,"127.0.0.1"); // TODO: Add actual computer ip address here
 
+    dlcsm_make_str(tmp);
+    dlcs_get_hostname(tmp);
+
+    struct hostent *phe = gethostbyname(tmp);
+    if (phe == 0) {
+        strcpy(x,"ERROR");
+        return x;
+    }
+    // strcpy(x,"IP:");
+    for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
+        struct in_addr addr;
+        memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
+        strcpy(x,inet_ntoa(addr));
+        return x;
+    }
+
+
+    return x;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
 /* MD5 converted to C++ class by Frank Thilo (thilo@unix-ag.org)
  for bzflag (http://www.bzflag.org) based on:
    md5.h and md5.c reference implemantion of RFC 1321
