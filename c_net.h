@@ -302,22 +302,20 @@ public:
     int               nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
     int               nSend(char *pBuf, int iLen, struct sockaddr *pAddr);
     SOCKET             iSocket;
-
     struct sockaddr_in ToAddr;
     struct sockaddr_in FromAddr;
 
 #pragma pack(1)
-    struct {
-        unsigned int  iLen;
-        unsigned int  iSequence;
-        char          pData[MAX_DATAGRAM];
-    } PacketBuffer;
+struct {
+    unsigned int  iLen;
+    unsigned int  iSequence;
+    char          pData[MAX_DATAGRAM];
+} PacketBuffer;
 #pragma pack()
 };
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 int     NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName);
 int     NET_GetAddrFromName(char *pName, struct sockaddr *pAddr);

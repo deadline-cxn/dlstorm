@@ -98,7 +98,6 @@ void normalize(GLfloat *a) {
     a[2]/=d;
 }
 //////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
-
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
 //////////////////////////////////////////////////////////////// C_Camera FUNCTIONS
@@ -217,7 +216,6 @@ void C_Camera::Move_Down() {
     if(!bMovingDown) return;
     loc.y-=1.0f;
 }
-
 void C_Camera::mouseMovement(int x, int y) {
     static int lx;
     static int ly;
@@ -231,13 +229,12 @@ void C_Camera::mouseMovement(int x, int y) {
     if(y<ly) diffy=-1;
     rot.x += (float) diffy;
     rot.y += (float) diffx;
-    //if(rot.x < -60.0f) rot.x=-60.0f;
-    //if(rot.x > 60.0f)  rot.x=60.0f;
-    //if(rot.y < -5000.0f) rot.y=0.0f;
+    if(rot.x < -60.0f) rot.x=-60.0f;
+    if(rot.x > 60.0f)  rot.x=60.0f;
+    if(rot.y < -5000.0f) rot.y=0.0f;
     lx=x;
     ly=y;
 }
-
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
@@ -269,6 +266,73 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
     if(VideoInfo) {
+
+pLog->_Add("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
+pLog->_Add("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
+pLog->_Add("VideoInfo->blit_hw [%d]             ",VideoInfo->blit_hw);
+pLog->_Add("VideoInfo->blit_hw_CC [%d]          ",VideoInfo->blit_hw_CC);
+pLog->_Add("VideoInfo->blit_hw_A [%d]           ",VideoInfo->blit_hw_A);
+pLog->_Add("VideoInfo->blit_sw [%d]             ",VideoInfo->blit_sw);
+pLog->_Add("VideoInfo->blit_sw_CC [%d]          ",VideoInfo->blit_sw_CC);
+pLog->_Add("VideoInfo->blit_sw_A [%d]           ",VideoInfo->blit_sw_A);
+pLog->_Add("VideoInfo->blit_fill [%d]           ",VideoInfo->blit_fill);
+pLog->_Add("VideoInfo->video_mem [%d]           ",VideoInfo->video_mem);
+pLog->_Add("VideoInfo->vfmt->BitsPerPixel [%d]  ",VideoInfo->vfmt->BitsPerPixel);
+pLog->_Add("VideoInfo->vfmt->BytesPerPixel [%d] ",VideoInfo->vfmt->BytesPerPixel);
+pLog->_Add("VideoInfo->vfmt->Rloss [%d]         ",VideoInfo->vfmt->Rloss);
+pLog->_Add("VideoInfo->vfmt->Gloss [%d]         ",VideoInfo->vfmt->Gloss);
+pLog->_Add("VideoInfo->vfmt->Bloss [%d]         ",VideoInfo->vfmt->Bloss);
+pLog->_Add("VideoInfo->vfmt->Aloss [%d]         ",VideoInfo->vfmt->Aloss);
+pLog->_Add("VideoInfo->vfmt->Rshift [%d]        ",VideoInfo->vfmt->Rshift);
+pLog->_Add("VideoInfo->vfmt->Gshift [%d]        ",VideoInfo->vfmt->Gshift);
+pLog->_Add("VideoInfo->vfmt->Bshift [%d]        ",VideoInfo->vfmt->Bshift);
+pLog->_Add("VideoInfo->vfmt->Ashift [%d]        ",VideoInfo->vfmt->Ashift);
+pLog->_Add("VideoInfo->vfmt->Rmask [%d]         ",VideoInfo->vfmt->Rmask);
+pLog->_Add("VideoInfo->vfmt->Gmask [%d]         ",VideoInfo->vfmt->Gmask);
+pLog->_Add("VideoInfo->vfmt->Bmask [%d]         ",VideoInfo->vfmt->Bmask);
+pLog->_Add("VideoInfo->vfmt->Amask [%d]         ",VideoInfo->vfmt->Amask);
+pLog->_Add("VideoInfo->vfmt->colorkey [%d]      ",VideoInfo->vfmt->colorkey);
+pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
+          /*
+           VideoInfo->hw_available                ///////////////////////////////////
+           VideoInfo->wm_available
+           VideoInfo->blit_hw
+           VideoInfo->blit_hw_CC
+           VideoInfo->blit_hw_A
+           VideoInfo->blit_sw
+           VideoInfo->blit_sw_CC
+           VideoInfo->blit_sw_A
+           VideoInfo->blit_fill
+           VideoInfo->video_mem
+           VideoInfo->vfmt->BitsPerPixel
+           VideoInfo->vfmt->BytesPerPixel
+           VideoInfo->vfmt->Rloss
+           VideoInfo->vfmt->Gloss
+           VideoInfo->vfmt->Bloss
+           VideoInfo->vfmt->Aloss
+           VideoInfo->vfmt->Rshift
+           VideoInfo->vfmt->Gshift
+           VideoInfo->vfmt->Bshift
+           VideoInfo->vfmt->Ashift
+           VideoInfo->vfmt->Rmask
+           VideoInfo->vfmt->Gmask
+           VideoInfo->vfmt->Bmask
+           VideoInfo->vfmt->Amask
+           VideoInfo->vfmt->colorkey
+           VideoInfo->vfmt->alpha
+
+           *//////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+       ///////////////////////////////////////////////////
+
     } else {
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
@@ -363,14 +427,17 @@ void C_GFX::SetWindowTitle(char *fmt, ...) {
     SDL_WM_SetCaption(WindowCaption,0);
 }
 void C_GFX::ToggleFullScreen(void) {
-    // SDL_WM_ToggleFullScreen(pScreen);
-    /*  const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
-        if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces..."); }
-        else                        { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
-    	if(bFullScreen==true) bFullScreen=false;
-    	else bFullScreen=true;
-    	pScreen = SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
-    	InitGL();	*/
+#ifdef __linux__
+    SDL_WM_ToggleFullScreen(pScreen);
+#endif
+    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
+    if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces..."); }
+    else                        { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
+    if(bFullScreen==true)   bFullScreen=false;
+    else bFullScreen=true;
+    pScreen = SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
+    InitGL();
+    LoadTextures(pGAF);
 }
 void C_GFX::ShutDownGFX(void) {
     pLog->_Add("Shutting down SDL/OpenGL GFX subsystem...");
@@ -398,7 +465,6 @@ int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
     glLoadIdentity();									// Reset The Projection Matrix
     gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
     glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-
     return true; // Initialization Went OK
 }
 void C_GFX::EndScene(void) {
@@ -425,27 +491,19 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     CGLTexture *pDELTexture;
     pDELTexture=0;
     DIR *dpdf;
-    pLog->_Add("Loading textures 2");
+
     struct dirent *epdf;
     dpdf = opendir("base");
     if (dpdf != NULL) {
-            pLog->_Add("Loading textures 3");
         while (epdf = readdir(dpdf)) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
                 if(dlcs_isdir(epdf->d_name)) {
-                        pLog->_Add("Loading textures 4");
-
                 } else {
-                    pLog->_Add("Loading textures 5");
                     if (strcmp(".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
-
-                        pLog->_Add("Loading textures 5.1");
-
                         pTexture=pFirstTexture;
                         if(pTexture) {
-                                pLog->_Add("Loading textures 5.2");
                             while(pTexture->pNext) {
                                 pTexture=pTexture->pNext;
                             }
@@ -453,26 +511,18 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
                             pTexture=pTexture->pNext;
                         }
                         else {
-                            pLog->_Add("Loading textures 5.2.1");
                             pFirstTexture=new CGLTexture(pLog);
                             pTexture=pFirstTexture;
-                            pLog->_Add("Loading textures 5.2.2");
                         }
-                        pLog->_Add("Loading textures 5.3");
-
                         pTexture->LoadPNG(va("base/%s",epdf->d_name));
-                        pLog->_Add("Loading textures 5.4");
                         if(!pTexture->bmap) {
-                                pLog->_Add("Loading textures 5.6");
                             pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
                             pDELTexture=pFirstTexture;
                             if(pTexture==pDELTexture) {
                                 dlcsm_delete(pTexture);
                                 dlcsm_delete(pFirstTexture);
                             }
-
                             else {
-                                    pLog->_Add("Loading textures 5.7");
                                 pDELTexture=pFirstTexture;
                                 while(pDELTexture) {
                                     if(pDELTexture==pTexture) {
@@ -491,7 +541,6 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
             }
         }
     }
-    pLog->_Add("Loading textures 6");
     closedir(dpdf);
     return true;
 }
@@ -651,21 +700,14 @@ bool C_GFX::DestroyModels(void) {
 }
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(int mx, int my) {
-    int viewport[4];
-
     glRenderMode(_glRendermode);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawFog();
     DrawSkyBox(); // TODO: Fix Skybox
-
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
-
     pCamera->Go();
-
     DrawEntities();
-
-
 }
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
 void C_GFX::DrawRect(RECT rc, long color) {
@@ -1126,7 +1168,6 @@ void C_GFX::InitializeEntities(void) {
 
 
 }
-
 C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
     C_Entity* pNTT;
     pNTT=pFirstNTT;
@@ -1217,7 +1258,6 @@ C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
     }
     return pNTT;
 }
-
 void C_GFX::DrawEntities(void) {
     C_Entity* pNTT;
     pNTT=pFirstNTT;
@@ -1230,7 +1270,6 @@ void C_GFX::DrawEntities(void) {
     }
 
 }
-
 C_Entity* C_GFX::GetSelectedEntity(void) {
 return pSelectedEntity;
 }
@@ -1248,7 +1287,6 @@ void C_GFX::SelectEntity(C_Entity* pEntity) {
     pSelectedEntity=pEntity;
     pSelectedEntity->bSelected=true;
 }
-
 void C_GFX::SelectClosestEntity(void) {
     ClearSelectEntity();
     CVector3 thisloc;
@@ -1274,8 +1312,6 @@ void C_GFX::SelectClosestEntity(void) {
     }
     return pSelectedEntity;
 }
-
-
 void C_GFX::DeleteEntity(C_Entity* pEntity) {
     C_Entity* pNTT;
     C_Entity* pLastEntity;
@@ -1294,7 +1330,6 @@ void C_GFX::DeleteEntity(C_Entity* pEntity) {
         pNTT=pNTT->pNext;
     }
 }
-
 void C_GFX::ClearEntities(void) {
     C_Entity* pNTT;
     pNTT=pFirstNTT;
@@ -1304,13 +1339,10 @@ void C_GFX::ClearEntities(void) {
         dlcsm_delete(pFirstNTT);
     }
 }
-
-
 void C_GFX::LoadEntities(CVector3 WhichSector) {
     C_Entity* pNTT;
     ClearEntities();
 }
-
 void C_GFX::SaveEntities(CVector3 WhichSector){
     C_Entity* pNTT;
 }
