@@ -218,7 +218,7 @@ const char * C_CONS::get_cvartype_string(int t) {
 }
 int C_CONS::get_cvartype(const char * s) {
     vector <string> vt;
-    vt=explode("_",s);
+    vt=dlcs_explode("_",s);
     if(vt.size()>1) {
         if(dlcs_strcasecmp(vt[0].c_str(),"b"))  return CVAR_BOOL;
         if(dlcs_strcasecmp(vt[0].c_str(),"s"))  return CVAR_STRING;
@@ -288,7 +288,7 @@ void C_CONS::_Execute(const char *cmd) {
     }
 
     if(cQuoteCount&1)  return; // mismatched quote
-    vector <string> ncmd=explode(";",cmd2);
+    vector <string> ncmd=dlcs_explode(";",cmd2);
     if(ncmd.size()>1) {
         for(i=0; i<ncmd.size(); i++) {
             _Execute((char *)ncmd[i].c_str());
@@ -304,7 +304,7 @@ void C_CONS::_Execute(const char *cmd) {
         }
     }
 
-    vector <string> narg=explode(" ",cmd2);
+    vector <string> narg=dlcs_explode(" ",cmd2);
 
     if(narg.size()>0) {
         // pLog->_Add("C_CONS::_Execute 5 1 > [%s] %s...",(char *)narg[0].c_str(),cmd);

@@ -238,7 +238,7 @@ bool CC_Data::bLoad(void) {
 
         In[strlen(In)-1]=0;
 
-        lin = explode("=",In);
+        lin = dlcs_explode("=",In);
         if(lin.size()>1) {
 
             pLog->_Add("%s",lin[0].c_str());

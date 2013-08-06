@@ -3,9 +3,7 @@
     Author: Seth Parson
 
 ****************************************************************/
-
 #include "dlstorm.h"
-
 #ifdef _DL_INCLUDE_LOG
 CLog* p_Log;
 void dLog(const char *fmt, ...) {
@@ -18,12 +16,9 @@ void dLog(const char *fmt, ...) {
     p_Log->_Add(ach);
 }
 #endif
-
 // __stdcall DllMain() { return 0; }
-
-//using namespace std;
-
-vector <string> explode(const string &delimiter, const string &str) {
+////////////////////////////////////////////////////////////////////////////////////////////////
+vector <string> dlcs_explode(const string &delimiter, const string &str) {
     vector <string> arr;
     arr.clear();
     int strleng=str.length();
@@ -48,15 +43,15 @@ vector <string> explode(const string &delimiter, const string &str) {
     return arr;
 
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 char* dlcs_get_filetype(char* x, char* in) {
     vector <string> ft;
-    ft=explode(".",in);
+    ft=dlcs_explode(".",in);
     ft.size();
     strcpy(x,ft[ft.size()].c_str());
     return x;
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 bool dlcs_istrue(char *text) {
     if(dlcs_strcasecmp(text,"on"))      return true;
     if(dlcs_strcasecmp(text,"1"))       return true;
@@ -64,9 +59,8 @@ bool dlcs_istrue(char *text) {
     if(dlcs_strcasecmp(text,"yes"))     return true;
     return false;
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
-vector <string> Dir2Vector(char *szDir, char *szWildCard) {
+vector <string> dlcs_dir_to_vector(char *szDir, char *szWildCard) {
     vector <string> diro;
     diro.clear();
 
@@ -122,8 +116,7 @@ vector <string> Dir2Vector(char *szDir, char *szWildCard) {
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-bool Dir2File(char *szDir,char *szFile,char *szWildCard) {
-
+bool dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
 #ifdef _WINDOWS_
     FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
@@ -170,11 +163,10 @@ bool Dir2File(char *szDir,char *szFile,char *szWildCard) {
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-inline int length(const char* s) {
+inline int dlcs_length(const char* s) {
     return s?strlen(s):0;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
 char *dlcs_charreplace(char *str, char cold,char cnew) {
     for(int i=0; i<(int)strlen(str); i++) {
         if(str[i]==cold)
@@ -182,7 +174,7 @@ char *dlcs_charreplace(char *str, char cold,char cnew) {
     }
     return (str);
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 char* dlcs_strreplace(char *str, const char* what, const char* to) {
     int i, j, k, m, n, delta;
     int n1, n2, n3;
@@ -191,14 +183,14 @@ char* dlcs_strreplace(char *str, const char* what, const char* to) {
         return 0;
     if (!to)
         to = "";
-    n1 = length(str);
-    n2 = length(what);
+    n1 = dlcs_length(str);
+    n2 = dlcs_length(what);
     n = n1 - n2 + 1;
     for (i = 0; i < n; ++i) {
         for (j = 0; j < n2 && what[j] == str[i+j]; ++j)
             ;
         if (j == n2) { // found
-            n3 = length(to);
+            n3 = dlcs_length(to);
             delta = n3 - n2;
             m = n1 - i - n2;
             if (delta < 0) { /* move left */
@@ -226,11 +218,11 @@ char* dlcs_strreplaceall(char* str, const char* what, const char* to) {
     return str;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void md5_digest(char *str, char *text) { // return a md5 digest of text
+void dlcs_md5_digest(char *str, char *text) { // return a md5 digest of text
     strcpy(str,md5(text).c_str());
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *encrypt(char *text) {
+char *dlcs_encrypt(char *text) {
     char ntext[1024];
     memset(ntext,0,1024);
     char ntext2[1024];
@@ -245,7 +237,7 @@ char *encrypt(char *text) {
     return (ntext2);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *decrypt(char *text) {
+char *dlcs_decrypt(char *text) {
 
     return (text);
 }
@@ -388,10 +380,7 @@ bool dlcs_isdir(char *dir) {
     if (st.st_mode & S_IFDIR) return true;
     return false;
 }
-
-int sp_mkdir(char *szDirectoryName) {
-    return dlcs_mkdir(szDirectoryName);
-}
+////////////////////////////////////////////////////////////////////////////////////////////////
 int dlcs_mkdir(char *szDirectoryName) {
     int returnval=0;
 #ifdef _WIN32
@@ -403,9 +392,6 @@ int dlcs_mkdir(char *szDirectoryName) {
     return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int sp_chdir(char *szDirectoryName) {
-    return dlcs_chdir(szDirectoryName);
-}
 int dlcs_chdir(char *szDirectory) {
     int returnval=0;
 #ifdef _WIN32
@@ -416,9 +402,6 @@ int dlcs_chdir(char *szDirectory) {
     return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *sp_getcwd(char *x) {
-    return dlcs_getcwd(x);
-}
 char *dlcs_getcwd(char *x) {
     getcwd(x,_MAX_PATH);
     return x;

@@ -245,11 +245,11 @@ void C_GCTRL::attach_default_children(void) {
             dlcs_getcwd(temp);
             // strcpy(temp,dlcs_getcwd());
             dlcs_chdir(action);
-            dirs=Dir2Vector(temp,"*.*");
+            dirs=dlcs_dir_to_vector(temp,"*.*");
             dlcs_chdir(temp);
         } else {
             dlcs_getcwd(temp);
-            dirs=Dir2Vector(temp,"*.*");
+            dirs=dlcs_dir_to_vector(temp,"*.*");
         }
 
         sort(dirs.begin(), dirs.end());
@@ -429,7 +429,7 @@ char* C_GCTRL::convert$(char* in) {
     memset(temp2,0,1024);
     memset(temp3,0,1024);
     strcpy(temp2," ");
-    varswap=explode(" ",in);
+    varswap=dlcs_explode(" ",in);
     for(i=0; i<varswap.size(); i++) {
         strcpy(temp,varswap[i].c_str());
         if(temp[0]=='$') {
@@ -2144,9 +2144,9 @@ void C_GUI::call_do_line(char* line) {
     memset(vsb,0,1024);
     char vsbl=0;
 
-    vs=explode("\n",line);
+    vs=dlcs_explode("\n",line);
     if(vs.size())
-        vin=explode("=",vs[0]);
+        vin=dlcs_explode("=",vs[0]);
 
     if(vin[0]!="") {
         if(vin.size()>1) {
@@ -2330,7 +2330,7 @@ void C_GUI::call_do_line(char* line) {
 
                 if(dlcs_strcasecmp((char*)vin[0].c_str(),"props")) {
                     stump->props=0;
-                    vs=explode("|",vin[1]);
+                    vs=dlcs_explode("|",vin[1]);
                     for(i=0; i<(int)vs.size(); i++) {
                         stump->props+=GC_PROP[(char*)vs[i].c_str()];
                     }
@@ -2406,7 +2406,7 @@ void C_GUI::call_do_line(char* line) {
 
                 if(dlcs_strcasecmp((char*)vin[0].c_str(),"props")) {
                     ctrl->props=0;
-                    vs=explode("|",vin[1]);
+                    vs=dlcs_explode("|",vin[1]);
                     for(i=0; i<(int)vs.size(); i++) {
                         ctrl->props+=GC_PROP[(char*)vs[i].c_str()];
                     }
@@ -2414,7 +2414,7 @@ void C_GUI::call_do_line(char* line) {
                 }
 
                 if(dlcs_strcasecmp((char*)vin[0].c_str(),"border_color")) {
-                    vs=explode(",",vin[1]);
+                    vs=dlcs_explode(",",vin[1]);
                     if(vs.size()>2) {
                         r=atoi(vs[0].c_str());
                         g=atoi(vs[1].c_str());
@@ -2427,7 +2427,7 @@ void C_GUI::call_do_line(char* line) {
                 }
 
                 if(dlcs_strcasecmp((char*)vin[0].c_str(),"background_color")) {
-                    vs=explode(",",vin[1]);
+                    vs=dlcs_explode(",",vin[1]);
                     if(vs.size()>1) {
                         r=atoi(vs[0].c_str());
                         g=atoi(vs[1].c_str());
@@ -2590,7 +2590,7 @@ void C_GUI::call_file(char*file) {
     fp=fopen(va("gumps/%s",file),"rt");
     if(fp) {
         while(fgets(fin,256,fp)) {
-            vs=explode("\r",fin);
+            vs=dlcs_explode("\r",fin);
             if(vs.size()) call_do_line((char*)vs[0].c_str());
         }
         fclose(fp);
@@ -2642,7 +2642,7 @@ void C_GUI::cab_call(char* file) {
 
         /* hi=new CxMemFile((BYTE*)nfb.fb,nfb.Size);
         while(hi->GetS(fin,256)) {
-            vs = explode("\r",fin);
+            vs = dlcs_explode("\r",fin);
             if(vs.size()) call_do_line((char *)vs[0].c_str());
         }
         dlcsm_delete(hi); */
@@ -3942,7 +3942,7 @@ void C_GUI::addChat(int channel, char* user,  char* msg) {
         while(c) {
             if(c->type==FM_GC_CHATBOX) {
 
-                v=explode(",",c->property["channel"].c_str());
+                v=dlcs_explode(",",c->property["channel"].c_str());
 
                 if(v.size()) {
 
