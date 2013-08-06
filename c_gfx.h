@@ -9,14 +9,14 @@
 #ifndef _EMBER_GFX_UTIL
 #define _EMBER_GFX_UTIL
 
-typedef struct CVector2 { float x, y; };
-typedef struct CVector3 { float x, y, z; };
-class CColor3  { public: float r, g, b; };
-class CTexCoord { public: float u,v; };
-struct tFace   { int vertIndex[3]; int coordIndex[3]; };
-typedef struct tagVERTEX   { float x, y, z; float u, v; } VERTEX;
-typedef struct tagTRIANGLE { VERTEX  vertex[3]; } TRIANGLE;
-typedef struct tagSECTOR   { int numtriangles; TRIANGLE* triangle; } SECTOR;
+typedef struct CVector2   { float x, y; };
+typedef struct CVector3   { float x, y, z; };
+typedef struct CColor3    { float r, g, b; };
+typedef struct CTexCoord  { float u,v; };
+typedef struct tFace      { int vertIndex[3]; int coordIndex[3]; };
+typedef struct tagVERTEX  { float x, y, z; float u, v; } VERTEX;
+typedef struct tagTRIANGLE{ VERTEX  vertex[3]; } TRIANGLE;
+typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -130,13 +130,15 @@ public:
     C_Entity*   pFirstMapNTT;   // Map Entities
     C_Entity*   pSelectedEntity;// Selected Entity
     GLuint      _glRendermode;
+
     CVector3    Sector;
+
     char        WindowCaption[1024];
     bool        bEditEntities;
 
-    v3ops OpRot;
-    v3ops OpLoc;
-    v3ops OpScale;
+    v3ops       OpRot;
+    v3ops       OpLoc;
+    v3ops       OpScale;
 
     // GFX System level functions
     int         InitGL(void);

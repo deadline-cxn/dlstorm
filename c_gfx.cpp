@@ -1103,6 +1103,9 @@ void C_GFX::InitializeEntities(void) {
     for(int i=0; i<numntt; i++)
         MakeEntity(va("Entity %d",i),0,0,0);
     SelectEntity(pFirstNTT);
+
+    CVector3 sec;
+    //LoadEntities(sec);
 }
 
 C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
@@ -1282,3 +1285,39 @@ void C_GFX::ClearEntities(void) {
         DEL(pFirstNTT);
     }
 }
+
+
+void C_GFX::LoadEntities(CVector3 WhichSector) {
+    C_Entity* pNTT;
+    ClearEntities();
+    pFirstNTT=new C_Entity(pLog,pGAF,this,0);
+    pNTT=pFirstNTT;
+    FILE* fp = fopen("map/ntt","rb");
+    if(fp)  {
+        while(fread(pNTT,1,sizeof(C_Entity),fp) ) {
+            pNTT->pNext=new C_Entity(pLog,pGAF,this,0);
+            pNTT=pNTT->pNext;
+        }
+        fclose(fp);
+    }
+    DEL(pNTT);
+
+}
+
+void C_GFX::SaveEntities(CVector3 WhichSector){
+
+    C_Entity* pNTT;
+
+    FILE *fp = fopen("map/ntt","wb");
+    if(fp) {
+        pNTT=pFirstNTT;
+        while(pNTT) {
+            fwrite(pNTT,1,sizeof(C_Entity),fp);
+            pNTT=pNTT->pNext;
+        }
+        fclose(fp);
+    }
+}
+
+
+
