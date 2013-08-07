@@ -383,6 +383,14 @@ bool dlcs_isdir(char *dir) {
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+string dlcs_filetype(string pathName){
+	// Finds the last persiod character of the string
+	int period = pathName.find_last_of(".");
+	// I use  + 1 because I don't really need the to include the period
+	string ext = pathName.substr(period + 1);
+	return ext;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
 int dlcs_mkdir(char *szDirectoryName) {
     int returnval=0;
 #ifdef _WIN32

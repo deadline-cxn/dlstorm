@@ -95,7 +95,7 @@ CGLFont::CGLFont(char *fn) {
 CGLFont::~CGLFont() {
     Kill();
 }
-bool CGLFont::Load(const char *file) { // Build Our Font Display List
+GLuint CGLFont::Load(const char *file) { // Build Our Font Display List
     float   cx,cy;
     int     loop;
     strcpy(szFile,file);
@@ -103,8 +103,7 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
     pFontTex=new CGLTexture(pLog);
     pFontTex->pGAF=pGAF;
     if(!pFontTex) return 0;
-    // pFontTex->usemask=0;
-    pFontTex->LoadPNG(va("%s",szFile));
+    pFontTex->Load(va("%s",szFile));
     pFontList=glGenLists(256);                          // Creating 256 Display Lists
     glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);         // Select Our Font Texture
     for(loop=0; loop<256; loop++) {                      // Loop Through All 256 Lists
@@ -124,7 +123,7 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
         glTranslated(16,0,0);                       // Move To The Right Of The Character
         glEndList();                                    // Done Building The Display List
     }                                                   // Loop Until All 256 Are Built
-    return pFontTex->Loaded();
+    return pFontTex->bmap;
 }
 GLvoid CGLFont::Kill() {
     if(pFontList)    {
@@ -431,7 +430,7 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char r, u_char g, u_char b) {
     if(!pFontTex) return;
     if(!pFontTex->bmap) {
-        pFontTex->LoadPNG(va("%s.png",szFile));
+        pFontTex->Load(va("%s.png",szFile));
     }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
     if(wset<2) {

@@ -16,20 +16,10 @@
  ***************************************************************/
 #ifndef _DLCS_CGLFONT
 #define _DLCS_CGLFONT
-#ifdef _WIN32
-#include <winsock2.h>
-#ifndef _MMEDIA_
-#define _MMEDIA_
-#include <mmsystem.h>
-#include <mmreg.h>
-#endif//_MMEDIA
-#endif//_WIN32
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "dlstorm.h"
 #include "c_gaf.h"
 #include "c_log.h"
 #include "c_gltexture.h"
-#include "SDL.h"
 class CGLTexture;
 ///////////////////////////// CGLFont class
 class CGLFont {
@@ -61,7 +51,7 @@ public:
     //GLuint    pFontTexture;       // Storage For Our Font Texture
     //GLuint    pFontMaskTexture;   // Storage For Our Font Texture
 
-    bool        Load(const char *file);
+    GLuint      Load(const char *file);
     GLvoid      Reload();
     GLvoid      Kill();
 

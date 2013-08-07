@@ -16,66 +16,63 @@
  ***************************************************************/
 #ifndef _DLCS_CGLTEXTURE
 #define _DLCS_CGLTEXTURE
-#ifdef _WIN32
-#include <winsock2.h>
-#ifndef _MMEDIA_
-#define _MMEDIA_
-#include <mmsystem.h>
-#include <mmreg.h>
-#endif//_MMEDIA
-#endif//_WIN32
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include "dlstorm.h"
 #include "c_gaf.h"
 #include "c_log.h"
 #include "png.h"
 #include "glerrors.h"
-#include "SDL.h"
-struct Image {
+/////////////////////////////// Image struct
+typedef struct Image {
     u_long width;
     u_long height;
     int bpp;
     int type;
     char *data;
-}; // Image;
+};
 /////////////////////////////// CGLTexture class
 class CGLTexture {
 public:
     CGLTexture();
-    CGLTexture(CLog *pLog);
-    CGLTexture(CGAF *pGAF,char *fname);
-    CGLTexture(CLog *pLog, CGAF *pGAF,char *fname);
-    CGLTexture(CGAF *pGAF,char *fname,bool fmask);
-    CGLTexture(CLog *pLog, CGAF *pGAF,char *fname,bool fmask);
+    CGLTexture(CLog* pLog);
+    CGLTexture(const char* file);
+    CGLTexture(CLog* pLog,const char* file);
     ~CGLTexture();
-    CLog    *pLog;
-    bool    bMadeLog;
-    CGAF    *pGAF;
-    char    name[FILENAME_SIZE];
+
+    CLog*       pLog;
+    bool        bMadeLog;
+    CGAF*       pGAF;
+    char        name[FILENAME_SIZE];
+    GLuint      bmap;
+    unsigned long width;
+    unsigned long height;
+    char        filename[FILENAME_SIZE];
+    CGLTexture* pNext;
+
     void    Initialize(void);
-    bool    Create(int x,int y);
+    GLuint  Create(int x,int y);
     bool    Clear(u_char R,u_char G,u_char B);
     bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b);
     bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
-    GLuint  Load(const char *filename,bool which);
-    bool    LoadTGA(char* filename, Image *image);
-    bool    LoadBMP(char* filename, Image *image);
-    GLuint  LoadBMP(CGAF *pGAF,const char *filename,bool which);
-    GLuint  LoadPNG(const char *filename);
-    bool    ImageLoad(char *filename, Image *image);
-    bool    LoadBMPFromMem(unsigned char* fb, Image *image);
-    bool    LoadTextureFromMem(unsigned char *fb);
-    bool    ReLoad(void);
-    bool    Loaded(void);
-    GLuint  bmap;
-    int     width;
-    int     height;
-    char    tfilename[FILENAME_SIZE];
-    CGLTexture *pNext;
+
+    GLuint  Load(const char* file);
+    GLuint  LoadFromMem(const char* file);
+private:
+    GLuint  LoadPNG(const char* file);
+    GLuint  LoadTGA(const char* file);
+    GLuint  LoadBMP(const char* file);
+    GLuint  LoadJPG(const char* file);
+    GLuint  LoadTIF(const char* file);
+    GLuint  LoadDDS(const char* file);
+    GLuint  LoadGIF(const char* file);
+    GLuint  LoadBMPFromMem(unsigned char* fb, Image *image);
+    GLuint  LoadTextureFromMem(unsigned char *fb);
 };
+
 struct CGLTextureList {  CGLTexture *texture; };
+// bool    ImageLoad(char *filename, Image *image);
+// bool    ReLoad(void);
 #endif//_DLCS_CGLTEXTURE
 

@@ -417,7 +417,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     if(!pDefaultTexture) {
         pDefaultTexture=new CGLTexture;
         if(pDefaultTexture) {
-            pDefaultTexture->LoadPNG("base/default.png");
+            pDefaultTexture->Load("base/default.png");
             pLog->_Add("Default Texture initialized");
         }
     }
@@ -530,7 +530,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
                             pFirstTexture=new CGLTexture(pLog);
                             pTexture=pFirstTexture;
                         }
-                        pTexture->LoadPNG(va("base/%s",epdf->d_name));
+                        pTexture->Load(va("base/%s",epdf->d_name));
                         if(!pTexture->bmap) {
                             pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
                             pDELTexture=pFirstTexture;
@@ -550,7 +550,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
                             }
                         }
                         else {
-                            pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->tfilename,pTexture->bmap);
+                            pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->filename,pTexture->bmap);
                         }
                     }
                 }
@@ -564,7 +564,7 @@ CGLTexture* C_GFX::GetTexture(char * name) {
     CGLTexture* pTexture;
     pTexture=pFirstTexture;
     while(pTexture) {
-        if(dlcs_strcasecmp(pTexture->tfilename,name)) return pTexture;
+        if(dlcs_strcasecmp(pTexture->filename,name)) return pTexture;
         pTexture=pTexture->pNext;
     }
     // TODO: Attempt to load texture

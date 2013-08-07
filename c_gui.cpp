@@ -3020,9 +3020,8 @@ void C_GUI::drawB9utton(int x,int y, int w, int h) {
             B9utton[i].texture=new CGLTexture(pLog);
             B9utton[i].texture->pGAF=pGAF;
         }
-        if(!B9utton[i].texture->Loaded()) {
-            // B9utton[i].texture->usemask=0;
-            B9utton[i].texture->LoadBMP(pGAF,va("buttons/b9_%03d.bmp",i),0);
+        if(!B9utton[i].texture->bmap) {
+            B9utton[i].texture->Load(va("buttons/b9_%03d.bmp",i));
             return;
         }
         cx=x + (col*8);
@@ -3043,9 +3042,8 @@ void C_GUI::drawGUIButton(int x, int y, int which, int size) {
         ButtonTexture[which].texture->pGAF=pGAF;
         return;
     }
-    if(!ButtonTexture[which].texture->Loaded()) {
-        // ButtonTexture[which].texture->usemask=1;
-        ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
+    if(!ButtonTexture[which].texture->bmap) {
+        ButtonTexture[which].texture->Load(va("buttons/%03d.bmp",which));
         return;
     }
     ButtonTexture[which].texture->Draw(x,y,x+size,y+size,255,255,255);
@@ -3061,9 +3059,8 @@ void C_GUI::drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,u_char r, u
         ButtonTexture[which].texture->pGAF=pGAF;
         return;
     }
-    if(!ButtonTexture[which].texture->Loaded()) {
-        // ButtonTexture[which].texture->usemask=1;
-        ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
+    if(!ButtonTexture[which].texture->bmap) {
+        ButtonTexture[which].texture->Load(va("buttons/%03d.bmp",which));
         return;
     }
     ButtonTexture[which].texture->Draw(iX,iY,iX2,iY2,r,g,b);
@@ -3095,9 +3092,8 @@ void C_GUI::drawButton(int which, int updown, int x, int y,int w, int h) {
         ButtonTexture[which].texture->pGAF=pGAF;
         return;
     }
-    if(!ButtonTexture[which].texture->Loaded()) {
-        // ButtonTexture[which].texture->usemask=0;
-        ButtonTexture[which].texture->LoadBMP(pGAF,va("buttons/%03d.bmp",which),0);
+    if(!ButtonTexture[which].texture->bmap) {
+        ButtonTexture[which].texture->Load(va("buttons/%03d.bmp",which));
         return;
     }
     ButtonTexture[which].texture->Draw(x,y,x+w,y+h,255,255,255);
@@ -3240,7 +3236,7 @@ bool C_GUI::loadFonts(void) {
                         pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
                         dlcsm_delete(pFont);
                     } else {
-                        pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->tfilename,pFont->pFontTex->bmap);
+                        pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->filename,pFont->pFontTex->bmap);
                     }
                 }
             }
@@ -3261,7 +3257,7 @@ CGLFont* C_GUI::GetFont(char* szFont) {
     CGLFont* pFont;
     pFont=pFirstFont;
     while(pFont) {
-        if(dlcs_strcasecmp(pFont->pFontTex->tfilename,szFont)) {
+        if(dlcs_strcasecmp(pFont->pFontTex->filename,szFont)) {
             return pFont;
         }
         pFont=pFont->pNext;

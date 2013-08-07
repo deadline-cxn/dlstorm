@@ -298,6 +298,11 @@
 #include <map>
 #include <algorithm>
 #include "../SDK/md5/md5.h"
+#include "SDL.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glext.h>
+#include <fstream>
 using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////
 // WIN32 Defines
@@ -425,10 +430,18 @@ typedef unsigned int   UINT;
 
 typedef DWORD          COLORREF;
 #endif // _WIN32
-
 ////////////////////////////////////////////////////////////////////////////////////
-// System independant defines
-
+// System independant
+// GFX Stuff
+typedef struct CVector2   { float x, y; };
+typedef struct CVector3   { float x, y, z; };
+typedef struct CColor3    { float r, g, b; };
+typedef struct CTexCoord  { float u,v; };
+typedef struct tFace      { int vertIndex[3]; int coordIndex[3]; };
+typedef struct tagVERTEX  { float x, y, z; float u, v; } VERTEX;
+typedef struct tagTRIANGLE{ VERTEX  vertex[3]; } TRIANGLE;
+typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
+// SIZE
 #ifndef HOST_NAME_MAX
 #define HOST_NAME_MAX 255
 #endif
@@ -507,6 +520,7 @@ char*   dlcs_get_os_version(char *x);
 char*   dlcs_get_hostname(char *x);
 char*   dlcs_get_ipaddress(char *x);
 bool    dlcs_isdir(char *dir);
+string dlcs_filetype(string pathName);
 int     dlcs_mkdir(char *szDirectoryName);
 int     dlcs_chdir(char *szDirectory);
 char*   dlcs_getcwd(char *x);

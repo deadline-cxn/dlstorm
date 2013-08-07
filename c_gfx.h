@@ -19,39 +19,14 @@
  ***************************************************************/
 #ifndef _DLCS_C_GFX
 #define _DLCS_C_GFX
-typedef struct CVector2   { float x, y; };
-typedef struct CVector3   { float x, y, z; };
-typedef struct CColor3    { float r, g, b; };
-typedef struct CTexCoord  { float u,v; };
-typedef struct tFace      { int vertIndex[3]; int coordIndex[3]; };
-typedef struct tagVERTEX  { float x, y, z; float u, v; } VERTEX;
-typedef struct tagTRIANGLE{ VERTEX  vertex[3]; } TRIANGLE;
-typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
-#ifdef _WIN32
-#include <winsock2.h>
-#ifndef _MMEDIA_
-#define _MMEDIA_
-#include <mmsystem.h>
-#include <mmreg.h>
-#endif//_MMEDIA
-#endif//_WIN32
-
-#include <math.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glext.h>
-#include "SDL.h"
-
+#include "dlstorm.h"
 #include "c_gaf.h"
 #include "c_log.h"
 #include "c_gltexture.h"
 #include "c_gl3dmodel.h"
 #include "c_entity.h"
-#include <fstream>
-
 class C_Entity;
 class CGLModel;
-
 class C_Camera {
 public:
     C_Camera();

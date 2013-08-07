@@ -81,8 +81,8 @@ GLvoid C_MouseCursor::load(char *file) {
         loadGAF(file);
     } else {
         pTexture=new CGLTexture(pLog);
-        pTexture->LoadPNG(file);
-        pLog->_Add("MOUSE TEXTURE: %s\n",pTexture->tfilename);
+        pTexture->Load(file);
+        pLog->_Add("MOUSE TEXTURE: %s\n",pTexture->filename);
     }
     /*  if(!strlen(file)) return;
         strcpy(filename,file);

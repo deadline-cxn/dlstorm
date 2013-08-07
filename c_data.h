@@ -55,7 +55,6 @@ public:
     bool LoadFavoriteServers(void);
     bool SaveFavoriteServers(void);
     bool DiscardFavoriteServer(int i);
-    //bool AddFavoriteServer(ServerData *pData);
     bool LoadProfiles(void);
     bool SaveProfiles(void);
     bool DiscardProfile(void);
@@ -75,17 +74,14 @@ public:
     char            MasterPort[TINYNAME_SIZE];
     bool			bLog;
     bool			bDownload;
-    bool            bAudioFailure;
     bool            bSound;					    	// Is sound system present?
     bool			 bMusic;					    	// Play Music? (MIDI only for now)
     float           fSoundVolume;
     float           fMusicVolume;
-    char			MouseLeftButtonSound[FILENAME_SIZE];
     bool            bFullScreen;
     int             ScreenWidth;
     int             ScreenHeight;
     int             ScreenColors;
-    bool            drawoptions;
     ///////////////////////////////////////////////////////////////
     // Discardable variables:
     char            cDebug;                         // Debug level 1 = onscreen messages only 2 = log
@@ -100,20 +96,13 @@ public:
     char            session_id[TEXTNAME_SIZE];
     u_char          Access;
     char			szAccessName[TEXTNAME_SIZE];
-    //unsigned long  dwKeyPressTimer;
     bool            bDrawMap;
     bool            bDrawMapObjects;
     bool            bBlockGlow;
     bool            bVertice;
     bool            bServerInfoUpdated[TEXTNAME_SIZE];
-    C_Profile     *Profile;
-    C_Profile     *FirstProfile;
-//  ServerData      *FavoriteServer;
-//  ServerData      *FirstFavoriteServer;
-//	C_ServerInfo    *ServerInfo;
-    float		    x;
-    float		    y;
-    float		    z;
+    C_Profile       *Profile;
+    C_Profile       *FirstProfile;
     float           fCredscroll;
     long            dwScrollTime;
     bool            bShowOptions;
@@ -126,3 +115,4 @@ public:
 };
 
 #endif // _DLCS_DATA_STORAGE_CLASS
+

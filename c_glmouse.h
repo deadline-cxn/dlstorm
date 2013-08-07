@@ -19,7 +19,6 @@
 #define _DLCS_C_MOUSE
 #include "dlstorm.h"
 #include "c_gltexture.h"
-#include "SDL.h"
 #include "c_gaf.h"
 #include "c_log.h"
 #define C_GLM_DOWNTICK_TIME 60
