@@ -419,8 +419,8 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Can't initialize Base Textures");
         return false;
     }
-
-    pDefaultTexture=GetTexture("base/default.png");
+                                // base/testprog.jpg
+    pDefaultTexture=GetTexture("base/testprog.jpg");
     if(!pDefaultTexture) {
         pDefaultTexture=new CGLTexture;
         if(pDefaultTexture) {
@@ -524,41 +524,42 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
             } else {
                 if(dlcs_isdir(epdf->d_name)) {
                 } else {
-                    if (strcmp(".png", epdf->d_name + strlen (epdf->d_name) - 4) == 0) {
-                        pTexture=pFirstTexture;
-                        if(pTexture) {
-                            while(pTexture->pNext) {
-                                pTexture=pTexture->pNext;
-                            }
-                            pTexture->pNext=new CGLTexture(pLog);
+                    pTexture=pFirstTexture;
+                    if(pTexture) {
+                        while(pTexture->pNext) {
                             pTexture=pTexture->pNext;
                         }
-                        else {
-                            pFirstTexture=new CGLTexture(pLog);
-                            pTexture=pFirstTexture;
+                        pTexture->pNext=new CGLTexture(pLog);
+                        pTexture=pTexture->pNext;
+                    }
+                    else {
+                        pFirstTexture=new CGLTexture(pLog);
+                        pTexture=pFirstTexture;
+                    }
+                    pTexture->Load(va("base/%s",epdf->d_name));
+                    if(!pTexture->bmap) {
+                        pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
+
+                        pDELTexture=pFirstTexture;
+                        if(pTexture==pDELTexture) {
+                            dlcsm_delete(pTexture);
+                            dlcsm_delete(pFirstTexture);
                         }
-                        pTexture->Load(va("base/%s",epdf->d_name));
-                        if(!pTexture->bmap) {
-                            pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
+                        else {
                             pDELTexture=pFirstTexture;
-                            if(pTexture==pDELTexture) {
-                                dlcsm_delete(pTexture);
-                                dlcsm_delete(pFirstTexture);
-                            }
-                            else {
-                                pDELTexture=pFirstTexture;
-                                while(pDELTexture) {
-                                    if(pDELTexture==pTexture) {
+                            while(pDELTexture) {
+
+                                if(pDELTexture==pTexture) {
+                                    if(pDELTexture->pNext)
                                         pDELTexture->pNext=pDELTexture->pNext->pNext;
-                                        dlcsm_delete(pTexture);
-                                    }
-                                    pDELTexture=pDELTexture->pNext;
+                                    dlcsm_delete(pTexture);
                                 }
+                                pDELTexture=pDELTexture->pNext;
                             }
                         }
-                        else {
-                            pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->filename,pTexture->bmap);
-                        }
+                    }
+                    else {
+                        pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->filename,pTexture->bmap);
                     }
                 }
             }

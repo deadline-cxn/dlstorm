@@ -15,6 +15,10 @@
  **
  ***************************************************************/
 #include "c_gltexture.h"
+TGAHeader tgaheader;									// TGA header
+TGA tga;												// TGA image data
+GLubyte uTGAcompare[12] = {0,0,2, 0,0,0,0,0,0,0,0,0};	// Uncompressed TGA Header
+GLubyte cTGAcompare[12] = {0,0,10,0,0,0,0,0,0,0,0,0};	// Compressed TGA Header
 extern GAF_SCANCALLBACK what(GAFFile_ElmHeader *ElmInfo,LPSTR FullPat);
 /////////////////////////////// CGLTexture class
 CGLTexture::CGLTexture() {
@@ -105,14 +109,14 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
 GLuint CGLTexture::Load(const char *file) {
     strcpy(filename,file);
     string ext=dlcs_filetype(file);
-    if(ext=="png") return LoadPNG(file);
-    if(ext=="bmp") return LoadBMP(file);
-    if(ext=="tga") return LoadTGA(file);
+    if (ext=="png") return LoadPNG(file);
+    if (ext=="bmp") return LoadBMP(file);
+    if (ext=="tga") return LoadTGA(file);
     if((ext=="jpg")||
        (ext=="jpeg")) return LoadJPG(file);
-    if(ext=="tif") return LoadTIF(file);
-    if(ext=="dds") return LoadDDS(file);
-    if(ext=="gif") return LoadGIF(file);
+    if (ext=="tif") return LoadTIF(file);
+    if (ext=="dds") return LoadDDS(file);
+    if (ext=="gif") return LoadGIF(file);
 
     ext.clear();
     return false;
@@ -404,27 +408,232 @@ GLuint CGLTexture::LoadPNG(const char *file) {
 GLuint CGLTexture::LoadBMP(const char *file) {
     strcpy(filename,file);
     bmap=0;
+    GLint nOfColors;
+    GLenum texture_format;
     SDL_Surface *loadSurface;
     loadSurface = SDL_LoadBMP(filename);
     if(loadSurface) {
+
+        nOfColors = loadSurface->format->BytesPerPixel;
+        if (nOfColors == 4) {
+            if (loadSurface->format->Rmask == 0x000000ff)   texture_format = GL_RGBA;
+            else                                            texture_format = GL_BGRA;
+        }
+        else
+        if (nOfColors == 3) {
+            if (loadSurface->format->Rmask == 0x000000ff)   texture_format = GL_RGB;
+            else                                            texture_format = GL_BGR;
+        } else {
+            pLog->_Add("Invalid bitmap format");
+            SDL_FreeSurface( loadSurface );
+            bmap=0;
+            return false;
+        }
         glGenTextures( 1, &bmap);
         glBindTexture( GL_TEXTURE_2D, bmap );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
         width  = loadSurface->w;
         height = loadSurface->h;
-        glTexImage2D( GL_TEXTURE_2D, 0, 4, loadSurface->w,loadSurface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, loadSurface->pixels );
+        glTexImage2D( GL_TEXTURE_2D, 0, 4, loadSurface->w,loadSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, loadSurface->pixels );
         SDL_FreeSurface( loadSurface );
     }
     return bmap;
 }
-// TODO:
 GLuint CGLTexture::LoadTGA(const char* file){
-    return 0;
+    pLog->_Add("Loading TGA file [%s]",file);
+    bmap=0;
+    Texture* texture;
+    bool bCompressed=0;
+    strcpy(filename,file);
+	FILE* fp;
+	fp = fopen(filename,"rb");
+	if(!fp) return false;
+	if(fread(&tgaheader, sizeof(TGAHeader), 1, fp) == 0) {
+		if(fp) fclose(fp);
+        return false;
+	}
+	if(memcmp(uTGAcompare, &tgaheader, sizeof(tgaheader)) == 0)         bCompressed=false;
+	else if(memcmp(cTGAcompare, &tgaheader, sizeof(tgaheader)) == 0)    bCompressed=true;
+	else {
+        fclose(fp);
+        return false;
+	}
+    if(bCompressed==false) {
+        if(fread(tga.header, sizeof(tga.header), 1, fp) == 0) {
+            if(fp) fclose(fp);
+            return false;
+        }
+        texture->width  = tga.header[1] * 256 + tga.header[0];
+        texture->height = tga.header[3] * 256 + tga.header[2];
+        texture->bpp	= tga.header[4];
+        tga.Width		= texture->width;
+        tga.Height		= texture->height;
+        tga.Bpp			= texture->bpp;
+        if((texture->width <= 0) || (texture->height <= 0) || ((texture->bpp != 24) && (texture->bpp !=32))) {
+            if(fp) fclose(fp);
+            return false;
+        }
+        if(texture->bpp == 24)  texture->type = GL_RGB;
+        else                    texture->type = GL_RGBA;
+        tga.bytesPerPixel	= (tga.Bpp / 8);
+        tga.imageSize		= (tga.bytesPerPixel * tga.Width * tga.Height);
+        texture->imageData	= (GLubyte *)malloc(tga.imageSize);
+        if(texture->imageData == NULL) {
+            fclose(fp);
+            return false;
+        }
+        if(fread(texture->imageData, 1, tga.imageSize, fp) != tga.imageSize) {
+            if(texture->imageData) free(texture->imageData);
+            fclose(fp);
+            return false;
+        }
+        for(GLuint cswap = 0; cswap < (int)tga.imageSize; cswap += tga.bytesPerPixel) {
+            texture->imageData[cswap] ^= texture->imageData[cswap+2] ^=
+            texture->imageData[cswap] ^= texture->imageData[cswap+2];
+        }
+        fclose(fp);
+        return true;
+    }
+
+    if(bCompressed==true) {
+        if(fread(tga.header, sizeof(tga.header), 1, fp) == 0){
+            if(fp) fclose(fp);
+            return false;
+        }
+
+        texture->width  = tga.header[1] * 256 + tga.header[0];
+        texture->height = tga.header[3] * 256 + tga.header[2];
+        texture->bpp	= tga.header[4];
+        tga.Width		= texture->width;
+        tga.Height		= texture->height;
+        tga.Bpp			= texture->bpp;
+
+        if((texture->width <= 0) || (texture->height <= 0) || ((texture->bpp != 24) && (texture->bpp !=32))){
+            if(fp) fclose(fp);
+            return false;
+        }
+        if(texture->bpp == 24)  texture->type = GL_RGB;
+        else                    texture->type = GL_RGBA;
+        tga.bytesPerPixel	= (tga.Bpp / 8);
+        tga.imageSize		= (tga.bytesPerPixel * tga.Width * tga.Height);
+        texture->imageData	= (GLubyte *)malloc(tga.imageSize);
+        if(texture->imageData == NULL) {
+            fclose(fp);
+            return false;
+        }
+        GLuint pixelcount	= tga.Height * tga.Width;
+        GLuint currentpixel	= 0;
+        GLuint currentbyte	= 0;
+        GLubyte * colorbuffer = (GLubyte *)malloc(tga.bytesPerPixel);
+        do {
+            GLubyte chunkheader = 0;
+            if(fread(&chunkheader, sizeof(GLubyte), 1, fp) == 0) {
+                if(fp) fclose(fp);
+                if(texture->imageData) free(texture->imageData);
+                return false;
+            }
+            if(chunkheader < 128) {
+                chunkheader++;
+                for(short counter = 0; counter < chunkheader; counter++) {
+                    if(fread(colorbuffer, 1, tga.bytesPerPixel, fp) != tga.bytesPerPixel) {
+                        if(fp) fclose(fp);
+                        if(colorbuffer) free(colorbuffer);
+                        if(texture->imageData) free(texture->imageData);
+                        return false;
+                    }
+                    texture->imageData[currentbyte		] = colorbuffer[2];
+                    texture->imageData[currentbyte + 1	] = colorbuffer[1];
+                    texture->imageData[currentbyte + 2	] = colorbuffer[0];
+                    if(tga.bytesPerPixel == 4) texture->imageData[currentbyte + 3] = colorbuffer[3];
+                    currentbyte += tga.bytesPerPixel;
+                    currentpixel++;
+                    if(currentpixel > pixelcount) {
+                        if(fp) fclose(fp);
+                        if(colorbuffer) free(colorbuffer);
+                        if(texture->imageData) free(texture->imageData);
+                        return false;
+                    }
+                }
+            }
+            else {
+                chunkheader -= 127;
+                if(fread(colorbuffer, 1, tga.bytesPerPixel, fp) != tga.bytesPerPixel) {
+                    if(fp) fclose(fp);
+                    if(colorbuffer) free(colorbuffer);
+                    if(texture->imageData) free(texture->imageData);
+                    return false;
+                }
+                for(short counter = 0; counter < chunkheader; counter++) {																			// by the header
+                    texture->imageData[currentbyte		] = colorbuffer[2];
+                    texture->imageData[currentbyte + 1	] = colorbuffer[1];
+                    texture->imageData[currentbyte + 2	] = colorbuffer[0];
+                    if(tga.bytesPerPixel == 4) texture->imageData[currentbyte + 3] = colorbuffer[3];
+                    currentbyte += tga.bytesPerPixel;
+                    currentpixel++;
+                    if(currentpixel > pixelcount) {
+                        if(fp) fclose(fp);
+                        if(colorbuffer) free(colorbuffer);
+                        if(texture->imageData) free(texture->imageData);
+                        return false;
+                    }
+                }
+            }
+        }
+        while(currentpixel < pixelcount);
+        fclose(fp);
+    }
+
+    glGenTextures( 1, &bmap);
+    glBindTexture(GL_TEXTURE_2D, bmap );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, texture->width, texture->height, 0, texture->type, GL_UNSIGNED_BYTE, texture->imageData);
+	return bmap;
 }
-// TODO:
 GLuint CGLTexture::LoadJPG(const char* file){
-    return 0;
+    strcpy(filename,file);
+    bmap=0;
+    bool Fast;
+    unsigned long x,y,sz;
+    char* data;
+
+    FILE* fp = fopen(filename, "rb");  //open the file
+    struct jpeg_decompress_struct info;  //the jpeg decompress info
+    struct jpeg_error_mgr err;           //the error handler
+    info.err = jpeg_std_error(&err);     //tell the jpeg decompression handler to send the errors to err
+    jpeg_create_decompress(&info);       //sets info to all the default stuff
+    //if the jpeg file didnt load exit
+    if(!fp) {
+        pLog->_Add("Error reading JPEG file %s!!!", filename);
+        return false;
+    }
+    jpeg_stdio_src(&info, fp);    //tell the jpeg lib the file we'er reading
+    jpeg_read_header(&info, TRUE);   //tell it to start reading it
+    if(Fast)
+      info.do_fancy_upsampling = FALSE;
+    jpeg_start_decompress(&info);    //decompress the file
+    x = info.output_width;
+    y = info.output_height;
+    sz = x * y * 3;
+    data = new BYTE[sz];      //setup data for the data its going to be handling
+    //read the scan lines
+    BYTE* p1 = data;
+    BYTE** p2 = &p1;
+    int numlines = 0;
+    while(info.output_scanline < info.output_height) {
+      numlines = jpeg_read_scanlines(&info, p2, 1);
+      *p2 += numlines * 3 * info.output_width;
+    }
+    jpeg_finish_decompress(&info);
+    fclose(fp);
+    glGenTextures(1, &bmap);
+    glBindTexture(GL_TEXTURE_2D, bmap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE,info.buffered_image);
+    jpeg_destroy_decompress(&info);
+    return bmap;
 }
 // TODO:
 GLuint CGLTexture::LoadTIF(const char* file) {

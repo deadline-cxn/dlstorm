@@ -20,7 +20,18 @@
 #include "c_gaf.h"
 #include "c_log.h"
 #include "png.h"
+#include "jpeglib.h"
 #include "glerrors.h"
+/////////////////////////////// TGA Stuff
+typedef struct {    GLubyte     Header[12]; } TGAHeader;
+typedef struct {    GLubyte		header[6];								// First 6 Useful Bytes From The Header
+                    GLuint		bytesPerPixel;							// Holds Number Of Bytes Per Pixel Used In The TGA File
+                    GLuint		imageSize;								// Used To Store The Image Size When Setting Aside Ram
+                    GLuint		temp;									// Temporary Variable
+                    GLuint		type;
+                    GLuint		Height;									//Height of Image
+                    GLuint		Width;									//Width ofImage
+                    GLuint		Bpp; } TGA;
 /////////////////////////////// Image struct
 typedef struct Image {
     u_long width;
@@ -29,6 +40,15 @@ typedef struct Image {
     int type;
     char *data;
 };
+typedef	struct Texture {
+	GLubyte	* imageData;									// Image Data (Up To 32 Bits)
+	GLuint	bpp;											// Image Color Depth In Bits Per Pixel
+	GLuint	width;											// Image Width
+	GLuint	height;											// Image Height
+	GLuint	texID;											// Texture ID Used To Select A Texture
+	GLuint	type;											// Image Type (GL_RGB, GL_RGBA)
+};
+
 /////////////////////////////// CGLTexture class
 class CGLTexture {
 public:
