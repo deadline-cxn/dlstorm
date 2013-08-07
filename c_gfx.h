@@ -98,6 +98,7 @@ public:
     ~C_GFX();
 
     // GFX Class Members
+    bool        bSDLFailed;
     SDL_Surface* pScreen;
     int         VideoFlags;
     bool        bFullScreen;

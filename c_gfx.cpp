@@ -263,9 +263,9 @@ C_GFX::~C_GFX() {
 }
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
 bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
-#ifdef __linux__
-    putenv("SDL_VIDEODRIVER=dga");
-#endif
+    bSDLFailed=false;
+// #ifdef __linux__    // putenv("SDL_VIDEODRIVER=dga"); #endif
+
     pDefaultTexture=0;
     pFirstTexture=0;
     pFirstModel=0;
@@ -280,10 +280,16 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     ScreenColors=c;
     pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
     SDL_InitSubSystem(SDL_INIT_VIDEO);
+
+    SDL_version ver;
+    SDL_VERSION(&ver);
+    pLog->_Add("SDL Version %d.%d.%d",ver.major,ver.minor,ver.patch);
+
     dlcsm_make_str(vdriver);
     SDL_VideoDriverName(vdriver,sizeof(vdriver));
     pLog->_Add("Video driver[%s]",vdriver);
 
+#ifndef __linux__
     SDL_Rect   **VideoModes;
     /* Get available fullscreen/hardware modes */
     VideoModes=SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
@@ -302,7 +308,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
             pLog->_Add("  %d x %d", VideoModes[i]->w, VideoModes[i]->h);
         }
     }
-
+#endif
 
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
@@ -335,6 +341,7 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("VideoInfo->vfmt->colorkey [%d]      ",VideoInfo->vfmt->colorkey);
         pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
     } else {
+        bSDLFailed=true;
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
@@ -624,8 +631,6 @@ bool C_GFX::LoadModels(void) {
             } else {
                 if(!dlcs_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
-                    // pLog->AddEntry("Model found %s\n",szModelFilename);
-
                     pModel=pFirstModel;
                     if(pModel) {
                         while(pModel->pNext) {
@@ -638,7 +643,6 @@ bool C_GFX::LoadModels(void) {
                         pFirstModel=new CGLModel(this,pLog);
                         pModel=pFirstModel;
                     }
-
                     if(!pModel->Load(szModelFilename)) {
                         if(pModel==pFirstModel) {
                             dlcsm_delete(pFirstModel);
@@ -652,11 +656,8 @@ bool C_GFX::LoadModels(void) {
                             }
                             dlcsm_delete(pModel);
                         }
-
-
                     }
                     else {
-
                     }
                 }
             }

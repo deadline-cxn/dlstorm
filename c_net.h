@@ -18,21 +18,6 @@
 #ifndef _DLCS_C_NET
 #define _DLCS_C_NET
 #include "dlstorm.h"
-#ifdef _WIN32
-#include <winsock2.h>
-#include <stdio.h>
-#else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/un.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <errno.h>
-#endif
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
 #ifndef _WIN32
 #ifdef SOCKET

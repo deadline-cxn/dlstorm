@@ -17,7 +17,6 @@
 #ifndef _DLCS_DATA_STORAGE_CLASS
 #define _DLCS_DATA_STORAGE_CLASS
 #include "dlstorm.h"
-#include "SDL.h"
 #include "c_log.h"
 /////////////////////////// Game play modes
 #define PLAY            0

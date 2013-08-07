@@ -246,10 +246,8 @@
 #ifdef DLCSM_WINDOWS
 #include <windows.h>
 #include <winbase.h>
-#include <stdio.h>
 #include <tchar.h>
 #include <winsock2.h>
-#include <io.h>
 #include <direct.h>
 #include <conio.h>
 #ifndef _MMEDIA_
@@ -261,6 +259,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // NON WINDOWS
 #ifndef _WIN32
+#include <sys/un.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <errno.h>
 #include <dirent.h>
 #include <ctype.h>
 #include <sys/types.h>

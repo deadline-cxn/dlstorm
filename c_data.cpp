@@ -140,10 +140,8 @@ bool CC_Data::bLoad(void) {
     float f;
     vector <string> lin;
     fp=fopen(filename,"rt");
-    if(!fp)
-        return false;
-    while(1) {
-        if(!fgets(In,255,fp)) break;
+    if(!fp) return false;
+    while(fgets(In,255,fp)) {
         In[strlen(In)-1]=0;
         lin = dlcs_explode("=",In);
         if(lin.size()>1) {

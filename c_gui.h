@@ -18,17 +18,18 @@
  ***************************************************************/
 #ifndef _DLCS_C_GUI
 #define _DLCS_C_GUI
+#include "dlstorm.h"
 #include "c_gui_chat_enum.h"
 #include <map>
 #include <algorithm>
-#include "sdl.h"
+
 #include "c_gfx.h"
 #include "c_gaf.h"
 #include "c_glfont.h"
 #include "c_glmouse.h"
 #include "c_gltexture.h"
 #include "c_console.h"
-#include "dlstorm.h"
+
 ////////////////////////// GUI Property definitions
 #define FM_GP_ALWAYS_ON_TOP     1
 #define FM_GP_SIZEABLE          2
