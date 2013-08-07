@@ -1,9 +1,21 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-****************************************************************/
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gl3dmodel.cpp
+ **   Class:        CGLModel
+ **   Description:  Import 3d models
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_gl3dmodel.h"
-
+/////////////////////////////////// CGLMaterial class
 CGLMaterial::CGLMaterial() { Initialize(); }
 CGLMaterial::~CGLMaterial() {}
 void CGLMaterial::Initialize() {
@@ -16,7 +28,7 @@ void CGLMaterial::Initialize() {
     memset(ShininessTexture,0,FILENAME_SIZE);
     memset(SpecularTexture,0,FILENAME_SIZE);
 }
-
+/////////////////////////////////// CGLMesh class
 CGLMesh::CGLMesh() { Initialize(); }
 CGLMesh::~CGLMesh() {
     if(vertexArray) delete [] vertexArray;
@@ -32,7 +44,7 @@ void CGLMesh::Initialize(){
     normalArray=0;
     uvArray=0;
 }
-
+/////////////////////////////////// CGLModel class
 CGLModel::CGLModel() {
     Initialize();
     bMadeLog=1;
@@ -146,11 +158,11 @@ bool CGLModel::Load(char* filename) {
 
     pLog->_Add("Materials loaded");
 
-int l;
+    int l;
 
     for(int i=0;i<numMeshes;i++) {
 
-        pLog->_Add("Mesh load A");
+        //pLog->_Add("Mesh load A");
 
         pMesh=pFirstMesh;
         if(pMesh) {
@@ -165,7 +177,7 @@ int l;
             pMesh=pFirstMesh;
         }
 
-        pLog->_Add("Mesh load B");
+        //pLog->_Add("Mesh load B");
 
         aiMesh *inMesh = scene->mMeshes[i];
 
@@ -174,7 +186,7 @@ int l;
         pMesh->numTriangles     = inMesh->mNumFaces*3;
         pMesh->numUvCoords      = inMesh->GetNumUVChannels();
 
-        pLog->_Add("Mesh load C");
+        //pLog->_Add("Mesh load C");
 
         pLog->_Add("Meshindex[%d] MaterialIndex[%d] NumTri[%d] NumUV[%d]",
                         pMesh->iMeshIndex,
@@ -188,7 +200,7 @@ int l;
         pMesh->normalArray  = new float[inMesh->mNumFaces*3*3];
 
 
-        pLog->_Add("Mesh load D");
+        //pLog->_Add("Mesh load D");
 
         for(unsigned int k=0;k<inMesh->mNumFaces;k++) {
             const aiFace& face = inMesh->mFaces[k];
@@ -210,12 +222,12 @@ int l;
         pMesh->normalArray  -= inMesh->mNumFaces*3*3;
         pMesh->vertexArray  -= inMesh->mNumFaces*3*3;
 
-        pLog->_Add("Mesh load F");
+        // pLog->_Add("Mesh load F");
 
     }
 
     pLog->_Add("Model loaded: %s (%d)",name,this);
-    pLog->_Add("============================================================");
+
     return true;
 }
 

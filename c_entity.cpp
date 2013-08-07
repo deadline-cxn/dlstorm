@@ -1,14 +1,21 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    Class:  C_Entity
-    Description:
-        Entity Object for games
-
-****************************************************************/
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_entity.cpp
+ **   Class:        C_Entity
+ **   Description:  Generic entity object for games
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_entity.h"
-
+///////////////////////////// C_Entity class
 C_Entity::C_Entity() {
     Initialize();
 }
@@ -27,12 +34,10 @@ C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel
     pGFX=pInGFX;
     pModel=pInModel;
 }
-
 C_Entity::~C_Entity() {
     if(bMadeLog)
         dlcsm_delete(pLog);
 }
-
 void C_Entity::Initialize(void) {
     pSelectTimer=new CTimer(200);
     bMadeLog=true;
@@ -206,9 +211,6 @@ void C_Entity::Draw(bool bSelecting) {
     }
     glPopMatrix();
 }
-
-
-
 void C_Entity::Save() {
     /*
     dlcsm_make_filename(filename);
@@ -247,16 +249,12 @@ void C_Entity::Save() {
     }
     */
 }
-
-
-
 bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {
     if(!rcv_entity) return false;
     if(!action_entity) action_entity=this;
     rcv_entity->exec_event(event,args,action_entity);
     return true;
 }
-
 bool C_Entity::exec_event(tEntityEvent event, char *args, C_Entity *action_entity) {
     if(action_entity==0) action_entity=this;
     switch(event) {
@@ -279,12 +277,10 @@ bool C_Entity::exec_event(tEntityEvent event, char *args, C_Entity *action_entit
     }
     return true;
 }
-
 void C_Entity::on_death(char *args,C_Entity *entity) {
     if(entity==0) return;
     pLog->AddEntry(va("%s is slain by %s.",name,entity->name));
 }
-
 void C_Entity::on_target(char *args,C_Entity *entity) {
     if(entity==0) return;
     if(entity!=pTargetEntity) {
@@ -292,7 +288,6 @@ void C_Entity::on_target(char *args,C_Entity *entity) {
         pLog->AddEntry(va("%s targetted %s...",name,entity->name));
     }
 }
-
 void C_Entity::on_attack(char *args,C_Entity *entity) {
     if(entity==0) return;
     /*
@@ -311,12 +306,12 @@ void C_Entity::on_attack(char *args,C_Entity *entity) {
     }
     */
 }
-
 void C_Entity::on_heal(char *args,C_Entity *entity) {
     if(entity==0) return;
-    /*
     int heal;
     heal=atoi(args);
     pLog->AddEntry(va("%s healed %s for %d...",entity->name,name,heal));
-    */
+
 }
+
+

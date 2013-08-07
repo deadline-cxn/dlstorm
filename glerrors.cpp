@@ -1,17 +1,22 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    OpenGL Errors
-
-****************************************************************/
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         glerrors.cpp
+ **   Description:  OpenGL errors
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "glerrors.h"
-
 extern "C" char *GL_Error(GLenum err) {
     char der[1024];
     memset(der,0,1024);
-
     switch(err) {
     case GL_NO_ERROR:
         strcpy(der,"GL_NO_ERROR");
@@ -40,7 +45,6 @@ extern "C" char *GL_Error(GLenum err) {
     }
     return strdup(der);
 }
-
 extern "C" void GL_ClearErrors(void) {
     GLenum err = GL_NO_ERROR;
     err=glGetError();
@@ -48,3 +52,4 @@ extern "C" void GL_ClearErrors(void) {
         err=glGetError();
     }
 }
+

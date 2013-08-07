@@ -1,14 +1,45 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    OpenGL Font class
-
-****************************************************************/
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_glfont.cpp
+ **   Class:        CGLFont
+ **   Description:  Fonts for OpenGL
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_glfont.h"
-#include "c_gltexture.h"
-#include "SDL.h"
-
+/////////////////////////////////////// Utility function
+extern "C" int CGLFont_StrLen(const char *string) {
+    int i,j=0;
+    char ch[2];
+    for(i=0; i<(int)strlen(string); i++)  {
+        if(string[i]=='^') {
+            i++;
+            if(string[i]==0) return j;
+            if(string[i]=='^') {
+                j++;
+                ch[0]=string[i];
+                ch[1]=0;
+            }
+            if(string[i]=='>') {
+                i+=6;
+            }
+        } else {
+            j++;
+            ch[0]=string[i];
+            ch[1]=0;
+        }
+    }
+    return j;
+}
+/////////////////////////////////////// CGLFont class
 CGLFont::CGLFont() {
     pNext=0;
     pFontTex=0;
@@ -21,8 +52,6 @@ CGLFont::CGLFont() {
     memset(Set2,0,64);
     memset(szFile,0,1024);
 }
-
-
 CGLFont::CGLFont(CLog *pInLog) {
     pNext=0;
     pLog=pInLog;
@@ -36,7 +65,6 @@ CGLFont::CGLFont(CLog *pInLog) {
     memset(Set2,0,64);
     memset(szFile,0,1024);
 }
-
 CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog) {
     pNext=0;
     pGAF=pInGAF;
@@ -51,8 +79,6 @@ CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog) {
     memset(Set2,0,64);
     memset(szFile,0,1024);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
 CGLFont::CGLFont(char *fn) {
     pNext=0;
     pFontTex=0;
@@ -66,11 +92,9 @@ CGLFont::CGLFont(char *fn) {
     memset(Set2,0,64);
     memset(szFile,0,1024);
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 CGLFont::~CGLFont() {
     Kill();
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 bool CGLFont::Load(const char *file) { // Build Our Font Display List
     float   cx,cy;
     int     loop;
@@ -102,7 +126,6 @@ bool CGLFont::Load(const char *file) { // Build Our Font Display List
     }                                                   // Loop Until All 256 Are Built
     return pFontTex->Loaded();
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::Kill() {
     if(pFontList)    {
         glDeleteLists(pFontList,256);
@@ -116,12 +139,9 @@ GLvoid CGLFont::Kill() {
     */
     dlcsm_delete(pFontTex);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::SinPrint(GLint x, GLint y, const char *string,int set, u_char r, u_char g, u_char b) {
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::PrintSolid(GLint x, GLint y, const char *string, u_char nr, u_char ng, u_char nb) {
     int i,j=0;
     char ch[2];
@@ -146,31 +166,6 @@ GLvoid CGLFont::PrintSolid(GLint x, GLint y, const char *string, u_char nr, u_ch
         }
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////
-extern "C" int CGLFont_StrLen(const char *string) {
-    int i,j=0;
-    char ch[2];
-    for(i=0; i<(int)strlen(string); i++)  {
-        if(string[i]=='^') {
-            i++;
-            if(string[i]==0) return j;
-            if(string[i]=='^') {
-                j++;
-                ch[0]=string[i];
-                ch[1]=0;
-            }
-            if(string[i]=='>') {
-                i+=6;
-            }
-        } else {
-            j++;
-            ch[0]=string[i];
-            ch[1]=0;
-        }
-    }
-    return j;
-}
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::Print(GLint x, GLint y, const char *string,int set) {
     int i,j;
     char ch[2];
@@ -408,7 +403,6 @@ GLvoid CGLFont::Print(GLint x, GLint y, const char *string,int set) {
         }
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int set, u_char r, u_char g, u_char b) {
     GLint tx,ty,sx,sy,sw,sh;
     tx=10;
@@ -434,7 +428,6 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
     glPopMatrix();
 
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char r, u_char g, u_char b) {
     if(!pFontTex) return;
     if(!pFontTex->bmap) {
@@ -466,7 +459,6 @@ GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char 
 
     }
 }
-//////////////////////////////////////////////////////////////////////////////////////////
 GLvoid CGLFont::BoldPrint(GLint x,GLint y, const char *string,int wset, u_char r, u_char g, u_char b) {
     RawPrint(x-1,y-1,string,wset,r,g,b);
     RawPrint(x-1,y,string,wset,r,g,b);
@@ -477,7 +469,8 @@ GLvoid CGLFont::BoldPrint(GLint x,GLint y, const char *string,int wset, u_char r
     RawPrint(x+1,y,string,wset,r,g,b);
     RawPrint(x+1,y+1,string,wset,r,g,b);
 }
-//////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 

@@ -1,18 +1,22 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    OpenGL Mouse Class
-
-****************************************************************/
-#include "dlstorm.h"
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_glmouse.cpp
+ **   Class:        C_Mouse
+ **                 C_MouseCursor
+ **   Description:  Mouse SDL/OpenGL wrapper
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_glmouse.h"
-#include "c_gltexture.h"
-#include "SDL.h"
-
-/*************************************************////////////////////
-// C_MouseCursor Class
-/*************************************************////////////////////
+///////////////////////////// C_MouseCursor Class
 C_MouseCursor::C_MouseCursor() {
     memset(filename,0,1024);
     pTexture=0;
@@ -33,8 +37,6 @@ C_MouseCursor::C_MouseCursor(CLog *pInLog) {
     y_hotspot=0;
     pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
 }
-
-
 C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) {
     pGAF=pInGAF;
     pLog=pInLog;
@@ -48,7 +50,6 @@ C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) {
     y_hotspot=0;
     pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
 }
-
 C_MouseCursor::C_MouseCursor(char *fn) {
     memset(filename,0,1024);
     pTexture=0;
@@ -63,7 +64,6 @@ C_MouseCursor::C_MouseCursor(char *fn) {
     bCreatedLog=true;
     pLog->_DebugAdd("Mouse cursor created");
 }
-
 C_MouseCursor::~C_MouseCursor() {
     kill();
     pLog->_DebugAdd("Mouse cursor destroyed");
@@ -73,7 +73,6 @@ C_MouseCursor::~C_MouseCursor() {
 GLvoid C_MouseCursor::kill() {
     dlcsm_delete(pTexture);
 }
-
 GLvoid C_MouseCursor::loadGAF(char *file) {
 }
 GLvoid C_MouseCursor::load(char *file) {
@@ -110,7 +109,6 @@ GLvoid C_MouseCursor::load(char *file) {
     	}
     	*/
 }
-/*************************************************////////////////////
 GLvoid C_MouseCursor::draw(void) {
     if(!pTexture) return;
     if(!pTexture->bmap) load(filename);
@@ -154,6 +152,7 @@ GLvoid C_MouseCursor::draw(void) {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_TEXTURE_2D);
 }
+///////////////////////////// C_Mouse class
 C_Mouse::C_Mouse() { }
 C_Mouse::C_Mouse(CLog *pInLog) {
     pGAF=0;
@@ -192,7 +191,6 @@ void C_Mouse::draw() {
     pCursor->y=iy+pCursor->y_offset;
     pCursor->draw();
 }
-/*************************************************/
 void C_Mouse::ClearClicks(void) {
     bLeftRelease=0;
     bRightRelease=0;
@@ -263,7 +261,6 @@ void C_Mouse::Refresh(void) {
     bRightDown  = bRight;
     bMiddleDown = bMiddle;
 }
-/*************************************************/
 bool C_Mouse::ButtonDownTick(int iWhich) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -278,7 +275,6 @@ bool C_Mouse::ButtonDownTick(int iWhich) {
     }
     return 0;
 }
-/*************************************************/
 void C_Mouse::SetDownTick(int iWhich,bool set) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -294,19 +290,15 @@ void C_Mouse::SetDownTick(int iWhich,bool set) {
         break;
     }
 }
-/*************************************************/
 bool C_Mouse::LeftClick() {
     return Click(SDL_BUTTON_LEFT);
 }
-/*************************************************/
 bool C_Mouse::MiddleClick() {
     return Click(SDL_BUTTON_MIDDLE);
 }
-/*************************************************/
 bool C_Mouse::RightClick() {
     return Click(SDL_BUTTON_RIGHT);
 }
-/*************************************************/
 bool C_Mouse::Click(int iWhich) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -321,7 +313,6 @@ bool C_Mouse::Click(int iWhich) {
     }
     return 0;
 }
-/*************************************************/
 void C_Mouse::SetClick(int iWhich,bool set) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -337,7 +328,6 @@ void C_Mouse::SetClick(int iWhich,bool set) {
         break;
     }
 }
-/*************************************************/
 void C_Mouse::SetButtonDown(int iWhich,bool set) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -350,7 +340,6 @@ void C_Mouse::SetButtonDown(int iWhich,bool set) {
         return;
     }
 }
-/*************************************************/
 bool C_Mouse::ButtonDown(int iWhich) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -364,7 +353,6 @@ bool C_Mouse::ButtonDown(int iWhich) {
     }
     return 0;
 }
-/*************************************************/
 bool C_Mouse::DoubleClick(int iWhich) {
     switch(iWhich) {
     case SDL_BUTTON_LEFT:
@@ -378,23 +366,18 @@ bool C_Mouse::DoubleClick(int iWhich) {
     }
     return 0;
 }
-/*************************************************/
 int  C_Mouse::X(void) {
     return ix;
 }
-/*************************************************/
 void C_Mouse::SetX(int x) {
     ix=x;
 }
-/*************************************************/
 int  C_Mouse::Y(void) {
     return iy;
 }
-/*************************************************/
 void C_Mouse::SetY(int y) {
     iy=y;
 }
-/*************************************************/
 bool C_Mouse::InX(int x1,int x2) {
     //float sfx=(float)((float)x1/800)*(float)pClientData->ScreenWidth;
     //float mfx=(float)((float)GetMouseX()/800)*(float)pClientData->ScreenWidth;
@@ -404,7 +387,6 @@ bool C_Mouse::InX(int x1,int x2) {
         return true;
     return false;
 }
-/*************************************************/
 bool C_Mouse::InY(int y1,int y2) {
     //float sfy=(float)((float)y1/600)*(float)pClientData->ScreenHeight;
     //float mfy=(float)((float)GetMouseY()/600)*(float)pClientData->ScreenHeight;
@@ -413,47 +395,33 @@ bool C_Mouse::InY(int y1,int y2) {
     if((Y()>y1) && (Y()<y2)) return true;
     return false;
 }
-/*************************************************/
 bool C_Mouse::In( int x1,int y1,int x2,int y2) {
     if((InX(x1,x2))&&(InY(y1,y2)))
         return true;
     return false;
 }
-/*************************************************/
 bool C_Mouse::InRect(RECT rc) {
     return (In(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom));
 }
-/*************************************************
-bool C_Mouse::InXPct(float fx1,float fx2)
-{
-	if((X()>(pClientData->ScreenWidth*fx1)) && (X()<(pClientData->ScreenWidth*fx2)))
-		return true;
+bool C_Mouse::InXPct(float fx1,float fx2){
+	// if((X()>(pClientData->ScreenWidth*fx1)) && (X()<(pClientData->ScreenWidth*fx2)))
+    // return true;
 	return false;
 }
-*/
-/*************************************************
-bool C_Mouse::InYPct(float fy1,float fy2)
-{
-	if((Y()>(pClientData->ScreenHeight*fy1)) && (Y()<(pClientData->ScreenHeight*fy2)))
-		return true;
+bool C_Mouse::InYPct(float fy1,float fy2) {
+	// if((Y()>(pClientData->ScreenHeight*fy1)) && (Y()<(pClientData->ScreenHeight*fy2)))
+    // return true;
 	return false;
 }
-*/
-/*************************************************
-bool C_Mouse::InPct( float fx1,float fy1,float fx2,float fy2)
-{
+bool C_Mouse::InPct( float fx1,float fy1,float fx2,float fy2) {
 	if((InXPct(fx1,fx2))&&(InYPct(fy1,fy2)))
 		return true;
 	return false;
 }
-*/
-/*************************************************/
 void C_Mouse::SetWheelUp(bool m) {
     bWheelUp=m;
 }
-/*************************************************/
 int  C_Mouse::WheelUp(void) {
-    //return bWheelUp;
     if(bWheelUp) {
         bWheelUp=0;
         return 1;
@@ -461,13 +429,10 @@ int  C_Mouse::WheelUp(void) {
         return 0;
     }
 }
-/*************************************************/
 void C_Mouse::SetWheelDown(bool m) {
     bWheelDown=m;
 }
-/*************************************************/
 int  C_Mouse::WheelDown(void) {
-    //return bWheelDown;
     if(bWheelDown) {
         bWheelDown=0;
         return 1;
@@ -475,5 +440,4 @@ int  C_Mouse::WheelDown(void) {
         return 0;
     }
 }
-/*************************************************/
 

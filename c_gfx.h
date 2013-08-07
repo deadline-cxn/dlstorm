@@ -1,14 +1,24 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    Link Libraries: OpenGL32 GLu32 GLaux SDLmain SDL
-
-****************************************************************/
-
-#ifndef _EMBER_GFX_UTIL
-#define _EMBER_GFX_UTIL
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gfx.h
+ **   Class:        C_GFX
+ **                 C_Camera
+ **   Description:  SDL / OpenGL class wrapper
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ **   Link Libraries: OpenGL32 GLu32 GLaux SDLmain SDL
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_GFX
+#define _DLCS_C_GFX
 typedef struct CVector2   { float x, y; };
 typedef struct CVector3   { float x, y, z; };
 typedef struct CColor3    { float r, g, b; };
@@ -17,7 +27,6 @@ typedef struct tFace      { int vertIndex[3]; int coordIndex[3]; };
 typedef struct tagVERTEX  { float x, y, z; float u, v; } VERTEX;
 typedef struct tagTRIANGLE{ VERTEX  vertex[3]; } TRIANGLE;
 typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
-
 #ifdef _WIN32
 #include <winsock2.h>
 #ifndef _MMEDIA_
@@ -208,5 +217,4 @@ public:
     void        SaveEntities(CVector3 WhichSector);
     void        DrawEntities(void);
 };
-
-#endif
+#endif // _DLCS_C_GAF

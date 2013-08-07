@@ -1,15 +1,21 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    FMOD Sound class
-
-****************************************************************/
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_snd.cpp
+ **   Class:        C_Sound
+ **   Description:  FMOD wrapper class
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_snd.h"
-
-#ifdef _WINDOWS_
-
+#ifdef DLCSM_WINDOWS
 C_Sound::C_Sound() {
     fmusic=0;
     svol=255;
@@ -136,5 +142,5 @@ void C_Sound::SetSoundVolume(float f) {
     FSOUND_SetSFXMasterVolume(svol);
 }
 
-#endif
+#endif // DLCSM_WINDOWS
 

@@ -1,11 +1,21 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-****************************************************************/
-
-#ifndef _DLSTORM_OPENGL_MODEL
-#define _DLSTORM_OPENGL_MODEL
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gl3dmodel.h
+ **   Class:        CGLModel
+ **   Description:  Import 3d models
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_CGLMODEL
+#define _DLCS_CGLMODEL
 #include "dlstorm.h"
 #include "c_gfx.h"
 #include "c_gltexture.h"
@@ -14,9 +24,8 @@
 #include "cimport.h"
 #include "scene.h"
 #include "postprocess.h"
-
 class C_GFX;
-
+/////////////////////////////// CGLMaterial class
 class CGLMaterial {
 public:
     CGLMaterial();
@@ -32,7 +41,7 @@ public:
     char    SpecularTexture[FILENAME_SIZE];
     void    Initialize(void);
 };
-
+/////////////////////////////// CGLMesh class
 class CGLMesh {
 public:
     CGLMesh();
@@ -49,7 +58,7 @@ public:
     void    Initialize(void);
 
 };
-
+/////////////////////////////// CGLModel class
 class CGLModel {
 public:
     CGLModel();
@@ -77,4 +86,4 @@ public:
     CGLMaterial* GetMaterial(char* inDiffuseTex);
 };
 
-#endif
+#endif // _DLCS_CGLMODEL

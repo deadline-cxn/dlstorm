@@ -1,34 +1,29 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef _SETH_LOG_CLASS
-#define _SETH_LOG_CLASS
-
-#ifdef _WIN32
-#include <direct.h>
-#endif
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#ifndef _WIN32
-#include <unistd.h>
-#endif
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_log.h
+ **   Class:        CLog
+ **   Description:  Log file class
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_LOG
+#define _DLCS_C_LOG
 #include "dlstorm.h"
-//#include <stdlib.h>
-
+///////////////////////////////// CLog class
 class CLog {
 public:
     CLog(void);
     CLog(char *szFilename);
     CLog(char *szFilename, bool bQ);
     virtual ~CLog(void);
-
     void Initialize(void);
     void AddEntry(char *fmt, ...);
     void AddEntryNoTime(char *fmt, ...);
@@ -40,10 +35,9 @@ public:
     void LineFeedsOff(void);
     bool IsActive(void);
     bool Restart(void);
-
-    char szBegin[255];
-    char szEnd[255];
-    char szLineSep[255];
+    char szBegin[TEXTNAME_SIZE];
+    char szEnd[TEXTNAME_SIZE];
+    char szLineSep[TEXTNAME_SIZE];
     char logfile[_MAX_PATH];
     char currentdir[_MAX_PATH];
     char logdir[_MAX_PATH];
@@ -52,9 +46,8 @@ public:
     bool disable;
     bool bDebug;
     bool bQuiet;
-
-    void _Add(const char *fmt, ...);
-    void _DebugAdd(const char *fmt, ...);
+    void _Add(const char *fmt, ...); // user defined
+    void _DebugAdd(const char *fmt, ...); // user defined
 };
 
-#endif
+#endif // _DLCS_C_LOG

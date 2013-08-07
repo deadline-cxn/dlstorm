@@ -1,10 +1,21 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-#ifndef B4_GL_TEXTURE
-#define B4_GL_TEXTURE
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gltexture.h
+ **   Class:        CGLTexture
+ **   Description:  SDL/OpenGL Texture manager class
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_CGLTEXTURE
+#define _DLCS_CGLTEXTURE
 #ifdef _WIN32
 #include <winsock2.h>
 #ifndef _MMEDIA_
@@ -18,7 +29,8 @@
 #include "c_gaf.h"
 #include "c_log.h"
 #include "png.h"
-
+#include "glerrors.h"
+#include "SDL.h"
 struct Image {
     u_long width;
     u_long height;
@@ -26,8 +38,7 @@ struct Image {
     int type;
     char *data;
 }; // Image;
-
-
+/////////////////////////////// CGLTexture class
 class CGLTexture {
 public:
     CGLTexture();
@@ -40,18 +51,15 @@ public:
     CLog    *pLog;
     bool    bMadeLog;
     CGAF    *pGAF;
-    char    name[1024];
+    char    name[FILENAME_SIZE];
     void    Initialize(void);
     bool    Create(int x,int y);
-    // bool    Transparent(bool trans);
     bool    Clear(u_char R,u_char G,u_char B);
-    // bool    ClearMask(u_char R,u_char G,u_char B);
     bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b);
     bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
-
     GLuint  Load(const char *filename,bool which);
     bool    LoadTGA(char* filename, Image *image);
     bool    LoadBMP(char* filename, Image *image);
@@ -60,22 +68,14 @@ public:
     bool    ImageLoad(char *filename, Image *image);
     bool    LoadBMPFromMem(unsigned char* fb, Image *image);
     bool    LoadTextureFromMem(unsigned char *fb);
-    // GLuint  LoadMask(char *filename);
     bool    ReLoad(void);
     bool    Loaded(void);
     GLuint  bmap;
-   // GLuint  mask;
-   //bool    usemask;
     int     width;
     int     height;
-
-    char    tfilename[1024];
+    char    tfilename[FILENAME_SIZE];
     CGLTexture *pNext;
 };
+struct CGLTextureList {  CGLTexture *texture; };
+#endif//_DLCS_CGLTEXTURE
 
-//typedef
-struct CGLTextureList {
-    CGLTexture *texture;
-};
-
-#endif//B4_GL_TEXTURE

@@ -1,9 +1,23 @@
 /***************************************************************
- **      EMBER                                                **
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gfx.cpp
+ **   Class:        C_GFX
+ **                 C_Camera
+ **   Description:  SDL / OpenGL class wrapper
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ **   Link Libraries: OpenGL32 GLu32 GLaux SDLmain SDL
+ **
  ***************************************************************/
 #include "c_gfx.h"
-#define X .525731112119133606
-#define Z .850650808352039932
 #ifdef _WIN32
 #ifndef _GL_VBO_STUFF
 #define _GL_VBO_STUFF
@@ -25,6 +39,9 @@ PFNGLUNMAPBUFFERARBPROC           glUnmapBufferARB = 0;            // unmap VBO 
 #define glUnmapBufferARB          pglUnmapBufferARB */
 #endif
 #endif
+/*
+#define X .525731112119133606
+#define Z .850650808352039932
 GLfloat Cubevertices[]  =                       { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,      // v0-v1-v2 (front)
         -1,-1, 1,   1,-1, 1,   1, 1, 1,      // v2-v3-v0
 
@@ -97,6 +114,7 @@ void normalize(GLfloat *a) {
     a[1]/=d;
     a[2]/=d;
 }
+*/
 //////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
@@ -262,77 +280,60 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     ScreenColors=c;
     pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
     SDL_InitSubSystem(SDL_INIT_VIDEO);
+    dlcsm_make_str(vdriver);
+    SDL_VideoDriverName(vdriver,sizeof(vdriver));
+    pLog->_Add("Video driver[%s]",vdriver);
+
+    SDL_Rect   **VideoModes;
+    /* Get available fullscreen/hardware modes */
+    VideoModes=SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
+    /* Check is there are any modes available */
+    if(VideoModes == (SDL_Rect **)0){
+        // printf("No modes available!\n");
+    } else {
+        /* Check if our resolution is restricted */
+        if(VideoModes == (SDL_Rect **)-1){
+            pLog->_Add("All resolutions available");
+        }
+        else{
+          /* Print valid modes */
+          pLog->_Add("Available Modes");
+          for(int i=0;VideoModes[i];++i)
+            pLog->_Add("  %d x %d", VideoModes[i]->w, VideoModes[i]->h);
+        }
+    }
+
+
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
     if(VideoInfo) {
-
-pLog->_Add("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
-pLog->_Add("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
-pLog->_Add("VideoInfo->blit_hw [%d]             ",VideoInfo->blit_hw);
-pLog->_Add("VideoInfo->blit_hw_CC [%d]          ",VideoInfo->blit_hw_CC);
-pLog->_Add("VideoInfo->blit_hw_A [%d]           ",VideoInfo->blit_hw_A);
-pLog->_Add("VideoInfo->blit_sw [%d]             ",VideoInfo->blit_sw);
-pLog->_Add("VideoInfo->blit_sw_CC [%d]          ",VideoInfo->blit_sw_CC);
-pLog->_Add("VideoInfo->blit_sw_A [%d]           ",VideoInfo->blit_sw_A);
-pLog->_Add("VideoInfo->blit_fill [%d]           ",VideoInfo->blit_fill);
-pLog->_Add("VideoInfo->video_mem [%d]           ",VideoInfo->video_mem);
-pLog->_Add("VideoInfo->vfmt->BitsPerPixel [%d]  ",VideoInfo->vfmt->BitsPerPixel);
-pLog->_Add("VideoInfo->vfmt->BytesPerPixel [%d] ",VideoInfo->vfmt->BytesPerPixel);
-pLog->_Add("VideoInfo->vfmt->Rloss [%d]         ",VideoInfo->vfmt->Rloss);
-pLog->_Add("VideoInfo->vfmt->Gloss [%d]         ",VideoInfo->vfmt->Gloss);
-pLog->_Add("VideoInfo->vfmt->Bloss [%d]         ",VideoInfo->vfmt->Bloss);
-pLog->_Add("VideoInfo->vfmt->Aloss [%d]         ",VideoInfo->vfmt->Aloss);
-pLog->_Add("VideoInfo->vfmt->Rshift [%d]        ",VideoInfo->vfmt->Rshift);
-pLog->_Add("VideoInfo->vfmt->Gshift [%d]        ",VideoInfo->vfmt->Gshift);
-pLog->_Add("VideoInfo->vfmt->Bshift [%d]        ",VideoInfo->vfmt->Bshift);
-pLog->_Add("VideoInfo->vfmt->Ashift [%d]        ",VideoInfo->vfmt->Ashift);
-pLog->_Add("VideoInfo->vfmt->Rmask [%d]         ",VideoInfo->vfmt->Rmask);
-pLog->_Add("VideoInfo->vfmt->Gmask [%d]         ",VideoInfo->vfmt->Gmask);
-pLog->_Add("VideoInfo->vfmt->Bmask [%d]         ",VideoInfo->vfmt->Bmask);
-pLog->_Add("VideoInfo->vfmt->Amask [%d]         ",VideoInfo->vfmt->Amask);
-pLog->_Add("VideoInfo->vfmt->colorkey [%d]      ",VideoInfo->vfmt->colorkey);
-pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
-          /*
-           VideoInfo->hw_available                ///////////////////////////////////
-           VideoInfo->wm_available
-           VideoInfo->blit_hw
-           VideoInfo->blit_hw_CC
-           VideoInfo->blit_hw_A
-           VideoInfo->blit_sw
-           VideoInfo->blit_sw_CC
-           VideoInfo->blit_sw_A
-           VideoInfo->blit_fill
-           VideoInfo->video_mem
-           VideoInfo->vfmt->BitsPerPixel
-           VideoInfo->vfmt->BytesPerPixel
-           VideoInfo->vfmt->Rloss
-           VideoInfo->vfmt->Gloss
-           VideoInfo->vfmt->Bloss
-           VideoInfo->vfmt->Aloss
-           VideoInfo->vfmt->Rshift
-           VideoInfo->vfmt->Gshift
-           VideoInfo->vfmt->Bshift
-           VideoInfo->vfmt->Ashift
-           VideoInfo->vfmt->Rmask
-           VideoInfo->vfmt->Gmask
-           VideoInfo->vfmt->Bmask
-           VideoInfo->vfmt->Amask
-           VideoInfo->vfmt->colorkey
-           VideoInfo->vfmt->alpha
-
-           *//////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-       ///////////////////////////////////////////////////
-
+        pLog->_Add("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
+        pLog->_Add("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
+        pLog->_Add("VideoInfo->blit_hw [%d]             ",VideoInfo->blit_hw);
+        pLog->_Add("VideoInfo->blit_hw_CC [%d]          ",VideoInfo->blit_hw_CC);
+        pLog->_Add("VideoInfo->blit_hw_A [%d]           ",VideoInfo->blit_hw_A);
+        pLog->_Add("VideoInfo->blit_sw [%d]             ",VideoInfo->blit_sw);
+        pLog->_Add("VideoInfo->blit_sw_CC [%d]          ",VideoInfo->blit_sw_CC);
+        pLog->_Add("VideoInfo->blit_sw_A [%d]           ",VideoInfo->blit_sw_A);
+        pLog->_Add("VideoInfo->blit_fill [%d]           ",VideoInfo->blit_fill);
+        pLog->_Add("VideoInfo->video_mem [%d]           ",VideoInfo->video_mem);
+        pLog->_Add("VideoInfo->vfmt->BitsPerPixel [%d]  ",VideoInfo->vfmt->BitsPerPixel);
+        pLog->_Add("VideoInfo->vfmt->BytesPerPixel [%d] ",VideoInfo->vfmt->BytesPerPixel);
+        pLog->_Add("VideoInfo->vfmt->Rloss [%d]         ",VideoInfo->vfmt->Rloss);
+        pLog->_Add("VideoInfo->vfmt->Gloss [%d]         ",VideoInfo->vfmt->Gloss);
+        pLog->_Add("VideoInfo->vfmt->Bloss [%d]         ",VideoInfo->vfmt->Bloss);
+        pLog->_Add("VideoInfo->vfmt->Aloss [%d]         ",VideoInfo->vfmt->Aloss);
+        pLog->_Add("VideoInfo->vfmt->Rshift [%d]        ",VideoInfo->vfmt->Rshift);
+        pLog->_Add("VideoInfo->vfmt->Gshift [%d]        ",VideoInfo->vfmt->Gshift);
+        pLog->_Add("VideoInfo->vfmt->Bshift [%d]        ",VideoInfo->vfmt->Bshift);
+        pLog->_Add("VideoInfo->vfmt->Ashift [%d]        ",VideoInfo->vfmt->Ashift);
+        pLog->_Add("VideoInfo->vfmt->Rmask [%d]         ",VideoInfo->vfmt->Rmask);
+        pLog->_Add("VideoInfo->vfmt->Gmask [%d]         ",VideoInfo->vfmt->Gmask);
+        pLog->_Add("VideoInfo->vfmt->Bmask [%d]         ",VideoInfo->vfmt->Bmask);
+        pLog->_Add("VideoInfo->vfmt->Amask [%d]         ",VideoInfo->vfmt->Amask);
+        pLog->_Add("VideoInfo->vfmt->colorkey [%d]      ",VideoInfo->vfmt->colorkey);
+        pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
     } else {
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
@@ -350,10 +351,23 @@ pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
     }
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
-    if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
+
+    bool bHW=0;
+    if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags|SDL_HWSURFACE)) {
+        bHW=1;
     } else {
-        pLog->_Add("SDL_VideoModeOK failure");
-        return false;
+        pLog->_Add("SDL_HWSURFACE SDL_VideoModeOK failure");
+        if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
+        }
+        else {
+            pLog->_Add("SDL_VideoModeOK failure");
+            return false;
+        }
+    }
+    if(bHW==1) {
+        VideoFlags|=SDL_HWACCEL;
+        pLog->_Add("SDL_HWSURFACE HARDWARE ACCELLERATION");
+
     }
     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
     if(pScreen) {
@@ -361,8 +375,10 @@ pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
         pLog->_Add("Can't set up pScreen! ErroR!");
         return false;
     }
+    VideoInfo = SDL_GetVideoInfo();
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(wincaption);
+
     pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
     if(InitGL()) {
         pLog->_Add("OpenGL initialized");
@@ -888,6 +904,7 @@ void C_GFX::DrawSun(void) {
     DrawSphere(3,160.0f,1.0f,1.0f,1.0f);
 }
 void C_GFX::DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float cr,float cg,float cb) {
+/*
     if (div<=0) {
         glNormal3fv(a);
         glColor3f(cr,cg,cb);
@@ -913,12 +930,15 @@ void C_GFX::DrawTri(GLfloat *a, GLfloat *b, GLfloat *c, int div, float r,float c
         DrawTri(c, ac, bc, div-1, r,cr,cg,cb);
         DrawTri(ab, bc, ac, div-1, r,cr,cg,cb);  //<--Comment this line and sphere looks really cool!
     }
+    */
 }
 void C_GFX::DrawSphere(int ndiv, float radius, float cr,float cg,float cb) {
+    /*
     glBegin(GL_TRIANGLES);
     for (int i=0; i<20; i++)
         DrawTri(vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], ndiv, radius,cr,cg,cb);
     glEnd();
+    */
 }
 void C_GFX::DrawCube() {
     glBegin(GL_QUADS);

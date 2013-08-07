@@ -1,22 +1,26 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    Class:  CLog
-    Description: Log class, adds logging to text
-        file capabilities
-
-****************************************************************/
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_log.cpp
+ **   Class:        CLog
+ **   Description:  Log file class
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_log.h"
-
-//////////////////////////////////////////////////////
+/////////////////////////////////// CLog class
 CLog::CLog() {
     memset(logfile,0,_MAX_PATH);
     strcpy(logfile,"log.log");
     Initialize();
 }
-//////////////////////////////////////////////////////
 CLog::CLog(char *szFilename) {
     Initialize();
     SetName(szFilename);
@@ -30,9 +34,7 @@ CLog::CLog(char *szFilename, bool bQ) {
     Restart();
     LineFeedsOn();
 }
-//////////////////////////////////////////////////////
 CLog::~CLog() { }
-//////////////////////////////////////////////////////
 void CLog::Initialize(void) {
     //if( getcwd( logfile, _MAX_PATH ) != NULL )
     //    strcpy(logdir,getcwd( "", _MAX_PATH ));
@@ -44,13 +46,11 @@ void CLog::Initialize(void) {
     bLineFeeds = false;
     bQuiet = true;
 }
-//////////////////////////////////////////////////////
 void CLog::SetName(char *szFilename) {
     strcpy(logfile,szFilename);
     //if( getcwd( logfile, _MAX_PATH ) != NULL) strcpy(logdir,getcwd("",_MAX_PATH));
     //strcpy(logfile,szFilename);
 }
-//////////////////////////////////////////////////////
 void CLog::AddEntry(char *fmt, ...) {
     if(!bActive) return;
     char ach[512];
@@ -83,7 +83,6 @@ void CLog::AddEntry(char *fmt, ...) {
     }
 
 }
-//////////////////////////////////////////////////////
 void CLog::AddEntryNoTime(char *fmt, ...) {
     if(!bActive) return;
     char ach[512];
@@ -107,7 +106,6 @@ void CLog::AddEntryNoTime(char *fmt, ...) {
     }
 
 }
-//////////////////////////////////////////////////////
 void CLog::AddLineSep(void) {
     if(bActive == false) return;
 
@@ -118,21 +116,10 @@ void CLog::AddLineSep(void) {
     }
 
 }
-//////////////////////////////////////////////////////
-void CLog::Off(void) {
-    bActive = false;
-}
-//////////////////////////////////////////////////////
-void CLog::On(void) {
-    bActive = true;
-}
-//////////////////////////////////////////////////////
-bool CLog::IsActive(void) {
-    return bActive;
-}
-//////////////////////////////////////////////////////
+void CLog::Off(void) { bActive = false; }
+void CLog::On(void) {  bActive = true; }
+bool CLog::IsActive(void) { return bActive; }
 bool CLog::Restart(void) {
-
     if(!bActive) return false;
     FILE *fp=fopen(logfile,"w+");
     if(fp) {
@@ -142,11 +129,6 @@ bool CLog::Restart(void) {
 
     return false;
 }
-//////////////////////////////////////////////////////
-void CLog::LineFeedsOn(void) {
-    bLineFeeds=true;
-}
-//////////////////////////////////////////////////////
-void CLog::LineFeedsOff(void) {
-    bLineFeeds=false;
-}
+void CLog::LineFeedsOn(void) { bLineFeeds=true; }
+void CLog::LineFeedsOff(void) { bLineFeeds=false; }
+

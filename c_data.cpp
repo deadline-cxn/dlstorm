@@ -1,36 +1,29 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    Class:  CC_DATA
-    Description:
-        Client Data storage method.
-        Creates a client.ini file that stores basic variable
-        information.
-
-****************************************************************/
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_data.h
+ **   Class:        CC_Data
+ **                 C_Profile
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_data.h"
-#include "SDL.h"
-
-/***************************************************************
-CFM_Character::CFM_Character() { memset(t_name,0,32); }
-*/
-
-/***************************************************************
-CFM_Character::~CFM_Character() { } */
-
-/***************************************************************/
-CFM_Profile::CFM_Profile() {
+//////////////////// C_Profile class
+C_Profile::C_Profile() {
     memset(name,0,32);
     memset(passwd,0,32);
     savepw=0;
     pNext=NULL;
 }
-
-/***************************************************************/
-CFM_Profile::~CFM_Profile() { }
-/***************************************************************/
+C_Profile::~C_Profile() { }
+//////////////////// CC_Data class
 CC_Data::CC_Data() {
     pLog=new CLog("cdata.log");
     bCreatedLog=true;
@@ -89,7 +82,7 @@ void CC_Data::Initialize(void) {
     ClearFavoriteServers();
     Profile = NULL;
     FirstProfile=NULL;
-    Profile = new CFM_Profile;
+    Profile = new C_Profile;
     FirstProfile=Profile;
     ClearProfiles();
     memset(szAccessName,0,255);
@@ -204,7 +197,7 @@ void CC_Data::ClearFavoriteServers(void) {
 /***************************************************************/
 
 void CC_Data::ClearProfiles(void) {
-    CFM_Profile *DelMe;
+    C_Profile *DelMe;
     Profile=FirstProfile;
     while(Profile) {
         DelMe=Profile;
@@ -241,8 +234,8 @@ bool CC_Data::bLoad(void) {
         lin = dlcs_explode("=",In);
         if(lin.size()>1) {
 
-            pLog->_Add("%s",lin[0].c_str());
-            pLog->_Add("%s",lin[1].c_str());
+            // pLog->_Add("%s",lin[0].c_str());
+            // pLog->_Add("%s",lin[1].c_str());
             strcpy(temp,lin[1].c_str());
 
             if(dlcs_strcasecmp(lin[0].c_str(),"name")) {

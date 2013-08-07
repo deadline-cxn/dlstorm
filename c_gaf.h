@@ -1,44 +1,48 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef SETH_GAF_
-#define SETH_GAF_
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gaf.h
+ **   Class:        CGAF
+ **   Description:  Game Archive File
+ **                 Store game assets into one compressed file
+ **                 Based on NukeDX Nukefile archiver
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_GAF_
+#define _DLCS_C_GAF_
 #include <dirent.h>
 #include "dlstorm.h"
 #include "zlib.h"
 #include "c_log.h"
-
 // Maximum size of a Indexname in CGAF File.
 #define GAF_NAMESIZE 256
 #define GAF_DESCSIZE 256
-
 // Element types.
 #define GAFELMTYPE_FILE		0	// a file.
 #define GAFELMTYPE_DIR		1	// a directory.
-
 // Compression modes
 #define GAFCOMP_NONE		Z_NO_COMPRESSION		// Default
 #define GAFCOMP_FORSPEED	Z_BEST_SPEED
 #define GAFCOMP_NORMAL		Z_DEFAULT_COMPRESSION
 #define GAFCOMP_BEST		Z_BEST_COMPRESSION
-
 struct GAFFile_Header;
 struct GAFFile_ElmHeader;
 class  CGAF;
-
 typedef void (*GAF_SCANCALLBACK)(GAFFile_ElmHeader *ElmInfo,LPSTR FullPath);
-
 struct GAFFile_Header {
     DWORD Size;			// Size of this header
     DWORD Version;		// Version
     char Description[GAF_DESCSIZE];	// Description
     int NumElements;	// Amount of elements
 };
-
 struct GAFFile_ElmHeader {
     DWORD	FileSize;	// Size of this file.
     DWORD	FileOffset;	// This files contents Offset in the nukefile.
@@ -49,7 +53,6 @@ struct GAFFile_ElmHeader {
     int		DirNumber;	// DirNumber is what directory this is (if it's a dir).
     int		UncompSize;	// Uncompressed size of compressed files.
 };
-
 #ifndef GAF_FILEBUF_DEFINED
 #define GAF_FILEBUF_DEFINED
 struct GAF_FileBuffer {
@@ -57,7 +60,7 @@ struct GAF_FileBuffer {
     int Size;
 };
 #endif
-
+///////////////////////// CGAF class
 class CGAF {
 public:
 
@@ -232,9 +235,7 @@ public:
     bool FileOpen;
     void SetAmount(int a);
 };
-
 //////////////////////////////////////////////////////////////////////////
 
-#endif
-
+#endif // _DLCS_C_GAF_
 

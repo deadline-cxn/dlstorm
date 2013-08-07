@@ -1,12 +1,21 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef B4_GL_FONT
-#define B4_GL_FONT
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_glfont.h
+ **   Class:        CGLFont
+ **   Description:  Fonts for OpenGL
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_CGLFONT
+#define _DLCS_CGLFONT
 #ifdef _WIN32
 #include <winsock2.h>
 #ifndef _MMEDIA_
@@ -17,12 +26,12 @@
 #endif//_WIN32
 #include <GL/gl.h>
 #include <GL/glu.h>
-
 #include "c_gaf.h"
 #include "c_log.h"
-
+#include "c_gltexture.h"
+#include "SDL.h"
 class CGLTexture;
-
+///////////////////////////// CGLFont class
 class CGLFont {
 public:
     CGLFont();
@@ -63,16 +72,8 @@ public:
     GLvoid RawPrint(GLint x, GLint y,const  char *string,int set, u_char r, u_char g, u_char b);
     GLvoid BoldPrint(GLint x,GLint y, const char *string,int set, u_char r, u_char g, u_char b);
     GLvoid WhatPrint(GLint x,GLint y, const char *string,int set, u_char r, u_char g, u_char b);
-
-
 };
-
-//typedef
-struct CGLFontList {
-    CGLFont *ob;
-};
+struct CGLFontList { CGLFont *ob; };
 extern "C" int CGLFont_StrLen(const char *string);
-
-#endif//B4_GL_FONT
-
+#endif//DLCS_CGLFONT
 

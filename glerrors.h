@@ -1,12 +1,20 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef B4_GL_ERRORS
-#define B4_GL_ERRORS
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         glerrors.h
+ **   Description:  OpenGL errors
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_GL_ERRORS
+#define _DLCS_GL_ERRORS
 #ifdef _WIN32
 #include <winsock2.h>
 #ifndef _MMEDIA_
@@ -15,14 +23,10 @@
 #include <mmreg.h>
 #endif//_MMEDIA
 #endif//_WIN32
-
 #include <stdio.h>
 #include <string.h>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
-
 extern "C" char *GL_Error(GLenum err);
 extern "C" void GL_ClearErrors(void);
-
-#endif
+#endif // _DLCS_GL_ERRORS

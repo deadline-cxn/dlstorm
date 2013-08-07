@@ -1,18 +1,26 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef _C_NET_HEADER
-#define _C_NET_HEADER
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_net.h
+ **   Class:        CPacket
+ **                 CCSocket
+ **   Description:  Network class and library
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_NET
+#define _DLCS_C_NET
 #include "dlstorm.h"
-
 #ifdef _WIN32
 #include <winsock2.h>
 #include <stdio.h>
-
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -25,9 +33,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #endif
-
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
-
 #ifndef _WIN32
 #ifdef SOCKET
 #undef SOCKET
@@ -42,12 +48,10 @@
 #endif
 #define SOCKET_ERROR -1
 #endif
-
 #define NET_WAITFORANSWER               6000  // should be an inivar?
 #define NET_MINMESSAGE                  8192  // do not let buffersize fall below this value
 #define NET_HEADERSIZE                  (2 * sizeof(unsigned int))
 #define NET_DATAGRAMSIZE                (MAX_DATAGRAM + NET_HEADERSIZE)
-
 #define NET_FLAG_RELIABLE               (1<<31)
 #define NET_FLAG_UNRELIABLE             (1<<30)
 #define NET_FLAG_EOM                    (1<<29)
@@ -55,7 +59,6 @@
 #define NET_FLAG_CTL                    (1<<27)
 #define NET_FLAG_BACKUP                 (1<<26)
 #define NET_FLAG_LENGTH_MASK            (~(NET_FLAG_RELIABLE|NET_FLAG_UNRELIABLE|NET_FLAG_EOM|NET_FLAG_ACK|NET_FLAG_CTL|NET_FLAG_BACKUP))
-
 #define NET_TIMEOUT_ALIVE               8000
 #define NET_TIMEOUT_ACK                 1000
 #define NET_TIMEOUT_CONNECTIONREQUEST   4000
@@ -67,7 +70,9 @@
 #define NET_BUFFERED_QUEUE              3
 #define NET_FILE_XFER_BLOCK_SIZE		1024
 #define	NET_NAMELEN 64
-
+#define MAX_DATAGRAM                1024    // Length of unreliable message
+#define WRITE(Type) if (pPacketBuffer==NULL) return; if (iPacketLen + (int)sizeof(Type) > iPacketSize) return; *((Type *)(pPacketBuffer+iPacketLen)) = Val; iPacketLen += sizeof(Type);
+#define READ(Val) if(iPacketLen<1) return 0; if (pPacketBuffer==NULL) return 0; iPacketCursor += sizeof(Val); if (iPacketCursor > iPacketLen) return 0; return *((Val *)(pPacketBuffer+iPacketCursor-sizeof(Val)));
 #ifdef _WIN32
 static struct stErrorEntry {
     int iID;
@@ -127,7 +132,7 @@ static struct stErrorEntry {
 };
 const int iNumMessages = sizeof(pErrorList) / sizeof(struct stErrorEntry);
 #endif
-
+/////////////////////////// Login operation codes
 typedef enum {
     LOGIN_WHAT,
     GOOD_LOGIN,
@@ -139,61 +144,50 @@ typedef enum {
     ACCOUNT_EXPIRED,
     MASTER_LOGIN,
 } eLoginStuff;
-
+/////////////////////////// Protocol op codes
 typedef enum {
     NET_NOTCONNECT=0,     // not connected to any host
     NET_LOGGINPROC,     // connected but not logged in
     NET_SYSBUSY,        // if some class internal things (filetransfer) are done
     NET_CONNECTED,      // ok normal connecting
 } eConState;
-
-
+/////////////////////////// CPacket class
 class CPacket {
 public:
     CPacket();
     CPacket(int iSize);
     CPacket(int iSize,char *pBuffer);
     ~CPacket();
-
     void DumpPacket(void);
-
     int iGetMaxSize(void);
     void SetMaxSize(int iSize,char *pBuffer=NULL);
-
     int iGetCurSize(void);
     void SetCurSize(int iNewSize);
     void Reset(void);
     void Rewind(void);
     char *pGetPacketBuffer(void);
-
     void Write(int     Val);
     void Write(long    Val);
     void Write(char    Val);
     void Write(short   Val);
     void Write(float   Val);
-
     void Write(char   *Val);
     void Write(char   *Val,int iSize);
     char *pWrite(int iSize);
-
     int   iRead(void);
     long dwRead(void);
     char  cRead(void);
     short sRead(void);
     float fRead(void);
-
     char *pRead(void);
     char *pRead(int iSize);
-
     bool bUserAlloc;
     char *pPacketBuffer;
     int iPacketSize;
     int iPacketCursor;
     int iPacketLen;
 };
-
-#define MAX_DATAGRAM                1024    // Length of unreliable message
-
+/////////////////////////// Control packet responses
 typedef enum {
     CTL_CONNECT = 1,
     CTL_PLACEHOLDER,
@@ -204,10 +198,8 @@ typedef enum {
     CTL_SERVERINFO_RESET,
     CTL_SERVERINFO_END,
     CTL_SERVERINFO_GET
-
 } tSocketCtrlMsg;
-
-
+/////////////////////////// CCSocket class
 class CCSocket {
 public:
     CCSocket(void);
@@ -277,13 +269,8 @@ public:
     unsigned int     iPacketsReceived;
     unsigned int     iDroppedDatagrams;
     unsigned int     iReceivedDuplicateCount;
-    //int               NET_StringToAddr(char *pString, struct sockaddr *pAddr);
     int               NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr);
-    //int               NET_GetSocketPort(struct sockaddr *pAddr);
-    //int               NET_SetSocketPort(struct sockaddr *pAddr, int iPort);
-    // void              NET_SetPort(int iPort);
-    // int               NET_GetPort(void);
-    //CCSocket         *pAccept(int iReSocket,struct sockaddr *ReAddr);
+    CCSocket*           pAccept(int iReSocket,struct sockaddr *ReAddr);
     void              SetRemoteIPAddress(char *iNetAddress);
     void              SetRemotePort(int iPort);
     char              *pGetRemoteIPAddress(void);
@@ -304,7 +291,6 @@ public:
     SOCKET             iSocket;
     struct sockaddr_in ToAddr;
     struct sockaddr_in FromAddr;
-
 #pragma pack(1)
 struct {
     unsigned int  iLen;
@@ -313,7 +299,7 @@ struct {
 } PacketBuffer;
 #pragma pack()
 };
-
+/////////////////////////// Network utility functions
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -329,5 +315,5 @@ int     NET_Shutdown(void);
 }
 #endif
 
-#endif
+#endif // _DLCS_C_NET
 

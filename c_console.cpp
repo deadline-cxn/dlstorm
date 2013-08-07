@@ -1,14 +1,18 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    Class:  C_CONS
-    Description:
-        Console class to add a console to OpenGL applications
-    Requires:
-            C_GUI
-
-****************************************************************/
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_console.cpp
+ **   Class:        C_CONS
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_console.h"
 C_CONS::C_CONS() {
     Init();
@@ -307,25 +311,25 @@ void C_CONS::_Execute(const char *cmd) {
     vector <string> narg=dlcs_explode(" ",cmd2);
 
     if(narg.size()>0) {
-        // pLog->_Add("C_CONS::_Execute 5 1 > [%s] %s...",(char *)narg[0].c_str(),cmd);
         if(funcmap.find((char *)narg[0].c_str())!=funcmap.end()) {
-            // pLog->_Add("C_CONS::_Execute 5 2 > %s...",cmd);
             if(narg.size()>0) {
                 memset(temp,0,1024);
                 strcpy(temp, narg[1].c_str());
-                if(narg.size()>1)
+                if(narg.size()>1){
                     for(i=2; i<narg.size(); i++) {
-                        //pLog->_Add("C_CONS::_Execute 5 6 > %s...",cmd);
                         strcat(temp,va(" %s",narg[i].c_str()));
                     }
+                }
                 else strcpy(temp,"(null)");
-                pLog->_Add("C_CONS::_Execute > [%s] [%s]...",cmd,temp);
+                dlcs_trim_lf(cmd);
+                // dlcs_trim_lf(temp);
+                // pLog->_Add("C_CONS::_Execute > [%s] [%s]...",cmd,temp);
                 funcmap.find(narg[0].c_str())->second(temp);
             }
             return;
         }
     }
-    pLog->_Add("C_CONS::_Execute 6 > %s...",cmd);
+    // pLog->_Add("C_CONS::_Execute 6 > %s...",cmd);
 }
 
 

@@ -1,19 +1,30 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef C_GLMOUSE
-#define C_GLMOUSE
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_glmouse.h
+ **   Class:        C_Mouse
+ **                 C_MouseCursor
+ **   Description:  Mouse SDL/OpenGL wrapper
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_MOUSE
+#define _DLCS_C_MOUSE
+#include "dlstorm.h"
+#include "c_gltexture.h"
+#include "SDL.h"
 #include "c_gaf.h"
 #include "c_log.h"
-#include "c_gltexture.h"
-
 #define C_GLM_DOWNTICK_TIME 60
 #define C_GLM_DOUBLECLICK_TIME 300
-
+/////////////////////////////////// C_MouseCursor class
 class C_MouseCursor {
 public:
     C_MouseCursor();
@@ -37,21 +48,18 @@ public:
     GLvoid          loadGAF(char *file);
     GLvoid          draw(void);
 };
-
+/////////////////////////////////// C_Mouse class
 class C_Mouse {
 public:
     C_Mouse();
     C_Mouse(CLog *pInLog);
     C_Mouse(CGAF *pInGAF, CLog *pInLog);
     ~C_Mouse();
-
     CLog            *pLog;
     CGAF            *pGAF;
     C_MouseCursor   *pFirstMouseCursor;
     C_MouseCursor   *pCursor;
-
     bool    bDraw;
-
     void ClearClicks(void);
     bool bLeftDown;
     bool bMiddleDown;
@@ -75,19 +83,15 @@ public:
     unsigned long lRightDownTick;
     int  ix;
     int  iy;
-
     void InitializeInput(void);
     void Refresh(void);
-
     bool LeftClick();
     bool MiddleClick();
     bool RightClick();
-
     bool Click(int iWhich);
     void SetClick(int iWhich,bool set);
     bool DoubleClick(int iWhich);
     void SetDoubleClick(int iWhich,bool set);
-
     bool ButtonDownTick(int iWhich);
     void SetDownTick(int iWhich,bool set);
     bool ButtonDown(int iWhich);
@@ -110,4 +114,4 @@ public:
     void draw(void);
 };
 
-#endif//C_GLMOUSE
+#endif//_DLCS_C_MOUSE

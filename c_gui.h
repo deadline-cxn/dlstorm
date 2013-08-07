@@ -1,12 +1,23 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef _C_GUI
-#define _C_GUI
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gui.h
+ **   Class:        C_GUI
+ **                 C_GSTMP
+ **                 C_GCTRL
+ **   Description:  GUI system for SDL/OpenGL
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_GUI
+#define _DLCS_C_GUI
 #include "c_gui_chat_enum.h"
 #include <map>
 #include <algorithm>
@@ -18,7 +29,7 @@
 #include "c_gltexture.h"
 #include "c_console.h"
 #include "dlstorm.h"
-
+////////////////////////// GUI Property definitions
 #define FM_GP_ALWAYS_ON_TOP     1
 #define FM_GP_SIZEABLE          2
 #define FM_GP_CLOSEX            4
@@ -40,7 +51,9 @@
 #define FM_GSM_ALPHA_DESCEND 	2
 #define MAX_BUTTONS		        128 // Button objects
 #define MAX_FONTS               11
+////////////////////////// GUI callback
 typedef void (*G_CBACK)(string whatgui);
+////////////////////////// GUI Load mode
 enum eGUILOADMODE {
     FGL_ATTACH=0,
     FGL_GUMP,
@@ -48,6 +61,7 @@ enum eGUILOADMODE {
     FGL_CTRL_CHILD,
     FGL_PROPERTY
 };
+////////////////////////// GUI Relative indicator
 enum tGUIRelativeTo {
     GUI_NOT_RELATIVE,
     GUI_TOP_LEFT,
@@ -60,6 +74,7 @@ enum tGUIRelativeTo {
     GUI_BOTTOM_CENTER,
     GUI_BOTTOM_RIGHT
 };
+////////////////////////// GUI Component types
 enum tGUIComponentTypes {
     FM_GC_BUTTON=1,
     FM_GC_SUBMIT,
@@ -96,10 +111,10 @@ enum tGUIComponentTypes {
     FM_GC_FILTER,
     FM_GC_RECT_GROUP
 };
-
- class C_GUI;
+class C_GUI;
 class C_GSTMP;
 class C_GCTRL;
+////////////////////////// C_GCTRL class
 class C_GCTRL {
 public:
     C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog,
@@ -108,15 +123,12 @@ public:
             C_CONS *pInConsole  );
     C_GCTRL(C_GCTRL *pInParentControl);
     ~C_GCTRL();
-
-    // functions
     void init_ctrl(void);
     void zeroize_ctrl(void);
     void set_value(const char *val);
     void get_value(char *str);
     char *get_value(void);
     void selecta(void);
-
     void on_leftclick(void);
     void on_rightclick(void);
     void on_move(void);
@@ -124,44 +136,31 @@ public:
     void on_focus(void);
     void on_wheelup(void);
     void on_wheeldown(void);
-
     char *convert$(char *in);
-
     void populate_ctrl_editor(void);
-
     int  control_data_total;
     void control_data_unselect(void);
     void clear_control_data(void);
     void put_control_data(const char *nname, const char *nvalue);
     void sort_control_data(const char method);
-
     void set_property(char *nname, char *nvalue);
-
     void attach_default_children(void);
     void hide_default_children(void);
     void show_default_children(void);
-
     void draw(bool bMouseWheelUp, bool bMouseWheelDown);
     void checkMouseClicks(bool bMouseWheelUp, bool bMouseWheelDown);
-
-    // members
     CLog     *pLog;
     C_GFX    *pGFX;
     C_GUI    *pGUI;
     C_CONS   *pCons;
-
     C_GSTMP *parent_stump;
     C_GCTRL  *parent_control;
-
     C_GCTRL *first_child_control;
     C_GCTRL *child_control;
-
     map <string, string> property;
-
     map <int, string>  data;
     map <int, bool>    data_selected;
     vector <string> buf;
-
     char  name[1024];
     char  type;
     RECT  rect;
@@ -169,9 +168,7 @@ public:
     RECT  mrect;
     //RECT  upbutton;
     //RECT  downbutton;
-
     int iRelativeTo;
-
     char  media[1024];
     char  media_hover[1024];
     char  media_click[1024];
@@ -181,35 +178,27 @@ public:
     char  console[1024];
     char  datafill[1024];
     char  datafilltarget[1024];
-
     char  nexttabfocus[64];
-
     bool  selected;
-
     bool bMoving;
     bool bSizing;
     bool bEditing;
-
     int   listdepth;
     int   listoffset;
     char  font;
     char  fontbank;
-
     int   props;
     bool  visible;
     long  background_color;
     long  border_color;
     bool  selecting;
-
     int   max_val_len;
-
     C_GCTRL *next;
     C_GCTRL *prev;
-
 private:
     char  value[1024];
-
 };
+////////////////////////// C_GSTMP class
 class C_GSTMP {
 public:
     C_GSTMP(CLog *pInLog,
@@ -218,7 +207,6 @@ public:
     ~C_GSTMP();
     void    init_stmp(void);
     void    zeroize_stmp(void);
-
     char    control_count(void);
     void    add_control(const char *name, int type, int x, int y, int x2, int y2, int props, char *media, char *value);
     void    mod_control(const char *name, int type, int x, int y, int x2, int y2, int props, char *media, char *value);
@@ -231,7 +219,6 @@ public:
     void    store_stmp(void);
     void    store_stmp(char *filename);
     C_GCTRL *get_control(const char *name);
-
     map <string, string> data;
     CLog    *pLog;
     C_GFX   *pGFX;
@@ -257,8 +244,8 @@ public:
     C_GCTRL *first_gui_control;
     C_GCTRL *gui_control;
     C_GCTRL *focus_control;
-
 };
+////////////////////////// C_GUI class
 class C_GUI {
 public:
     C_GUI();
@@ -266,25 +253,17 @@ public:
     C_GUI(CGAF *pUSEGAF, CLog *pUSELog);
     C_GUI(C_GFX *pUSEGFX,CGAF *pUSEGAF, CLog *pUSELog);
     ~C_GUI();
-
-//class C_GLAYER{public:    C_GLAYER(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );    ~C_GLAYER();
-
+    //class C_GLAYER{public:    C_GLAYER(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );    ~C_GLAYER();
     C_GSTMP *focus_stump;
     C_GSTMP *first_gui_stump;
     C_GCTRL *focus_control;
-
     void    clear(void); // clear
-
     void    setdata(char * stump, char* ctrl, char *value);
     char *  getdata(char * ctrlname);
     void    getdata(char * pString, char * ctrlname);
     int     getctrltype(char *);
-
     void    edit_stump(char *file);
     void    remove_control(char *stump, char *control);
-
-    // GUI Creation / Delete functions
-
     void    set_focus_stump(C_GSTMP *pStump);
     void    set_focus_control(C_GCTRL *pCtrl);
     void    moveStumpToTop(C_GSTMP *pStump);
@@ -293,28 +272,20 @@ public:
     void    del_stump(C_GSTMP *tstump);
     void    del_stump(char *name);
     void    del_stumps(void);
-
     bool    isAStumpMoving(void);
     bool    isAControlMoving(void);
     bool    isAStumpSizing(void);
     bool    isAControlSizing(void);
-
     bool    bCtrlMoving;
     bool    bStmpMoving;
     bool    bCtrlSizing;
     bool    bStmpSizing;
-
     void    draw(void);
     void    draw_ctrls(void);
-
     C_GSTMP *get_stump(char *name);
     C_GSTMP *get_prev_stump(char *name);
     C_GSTMP *get_prev_stump(C_GSTMP *tstump);
-
     int     stump_count;
-
-    // GUI Initialization / destruction functions
-
     void    init(void); //  initialize basic data
     bool    initFonts(void); // initialize fonts
     bool    initButtons(void); // initialize buttons
@@ -323,10 +294,7 @@ public:
     bool    loadButtons(char *szFilename);
     bool    destroyFonts(void);
     bool    destroyButtons(void);
-
     // G_CBACK _gcdatafill(string whatgui, string whatdata);
-    // GUI Draw functions
-
     void    drawButton(int which, int updown, int x, int y);
     void    drawButton(int which, int updown, int x, int y, int w, int h);
     void    drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,unsigned char r, unsigned char g, unsigned char b);
@@ -352,9 +320,6 @@ public:
     void    prompt(char *szPrompt, char *szCommand);
     bool    bIsPrompt(void);
     void    drawToolTip(void);
-
-    // GUI Load / Store functions
-
     bool	cab_loading;
     //void	cab_call_process_file(char *file);
     void	cab_call(char *file);  // load a fm gui file
@@ -366,32 +331,23 @@ public:
     void	store(char *name); // save a fm gui to a file
     void    bcall(char *file);
     void    bstore(char *file);
-
-    // GUI Keyboard / Mouse functions
-
     int     doInput(void);
     int     processKeyboard(void);
     void    checkMouseClicks(void);
     void    clearKeys(void);
     bool    bSaveBinds(char *szFilename);
-
-    // GUI members
-
     char	szPromptMsg[1024];
     bool    bClosePrompt;
     char	szCommand[1024];
     bool    bShowFPS;  // Show frames per second on or off
     bool    bMadeLog;  // Made the log file on or off
-
     CGAF    *pGAF;
     C_GFX   *pGFX;
     CLog    *pLog;
     C_Mouse *pMouse;
-
     map<string, int>    GC_TYPE;
     map<string, int>    GC_PROP;
     map<string, int>    GC_RELATIVE;
-
     SDLKey              ikey;
     SDLKey              iKeyUp;
     SDLKey              iKeyDown;
@@ -401,46 +357,34 @@ public:
     map<SDLKey, char *> KeyMap;
     map<SDLKey, bool>   KeyDown;
     long KeyRepeatTimer;
-
     CGLTextureList      *ButtonTexture;
     CGLTextureList	    *B9utton;
-
-
     CGLFontList*    font;
-
     CGLFont*            pFirstFont;
     CGLFont*            GetFont(char* szWhichFont);
     CGLFont*            GetFont(int iWhich);
-
     bool    bStaticToolTip;
     bool    bDrawToolTip;
     bool    bResetToolTip;
     RECT    rectToolTip;
     char    hover_text[1024];
     bool    bDebug;
-
     C_GCTRL *last_control_clicked;
-
     C_GCTRL *highest_control_clicked;
     C_GSTMP *highest_stump_clicked;
-
-    // GUI Console stuff
-
     C_CONS  *pCons;
     void    consEntry(char *fmt, ...);
     void _consExecute(char *cmd);
-
-    // CHAT System stuff
-
     void    addChat(int channel, char * user,  char * msg);
-
     map<string, int>    GUI_CHAT;
     map<int, string>    GUI_CHAT_COLOR;
-
 };
-#endif //_C_GUI
+#endif //_DLCS_C_GUI
 
-/*  GUI system default buttons
+
+/*
+// Some junk
+// GUI system default buttons
 #define BC_ARROW_LEFT	3
 #define BC_ARROW_RIGHT	4
 #define BC_ARROW_UP	2
@@ -469,10 +413,6 @@ public:
 /*
 void C_CONS::_GlobalIntegers(){
     intmap.clear();
-
-
-
-
     intmap["f1"]    = SDLK_F1;
     intmap["f2"]    = SDLK_F2;
     intmap["f3"]    = SDLK_F3;
@@ -488,7 +428,6 @@ void C_CONS::_GlobalIntegers(){
     intmap["f13"]   = SDLK_F13;
     intmap["f14"]   = SDLK_F14;
     intmap["f15"]   = SDLK_F15;
-
     intmap["numlock"]   = SDLK_NUMLOCK;
     intmap["scroll"]    = SDLK_SCROLLOCK;
     intmap["numpad_7"]  = SDLK_KP7;
@@ -621,8 +560,7 @@ void C_CONS::_GlobalIntegers(){
 //    intmap["mail"] = SDLK_MAIL;
 //    intmap["mediaselect"] = SDLK_MEDIASELECT;
 }
-
-
 */
-
 //G_CBACK C_GUI::_gcdatafill(string whatgui, string whatdata){//    pLog->_Add("_gcdatafill whatgui[%s] whatdata[%s]",(char *)whatgui.c_str(),(char *)whatdata.c_str());}
+
+

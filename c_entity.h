@@ -1,26 +1,31 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-
-#ifndef _C_ENTITY
-#define _C_ENTITY
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_entity.h
+ **   Class:        C_Entity
+ **   Description:  Generic entity object for games
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_C_ENTITY
+#define _DLCS_C_ENTITY
 #include "dlstorm.h"
-
 #include "c_waypoint.h"
 #include "c_log.h"
 #include "c_gaf.h"
 #include "c_gfx.h"
 #include "c_gl3dmodel.h"
 #include "c_timer.h";
-
 class CGLModel;
 class C_GFX;
-
 #define ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes
-
 enum tEntityActions {
     // Actions:
     ENTITY_ACT_NONE,
@@ -223,6 +228,4 @@ public:
     bool    act_observe(C_Entity *entity);
     bool    act_listen(C_Entity *entity);
 };
-
-
-#endif
+#endif // _DLCS_C_ENTITY

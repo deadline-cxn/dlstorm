@@ -1,23 +1,25 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-    Class:  CGAF
-    Description:
-        Game Archive File Class
-        Stores multiple files into one archive file
-        Uses zlib
-        Based on NUKE_DX NukeFile by Odin (modified to be cross
-                                        platform, and file type
-                                        loaders)
-
-****************************************************************/
-
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         c_gaf.cpp
+ **   Class:        CGAF
+ **   Description:  Game Archive File
+ **                 Store game assets into one compressed file
+ **                 Based on NukeDX Nukefile archiver
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_gaf.h"
-
 #define BUFFERSIZE (1024*1024)
 DWORD GAF_VERSION=0x120101c5;
-
+////////////////////// CGAF class
 CGAF::CGAF() {
     CompLevel=GAFCOMP_BEST;
     CurrentFileName[0]=0;
@@ -26,16 +28,13 @@ CGAF::CGAF() {
     MaxElements=1;
     Elements=(GAFFile_ElmHeader*)malloc(sizeof(GAFFile_ElmHeader)*MaxElements);
     SetFileDescription("[GAF Game Archive File]");
-
 #ifdef GAFDEBUG
     CabLog=new CLog();
     CabLog->SetName("gaf.log");
     CabLog->LineFeedsOn();
     CabLog->AddEntry("===========================================================================GAF constructed\n");
 #endif
-
 }
-
 CGAF::CGAF(char *file,int comp) {
     CompLevel=comp;
     CurrentFileName[0]=0;
@@ -46,7 +45,6 @@ CGAF::CGAF(char *file,int comp) {
     SetFileDescription("[GAF Game Archive File]");
     Open(file,0);
 }
-
 CGAF::~CGAF() {
 #ifdef GAFDEBUG
     DEL(CabLog);
