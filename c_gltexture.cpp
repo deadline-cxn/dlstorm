@@ -69,7 +69,11 @@ void CGLTexture::Initialize() {
     pNext=0;
     glBmap=0;
     filename.clear();
-    name.clear();
+    width=0;
+    width=0;
+    height=0;
+    bpp=0;
+    format=0;
 }
 GLuint CGLTexture::Create(int x, int y) {
     width=x;
@@ -124,7 +128,7 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
 GLuint CGLTexture::LoadGL(const char *file) {
     glBmap=0;
     filename=file;
-    pLog->_Add("Loading GL file %s",filename.c_str());
+    // pLog->_Add(" CGLTexture::LoadGL() Loading GL file %s",filename.c_str());
 	ILuint imageID;
 	ILboolean success;
 	ILenum error;
@@ -138,11 +142,28 @@ GLuint CGLTexture::LoadGL(const char *file) {
 		success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
 		if (!success){
 			error = ilGetError();
-			pLog->_Add("Image conversion failed - IL reports error: %d %s",error,iluErrorString(error));
+			pLog->_Add("  CGLTexture::LoadGL() Image conversion failed - IL reports error: %d %s",error,iluErrorString(error));
 			return 0;
 		}
+
+        width=ilGetInteger(IL_IMAGE_WIDTH);
+        height=ilGetInteger(IL_IMAGE_HEIGHT);
+        format=ilGetInteger(IL_IMAGE_FORMAT);
+        bpp=ilGetInteger(IL_IMAGE_BPP)*8;
+
+        /*
+        pLog->_Add("IMAGE DATA: [%s] %dx%d %d bpp (format %d)",
+                   filename.c_str(),
+                   width,
+                   height,
+                   bpp,
+                   format
+                   ); */
+
+        glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &glBmap);
 		glBindTexture(GL_TEXTURE_2D, glBmap);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -154,10 +175,11 @@ GLuint CGLTexture::LoadGL(const char *file) {
 					 ilGetInteger(IL_IMAGE_FORMAT),
 					 GL_UNSIGNED_BYTE,
 					 ilGetData());
+
  	}
   	else {
 		error = ilGetError();
-		pLog->_Add("Image load failed - IL reports error: %d %s",error,iluErrorString(error));
+		pLog->_Add("  CGLTexture::LoadGL() Image load failed - IL reports error: %d %s",error,iluErrorString(error));
 		return 0;
   	}
  	ilDeleteImages(1, &imageID);

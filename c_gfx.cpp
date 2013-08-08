@@ -163,6 +163,7 @@ C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELO
 C_GFX::~C_GFX() {
     ShutDownGFX();
     SDL_Quit();
+    pLog->_Add("SDL shut down...");
 }
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
 bool C_GFX::InitializeGFX( int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
@@ -197,8 +198,8 @@ CGX (Amiga)
 photon  (QNX)
 epoc    (Epoc)
 dummy
-// VideoInfo = SDL_GetVideoInfo();
-    // pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
+
+
 
   if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags|SDL_HWSURFACE)) {
     } else {
@@ -223,32 +224,27 @@ dummy
     ScreenHeight=h;
     ScreenColors=c;
 
+    VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
+    if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
 
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
 
-//VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
-//if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-//SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
-//SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
+    SDL_version ver;
+    SDL_VERSION(&ver);
+    pLog->_Add("SDL Version %d.%d.%d",ver.major,ver.minor,ver.patch);
+        dlcsm_make_str(vdriver);
+    SDL_VideoDriverName(vdriver,sizeof(vdriver));
+     pLog->_Add("Video driver[%s]",vdriver);
 
-    pScreen = SDL_SetVideoMode(640, 480, 16, SDL_DOUBLEBUF);
-    if(!pScreen) { pLog->_Add("Can't set up pScreen! ErroR!"); return false; }
-
-    //SDL_version ver;
-    //SDL_VERSION(&ver);
-    //pLog->_Add("SDL Version %d.%d.%d",ver.major,ver.minor,ver.patch);
-    //    dlcsm_make_str(vdriver);
-    //SDL_VideoDriverName(vdriver,sizeof(vdriver));
-    // pLog->_Add("Video driver[%s]",vdriver);
-/*
     SDL_Rect   **VideoModes;
     VideoModes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
     if(VideoModes == (SDL_Rect **)0){
     } else {
         if(VideoModes == (SDL_Rect **)-1) pLog->_Add("All resolutions available");
         else { pLog->_Add("Available Modes"); for(int i=0;VideoModes[i];++i) pLog->_Add("  %d x %d", VideoModes[i]->w, VideoModes[i]->h); }
-    }    */
-
-/*    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
+    }
+    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
     if(VideoInfo) {
         pLog->_Add("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
         pLog->_Add("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
@@ -283,22 +279,37 @@ dummy
     }
     if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces...");}
     else { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
-    if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); } */
-//     if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {    }
-//     else {        pLog->_Add("SDL_VideoModeOK failure");         return false;    }
-//     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
+    if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); }
+    if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {    }
+    else {        pLog->_Add("SDL_VideoModeOK failure");         return false;    }
+
+    if(!SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
+        bSDLFailed=true;
+        pLog->_Add("SDL_SetVideoMode failed");
+        return false;
+    }
 
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(wincaption);
 
-    if(InitGL()) pLog->_Add("OpenGL initialized");
-    else { pLog->_Add("Can't initialize OpenGL"); return false; }
+    if(InitGL(ScreenWidth, ScreenHeight)) {
+        pLog->_Add("OpenGL initialized");
+    }
+    else {
+        bSDLFailed=true;
+        pLog->_Add("Can't initialize OpenGL");
+        return false;
+    }
 
 	ilutRenderer(ILUT_OPENGL);
 	ilInit();
 	iluInit();
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
+
+    VideoInfo = SDL_GetVideoInfo();
+    pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
+
 
     pCamera=new C_Camera();
     if(pCamera) {
@@ -314,26 +325,18 @@ dummy
 
     textures.clear();
 
-    CGLTexture* pWTF;
-    pWTF=new CGLTexture();
-    pWTF->name="TEST TEXTURE";
-    pWTF->glBmap=0;
-    textures.push_back(pWTF);
-    pWTF=new CGLTexture();
-    pWTF->name="TEST TEXTURE 2";
-    pWTF->glBmap=0;
-    textures.push_back(pWTF);
-    pLog->_Add(" Textures[%d]",textures.size());
-
-    if( LoadTextures(pGAF)) {
-        pLog->_Add("Base Textures initialized");
+    if(LoadTextures(pGAF)) {
+        pLog->_Add("[%d] base textures loaded",textures.size());
     } else {
-        pLog->_Add("Can't initialize Base Textures");
+        pLog->_Add("Can't initialize base textures");
         return false;
     }
 
     pDefaultTexture=GetTexture("base/testprog.jpg");
-    //if(!pDefaultTexture) { pLog->_Add("Can't initialize Default Texture"); return false; }
+    if(!pDefaultTexture) {
+            pLog->_Add("Can't initialize Default Texture");
+        return false;
+    }
 
     if(!LoadModels()) return false;
 
@@ -360,12 +363,15 @@ void C_GFX::ToggleFullScreen(void) {
     else                        { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
     if(bFullScreen==true)   bFullScreen=false;
     else bFullScreen=true;
-    pScreen = SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
-    InitGL();
+    SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
+    InitGL(ScreenWidth,ScreenHeight);
     LoadTextures(pGAF);
 }
 void C_GFX::ShutDownGFX(void) {
-    pLog->_Add("Shutting down SDL/OpenGL GFX subsystem...");
+
+    glFinish();
+    glFlush();
+    pLog->_Add("OpenGL shut down...");
 
     ClearEntities();
     pLog->_Add("Entities shut down...");
@@ -377,19 +383,36 @@ void C_GFX::ShutDownGFX(void) {
     pLog->_Add("Textures shut down...");
     DestroyModels();
     pLog->_Add("Models shut down...");
-    glFinish();
-    glFlush();
-    SDL_FreeSurface(pScreen);
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    pLog->_Add("SDL/OpenGL GFX subsystem shutdown...");
+
 }
-int C_GFX::InitGL() { // All Setup For OpenGL Goes Here
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glViewport(0, 0, SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h);
-    glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-    glLoadIdentity();									// Reset The Projection Matrix
-    gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
-    glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+int C_GFX::InitGL(int x, int y) {
+    float ratio = (float) x / (float) y;
+    glShadeModel( GL_SMOOTH );     // Our shading model--Gouraud (smooth).
+    glCullFace( GL_BACK ); // Culling.
+    glFrontFace( GL_CCW );
+    glEnable( GL_CULL_FACE );
+    glClearColor(0, 0, 0, 0); // Set the clear color.
+    glViewport(0, 0, x, y); // Setup our viewport.
+    glMatrixMode(GL_PROJECTION);     // Change to the projection matrix and set our viewing volume.
+    glLoadIdentity();
+    gluPerspective(60.0, ratio, 1.0, 1024.0);     // EXERCISE:* Replace this with a call to glFrustum.
+    glEnable(GL_TEXTURE_2D);
+/*  glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+    glClearColor( 0.f, 0.f, 0.f, 1.f );
+    //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //glViewport(0, 0, SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h);
+    //glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
+    //glLoadIdentity();									// Reset The Projection Matrix
+    //gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
+    //glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix*/
+    GLenum error = glGetError();
+    if( error != GL_NO_ERROR ) {
+        pLog->_Add( "Error initializing OpenGL! %s\n", gluErrorString(error));
+        return false;
+    }
     return true; // Initialization Went OK
 }
 void C_GFX::EndScene(void) {
@@ -426,7 +449,12 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
                     }
                     else {
                         textures.push_back(pTexture);
-                        pLog->_Add("Texture %s (OPENGL[%d])",pTexture->filename.c_str(),pTexture->glBmap);
+                        pLog->_Add("Texture[%s] width[%d] height[%d] bpp[%d] GL[%d] )",
+                                            pTexture->filename.c_str(),
+                                            pTexture->width,
+                                            pTexture->height,
+                                            pTexture->bpp,
+                                            pTexture->glBmap);
                     }
                 }
             }
@@ -437,26 +465,18 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
 }
 CGLTexture* C_GFX::GetTexture(string name) {
     for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ++it) {
-        pLog->_Add(" textures[%s] name[%s]",(**it).name.c_str(), name.c_str());
-        if((**it).name==name) return &(**it);
+        if((**it).filename==name) return &(**it);
     }
-    pLog->_Add(" GetTexture FAILED [%s]",name.c_str());
     return 0;
 }
 CGLTexture* C_GFX::GetRandomTexture(void) {
-    int c=textures.size();
-    vector<CGLTexture*>::iterator it;
-    it=textures.begin();
-    it++;
-    return &(**it);
+    return textures[(rand()%textures.size()) + 1];
 }
 bool C_GFX::DestroyTextures(void) {
-    CGLTexture* pTexture;
-    for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ++it) {
-        pTexture=&(**it);
-        textures.erase(it);
+    for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {
+        dlcsm_delete(*it);
+        it = textures.erase(it);
         pLog->_Add("Deleting Textures[%d]",textures.size());
-        dlcsm_delete(pTexture);
     }
     return true;
 }
@@ -1111,7 +1131,8 @@ C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
                 break;
         }
 
-        if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
+        if(!pNTT->pTexture)
+            pNTT->pTexture=pDefaultTexture;
 
         if( (rand()%100)> 50 ) {
 
@@ -1134,6 +1155,11 @@ C_Entity* C_GFX::MakeEntity(char* name,float x, float y, float z) {
                 pNTT->autorot.z = 0.0f;
         }
     }
+    if(pNTT->pTexture);
+    pLog->_Add(" Entity texture set to [%s] GL[%d]",
+               pNTT->pTexture->filename.c_str(),
+               pNTT->pTexture->glBmap);
+
     return pNTT;
 }
 void C_GFX::DrawEntities(void) {

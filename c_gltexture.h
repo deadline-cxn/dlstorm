@@ -33,7 +33,6 @@ public:
 	CGLTexture operator/(int);
 	CGLTexture operator==(CGLTexture);
 
-    string      name;
     string      filename;
 
     bool        bGL;
@@ -41,7 +40,7 @@ public:
     u_long      width;
     u_long      height;
     GLenum      format;
-    int         BPP;
+    int         bpp;
     GLuint      glBmap;
 
     CGLTexture* pNext;

@@ -99,7 +99,7 @@ public:
 
     // GFX Class Members
     bool        bSDLFailed;
-    SDL_Surface* pScreen;
+    // SDL_Surface* pScreen;
     int         VideoFlags;
     bool        bFullScreen;
     int         ScreenWidth;
@@ -129,7 +129,7 @@ public:
     v3ops       OpScale;
 
     // GFX System level functions
-    int         InitGL(void);
+    int         InitGL(int x, int y);
     void        BeginScene(void);
     void        SetWindowTitle(char *fmt, ...);
     void        ShutDownGFX(void);

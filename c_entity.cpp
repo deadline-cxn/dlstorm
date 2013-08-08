@@ -115,6 +115,8 @@ void C_Entity::DrawLight(void) {
 }
 void C_Entity::Draw(bool bSelecting) {
 
+    glEnable(GL_TEXTURE_2D);
+
     if(!pGFX) return;
 
     switch(type) {
@@ -191,6 +193,8 @@ void C_Entity::Draw(bool bSelecting) {
                 glColor3f(1.0f,1.0f,0.0f);
         }
     }
+
+
 
 
     if(pModel) {
