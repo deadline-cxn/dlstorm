@@ -310,10 +310,10 @@
 #include "glerrors.h"
 #define ILUT_USE_OPENGL
 // #include "devil_cpp_wrapper.hpp"
-#include "il.h"
-#include "ilu.h"
+#include <il.h>
+#include <ilu.h>
 // #include "ilu_region.h"
-#include "ilut.h"
+#include <ilut.h>
 using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////
 // WIN32 Defines

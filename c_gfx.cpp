@@ -281,15 +281,11 @@ dummy
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
-
     if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces...");}
     else { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
-    if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); }
-    */
-
+    if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); } */
 //     if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {    }
 //     else {        pLog->_Add("SDL_VideoModeOK failure");         return false;    }
-
 //     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
 
     SDL_ShowCursor(SDL_DISABLE);
