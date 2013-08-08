@@ -259,9 +259,9 @@ public:
     C_GSTMP *first_gui_stump;
     C_GCTRL *focus_control;
     void    clear(void); // clear
-    void    setdata(char * stump, char* ctrl, char *value);
-    char *  getdata(char * ctrlname);
-    void    getdata(char * pString, char * ctrlname);
+    void    setdata(char *stump, char *ctrl, char *value);
+    char    *getdata(char *ctrlname);
+    void    getdata(char *pString, char *ctrlname);
     int     getctrltype(char *);
     void    edit_stump(char *file);
     void    remove_control(char *stump, char *control);
@@ -352,7 +352,7 @@ public:
     SDLKey              ikey;
     SDLKey              iKeyUp;
     SDLKey              iKeyDown;
-    Uint8*              keystate;
+    Uint8               *keystate;
     SDLMod              modstate;
     SDL_Event           event;
     map<SDLKey, char *> KeyMap;
@@ -360,10 +360,10 @@ public:
     long KeyRepeatTimer;
     CGLTextureList      *ButtonTexture;
     CGLTextureList	    *B9utton;
-    CGLFontList*    font;
-    CGLFont*            pFirstFont;
-    CGLFont*            GetFont(char* szWhichFont);
-    CGLFont*            GetFont(int iWhich);
+    CGLFontList         *font;
+    CGLFont             *pFirstFont;
+    CGLFont             *GetFont(char* szWhichFont);
+    CGLFont             *GetFont(int iWhich);
     bool    bStaticToolTip;
     bool    bDrawToolTip;
     bool    bResetToolTip;
@@ -376,7 +376,7 @@ public:
     C_CONS  *pCons;
     void    consEntry(char *fmt, ...);
     void _consExecute(char *cmd);
-    void    addChat(int channel, char * user,  char * msg);
+    void    addChat(int channel, char *user,  char *msg);
     map<string, int>    GUI_CHAT;
     map<int, string>    GUI_CHAT_COLOR;
 };

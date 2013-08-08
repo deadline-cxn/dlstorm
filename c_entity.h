@@ -22,7 +22,7 @@
 #include "c_gaf.h"
 #include "c_gfx.h"
 #include "c_gl3dmodel.h"
-#include "c_timer.h";
+#include "c_timer.h"
 class CGLModel;
 class C_GFX;
 #define ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes

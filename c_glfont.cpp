@@ -423,7 +423,7 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char r, u_char g, u_char b) {
     if(!pFontTex) return;
     if(!pFontTex->glBmap) {
-        pFontTex->Load(va("%s.png",szFile));
+        pFontTex->LoadGL(va("%s.png",szFile));
     }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
     if(wset<2) {

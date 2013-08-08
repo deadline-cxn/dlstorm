@@ -301,12 +301,19 @@
 #include <string>
 #include <map>
 #include <algorithm>
+#include <fstream>
 #include "../SDK/md5/md5.h"
 #include "SDL.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
-#include <fstream>
+#include "glerrors.h"
+#define ILUT_USE_OPENGL
+// #include "devil_cpp_wrapper.hpp"
+#include "il.h"
+#include "ilu.h"
+// #include "ilu_region.h"
+#include "ilut.h"
 using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////
 // WIN32 Defines

@@ -109,8 +109,10 @@ public:
     bool        bCreatedLog;
     CLog*       pLog;
     CGAF*       pGAF;
+
     CGLTexture* pDefaultTexture; // default texture storage
-    CGLTexture* pFirstTexture; // texture storage
+    vector<CGLTexture*> textures;
+
     CGLModel*   pFirstModel; // model storage
     C_Entity*   pFirstNTT;      // Entities
     C_Entity*   pFirstMapNTT;   // Map Entities
@@ -142,17 +144,14 @@ public:
 
     // OpenGL Texture Management (CGLTexture Class)
     bool        LoadTextures(CGAF *pGAF);
-    CGLTexture* GetTexture(char *name);
+    CGLTexture* GetTexture(string inname);
     CGLTexture* GetRandomTexture(void);
-    int         GetTotalTextures(void); // return number of loaded textures
     void        DrawTexture(int x,int y,int x2,int y2,char *name,unsigned char r,unsigned char g,unsigned char b);//long color);
     bool        DestroyTextures(void);
-    void        DeleteTexture(CGLTexture* pTexture);
-    CGLTexture* NewTexture(void);
 
     // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
-    CGLModel*   GetModel(char* name);
+    CGLModel*   GetModel(char* inname);
     CGLModel*   GetRandomModel(void);
     int         GetTotalModels(void);
     bool        DestroyModels(void);
@@ -190,7 +189,7 @@ public:
     void        SelectEntity(C_Entity* pEntity);
     void        SelectClosestEntity(void);
     void        InitializeEntities(void);
-    C_Entity*   MakeEntity(char* name,float x, float y, float z);
+    C_Entity*    MakeEntity(char *inname,float x, float y, float z);
     void        DeleteEntity(C_Entity* pEntity);
     void        ClearEntities(void);
     void        LoadEntities(CVector3 WhichSector);

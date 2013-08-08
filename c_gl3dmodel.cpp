@@ -283,6 +283,9 @@ bool CGLModel::Draw(CGLTexture* pTexture) {
             }
         }
         if(!bMatFound) {
+            if(pGFX)
+            if(pGFX->pDefaultTexture)
+            if(pGFX->pDefaultTexture->glBmap)
             glBindTexture(GL_TEXTURE_2D,pGFX->pDefaultTexture->glBmap);
         }
 
