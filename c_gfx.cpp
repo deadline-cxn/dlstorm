@@ -514,52 +514,25 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     CGLTexture *pDELTexture;
     pDELTexture=0;
     DIR *dpdf;
-
     struct dirent *epdf;
     dpdf = opendir("base");
     if (dpdf != NULL) {
         while (epdf = readdir(dpdf)) {
+
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
+
             } else {
-                if(dlcs_isdir(epdf->d_name)) {
-                } else {
-                    pTexture=pFirstTexture;
-                    if(pTexture) {
-                        while(pTexture->pNext) {
-                            pTexture=pTexture->pNext;
-                        }
-                        pTexture->pNext=new CGLTexture(pLog);
-                        pTexture=pTexture->pNext;
-                    }
-                    else {
-                        pFirstTexture=new CGLTexture(pLog);
-                        pTexture=pFirstTexture;
-                    }
+                if(!dlcs_isdir(epdf->d_name)) {
+                    // pLog->_Add("ATTEMPTING TO LOAD base/%s",epdf->d_name);
+                    pTexture=NewTexture();
                     pTexture->Load(va("base/%s",epdf->d_name));
                     if(!pTexture->bmap) {
-                        pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
-
-                        pDELTexture=pFirstTexture;
-                        if(pTexture==pDELTexture) {
-                            dlcsm_delete(pTexture);
-                            dlcsm_delete(pFirstTexture);
-                        }
-                        else {
-                            pDELTexture=pFirstTexture;
-                            while(pDELTexture) {
-
-                                if(pDELTexture==pTexture) {
-                                    if(pDELTexture->pNext)
-                                        pDELTexture->pNext=pDELTexture->pNext->pNext;
-                                    dlcsm_delete(pTexture);
-                                }
-                                pDELTexture=pDELTexture->pNext;
-                            }
-                        }
+                        pLog->_Add("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)",epdf->d_name);
+                        DeleteTexture(pTexture);
                     }
                     else {
-                        pLog->AddEntry("Texture %s (OPENGL[%d]) \n",pTexture->filename,pTexture->bmap);
+                        pLog->_Add("Texture %s (OPENGL[%d])",pTexture->filename,pTexture->bmap);
                     }
                 }
             }
@@ -567,6 +540,22 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     }
     closedir(dpdf);
     return true;
+}
+CGLTexture* C_GFX::NewTexture() {
+    CGLTexture* pTexture=new CGLTexture(pLog);
+    CGLTexture* pLTex=0;
+    pLTex=pFirstTexture;
+    if(!pLTex) {
+        pFirstTexture=pTexture;
+    }
+    else {
+        while(pLTex->pNext) {
+            pLTex=pLTex->pNext;
+        }
+        pLTex->pNext=pTexture;
+        pLTex=pLTex->pNext;
+    }
+    return pTexture;
 }
 CGLTexture* C_GFX::GetTexture(char * name) {
     CGLTexture* pTexture;
@@ -615,6 +604,32 @@ bool C_GFX::DestroyTextures(void) {
     }
     return true;
 }
+void C_GFX::DeleteTexture(CGLTexture* pWhichTexture) {
+    CGLTexture* pTexture;
+    CGLTexture* pLastTexture;
+    pLastTexture=0;
+    pTexture=pFirstTexture;
+    while(pTexture) {
+        if(pTexture==pWhichTexture) {
+            if(pLastTexture) {
+                if(pTexture->pNext)
+                    pLastTexture->pNext=pTexture->pNext;
+                dlcsm_delete(pTexture);
+                return;
+            }
+            else {
+                if(pTexture==pFirstTexture);
+                dlcsm_delete(pFirstTexture);
+                dlcsm_delete(pTexture);
+
+                return;
+            }
+
+        }
+        pLastTexture=pTexture;
+        pTexture=pTexture->pNext;
+    }
+}
 //////////////////////////////////////////////////////////////// MODELS
 bool C_GFX::LoadModels(void) {
     pLog->AddEntry("Loading models...\n");
@@ -632,34 +647,9 @@ bool C_GFX::LoadModels(void) {
             } else {
                 if(!dlcs_isdir(va("models/%s",epdf->d_name))) {
                     strcpy(szModelFilename,va("models/%s",epdf->d_name));
-                    pModel=pFirstModel;
-                    if(pModel) {
-                        while(pModel->pNext) {
-                            pModel=pModel->pNext;
-                        }
-                        pModel->pNext=new CGLModel(this,pLog);
-                        pModel=pModel->pNext;
-                    }
-                    else {
-                        pFirstModel=new CGLModel(this,pLog);
-                        pModel=pFirstModel;
-                    }
-                    if(!pModel->Load(szModelFilename)) {
-                        if(pModel==pFirstModel) {
-                            dlcsm_delete(pFirstModel);
-                        }
-                        else {
-                            pDELModel=pFirstModel;
-                            while(pDELModel) {
-                                if(pDELModel->pNext==pModel)
-                                    pDELModel->pNext=pDELModel->pNext->pNext;
-                                pDELModel=pDELModel->pNext;
-                            }
-                            dlcsm_delete(pModel);
-                        }
-                    }
-                    else {
-                    }
+                    pModel=NewModel();
+                    if(!pModel->Load(szModelFilename))
+                        DeleteModel(pModel);
                 }
             }
         }
@@ -716,6 +706,42 @@ bool C_GFX::DestroyModels(void) {
     pLog->_DebugAdd("Models destroyed...");
     return true;
 }
+void C_GFX::DeleteModel(CGLModel* pWhichModel) {
+    CGLModel* pModel;
+    CGLModel* pLastModel;
+    pLastModel=0;
+    pModel=pFirstModel;
+    while(pModel) {
+        if(pModel==pWhichModel) {
+            if(pLastModel) {
+                if(pModel->pNext)
+                    pLastModel->pNext=pModel->pNext;
+                dlcsm_delete(pModel);
+                return;
+            }
+        }
+        pLastModel=pModel;
+        pModel=pModel->pNext;
+    }
+}
+CGLModel* C_GFX::NewModel() {
+    CGLModel* pModel;
+    pModel=0;
+    pModel=pFirstModel;
+    if(!pModel) {
+        pFirstModel=new CGLModel(this,pLog);
+        pModel=pFirstModel;
+    }
+    else {
+        while(pModel->pNext) {
+            pModel=pModel->pNext;
+        }
+        pModel->pNext=new CGLModel(this,pLog);
+        pModel=pModel->pNext;
+    }
+    return pModel;
+}
+
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(int mx, int my) {
     glRenderMode(_glRendermode);

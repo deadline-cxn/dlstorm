@@ -147,6 +147,8 @@ public:
     int         GetTotalTextures(void); // return number of loaded textures
     void        DrawTexture(int x,int y,int x2,int y2,char *name,unsigned char r,unsigned char g,unsigned char b);//long color);
     bool        DestroyTextures(void);
+    void        DeleteTexture(CGLTexture* pTexture);
+    CGLTexture* NewTexture(void);
 
     // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
@@ -154,6 +156,8 @@ public:
     CGLModel*   GetRandomModel(void);
     int         GetTotalModels(void);
     bool        DestroyModels(void);
+    void        DeleteModel(CGLModel* pModel);
+    CGLModel*   NewModel(void);
 
     // 2D Draw Functions
     void        DrawVertice(int x, int y);

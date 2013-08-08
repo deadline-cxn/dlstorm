@@ -378,8 +378,8 @@ int dlcs_strcasecmp(const char *szOne,const char *szTwo) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool dlcs_isdir(char *dir) {
     struct stat st;
-    if(stat(dir,&st) == -1) return false;
-    if (st.st_mode & S_IFDIR) return true;
+    if(stat(dir,&st)==-1) return false;
+    if(st.st_mode&S_IFDIR) return true;
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
