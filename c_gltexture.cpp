@@ -40,33 +40,35 @@ CGLTexture::CGLTexture(CLog *pInLog, const char *file) {
     Load(file);
 }
 CGLTexture::~CGLTexture() {
+
     if(bMadeLog)
         dlcsm_delete(pLog);
-    dlcsm_gl_delete(bmap);
+    dlcsm_gl_delete(glBmap);
+
 }
 void CGLTexture::Initialize() {
     bMadeLog=true;
     pLog=0;
     pNext=0;
-    bmap=0;
-    dlcsm_zero(filename);
-    dlcsm_zero(name);
+    glBmap=0;
+    memset(filename,0,FILENAME_SIZE);
+    memset(name,0,FILENAME_SIZE);
 }
 GLuint CGLTexture::Create(int x, int y) {
     width=x;
     height=y;
-    dlcsm_gl_delete(bmap);
+    dlcsm_gl_delete(glBmap);
     GLuint * data;
     data = (unsigned int*)new GLuint[((width * height)* 4 * sizeof(unsigned int))];
-    memset(data,((width * height)* 4 * sizeof(unsigned int)),0);
-    glGenTextures(1, &bmap);
-    glBindTexture(GL_TEXTURE_2D, bmap);
+    memset(data,0,((width * height)* 4 * sizeof(unsigned int)));
+    glGenTextures(1, &glBmap);
+    glBindTexture(GL_TEXTURE_2D, glBmap);
     glTexImage2D(GL_TEXTURE_2D, 0, 4, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
     delete [] data;
     if(pLog) pLog->_DebugAdd("CGLTexture::Create() -> created a texture!");
-    return bmap;
+    return glBmap;
 }
 bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
     glDisable(GL_BLEND);
@@ -80,7 +82,7 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
     glLoadIdentity();
     glTranslated(0,0,0);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,bmap);
+    glBindTexture(GL_TEXTURE_2D,glBmap);
     glBegin(GL_QUADS);
     glColor3ub(R,G,B);
     glTexCoord2f(0.0f, 1.0f);
@@ -103,36 +105,28 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
     return true;
 }
 GLuint CGLTexture::Load(const char *file) {
-    bmap=0;
+    glBmap=0;
     strcpy(filename,file);
     string ext=dlcs_filetype(file);
-    if (ext=="png") {
-            pLog->_Add("Loading PNG file [%s]",file);
-            return LoadPNG(file);
-    }
+    if (ext=="png") return LoadPNG(file);
     if (ext=="bmp") return LoadBMP(file);
     if (ext=="tga") return LoadTGA(file);
     if((ext=="jpg")||
-       (ext=="jpeg")) {
-            pLog->_Add("Loading JPG file [%s]",file);
-            return LoadJPG(file);
-    }
+       (ext=="jpeg")) return LoadJPG(file);
     if (ext=="tif") return LoadTIF(file);
     if (ext=="dds") return LoadDDS(file);
     if (ext=="gif") return LoadGIF(file);
     ext.clear();
-    return bmap;
+    return glBmap;
 }
-// TODO:
-GLuint CGLTexture::LoadFromMem(const char *file){
+
+GLuint CGLTexture::LoadFromMem(const char *file){ // TODO
     return 0;
 }
-// TODO:
-GLuint CGLTexture::LoadBMPFromMem(unsigned char* fb, GLuint* idata){
+GLuint CGLTexture::LoadBMPFromMem(unsigned char* fb, GLuint* idata){// TODO
     return 0;
 }
-// TODO:
-GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
+GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){ // TODO
     /*  pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> Start");
     	if(!strlen(filename)) return 0;
     	if(!pGAF) return 0;
@@ -147,7 +141,7 @@ GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
     	CxImage *himage2;
     	GAF_FileBuffer nfbuf1;
     	GAF_FileBuffer nfbuf2;
-        glDEL(bmap);
+        glDEL(glBmap);
         glDEL(mask);
         ax=filename[strlen(filename)-3];
         ay=filename[strlen(filename)-2];
@@ -185,17 +179,17 @@ GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
     		himage->SetXDPI(72);
     		himage->SetYDPI(72);
 
-    	    glGenTextures(1, &bmap);
-    	    glBindTexture(GL_TEXTURE_2D, bmap);
+    	    glGenTextures(1, &glBmap);
+    	    glBindTexture(GL_TEXTURE_2D, glBmap);
 
 
-    		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> %s %d %d size(%d) bmap(%d)",filename,himage->GetWidth(),himage->GetHeight(),himage->GetSize(),bmap);
+    		if(pLog) pLog->_DebugAdd("CGLTexture::Load(pGAF,filename,which) -> %s %d %d size(%d) glBmap(%d)",filename,himage->Gewidth(),himage->Geheight(),himage->GetSize(),glBmap);
 
     		glTexImage2D    ( GL_TEXTURE_2D,
     						0,
     						3,
-    						himage->GetWidth(),
-    						himage->GetHeight(),
+    						himage->Gewidth(),
+    						himage->Geheight(),
     						0,
     						GL_RGB,
     						GL_UNSIGNED_BYTE,
@@ -245,8 +239,8 @@ GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
     			glTexImage2D    (	GL_TEXTURE_2D,
     								0,
     								3,
-    								himage2->GetWidth(),
-    								himage2->GetHeight(),
+    								himage2->Gewidth(),
+    								himage2->Geheight(),
     								0,
     								GL_RGB,
     								GL_UNSIGNED_BYTE,
@@ -282,7 +276,7 @@ GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
     GAF_FileBuffer nfbuf1;
     dlcsm_zero(nfbuf1.fb);
     dlcsm_zero(nfbuf1.Size);
-    dlcsm_gl_delete(bmap);
+    dlcsm_gl_delete(glBmap);
     ax=filename[strlen(filename)-3];
     ay=filename[strlen(filename)-2];
     az=filename[strlen(filename)-1];
@@ -294,9 +288,9 @@ GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
         x=nfbuf1.fb[18]+nfbuf1.fb[19]*256+nfbuf1.fb[20]*512+nfbuf1.fb[21]*1024;
         y=nfbuf1.fb[22]+nfbuf1.fb[23]*256+nfbuf1.fb[24]*512+nfbuf1.fb[25]*1024;
         pLog->_DebugAdd("GAF INFO: nfbuf1.Size= %d nfbuf1.fb  = %d(address)\n",nfbuf1.Size,nfbuf1.fb);
-        pLog->_DebugAdd("IMAGE   : Filename   = %s     OPENGL[%d] WIDTH: %d  HEIGHT: %d \n",filename,bmap,x,y);
-        glGenTextures(1, &bmap);
-        glBindTexture(GL_TEXTURE_2D, bmap);
+        pLog->_DebugAdd("IMAGE   : Filename   = %s     OPENGL[%d] WIDTH: %d  HEIGHT: %d \n",filename,glBmap,x,y);
+        glGenTextures(1, &glBmap);
+        glBindTexture(GL_TEXTURE_2D, glBmap);
         glTexImage2D( GL_TEXTURE_2D, 0, 3, x, y, 0, GL_RGB, GL_UNSIGNED_BYTE, nfbuf1.fb+54);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -318,74 +312,63 @@ GLuint CGLTexture::LoadTextureFromMem(unsigned char *fb){
     return 0;
 }
 GLuint CGLTexture::LoadPNG(const char *file) {
+    glBmap=0;
     strcpy(filename,file);
+    pLog->_Add("Loading PNG file [%s]",filename);
     png_byte header[8];
     FILE *fp = fopen(filename, "rb");
-    if (fp == 0) {
-        perror(filename);
-        return 0;
-    }
+    if (fp == 0) { perror(filename); return 0; }
+
     fread(header, 1, 8, fp);
-    if (png_sig_cmp(header, 0, 8)) {
-        pLog->_Add("error: %s is not a PNG.\n", filename);
-        fclose(fp);
-        return 0;
-    }
+    if (png_sig_cmp(header, 0, 8)) { pLog->_Add("error: %s is not a PNG.\n", filename); fclose(fp); return 0;}
+
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png_ptr) {
-        pLog->_Add("error: png_create_info_struct returned 0");
-        fclose(fp);
-        return 0;
-    }
+    if (!png_ptr) { pLog->_Add("error: png_create_info_struct returned 0"); fclose(fp); return 0; }
+
     png_infop info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr) {
-        pLog->_Add("error: png_create_info_struct returned 0");
-        png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-        fclose(fp);
-        return 0;
-    }
+    if (!info_ptr) { pLog->_Add("error: png_create_info_struct returned 0"); png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL); fclose(fp); return 0;    }
+
     png_infop end_info = png_create_info_struct(png_ptr);
-    if (!end_info) {
-        pLog->_Add("error: png_create_info_struct returned 0");
-        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL);
-        fclose(fp);
-        return 0;
-    }
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        pLog->_Add("error from libpng");
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        fclose(fp);
-        return 0;
-    }
+    if (!end_info) { pLog->_Add("error: png_create_info_struct returned 0"); png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp) NULL); fclose(fp); return 0;    }
+
+    if (setjmp(png_jmpbuf(png_ptr))) { pLog->_Add("error from libpng"); png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);fclose(fp); return 0;}
+
     png_init_io(png_ptr, fp);
     png_set_sig_bytes(png_ptr, 8);
     png_read_info(png_ptr, info_ptr);
     int color_type;
-    png_get_IHDR(png_ptr, info_ptr, &width, &height, &bpp, &color_type, NULL, NULL, NULL);
-    pLog->_Add(" %d %d %d",width,height,bpp);
+
+
+
+    png_get_IHDR(
+        png_ptr,
+        info_ptr,
+        &width,
+        &height,
+        &BPP,
+        &color_type,
+        NULL,
+        NULL,
+        NULL);
+
+    pLog->_Add(" %d %d %d",width,height,BPP);
     png_read_update_info(png_ptr, info_ptr);
     int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
     rowbytes += 3 - ((rowbytes-1) % 4);
+
     png_byte * image_data;
     image_data=malloc(rowbytes * height * sizeof(png_byte)+15);
-    if(image_data == NULL) {
-        pLog->_Add("error: could not allocate memory for PNG image data");
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        fclose(fp);
-        return 0;
-    }
+    if(image_data == NULL) { pLog->_Add("error: could not allocate memory for PNG image data"); png_destroy_read_struct(&png_ptr, &info_ptr, &end_info); fclose(fp); return 0; }
+
     png_bytep * row_pointers = malloc(height * sizeof(png_bytep));
-    if(row_pointers == NULL) {
-        pLog->_Add("error: could not allocate memory for PNG row pointers");
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        dlcsm_free(image_data);
-        fclose(fp);
-        return 0;
-    }
+    if(row_pointers == NULL) { pLog->_Add("error: could not allocate memory for PNG row pointers"); png_destroy_read_struct(&png_ptr, &info_ptr, &end_info); dlcsm_free(image_data); fclose(fp); return 0; }
+
     for(int i = 0; i < height; i++) row_pointers[height - 1 - i] = (png_bytep )image_data + i * rowbytes;
+
     png_read_image(png_ptr, row_pointers);
-    glGenTextures(1, &bmap);
-    glBindTexture(GL_TEXTURE_2D, bmap);
+
+    glGenTextures(1, &glBmap);
+    glBindTexture(GL_TEXTURE_2D, glBmap);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     if(color_type==PNG_COLOR_TYPE_RGB_ALPHA)    format=GL_RGBA;
@@ -395,31 +378,32 @@ GLuint CGLTexture::LoadPNG(const char *file) {
     free(image_data);
     free(row_pointers);
     fclose(fp);
-    return bmap;
+    return glBmap;
 }
 GLuint CGLTexture::LoadBMP(const char *file) {
     strcpy(filename,file);
-    bmap=0;
+    pLog->_Add("Loading BMP file [%s]",filename);
+    glBmap=0;
     SDL_Surface *loadSurface;
     loadSurface = SDL_LoadBMP(filename);
     if(loadSurface) {
-        bpp = loadSurface->format->BytesPerPixel;
-        if (bpp == 4) {
+        BPP = loadSurface->format->BytesPerPixel;
+        if (BPP == 4) {
             if (loadSurface->format->Rmask == 0x000000ff)   format = GL_RGBA;
             else                                            format = GL_BGRA;
         }
         else
-        if (bpp == 3) {
+        if (BPP == 3) {
             if(loadSurface->format->Rmask == 0x000000ff)   format = GL_RGB;
             else                                            format = GL_BGR;
         } else {
             pLog->_Add("Invalid bitmap format");
             SDL_FreeSurface(loadSurface);
-            bmap=0;
+            glBmap=0;
             return false;
         }
-        glGenTextures( 1, &bmap);
-        glBindTexture( GL_TEXTURE_2D, bmap );
+        glGenTextures( 1, &glBmap);
+        glBindTexture( GL_TEXTURE_2D, glBmap );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
         width  = loadSurface->w;
@@ -433,7 +417,7 @@ GLuint CGLTexture::LoadBMP(const char *file) {
                         loadSurface->pixels);
         SDL_FreeSurface(loadSurface);
     }
-    return bmap;
+    return glBmap;
 }
 GLuint CGLTexture::LoadTGA(const char* file){
 /////////////////////////////// TGA Stuff
@@ -456,7 +440,7 @@ GLuint CGLTexture::LoadTGA(const char* file){
     GLuint* data;
 
     pLog->_Add("Loading TGA file [%s] [%d]",file,sizeof(TGAHeader));
-    bmap=0;
+    glBmap=0;
 
     bool bCompressed=0;
     strcpy(filename,file);
@@ -483,15 +467,15 @@ GLuint CGLTexture::LoadTGA(const char* file){
         }
         width    = tga.header[1] * 256 + tga.header[0];
         height   = tga.header[3] * 256 + tga.header[2];
-        bpp	    = tga.header[4];
+        BPP	    = tga.header[4];
         tga.Width		= width;
         tga.Height		= height;
-        tga.Bpp			= bpp;
-        if((width <= 0) || (height <= 0) || ((bpp != 24) && (bpp !=32))) {
+        tga.Bpp			= BPP;
+        if((width <= 0) || (height <= 0) || ((BPP != 24) && (BPP !=32))) {
             if(fp) fclose(fp);
             return false;
         }
-        if(bpp == 24)  format = GL_RGB;
+        if(BPP == 24)  format = GL_RGB;
         else                    format = GL_RGBA;
         tga.bytesPerPixel	= (tga.Bpp / 8);
         tga.imageSize		= (tga.bytesPerPixel * tga.Width * tga.Height);
@@ -526,25 +510,25 @@ GLuint CGLTexture::LoadTGA(const char* file){
         pLog->_Add("Loading TGA file [%s] 5.1",file);
         height = tga.header[3] * 256 + tga.header[2];
         pLog->_Add("Loading TGA file [%s] 5.2",file);
-        bpp	= tga.header[4];
+        BPP	= tga.header[4];
         pLog->_Add("Loading TGA file [%s] 5.3",file);
         tga.Width		= width;
         pLog->_Add("Loading TGA file [%s] 5.4",file);
         tga.Height		= height;
         pLog->_Add("Loading TGA file [%s] 5.5",file);
-        tga.Bpp			= bpp;
+        tga.Bpp			= BPP;
         pLog->_Add("Loading TGA file [%s] 5.6",file);
 
         pLog->_Add("Loading TGA file [%s] 6",file);
 
-        if((width <= 0) || (height <= 0) || ((bpp != 24) && (bpp !=32))){
+        if((width <= 0) || (height <= 0) || ((BPP != 24) && (BPP !=32))){
             if(fp) fclose(fp);
             return false;
         }
 
         pLog->_Add("Loading TGA file [%s] 7",file);
 
-        if(bpp == 24)  format = GL_RGB;
+        if(BPP == 24)  format = GL_RGB;
         else                    format = GL_RGBA;
         tga.bytesPerPixel	= (tga.Bpp / 8);
         tga.imageSize		= (tga.bytesPerPixel * tga.Width * tga.Height);
@@ -622,8 +606,8 @@ GLuint CGLTexture::LoadTGA(const char* file){
     }
 
     pLog->_Add("Loading TGA file [%s] 11",file);
-    glGenTextures( 1, &bmap);
-    glBindTexture(GL_TEXTURE_2D, bmap );
+    glGenTextures( 1, &glBmap);
+    glBindTexture(GL_TEXTURE_2D, glBmap );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
@@ -639,14 +623,13 @@ GLuint CGLTexture::LoadTGA(const char* file){
 
     pLog->_Add("Loading TGA file [%s] 12",file);
     dlcsm_free(data);
-	return bmap;
+	return glBmap;
 }
 GLuint CGLTexture::LoadJPG(const char* file){
-
+    glBmap=0;
+#ifdef DLCSM_WINDOWS
     strcpy(filename,file);
     pLog->_Add("Loading JPG file [%s]",filename);
-
-    bmap=0;
     bool Fast;
     unsigned long sz;
     FILE* fp = fopen(filename, "rb");
@@ -680,8 +663,8 @@ GLuint CGLTexture::LoadJPG(const char* file){
     jpeg_finish_decompress(info.buffered_image);
     fclose(fp);
 
-    glGenTextures(1, &bmap);
-    glBindTexture(GL_TEXTURE_2D, bmap);
+    glGenTextures(1, &glBmap);
+    glBindTexture(GL_TEXTURE_2D, glBmap);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(   GL_TEXTURE_2D,
@@ -695,8 +678,8 @@ GLuint CGLTexture::LoadJPG(const char* file){
                     info.buffered_image);
 
     jpeg_destroy_decompress(info.buffered_image);
-
-    return bmap;
+#endif // DLCSM_WINDOWS
+    return glBmap;
 }
 GLuint CGLTexture::LoadTIF(const char* file) { // TODO
 }
@@ -707,7 +690,7 @@ GLuint CGLTexture::LoadGIF(const char* file) { // TODO
 bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) { return Draw2d(x,y,x2,y2,r,g,b,255,255,255);}
 bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) {   return Draw(x,y,x2,y2,r,g,b,255,255,255); }
 bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
-    if(!bmap) { Load(filename); return false; }
+    if(!glBmap) { Load(filename); return false; }
     int x3=(x2-x);
     int y3=(y2-y);
     x=x/2;
@@ -729,7 +712,7 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
     glLoadIdentity();
 
     glTranslated(x,y,0);
-    glBindTexture(GL_TEXTURE_2D,bmap);
+    glBindTexture(GL_TEXTURE_2D,glBmap);
     glColor3ub(r,g,b);
 
     glBegin(GL_QUADS);
@@ -750,7 +733,7 @@ bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_cha
     return 1;
 }
 bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {
-    if(!bmap) { Load(filename); return 0; }
+    if(!glBmap) { Load(filename); return 0; }
     int x3=(x2-x);
     int y3=(y2-y);
     x=x/2;
@@ -770,7 +753,7 @@ bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_c
     glLoadIdentity();
 
     glTranslated(x,y,0);
-    glBindTexture(GL_TEXTURE_2D,bmap);
+    glBindTexture(GL_TEXTURE_2D,glBmap);
     glColor3ub(r,g,b);
 
     glBegin(GL_QUADS);

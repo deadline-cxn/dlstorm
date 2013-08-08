@@ -264,7 +264,38 @@ C_GFX::~C_GFX() {
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
 bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
     bSDLFailed=false;
-// #ifdef __linux__    // putenv("SDL_VIDEODRIVER=dga"); #endif
+
+
+
+
+/*
+SDL_VIDEODRIVER=x
+
+example:
+#ifdef __linux__
+putenv("SDL_VIDEODRIVER=dga");
+#endif
+x11
+dga     (the XFree86 DGA2)
+nanox   (Linux)
+fbcon   (Linux)
+directfb    (Linux)
+ps2gs   (Playstation 2)
+ggi
+vgl (BSD)
+svgalib (Linux)
+aalib
+directx (Win32)
+windib  (Win32)
+bwindow (BeOS)
+toolbox (MacOS Classic)
+DSp (MacOS Classic)
+Quartz  (Mac OS X)
+CGX (Amiga)
+photon  (QNX)
+epoc    (Epoc)
+dummy
+*/
 
     pDefaultTexture=0;
     pFirstTexture=0;
@@ -288,31 +319,16 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
     dlcsm_make_str(vdriver);
     SDL_VideoDriverName(vdriver,sizeof(vdriver));
     pLog->_Add("Video driver[%s]",vdriver);
-
-#ifndef __linux__
     SDL_Rect   **VideoModes;
-    /* Get available fullscreen/hardware modes */
     VideoModes=SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
-    /* Check is there are any modes available */
     if(VideoModes == (SDL_Rect **)0){
-        // printf("No modes available!\n");
     } else {
-        /* Check if our resolution is restricted */
-        if(VideoModes == (SDL_Rect **)-1){
-            pLog->_Add("All resolutions available");
-        }
-        else{
-          /* Print valid modes */
-          pLog->_Add("Available Modes");
-          for(int i=0;VideoModes[i];++i)
-            pLog->_Add("  %d x %d", VideoModes[i]->w, VideoModes[i]->h);
-        }
+        if(VideoModes == (SDL_Rect **)-1) pLog->_Add("All resolutions available");
+        else { pLog->_Add("Available Modes"); for(int i=0;VideoModes[i];++i) pLog->_Add("  %d x %d", VideoModes[i]->w, VideoModes[i]->h); }
     }
-#endif
-
     VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();     // query SDL for information about our video hardware
+    const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
     if(VideoInfo) {
         pLog->_Add("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
         pLog->_Add("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
@@ -345,23 +361,12 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
         return false;
     }
-    if(VideoInfo->hw_available) {
-        VideoFlags |= SDL_HWSURFACE;
-        pLog->_Add("Hardware surfaces...");
-    } else {
-        VideoFlags |= SDL_SWSURFACE;
-        pLog->_Add("Software surfaces...");
-    }
-    if(VideoInfo->blit_hw) {
-        VideoFlags |= SDL_HWACCEL;
-        pLog->_Add("Hardware acceleration enabled!");
-    }
+    if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces...");}
+    else { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
+    if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); }
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
-
-    bool bHW=0;
     if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags|SDL_HWSURFACE)) {
-        bHW=1;
     } else {
         pLog->_Add("SDL_HWSURFACE SDL_VideoModeOK failure");
         if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
@@ -371,25 +376,14 @@ bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption
             return false;
         }
     }
-    if(bHW==1) {
-        VideoFlags|=SDL_HWACCEL;
-        pLog->_Add("SDL_HWSURFACE HARDWARE ACCELLERATION");
-
-    }
     pScreen = SDL_SetVideoMode(w,h,c,VideoFlags);
-    if(pScreen) {
-    } else {
-        pLog->_Add("Can't set up pScreen! ErroR!");
-        return false;
-    }
+    if(!pScreen) { pLog->_Add("Can't set up pScreen! ErroR!"); return false; }
     VideoInfo = SDL_GetVideoInfo();
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(wincaption);
-
     pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
     if(InitGL()) {
         pLog->_Add("OpenGL initialized");
-
     } else {
         pLog->_Add("Can't initialize OpenGL");
         return false;
@@ -524,15 +518,14 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
 
             } else {
                 if(!dlcs_isdir(epdf->d_name)) {
-                    // pLog->_Add("ATTEMPTING TO LOAD base/%s",epdf->d_name);
                     pTexture=NewTexture();
                     pTexture->Load(va("base/%s",epdf->d_name));
-                    if(!pTexture->bmap) {
+                    if(!pTexture->glBmap) {
                         pLog->_Add("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)",epdf->d_name);
                         DeleteTexture(pTexture);
                     }
                     else {
-                        pLog->_Add("Texture %s (OPENGL[%d])",pTexture->filename,pTexture->bmap);
+                        pLog->_Add("Texture %s (OPENGL[%d])",pTexture->filename,pTexture->glBmap);
                     }
                 }
             }
@@ -580,25 +573,25 @@ int C_GFX::GetTotalTextures(void) {
 CGLTexture* C_GFX::GetRandomTexture(void) {
     int n=GetTotalTextures();
     int x=0;
-    int r=(rand()%n)+1;
-    CGLTexture* pTexture;
-    pTexture=pFirstTexture;
-    while(pTexture) {
-        x++;
-        if(x>n) return pTexture;
-        if(x==r) return pTexture;
-        pTexture=pTexture->pNext;
+    if(n) {
+        int r=(rand()%n)+1;
+        CGLTexture* pTexture;
+        pTexture=pFirstTexture;
+        while(pTexture) {
+            x++;
+            if(x>n) return pTexture;
+            if(x==r) return pTexture;
+            pTexture=pTexture->pNext;
+        }
     }
     return 0;
 }
 bool C_GFX::DestroyTextures(void) {
-    // pLog->_Add("Destroying textures");
     CGLTexture* pTexture;
     CGLTexture* pDELTexture;
     pTexture=pFirstTexture;
     while(pTexture) {
         pDELTexture=pTexture;
-        // pLog->_Add("Destroying texture :%s",pTexture->tfilename);
         pTexture=pTexture->pNext;
         dlcsm_delete(pDELTexture);
     }
@@ -607,25 +600,24 @@ bool C_GFX::DestroyTextures(void) {
 void C_GFX::DeleteTexture(CGLTexture* pWhichTexture) {
     CGLTexture* pTexture;
     CGLTexture* pLastTexture;
+    if(pWhichTexture==pFirstTexture) {
+        if(pFirstTexture->pNext)
+            pFirstTexture=pFirstTexture->pNext;
+        else
+            dlcsm_delete(pFirstTexture);
+        pWhichTexture=0;
+        return;
+    }
     pLastTexture=0;
     pTexture=pFirstTexture;
     while(pTexture) {
         if(pTexture==pWhichTexture) {
-            if(pLastTexture) {
-                if(pTexture->pNext)
-                    pLastTexture->pNext=pTexture->pNext;
-                dlcsm_delete(pTexture);
+                if(pLastTexture)
+                    if(pTexture->pNext)
+                        pLastTexture->pNext=pTexture->pNext;
+                dlcsm_delete(pWhichTexture);
                 return;
             }
-            else {
-                if(pTexture==pFirstTexture);
-                dlcsm_delete(pFirstTexture);
-                dlcsm_delete(pTexture);
-
-                return;
-            }
-
-        }
         pLastTexture=pTexture;
         pTexture=pTexture->pNext;
     }
@@ -927,7 +919,7 @@ void C_GFX::DrawSun(void) {
     glTranslatef(0.0f,ypos,zpos);
     CGLTexture *pTexture=0;
     pTexture=GetTexture("base/sun.png");
-    if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+    if(pTexture) glBindTexture(GL_TEXTURE_2D, pTexture->glBmap);
     glDisable(GL_BLEND);
     DrawSphere(3,160.0f,1.0f,1.0f,1.0f);
 }
@@ -1046,7 +1038,7 @@ void C_GFX::DrawSkyBox(void) {
 
 
     // Render the front quad
-    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.front.png")->bmap);
+    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.front.png")->glBmap);
     glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f(  0.5f, -0.5f, -0.5f );
         glTexCoord2f(1, 0); glVertex3f( -0.5f, -0.5f, -0.5f );
@@ -1056,7 +1048,7 @@ void C_GFX::DrawSkyBox(void) {
 
 
     // Render the back quad
-    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.back.png")->bmap);
+    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.back.png")->glBmap);
     glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f( -0.5f, -0.5f,  0.5f );
         glTexCoord2f(1, 0); glVertex3f(  0.5f, -0.5f,  0.5f );
@@ -1065,7 +1057,7 @@ void C_GFX::DrawSkyBox(void) {
     glEnd();
 
     // Render the left quad
-    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.left.png")->bmap);
+    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.left.png")->glBmap);
     glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f(  0.5f, -0.5f,  0.5f );
         glTexCoord2f(1, 0); glVertex3f(  0.5f, -0.5f, -0.5f );
@@ -1074,7 +1066,7 @@ void C_GFX::DrawSkyBox(void) {
     glEnd();
 
     // Render the right quad
-    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.right.png")->bmap);
+    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.right.png")->glBmap);
     glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f( -0.5f, -0.5f, -0.5f );
         glTexCoord2f(1, 0); glVertex3f( -0.5f, -0.5f,  0.5f );
@@ -1083,7 +1075,7 @@ void C_GFX::DrawSkyBox(void) {
     glEnd();
 
     // Render the top quad
-    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.top.png")->bmap);
+    glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.top.png")->glBmap);
     glBegin(GL_QUADS);
         glTexCoord2f(0, 1); glVertex3f( -0.5f,  0.5f, -0.5f );
         glTexCoord2f(0, 0); glVertex3f( -0.5f,  0.5f,  0.5f );
@@ -1093,7 +1085,7 @@ void C_GFX::DrawSkyBox(void) {
 
     // Render the bottom quad
     if(GetTexture("base/sb1.bottom.png")) {
-        glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.bottom.png")->bmap);
+        glBindTexture(GL_TEXTURE_2D, GetTexture("base/sb1.bottom.png")->glBmap);
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0); glVertex3f( -0.5f, -0.5f, -0.5f );
         glTexCoord2f(0, 1); glVertex3f( -0.5f, -0.5f,  0.5f );
@@ -1311,8 +1303,8 @@ void C_GFX::DrawEntities(void) {
     pNTT=pFirstNTT;
     while(pNTT) {
         if(pNTT->pTexture)
-            if(pNTT->pTexture->bmap)
-                glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->bmap);
+            if(pNTT->pTexture->glBmap)
+                glBindTexture(GL_TEXTURE_2D, pNTT->pTexture->glBmap);
         pNTT->Draw(bEditEntities);
         pNTT=pNTT->pNext;
     }

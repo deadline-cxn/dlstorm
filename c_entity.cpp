@@ -197,8 +197,8 @@ void C_Entity::Draw(bool bSelecting) {
         pModel->Draw(pTexture);
     } else {
         if(pTexture) {
-            if(pTexture->bmap) {
-                glBindTexture(GL_TEXTURE_2D, pTexture->bmap);
+            if(pTexture->glBmap) {
+                glBindTexture(GL_TEXTURE_2D, pTexture->glBmap);
             }
             else {
                 glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);

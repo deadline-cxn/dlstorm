@@ -197,7 +197,7 @@ void C_GCTRL::attach_default_children(void) {
     /*  for(i=0;i<MAX_BASE_GFX;i++){
             if(pGFX->BaseTexture){
                 if(pGFX->BaseTexture[i].texture){
-                    if(pGFX->BaseTexture[i].texture->bmap){
+                    if(pGFX->BaseTexture[i].texture->glBmap){
                         put_control_data("what",(char* )va("%d",i));
                     }
                 }
@@ -1015,20 +1015,10 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
 
 
             if(props & FM_GP_USEBACKGROUND) pGFX->DrawBar(x,y,w,h,LONGRGB(0,0,0),LONGRGB(0,0,50));
-            else                            pGFX->DrawTexture(x,y,w,h,
-                        media
-                        ,255,255,255 );
-
-
-
-            if(listoffset > (control_data_total - listdepth))
-                listoffset = control_data_total - listdepth;
-
-
-
+            else                            pGFX->DrawTexture(x,y,w,h,media,255,255,255 );
+            if(listoffset > (control_data_total - listdepth)) listoffset = control_data_total - listdepth;
             if(listoffset < 0)   listoffset = 0;
             for(i=0; i<listdepth; i++) {
-
                 // pLog->_Add("C_GCTRL::draw FM_GC_CONSOLE %d",listoffset); pLog->_Add("C_GCTRL::draw FM_GC_CONSOLE %s",temp);
                 strcpy(temp,(char*)pCons->buf[i+listoffset].c_str());
 
@@ -1280,19 +1270,13 @@ void C_GCTRL::draw(bool bMouseWheelUp, bool bMouseWheelDown) {
                 }
                 if(selected) {
                     if(imedia_selected) {
-                        pGFX->DrawTexture(x,y,w,h,
-                                          // imedia_selected
-                                          tctrl2->property["media_selected"].c_str()
-                                          ,255,255,255 );
+                        pGFX->DrawTexture(x,y,w,h,tctrl2->property["media_selected"].c_str(),255,255,255 );
                     } else {
                         pGFX->DrawBar(x,y,w,h,RGB(r1,g1,b1),RGB(r1,g1,b1) );
                     }
                 } else {
                     if(imedia_unselected) {
-                        pGFX->DrawTexture(x,y,w,h,
-                                          // imedia_unselected
-                                          tctrl2->property["media_unselected"].c_str()
-                                          ,255,255,255 );
+                        pGFX->DrawTexture(x,y,w,h,tctrl2->property["media_unselected"].c_str(),255,255,255 );
                     } else {
                         pGFX->DrawBar(x,y,w,h,RGB(r2,g2,b2),RGB(r2,g2,b2) );
                     }
@@ -1901,9 +1885,9 @@ void C_GUI::init(void) {
     //pMouse=new C_Mouse(pLog);// (pGAF,pLog);
     initFonts();
     initButtons();
-    loadButtons("");
-//     loadFonts();
-//    MOUSEMODE=MP_MENU;
+//  loadButtons("");
+//  loadFonts();
+//  MOUSEMODE=MP_MENU;
     memset(szPromptMsg,0,_MAX_PATH);
     strcpy(szCommand,"nop");
     bShowFPS=false;
@@ -2894,7 +2878,6 @@ void C_GUI::draw_ctrls(void) {
                                 tstump->rect.top,
                                 tstump->rect.left+tstump->rect.right,
                                 tstump->rect.top+tstump->rect.bottom,
-                                //atoi(
                                 tstump->media,
                                 255,255,255 );
         } else {
@@ -3013,36 +2996,33 @@ void C_GUI::drawB9utton(int x,int y, int w, int h) {
     col=0;
     if(!B9utton) {
         B9utton=new CGLTextureList[9];
-        if(!B9utton)		 return;
+        if(!B9utton) return;
     }
     for(i=0; i<9; i++) {
-        if(!B9utton[i].texture) {
-            B9utton[i].texture=new CGLTexture(pLog);
-            B9utton[i].texture->pGAF=pGAF;
-        }
-        if(!B9utton[i].texture->bmap) {
-            B9utton[i].texture->Load(va("buttons/b9_%03d.bmp",i));
-            return;
-        }
-        cx=x + (col*8);
-        cy=y + (row*8);
-        B9utton[i].texture->Draw(cx,cy,cx+8,cy+8,255,255,255);
-        col++;
-        if(col>2) {
-            col=0;
-            row++;
+        if(!B9utton[i].texture)
+            B9utton[i].texture=new CGLTexture(pLog,va("buttons/b9_%03d.bmp",i));
+        else {
+            if(!B9utton[i].texture->glBmap) B9utton[i].texture->Load(va("buttons/b9_%03d.bmp",i));
+            else {
+                cx=x + (col*8);
+                cy=y + (row*8);
+                B9utton[i].texture->Draw(cx,cy,cx+8,cy+8,255,255,255);
+                col++;
+                if(col>2) {
+                    col=0;
+                    row++;
+                }
+            }
         }
     }
 }
 void C_GUI::drawGUIButton(int x, int y, int which, int size) {
-    // draw a button at x,y in updown state
     if(!ButtonTexture) return;
     if(!ButtonTexture[which].texture) {
-        ButtonTexture[which].texture=new CGLTexture(pLog);
-        ButtonTexture[which].texture->pGAF=pGAF;
+        ButtonTexture[which].texture=new CGLTexture(pLog,va("buttons/%03d.bmp",which));
         return;
     }
-    if(!ButtonTexture[which].texture->bmap) {
+    if(!ButtonTexture[which].texture->glBmap) {
         ButtonTexture[which].texture->Load(va("buttons/%03d.bmp",which));
         return;
     }
@@ -3055,12 +3035,12 @@ void C_GUI::drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,u_char r, u
     // draw a GUI resource at x,y
     if(!ButtonTexture) return;
     if(!ButtonTexture[which].texture) {
-        ButtonTexture[which].texture=new CGLTexture(pLog);
+        ButtonTexture[which].texture=new CGLTexture(pLog,va("buttons/%03d.bmp"));
         ButtonTexture[which].texture->pGAF=pGAF;
         return;
     }
-    if(!ButtonTexture[which].texture->bmap) {
-        ButtonTexture[which].texture->Load(va("buttons/%03d.bmp",which));
+    if(!ButtonTexture[which].texture->glBmap) {
+        ButtonTexture[which].texture->Load(va("buttons/%03d.bmp"));
         return;
     }
     ButtonTexture[which].texture->Draw(iX,iY,iX2,iY2,r,g,b);
@@ -3088,11 +3068,10 @@ void C_GUI::drawButton(int which, int updown, int x, int y) {
 void C_GUI::drawButton(int which, int updown, int x, int y,int w, int h) {
     if(!ButtonTexture) return;
     if(!ButtonTexture[which].texture) {
-        ButtonTexture[which].texture=new CGLTexture(pLog);
-        ButtonTexture[which].texture->pGAF=pGAF;
+        ButtonTexture[which].texture=new CGLTexture(pLog,va("buttons/%03d.bmp",which));
         return;
     }
-    if(!ButtonTexture[which].texture->bmap) {
+    if(!ButtonTexture[which].texture->glBmap) {
         ButtonTexture[which].texture->Load(va("buttons/%03d.bmp",which));
         return;
     }
@@ -3181,8 +3160,8 @@ bool C_GUI::initButtons() {
     return true;
 }
 bool C_GUI::loadButtons(char* szFilename) {
-    destroyButtons();
-    if(!initButtons()) return false;
+    // for(i=0; i<9; i++) B9utton[i].texture=0;
+    // if(!initButtons()) return false;
     return true;
 }
 bool C_GUI::destroyButtons() {
@@ -3205,6 +3184,7 @@ bool C_GUI::initFonts() {
 bool C_GUI::loadFonts(void) {
     pLog->_DebugAdd("Begin Fonts load...");
     CGLFont* pFont;
+    CGLFont* pOldFont=0;
     int x=1;
     DIR* dpdf;
     struct dirent* epdf;
@@ -3214,16 +3194,14 @@ bool C_GUI::loadFonts(void) {
             if( (dlcs_strcasecmp(epdf->d_name,".")) ||
                     (dlcs_strcasecmp(epdf->d_name,"..")) ) {
             } else {
-                if(dlcs_isdir(epdf->d_name)) {
-
-                } else {
-                    // pLog->AddEntry("Found font texture: font/%s\n",epdf->d_name);
+                if(!dlcs_isdir(epdf->d_name)) {
                     pFont=pFirstFont;
                     if(pFont) {
                         while(pFont->pNext) {
                             pFont=pFont->pNext;
                         }
                         pFont->pNext=new CGLFont(pGAF, pLog);
+                        pOldFont=pFont;
                         pFont=pFont->pNext;
                     } else {
                         pFirstFont=new CGLFont(pGAF, pLog);
@@ -3232,11 +3210,13 @@ bool C_GUI::loadFonts(void) {
                     pFont->Load(va("fonts/%s",epdf->d_name));
                     pFont->iWhich=x;
                     x++;
-                    if(!pFont->pFontTex->bmap) {
+                    if(!pFont->pFontTex) {
                         pLog->AddEntry("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n",epdf->d_name);
-                        dlcsm_delete(pFont);
+                        if(pFont==pFirstFont) { dlcsm_delete(pFirstFont); pFont=0; }
+                        else dlcsm_delete(pFirstFont);
+                        if(pOldFont) pOldFont->pNext=0;
                     } else {
-                        pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->filename,pFont->pFontTex->bmap);
+                        pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->filename,pFont->pFontTex->glBmap);
                     }
                 }
             }

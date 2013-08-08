@@ -90,7 +90,7 @@ GLvoid C_MouseCursor::load(char *file) {
         Cursor=new CGLTexture(pLog);
         Cursor->pGAF=pGAF;
         if(!Cursor) return;
-        Cursor->bmap=0;
+        Cursor->glBmap=0;
         Cursor->mask=0;
         Cursor->usemask=1;
         Cursor->LoadBMP(pGAF,va("%s.bmp",file),0);
@@ -111,8 +111,8 @@ GLvoid C_MouseCursor::load(char *file) {
 }
 GLvoid C_MouseCursor::draw(void) {
     if(!pTexture) return;
-    if(!pTexture->bmap) load(filename);
-    if(!pTexture->bmap) return;
+    if(!pTexture->glBmap) load(filename);
+    if(!pTexture->glBmap) return;
     x=x/2;
     y=(-y/2)+(SDL_GetVideoSurface()->h/2);
     glLoadIdentity();
@@ -133,7 +133,7 @@ GLvoid C_MouseCursor::draw(void) {
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glDisable(GL_COLOR_MATERIAL);
-    glBindTexture(GL_TEXTURE_2D,pTexture->bmap);
+    glBindTexture(GL_TEXTURE_2D,pTexture->glBmap);
     glColor3f(1.0f,1.0f,1.0f);
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 0.0f);

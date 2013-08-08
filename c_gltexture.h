@@ -20,8 +20,10 @@
 #include "c_gaf.h"
 #include "c_log.h"
 #include "png.h"
-#include "jpeglib.h"
 #include "glerrors.h"
+#ifdef DLCSM_WINDOWS
+#include "jpeglib.h"
+#endif
 /////////////////////////////// CGLTexture class
 class CGLTexture {
 public:
@@ -36,16 +38,15 @@ public:
 
     u_long      width;
     u_long      height;
-    int         bpp;
     GLenum      format;
-    GLuint      bmap;
+    int         BPP;
+    GLuint      glBmap;
 
     CGLTexture* pNext;
 
     CLog*       pLog;
     bool        bMadeLog;
     CGAF*       pGAF;
-
 
     void    Initialize(void);
     GLuint  Create(int x,int y);

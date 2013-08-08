@@ -469,13 +469,13 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define dlcsm_to_dword(a,b,c,d) ((a)+(b<<8)+(c<<16)+(d<<24))
 #define dlcsm_to_word(a,b)      ((a)+(b<<8))
 // MEMORY MACROS
-#define dlcsm_release(x)        if(x) { x->Release(); x=NULL; }
-#define dlcsm_delete(x)         if(x) { delete x; x=NULL;}
-#define dlcsm_delete_array(x)   if(x) { delete [] x; x=NULL; }
+#define dlcsm_release(x)        if(x) x->Release(); x=0;
+#define dlcsm_delete(x)         if(x) delete x; x=0;
+#define dlcsm_delete_array(x)   if(x) delete [] x; x=0;
 #define dlcsm_malloc(x,y)       (x*) malloc(sizeof(x) * y);
-#define dlcsm_free(x)           if(x) { free(x); x=NULL; }
+#define dlcsm_free(x)           if(x) free(x); x=0;
 // GFX MACROS
-#define dlcsm_gl_delete(x)      if(glIsTexture(x)) { glDeleteTextures(1,&x); x=0; }
+#define dlcsm_gl_delete(x)      if(glIsTexture(x)) glDeleteTextures(1,&x); x=0;
 #define LONGRGB(r,g,b)          ((long)(((u_char)(r)|((u_short)((u_char)(g))<<8))|(((long)(u_char)(b))<<16)))
 // MATH MACROS
 #define dlcsm_pi                3.14159265359f
@@ -493,7 +493,7 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define dlcsm_make_filename(x)  char x[FILENAME_SIZE]; memset(x,0,FILENAME_SIZE);
 #define dlcsm_make_str(x)       char x[TEXTNAME_SIZE]; memset(x,0,TEXTNAME_SIZE);
 #define dlcsm_make_lstr(x,y)    char x[y]; memset(x,0,y);
-#define dlcsm_zero(x)           memset(x,0,sizeof(x));
+// #define dlcsm_zero(x)           memset(x,0,sizeof(x));
 ////////////////////////////////////////////////////////////////////////////////////////
 // Do a log if defined
 #ifdef _DL_INCLUDE_LOG

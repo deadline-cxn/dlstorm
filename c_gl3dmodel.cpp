@@ -271,19 +271,19 @@ bool CGLModel::Draw(CGLTexture* pTexture) {
         bMatFound=false;
         pMat=GetMaterial(pMesh->iMaterialIndex);
         if(pGFX->GetTexture(pMat->DiffuseTexture)) {
-           if(pGFX->GetTexture(pMat->DiffuseTexture)->bmap) {
-                glBindTexture(GL_TEXTURE_2D,pGFX->GetTexture(pMat->DiffuseTexture)->bmap);
+           if(pGFX->GetTexture(pMat->DiffuseTexture)->glBmap) {
+                glBindTexture(GL_TEXTURE_2D,pGFX->GetTexture(pMat->DiffuseTexture)->glBmap);
                 bMatFound=true;
            }
         }
         if(pTexture) {
-            if(pTexture->bmap) {
-                glBindTexture(GL_TEXTURE_2D,pTexture->bmap);
+            if(pTexture->glBmap) {
+                glBindTexture(GL_TEXTURE_2D,pTexture->glBmap);
                 bMatFound=true;
             }
         }
         if(!bMatFound) {
-            glBindTexture(GL_TEXTURE_2D,pGFX->pDefaultTexture->bmap);
+            glBindTexture(GL_TEXTURE_2D,pGFX->pDefaultTexture->glBmap);
         }
 
         glEnableClientState(GL_VERTEX_ARRAY);

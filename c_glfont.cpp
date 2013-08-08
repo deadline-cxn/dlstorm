@@ -99,13 +99,12 @@ GLuint CGLFont::Load(const char *file) { // Build Our Font Display List
     float   cx,cy;
     int     loop;
     strcpy(szFile,file);
-    dlcsm_delete(pFontTex);
-    pFontTex=new CGLTexture(pLog);
-    pFontTex->pGAF=pGAF;
+    // dlcsm_delete(pFontTex);
+    pFontTex=new CGLTexture(pLog,szFile);
+    if(!pFontTex->glBmap) dlcsm_delete(pFontTex);
     if(!pFontTex) return 0;
-    pFontTex->Load(va("%s",szFile));
     pFontList=glGenLists(256);                          // Creating 256 Display Lists
-    glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);         // Select Our Font Texture
+    glBindTexture(GL_TEXTURE_2D, pFontTex->glBmap);         // Select Our Font Texture
     for(loop=0; loop<256; loop++) {                      // Loop Through All 256 Lists
         cx=float(loop%16)/16.0f;                        // X Position Of Current Character
         cy=float(loop/16)/16.0f;                        // Y Position Of Current Character
@@ -123,19 +122,13 @@ GLuint CGLFont::Load(const char *file) { // Build Our Font Display List
         glTranslated(16,0,0);                       // Move To The Right Of The Character
         glEndList();                                    // Done Building The Display List
     }                                                   // Loop Until All 256 Are Built
-    return pFontTex->bmap;
+    return pFontTex->glBmap;
 }
 GLvoid CGLFont::Kill() {
     if(pFontList)    {
         glDeleteLists(pFontList,256);
         pFontList=0;
     }
-    /*
-    if(pFontMaskList)    {
-        glDeleteLists(pFontMaskList,256);
-        pFontMaskList=0;
-    }
-    */
     dlcsm_delete(pFontTex);
 }
 GLvoid CGLFont::SinPrint(GLint x, GLint y, const char *string,int set, u_char r, u_char g, u_char b) {
@@ -413,7 +406,7 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
     glColor3ub(r,g,b);
     glBlendFunc(GL_ONE, GL_ONE);
     glEnable(GL_BLEND);
-    glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);         // Select Our Font Texture
+    glBindTexture(GL_TEXTURE_2D, pFontTex->glBmap);         // Select Our Font Texture
     glEnable(GL_TEXTURE_2D);
     glLoadIdentity();
     glTranslated(x,y,0);
@@ -429,7 +422,7 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
 }
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char r, u_char g, u_char b) {
     if(!pFontTex) return;
-    if(!pFontTex->bmap) {
+    if(!pFontTex->glBmap) {
         pFontTex->Load(va("%s.png",szFile));
     }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
@@ -444,7 +437,7 @@ GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char 
         glColor3ub(r,g,b);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        glBindTexture(GL_TEXTURE_2D, pFontTex->bmap);       // Select Our Font Texture
+        glBindTexture(GL_TEXTURE_2D, pFontTex->glBmap);       // Select Our Font Texture
         glEnable(GL_TEXTURE_2D);
         glLoadIdentity();
         glTranslated(x,y,0);
