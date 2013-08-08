@@ -44,6 +44,25 @@ CGLTexture::CGLTexture(CLog *pInLog, const char *file) {
     LoadGL(file);
 }
 CGLTexture::~CGLTexture() { if(bMadeLog) dlcsm_delete(pLog); if(glIsTexture(glBmap)) glDeleteTextures(1,&glBmap); glBmap=0;}
+
+/*
+Vector Vector::operator+(Vector other){
+	Vector v(other.x + x,other.y+y,other.z+z);
+	return v;
+}
+Vector Vector::operator-(Vector other){
+	Vector v(-other.x+x,-other.y+y,-other.z+z);
+	return v;
+}
+Vector Vector::operator/(int d){
+	Vector v(x/d,-y/d,z/d);
+	return v;
+}
+bool Vector::operator==(Vector other){
+	return ((other.x==x) && (other.y==y) && (other.z==z));
+}
+*/
+
 void CGLTexture::Initialize() {
     bMadeLog=true;
     pLog=0;

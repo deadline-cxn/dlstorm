@@ -19,7 +19,6 @@
 #include "dlstorm.h"
 #include "c_gaf.h"
 #include "c_log.h"
-// #ifdef DLCSM_WINDOWS#include "jpeglib.h" #endif
 /////////////////////////////// CGLTexture class
 class CGLTexture {
 public:
@@ -28,6 +27,11 @@ public:
     CGLTexture(const char* file);
     CGLTexture(CLog* pLog,const char* file);
     ~CGLTexture();
+
+    CGLTexture operator+(CGLTexture);
+	CGLTexture operator-(CGLTexture);
+	CGLTexture operator/(int);
+	CGLTexture operator==(CGLTexture);
 
     string      name;
     string      filename;
