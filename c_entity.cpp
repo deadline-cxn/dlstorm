@@ -100,7 +100,9 @@ void C_Entity::DrawLight(void) {
 
 }
 void C_Entity::Draw(bool bSelecting) {
+
     glEnable(GL_TEXTURE_2D);
+
     if(!pGFX) return;
     switch(type) {
         case ENTITY_INVISIBLE:
@@ -186,11 +188,12 @@ void C_Entity::Draw(bool bSelecting) {
         if(pTex) if(pTex->glBmap) bFoundTex=true;
     }
 
-    if(pModel) pModel->Draw(0);
-    else {
+//    if(pModel) pModel->Draw(0);
+//
+ //   else {
         if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D, pTex->glBmap);
         pGFX->DrawCube();
-    }
+ //   }
     glPopMatrix();
 }
 void C_Entity::Save() {
@@ -271,8 +274,7 @@ void C_Entity::on_target(string args,C_Entity *entity) {
 }
 void C_Entity::on_attack(string args,C_Entity *entity) {
     if(entity==0) return;
-    /*
-    int attack_dmg=atoi(args);
+/*  int attack_dmg=atoi(args);
     if(life_points>0) {
         life_points-=attack_dmg;
         if(life_points<0) life_points=0;

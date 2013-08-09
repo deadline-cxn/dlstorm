@@ -8,6 +8,12 @@
  ***************************************************************/
 #ifndef DLCS_DEADLINE_CODE_STORM_LIB
 #define DLCS_DEADLINE_CODE_STORM_LIB
+#ifdef _DEBUG_DLCS
+#define _DEBUG_DLCS_LOG 1
+#define _DEBUG_DLCS_GFX 1
+#define _DEBUG_DLCS_GUI 1
+#define _DEBUG_DLCS_SND 1
+#endif
 /**********************************************
     C Preprocessor Directives for various OS
 
@@ -466,7 +472,7 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define vecstr                  vector <string>
 #define vecint                  vector <int>
 #define dlcsm_erase_vector(x,y) for(vector<x>::iterator it=y.begin();it!=y.end();){dlcsm_delete(*it);it=y.erase(it);pLog->_Add("Deleting vector [%d]",y.size()); }
-#define vec(x)                  vector<x>
+
 // MISC MACROS
 #define GetRValue(rgb)          ((BYTE)(rgb))
 #define GetGValue(rgb)          ((BYTE)(((WORD)(rgb)) >> 8))
@@ -479,7 +485,7 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define dlcsm_to_word(a,b)      ((a)+(b<<8))
 // MEMORY MACROS
 #define dlcsm_release(x)        if(x) x->Release(); x=0;
-#define dlcsm_delete(x)         if(x) delete x; x=0;
+#define dlcsm_delete(x)         if(x) { delete x; x=0; if(pLog)pLog->_DebugAdd("DELETED X");}
 #define dlcsm_delete_array(x)   if(x) delete [] x; x=0;
 #define dlcsm_malloc(x,y)       (x*) malloc(sizeof(x) * y);
 #define dlcsm_free(x)           if(x) free(x); x=0;
@@ -521,7 +527,7 @@ extern "C" {
 vecstr  dlcs_explode(const string &delimiter, const string &explodeme);
 vecstr  dlcs_dir_to_vector(char *szDir, char *szWildCard);
 bool    dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard);
-void    dlcs_md5_digest(char *str, char *text); // md5 digest of the text
+string  dlcs_md5_digest(string str);// , char *text); // md5 digest of the text
 char*   dlcs_encrypt(char *text);
 char*   dlcs_decrypt(char *text);
 bool    dlcs_istrue(char *text);

@@ -110,6 +110,7 @@ public:
     CGAF*       pGAF;
 
     CGLTexture*     pDefaultTexture; // default texture storage
+
     vector<CGLTexture*> textures;
     vector<CGLModel*>   models;
     vector<C_Entity*>   entities;

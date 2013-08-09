@@ -223,8 +223,8 @@ char* dlcs_strreplaceall(char* str, const char* what, const char* to) {
     return str;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void dlcs_md5_digest(char *str, char *text) { // return a md5 digest of text
-    strcpy(str,md5(text).c_str());
+string dlcs_md5_digest(string str) { // return a md5 digest of text
+    return md5(str);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 char *dlcs_encrypt(char *text) {

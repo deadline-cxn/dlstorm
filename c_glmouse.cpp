@@ -67,8 +67,7 @@ C_MouseCursor::C_MouseCursor(string f) {
 C_MouseCursor::~C_MouseCursor() {
     kill();
     pLog->_DebugAdd("Mouse cursor destroyed");
-    if(bCreatedLog)
-        dlcsm_delete(pLog);
+    if(bCreatedLog) dlcsm_delete(pLog);
 }
 GLvoid C_MouseCursor::kill() {
     dlcsm_delete(pTexture);

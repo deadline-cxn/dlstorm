@@ -20,12 +20,14 @@ CLog::CLog() {
     memset(logfile,0,_MAX_PATH);
     strcpy(logfile,"log.log");
     Initialize();
+    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::CLog(char *szFilename) {
     Initialize();
     SetName(szFilename);
     Restart();
     LineFeedsOn();
+    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::CLog(char *szFilename, bool bQ) {
     Initialize();
@@ -33,11 +35,15 @@ CLog::CLog(char *szFilename, bool bQ) {
     bQuiet=bQ;
     Restart();
     LineFeedsOn();
+    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::~CLog() { }
 void CLog::Initialize(void) {
-    //if( getcwd( logfile, _MAX_PATH ) != NULL )
-    //    strcpy(logdir,getcwd( "", _MAX_PATH ));
+#ifdef _DEBUG_DLCS_LOG
+    bDebug=true;
+#else
+    bDebug=false;
+#endif
     strcpy(logfile,"[CLog].log");
     strcpy(szBegin,"(");
     strcpy(szEnd,"):");
@@ -48,8 +54,6 @@ void CLog::Initialize(void) {
 }
 void CLog::SetName(char *szFilename) {
     strcpy(logfile,szFilename);
-    //if( getcwd( logfile, _MAX_PATH ) != NULL) strcpy(logdir,getcwd("",_MAX_PATH));
-    //strcpy(logfile,szFilename);
 }
 void CLog::AddEntry(char *fmt, ...) {
     if(!bActive) return;

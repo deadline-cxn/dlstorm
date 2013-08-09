@@ -72,7 +72,7 @@ bool CGLModel::Load(string filename) {
     CGLMaterial* pMat;
     CGLMesh*     pMesh;
     name=filename;
-    if(!name.length()) name = "EMPTY";
+    if(name.empty()) name = "EMPTY";
     const aiScene *scene = aiImportFile(filename.c_str(),aiProcessPreset_TargetRealtime_MaxQuality); // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
     if(!scene) {
         pLog->_Add("Model load error %s",filename.c_str());

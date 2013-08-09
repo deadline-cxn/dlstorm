@@ -168,6 +168,9 @@ C_GFX::~C_GFX() {
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
 bool C_GFX::InitializeGFX( int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
     bEditEntities=false;
+    entities.clear();
+    models.clear();
+    textures.clear();
     pLog=pUSELOG;
     pGAF=pUSEGAF;
     pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
