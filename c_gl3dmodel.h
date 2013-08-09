@@ -30,7 +30,6 @@ class CGLMaterial {
 public:
     CGLMaterial();
     ~CGLMaterial();
-    CGLMaterial* pNext;
     string  name;
     int     iMaterialIndex;
     string DiffuseTexture;
@@ -46,7 +45,6 @@ class CGLMesh {
 public:
     CGLMesh();
     ~CGLMesh();
-    CGLMesh* pNext;
     string  name;
     int     iMeshIndex;
     int     iMaterialIndex;
@@ -72,15 +70,15 @@ public:
     void                    Initialize(void);
     bool                    Load(string filename);
     bool                    Draw(CGLTexture* pTexture);
+    CGLMaterial*            GetMaterial(int x);
     CGLMaterial*            GetMaterial(string diffuse_tex);
+    CGLMesh*                GetMesh(int x);
+
+
     bool                    bMadeLog;
     CLog*                   pLog;
-    CGLModel*               pNext;
-    CGLModel*               pPrev;
     CGAF*                   pGAF;
     C_GFX*                  pGFX;
 };
 
 #endif // _DLCS_CGLMODEL
-    //  CGLMesh*                GetMesh(int x);
-    //  CGLMaterial*            GetMaterial(int x);

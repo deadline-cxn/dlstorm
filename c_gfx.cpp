@@ -157,7 +157,7 @@ void C_Camera::mouseMovement(int x, int y) {
     ly=y;
 }
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
-C_GFX::C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF) {
+C_GFX::C_GFX(int w, int h, int c, bool FullScreen, string wincaption, CLog *pUSELOG, CGAF *pUSEGAF) {
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
 }
 C_GFX::~C_GFX() {
@@ -166,7 +166,8 @@ C_GFX::~C_GFX() {
     pLog->_Add("SDL shut down...");
 }
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
-bool C_GFX::InitializeGFX( int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
+bool C_GFX::InitializeGFX( int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
+    bEditEntities=false;
     pLog=pUSELOG;
     pGAF=pUSEGAF;
     pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
@@ -199,8 +200,6 @@ photon  (QNX)
 epoc    (Epoc)
 dummy
 
-
-
   if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags|SDL_HWSURFACE)) {
     } else {
         pLog->_Add("SDL_HWSURFACE SDL_VideoModeOK failure");
@@ -210,9 +209,7 @@ dummy
             pLog->_Add("SDL_VideoModeOK failure");
             return false;
         }
-    }
-
-*/
+    }  */
 
     pDefaultTexture=0;
 
@@ -309,7 +306,6 @@ dummy
     VideoInfo = SDL_GetVideoInfo();
     pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
 
-
     pCamera=new C_Camera();
     if(pCamera) {
         pCamera->Move_Left_Stop();
@@ -337,21 +333,27 @@ dummy
         return false;
     }
 
+    models.clear();
+
     if(!LoadModels()) return false;
 
     InitializeEntities();
 
+    pSelectedEntity=0;
+
     pLog->_Add("GFX Initialized");
     return true;
 }
-void C_GFX::SetWindowTitle(char *fmt, ...) {
+void C_GFX::SetWindowTitle(string fmt, ...) {
     char ach[512];
+    char f2[512];
+    strcpy(f2,fmt.c_str());
     va_list va;
-    va_start( va, fmt );
-    vsprintf( ach, fmt, va );
-    va_end( va );
-    strcpy(WindowCaption, ach);
-    SDL_WM_SetCaption(WindowCaption,0);
+    va_start(va, f2);
+    vsprintf(ach, f2, va);
+    va_end(va);
+    WindowCaption.assign(ach);
+    SDL_WM_SetCaption(WindowCaption.c_str(),0);
 }
 void C_GFX::ToggleFullScreen(void) {
 #ifdef __linux__
@@ -462,8 +464,22 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     closedir(dpdf);
     return true;
 }
-CGLTexture* C_GFX::GetTexture(string name) { for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ++it) { if((**it).filename==name) return &(**it); }     return 0; }
-CGLTexture* C_GFX::GetRandomTexture(void) { return textures[(rand()%textures.size()) + 1]; }
+CGLTexture* C_GFX::GetTexture(string name) {
+    for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ++it) {
+            if((**it).filename==name) return &(**it);
+        }
+    return 0;
+}
+CGLTexture* C_GFX::GetRandomTexture(void) {
+    int x=(rand()%textures.size())+1; int y=0;
+    for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ++it) {
+        if(x==y) return &(**it);
+        y++;
+    }
+    return false;
+
+}
+
 bool C_GFX::DestroyTextures(void) {
     dlcsm_erase_vector(CGLTexture*,textures); /*  for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {  lcsm_delete(*it);   it = textures.erase(it);    }*/
     return true;
@@ -471,7 +487,8 @@ bool C_GFX::DestroyTextures(void) {
 //////////////////////////////////////////////////////////////// MODELS
 bool C_GFX::LoadModels(void) {
     pLog->AddEntry("Loading models...\n");
-    string filename; CGLModel *pModel;
+    string filename;
+    CGLModel *pModel;
     DIR *dpdf;
     struct dirent *epdf;
     dpdf = opendir("models");
@@ -479,7 +496,7 @@ bool C_GFX::LoadModels(void) {
         while (epdf = readdir(dpdf)) {
             if( (!((dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,".."))))  &&
                 (!dlcs_isdir(va("models/%s",epdf->d_name)))) {
-                filename=va("models/%s",epdf->d_name);
+                filename.assign(va("models/%s",epdf->d_name));
                 pLog->_Add("Loadin the model [%s]",filename.c_str());
                 pModel=new CGLModel(this,pLog);
                 if(pModel->Load(filename))  models.push_back(pModel);
@@ -490,9 +507,18 @@ bool C_GFX::LoadModels(void) {
     closedir(dpdf);
     return true;
 }
-CGLModel *C_GFX::GetModel(string inname) { for(vector<CGLModel*>::iterator it = models.begin() ; it != models.end(); ++it) { if((**it).name==inname) return &(**it); } return false; }
+CGLModel *C_GFX::GetModel(string inname) {
+    for(vector<CGLModel*>::iterator it = models.begin() ; it != models.end(); ++it) {
+            if((**it).name==inname) return &(**it); } return false; }
 int C_GFX::GetTotalModels(void) { return models.size(); }
-CGLModel* C_GFX::GetRandomModel(void) { return models[(rand()%models.size())+1]; }
+CGLModel* C_GFX::GetRandomModel(void) {
+    int x=(rand()%models.size())+1; int y=0;
+    for(vector<CGLModel*>::iterator it = models.begin() ; it != models.end(); ++it) {
+        if(x==y) return &(**it);
+        y++;
+    }
+    return false;
+}
 bool C_GFX::DestroyModels(void) { dlcsm_erase_vector(CGLModel*,models); return true; }
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(int mx, int my) {
@@ -603,7 +629,7 @@ void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long co
 void C_GFX::DrawVertice(int x, int y) {
     DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255));
 }
-void C_GFX::DrawTexture(int x,int y,int x2,int y2,char * name,u_char r,u_char g,u_char b) {
+void C_GFX::DrawTexture(int x,int y,int x2,int y2,string name,u_char r,u_char g,u_char b) {
     CGLTexture *pTexture;
     pTexture=0;
     pTexture=GetTexture(name);
@@ -960,14 +986,21 @@ u_char C_GFX::GetFade(char cWhichFade) {
 void C_GFX::InitializeEntities(void) {
     pLog->_Add(" GOING NUTS WITH ENTITIES!!!!!!!!!!!! ");
     ClearEntities();
+    int i;
     int numntt;
     numntt=300;
-    for(int i=0; i<numntt; i++) MakeEntity(va("Entity %d",i),0,0,0);
+    string nout;
+    for(i=0;i<numntt;i++){
+        nout.assign(va("Entity %d",i));
+        MakeEntity(nout,0,0,0);
+    }
 }
 void C_GFX::MakeEntity(string name,float x, float y, float z) {
-    C_Entity* pNTT = new C_Entity(pLog,pGAF,this,0);
+    C_Entity *pNTT = new C_Entity(pLog,pGAF,this,0);
     if(pNTT) {
         pNTT->name=name;
+        pLog->_Add("ENTITY IS NAMED [%s]",pNTT->name.c_str());
+
         if(x) pNTT->loc.x=x;
         else  pNTT->loc.x     = (((float)rand()/(float)RAND_MAX)*1250)-625;
         if(y) pNTT->loc.y=y;
@@ -1017,41 +1050,36 @@ void C_GFX::MakeEntity(string name,float x, float y, float z) {
                 break;
         }
 
-        if(!pNTT->pTexture)
-            pNTT->pTexture=pDefaultTexture;
+        if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
 
         if( (rand()%100)> 50 ) {
-                pNTT->pModel=GetRandomModel();
-                pNTT->pTexture=0;
-                if(pNTT->pModel)
-                    if(pNTT->pModel->name.length())
-                    pLog->_Add("Entity :%s", pNTT->pModel->name.c_str());
-                //pNTT->loc.x = 0.0f;
-                pNTT->loc.y = 0.0f;
-                //pNTT->loc.z = 0.0f;
-                pNTT->scale.x = 0.3f;
-                pNTT->scale.y = 0.3f;
-                pNTT->scale.z = 0.3f;
-                pNTT->rot.x = 0.0f;
-                // pNTT->rot.y = 0.0f;
-                pNTT->rot.z = 0.0f;
-                pNTT->autorot.x = 0.0f;
-                pNTT->autorot.y = 0.0f;
-                pNTT->autorot.z = 0.0f;
+            pNTT->pModel=GetRandomModel();
+            pNTT->pTexture=0;
+            if(pNTT->pModel)
+                pLog->_Add("Entity :%s", pNTT->pModel->name.c_str());
+            //pNTT->loc.x = 0.0f;
+            pNTT->loc.y = 0.0f;
+            //pNTT->loc.z = 0.0f;
+            pNTT->scale.x = 0.3f;
+            pNTT->scale.y = 0.3f;
+            pNTT->scale.z = 0.3f;
+            pNTT->rot.x = 0.0f;
+            // pNTT->rot.y = 0.0f;
+            pNTT->rot.z = 0.0f;
+            pNTT->autorot.x = 0.0f;
+            pNTT->autorot.y = 0.0f;
+            pNTT->autorot.z = 0.0f;
         }
         if(pNTT->pTexture) if(pNTT->pTexture->glBmap)
-        pLog->_Add(" Entity texture set to [%s] GL[%d]", pNTT->pTexture->filename.c_str(), pNTT->pTexture->glBmap);
+        pLog->_Add("Entity texture set to [%s] GL[%d]", pNTT->pTexture->filename.c_str(), pNTT->pTexture->glBmap);
         entities.push_back(pNTT);
     }
 }
 void C_GFX::DrawEntities(void) {
-    for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++ ){
+    for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++ )
         (*it)->Draw(bEditEntities);
-    }
 }
-C_Entity* C_GFX::GetSelectedEntity(void) {
-return pSelectedEntity;
-}
+C_Entity* C_GFX::GetSelectedEntity(void) { return pSelectedEntity; }
 void C_GFX::ClearSelectEntity(void) {
     for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++ ){
         (*it)->bSelected=false;
@@ -1094,9 +1122,7 @@ void C_GFX::DeleteEntity(C_Entity* pEntity) {
         }
     }
 }
-void C_GFX::ClearEntities(void) {
-    dlcsm_erase_vector(C_Entity*,entities);
-}
+void C_GFX::ClearEntities(void) { dlcsm_erase_vector(C_Entity*,entities); entities.clear(); }
 void C_GFX::LoadEntities(CVector3 WhichSector) { }
 void C_GFX::SaveEntities(CVector3 WhichSector) { }
 

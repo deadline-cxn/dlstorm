@@ -284,8 +284,8 @@ char _vx[1024]; // keep this in the global space TODO: improve this
 const char *va(const char *format, ...) {
     memset(_vx,0,1024);
     va_list argptr;
-    va_start (argptr, format);
-    vsprintf (_vx, format,argptr);
+    va_start(argptr, format);
+    vsprintf(_vx, format,argptr);
     va_end (argptr);
     return (_vx);
 }

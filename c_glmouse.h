@@ -29,22 +29,22 @@ public:
     C_MouseCursor();
     C_MouseCursor(CLog *pInLog);
     C_MouseCursor(CGAF *pInGAF, CLog *pInLog);
-    C_MouseCursor(char *fn);
+    C_MouseCursor(string f);
     ~C_MouseCursor();
     CGLTexture      *pTexture;
     C_MouseCursor   *pNext;
     CGAF            *pGAF;
     bool            bCreatedLog;
     CLog            *pLog;
-    char            filename[1024];     // file name of the cursor
+    string          filename;     // file name of the cursor
     unsigned char  r,g,b;
     int             x,y;
     char            x_offset,y_offset;
     char            x_hotspot,y_hotspot;
     GLvoid          reload();
     GLvoid          kill();
-    GLvoid          load(char *file);
-    GLvoid          loadGAF(char *file);
+    GLvoid          load(string file);
+    GLvoid          loadGAF(string file);
     GLvoid          draw(void);
 };
 /////////////////////////////////// C_Mouse class

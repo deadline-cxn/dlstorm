@@ -24,31 +24,20 @@ class CGLTexture {
 public:
     CGLTexture();
     CGLTexture(CLog* pLog);
-    CGLTexture(const char* file);
-    CGLTexture(CLog* pLog,const char* file);
+    CGLTexture(string f);
+    CGLTexture(CLog* pLog,string f);
     ~CGLTexture();
-
-    CGLTexture operator+(CGLTexture);
-	CGLTexture operator-(CGLTexture);
-	CGLTexture operator/(int);
-	CGLTexture operator==(CGLTexture);
-
     string      filename;
-
     bool        bGL;
-
     u_long      width;
     u_long      height;
     GLenum      format;
     int         bpp;
     GLuint      glBmap;
-
     CGLTexture* pNext;
-
     CLog*       pLog;
     bool        bMadeLog;
     CGAF*       pGAF;
-
     void    Initialize(void);
     GLuint  Create(int x,int y);
     bool    Clear(u_char R,u_char G,u_char B);
@@ -57,14 +46,12 @@ public:
     bool    Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
     bool    DrawRaw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2);
-
-    GLuint  LoadGL(const char* file);
-
+    GLuint  LoadGL(string f);
 
 };
 
 struct CGLTextureList {  CGLTexture *texture; };
-// bool    ImageLoad(char *filename, Image *image);
+// bool    ImageLoad(string filename, Image *image);
 // bool    ReLoad(void);
 #endif//_DLCS_CGLTEXTURE
 

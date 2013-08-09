@@ -466,6 +466,7 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define vecstr                  vector <string>
 #define vecint                  vector <int>
 #define dlcsm_erase_vector(x,y) for(vector<x>::iterator it=y.begin();it!=y.end();){dlcsm_delete(*it);it=y.erase(it);pLog->_Add("Deleting vector [%d]",y.size()); }
+#define vec(x)                  vector<x>
 // MISC MACROS
 #define GetRValue(rgb)          ((BYTE)(rgb))
 #define GetGValue(rgb)          ((BYTE)(((WORD)(rgb)) >> 8))

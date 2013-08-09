@@ -3191,10 +3191,8 @@ bool C_GUI::loadFonts(void) {
     dpdf = opendir("fonts");
     if (dpdf != NULL) {
         while (epdf = readdir(dpdf)) {
-            if( (dlcs_strcasecmp(epdf->d_name,".")) ||
-                    (dlcs_strcasecmp(epdf->d_name,"..")) ) {
-            } else {
-                if(!dlcs_isdir(epdf->d_name)) {
+            if( !( (dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,"..")) ) &&
+                (!dlcs_isdir(epdf->d_name)) ) {
                     pFont=pFirstFont;
                     if(pFont) {
                         while(pFont->pNext) {
@@ -3207,7 +3205,9 @@ bool C_GUI::loadFonts(void) {
                         pFirstFont=new CGLFont(pGAF, pLog);
                         pFont=pFirstFont;
                     }
-                    pFont->Load(va("fonts/%s",epdf->d_name));
+                    string fx;
+                    fx.assign(va("fonts/%s",epdf->d_name));
+                    pFont->Load(fx);
                     pFont->iWhich=x;
                     x++;
                     if(!pFont->pFontTex) {
@@ -3218,7 +3218,7 @@ bool C_GUI::loadFonts(void) {
                     } else {
                         pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->filename.c_str(),pFont->pFontTex->glBmap);
                     }
-                }
+
             }
         }
     }

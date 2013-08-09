@@ -22,11 +22,11 @@ CGLTexture::CGLTexture() {
     pLog=new CLog("texture.log");
     bMadeLog=true;
 }
-CGLTexture::CGLTexture(const char* file) {
+CGLTexture::CGLTexture(string f) {
     Initialize();
     pLog=new CLog("texture.log");
     bMadeLog=true;
-    LoadGL(file);
+    LoadGL(f);
 }
 CGLTexture::CGLTexture(CLog *pInLog) {
     Initialize();
@@ -35,13 +35,13 @@ CGLTexture::CGLTexture(CLog *pInLog) {
         pLog=pInLog;
     }
 }
-CGLTexture::CGLTexture(CLog *pInLog, const char *file) {
+CGLTexture::CGLTexture(CLog *pInLog,string f) {
     Initialize();
     if(pInLog){
         bMadeLog=false;
         pLog=pInLog;
     }
-    LoadGL(file);
+    LoadGL(f);
 }
 CGLTexture::~CGLTexture() { if(bMadeLog) dlcsm_delete(pLog); if(glIsTexture(glBmap)) glDeleteTextures(1,&glBmap); glBmap=0;}
 void CGLTexture::Initialize() {
@@ -106,9 +106,9 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
     glEnable(GL_DEPTH_TEST);
     return true;
 }
-GLuint CGLTexture::LoadGL(const char *file) {
+GLuint CGLTexture::LoadGL(string f) {
     glBmap=0;
-    filename=file;
+    filename=f;
 	ILuint imageID;
 	ILboolean success;
 	ILenum error;

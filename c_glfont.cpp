@@ -48,9 +48,10 @@ CGLFont::CGLFont() {
     b=220;
     width=8.5f;
     height=8.5f;
-    memset(Set1,0,64);
-    memset(Set2,0,64);
-    memset(szFile,0,1024);
+    //memset(Set1,0,64);
+    //memset(Set2,0,64);
+    //memset(szFile,0,1024);
+    filename.clear();
 }
 CGLFont::CGLFont(CLog *pInLog) {
     pNext=0;
@@ -61,9 +62,7 @@ CGLFont::CGLFont(CLog *pInLog) {
     b=220;
     width=8.5f;
     height=8.5f;
-    memset(Set1,0,64);
-    memset(Set2,0,64);
-    memset(szFile,0,1024);
+    filename.clear();
 }
 CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog) {
     pNext=0;
@@ -75,9 +74,7 @@ CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog) {
     b=220;
     width=8.5f;
     height=8.5f;
-    memset(Set1,0,64);
-    memset(Set2,0,64);
-    memset(szFile,0,1024);
+    filename.clear();
 }
 CGLFont::CGLFont(char *fn) {
     pNext=0;
@@ -88,19 +85,14 @@ CGLFont::CGLFont(char *fn) {
     b=120;
     width=8.5f;
     height=8.5f;
-    memset(Set1,0,64);
-    memset(Set2,0,64);
-    memset(szFile,0,1024);
+    filename.clear();
 }
-CGLFont::~CGLFont() {
-    Kill();
-}
-GLuint CGLFont::Load(const char *file) { // Build Our Font Display List
+CGLFont::~CGLFont() { Kill(); }
+GLuint CGLFont::Load(string f) { // Build Our Font Display List
     float   cx,cy;
     int     loop;
-    strcpy(szFile,file);
-    // dlcsm_delete(pFontTex);
-    pFontTex=new CGLTexture(pLog,szFile);
+    filename=f;
+    pFontTex = new CGLTexture(pLog,filename);
     if(!pFontTex->glBmap) dlcsm_delete(pFontTex);
     if(!pFontTex) return 0;
     pFontList=glGenLists(256);                          // Creating 256 Display Lists
@@ -422,9 +414,7 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
 }
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char r, u_char g, u_char b) {
     if(!pFontTex) return;
-    if(!pFontTex->glBmap) {
-        pFontTex->LoadGL(va("%s.png",szFile));
-    }
+    if(!pFontTex->glBmap) { pFontTex->LoadGL(va("%s.png",filename.c_str())); }
     y=(-y)+(SDL_GetVideoSurface()->h)-16;
     if(wset<2) {
         glDisable(GL_DEPTH_TEST);                           // Disables Depth Testing

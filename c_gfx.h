@@ -94,12 +94,11 @@ typedef struct {
 class C_GFX {
 
 public:
-    C_GFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
+    C_GFX(int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
     ~C_GFX();
 
     // GFX Class Members
     bool        bSDLFailed;
-    // SDL_Surface* pScreen;
     int         VideoFlags;
     bool        bFullScreen;
     int         ScreenWidth;
@@ -120,7 +119,7 @@ public:
 
     CVector3    Sector;
 
-    char        WindowCaption[1024];
+    string      WindowCaption;
     bool        bEditEntities;
 
     v3ops       OpRot;
@@ -130,9 +129,9 @@ public:
     // GFX System level functions
     int         InitGL(int x, int y);
     void        BeginScene(void);
-    void        SetWindowTitle(char *fmt, ...);
+    void        SetWindowTitle(string fmt, ...);
     void        ShutDownGFX(void);
-    bool        InitializeGFX(int w, int h, int c, bool FullScreen, char *wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
+    bool        InitializeGFX(int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG, CGAF *pUSEGAF);
     void        ToggleFullScreen(void);
     GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
     void        SetScreenRes(int x,int y,int cl, bool fs);
@@ -145,7 +144,7 @@ public:
     bool        LoadTextures(CGAF *pGAF);
     CGLTexture* GetTexture(string inname);
     CGLTexture* GetRandomTexture(void);
-    void        DrawTexture(int x,int y,int x2,int y2,char *name,unsigned char r,unsigned char g,unsigned char b);//long color);
+    void        DrawTexture(int x,int y,int x2,int y2,string name,unsigned char r,unsigned char g,unsigned char b);//long color);
     bool        DestroyTextures(void);
 
     // OpenGL 3D Model Management (CGLModel Class)

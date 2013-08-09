@@ -18,7 +18,7 @@
 #include "c_glmouse.h"
 ///////////////////////////// C_MouseCursor Class
 C_MouseCursor::C_MouseCursor() {
-    memset(filename,0,1024);
+    filename.clear();
     pTexture=0;
     pLog=new CLog("mousecursor.log");
     bCreatedLog=true;
@@ -50,8 +50,8 @@ C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) {
     y_hotspot=0;
     pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
 }
-C_MouseCursor::C_MouseCursor(char *fn) {
-    memset(filename,0,1024);
+C_MouseCursor::C_MouseCursor(string f) {
+    filename.clear();
     pTexture=0;
     x_offset=0;
     y_offset=0;
@@ -59,7 +59,7 @@ C_MouseCursor::C_MouseCursor(char *fn) {
     y=0;
     x_hotspot=0;
     y_hotspot=0;
-    load(fn);
+    load(f);
     pLog=new CLog("mousecursor.log");
     bCreatedLog=true;
     pLog->_DebugAdd("Mouse cursor created");
@@ -73,15 +73,13 @@ C_MouseCursor::~C_MouseCursor() {
 GLvoid C_MouseCursor::kill() {
     dlcsm_delete(pTexture);
 }
-GLvoid C_MouseCursor::loadGAF(char *file) {
-}
-GLvoid C_MouseCursor::load(char *file) {
-    strcpy(filename,file);
-    if(pGAF) {
-        loadGAF(file);
-    } else {
+GLvoid C_MouseCursor::loadGAF(string f) { }
+GLvoid C_MouseCursor::load(string f) {
+    filename=f;
+    if(pGAF) loadGAF(filename);
+    else {
         pTexture=new CGLTexture(pLog);
-        pTexture->LoadGL(file);
+        pTexture->LoadGL(filename);
         pLog->_Add("MOUSE TEXTURE: %s\n",pTexture->filename.c_str());
     }
     /*  if(!strlen(file)) return;

@@ -20,7 +20,7 @@ CGLMaterial::CGLMaterial() { Initialize(); }
 CGLMaterial::~CGLMaterial() {}
 void CGLMaterial::Initialize() {
     iMaterialIndex=0;
-    pNext=0;
+    name.clear();
 }
 /////////////////////////////////// CGLMesh class
 CGLMesh::CGLMesh() { Initialize(); }
@@ -30,13 +30,13 @@ CGLMesh::~CGLMesh() {
     if(uvArray)     delete [] uvArray;
 }
 void CGLMesh::Initialize(){
-    pNext=0;
     iMeshIndex=0;
     numTriangles=0;
     numUvCoords=0;
     vertexArray=0;
     normalArray=0;
     uvArray=0;
+    name.clear();
 }
 /////////////////////////////////// CGLModel class
 CGLModel::CGLModel() {
@@ -60,19 +60,19 @@ CGLModel::~CGLModel() {
     if(bMadeLog) dlcsm_delete(pLog);
 }
 void CGLModel::Initialize() {
-    pNext=0;
-    pPrev=0;
     pLog=0;
     pGAF=0;
     bMadeLog=0;
     numMeshes=0;
     numMaterials=0;
+    name.clear();
 }
 bool CGLModel::Load(string filename) {
     pLog->_Add("============================================================");
     CGLMaterial* pMat;
     CGLMesh*     pMesh;
-    name=filename; if(!name.size()) name = "EMPTY";
+    name=filename;
+    if(!name.length()) name = "EMPTY";
     const aiScene *scene = aiImportFile(filename.c_str(),aiProcessPreset_TargetRealtime_MaxQuality); // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
     if(!scene) {
         pLog->_Add("Model load error %s",filename.c_str());
@@ -88,8 +88,10 @@ bool CGLModel::Load(string filename) {
         pMat->iMaterialIndex=i;
         aiMaterial *material = scene->mMaterials[i];
         aiString str;
-        material->Get(AI_MATKEY_NAME,str); pMat->name=str.C_Str();
-        material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE,0),str); pMat->DiffuseTexture=str.C_Str();
+        material->Get(AI_MATKEY_NAME,str);
+        pMat->name.assign(str.C_Str());
+        material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE,0),str);
+        pMat->DiffuseTexture.assign(str.C_Str());
         pLog->_Add("diffuse = %s",pMat->DiffuseTexture.c_str());
 //      pMat->DiffuseTexture.erase(pMat->DiffuseTexture.find("..\\"),3);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_NORMALS,	0 ), pMat->NormalTexture);
@@ -134,11 +136,24 @@ bool CGLModel::Load(string filename) {
     pLog->_Add("Model loaded: %s (%d)",name.c_str(),this);
     return true;
 }
-// CGLMesh* CGLModel::GetMesh(int x){ return meshes[x]; }
-// CGLMaterial* CGLModel::GetMaterial(int x){ return materials[x]; }
-CGLMaterial* CGLModel::GetMaterial(string inDiffuseTex){ for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) { if((**it).DiffuseTexture==name) return &(**it); } return 0; }
+CGLMesh* CGLModel::GetMesh(int x){
+    for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
+            if((**it).iMeshIndex==x) return &(**it);
+    }
+    return 0;
+}
+CGLMaterial* CGLModel::GetMaterial(int x){
+    for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
+            if((**it).iMaterialIndex==x) return &(**it);
+    }
+    return 0;
+}
+
+CGLMaterial* CGLModel::GetMaterial(string inDiffuseTex){
+    for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it)
+        { if((**it).DiffuseTexture==name) return &(**it); } return 0; }
 bool CGLModel::Draw(CGLTexture* pTexture) {
-    if(!pGFX)       return 0;
+    if(!pGFX) return 0;
     glEnable(GL_TEXTURE_2D);
     bool            bMatFound;
     CGLTexture*     pTex;
@@ -147,11 +162,14 @@ bool CGLModel::Draw(CGLTexture* pTexture) {
     for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
         pMesh=(*it);
         bMatFound=false;
-        pMat=materials[pMat->iMaterialIndex];
-        pTex=pGFX->GetTexture(pMat->DiffuseTexture);
-        if(pTex) if(pTex->glBmap) bMatFound=true;
+        pMat=GetMaterial(pMat->iMaterialIndex);
+
         if(pTexture) if(pTexture->glBmap) { pTex=pTexture; bMatFound=true; }
+
+        if(!bMatFound) pTex=pGFX->GetTexture(pMat->DiffuseTexture);
+        if(pTex) if(pTex->glBmap) bMatFound=true;
         if(!bMatFound) pTex=pGFX->pDefaultTexture;
+
         if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_NORMAL_ARRAY);

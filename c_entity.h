@@ -49,7 +49,7 @@ enum tEntityActions {
 
 /*struct G_ENTITY_EVENT_RESULTS {
     int returned_event;
-    char *args;
+    stringargs;
     CEntity *entity;
 };
 */
@@ -105,26 +105,10 @@ public:
     ~C_Entity();
 
     // Basic info
-    string      name; //char        name[TEXTNAME_SIZE];
+    string      name;
     int         type;
     bool        hidden;
     bool        bSelected;
-
-/*    // Attributes
-    int         life_points;
-    int         mana_points;
-    int         power_points;
-    int         rage_points;
-    int         at_sta;
-    int         at_int;
-    int         at_spi;
-    int         at_wis;
-    int         at_agi;
-    int         at_con;
-*/
-// C_Entity    *pParent;
-    C_Entity    *pNext;
-    C_Entity    *pPrev;
     C_Entity    *pTargetEntity;
 
     // OpenGL Stuff
@@ -184,7 +168,7 @@ public:
     void    Draw(bool bSelecting);
     void    DrawLight(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
-    bool    push_event(C_Entity *rcv_entity, int event, char *args, C_Entity *action_entity);
+    bool    push_event(C_Entity *rcv_entity, int event, string args, C_Entity *action_entity);
     /*************************************************************************************************************************
        use: push_event(entity,event,event_args,entity_to_take_action_on (if 0 it will action self));
            example:
@@ -192,26 +176,26 @@ public:
             target->exec_event(sending_entity,G_ENTITY_ATTACK,"243",sending_entity);
             target->on_attack("243",sending_entity);
     **************************************************************************************************************************/
-    bool    exec_event(tEntityEvent event, char *args, C_Entity *action_entity);
-    void    on_create(char *args,C_Entity *entity);
-    void    on_destroy(char *args,C_Entity *entity);
-    void    on_near(char *args,C_Entity *entity);
-    void    on_far(char *args,C_Entity *entity);
-    void    on_leave(char *args,C_Entity *entity);
-    void    on_enter(char *args,C_Entity *entity);
-    void    on_wait(char *args,C_Entity *entity);
-    void    on_hover(char *args,C_Entity *entity);
-    void    on_click(char *args, C_Entity *entity);
-    void    on_double_click(char *args, C_Entity *entity);
-    void    on_timer_cycle(char *args, C_Entity *entity);
-    void    on_use(char *args, C_Entity *entity);
-    void    on_speak(char *args, C_Entity *entity);
-    void    on_sound(char *args, C_Entity *entity);
-    void    on_attack(char *args, C_Entity *entity);
-    void    on_target(char *args, C_Entity *entity);
-    void    on_heal(char *args, C_Entity *entity);
-    void    on_reset(char *args, C_Entity *entity);
-    void    on_death(char *args, C_Entity *entity);
+    bool    exec_event(tEntityEvent event, string args, C_Entity *action_entity);
+    void    on_create(string args,C_Entity *entity);
+    void    on_destroy(string args,C_Entity *entity);
+    void    on_near(string args,C_Entity *entity);
+    void    on_far(string args,C_Entity *entity);
+    void    on_leave(string args,C_Entity *entity);
+    void    on_enter(string args,C_Entity *entity);
+    void    on_wait(string args,C_Entity *entity);
+    void    on_hover(string args,C_Entity *entity);
+    void    on_click(string args, C_Entity *entity);
+    void    on_double_click(string args, C_Entity *entity);
+    void    on_timer_cycle(string args, C_Entity *entity);
+    void    on_use(string args, C_Entity *entity);
+    void    on_speak(string args, C_Entity *entity);
+    void    on_sound(string args, C_Entity *entity);
+    void    on_attack(string args, C_Entity *entity);
+    void    on_target(string args, C_Entity *entity);
+    void    on_heal(string args, C_Entity *entity);
+    void    on_reset(string args, C_Entity *entity);
+    void    on_death(string args, C_Entity *entity);
 
     bool    act_move(C_Entity *entity);
     bool    act_target(C_Entity *entity);

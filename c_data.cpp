@@ -17,8 +17,8 @@
 #include "c_data.h"
 //////////////////// C_Profile class
 C_Profile::C_Profile() {
-    memset(name,0,32);
-    memset(passwd,0,32);
+    name.clear();
+    passwd.clear();
     savepw=0;
     pNext=NULL;
 }
@@ -41,7 +41,7 @@ CC_Data::CC_Data(char* infilename) {
     pLog=new CLog("cdata.log");
     bCreatedLog=true;
     Initialize();
-    strcpy(filename,infilename);
+    filename.assign(infilename);
     bLoad();
 }
 
@@ -49,7 +49,7 @@ CC_Data::CC_Data(char* infilename, CLog* pInLog) {
     bCreatedLog=false;
     pLog=pInLog;
     Initialize();
-    strcpy(filename,infilename);
+    filename.assign(infilename);
     bLoad();
 }
 CC_Data::~CC_Data() {
@@ -58,7 +58,7 @@ CC_Data::~CC_Data() {
         dlcsm_delete(pLog);
 }
 void CC_Data::Initialize(void) {
-    strcpy(filename,"client.ini");
+    filename="client.ini";
     ClearFavoriteServers();
     Profile = NULL;
     FirstProfile=NULL;
@@ -75,8 +75,8 @@ void CC_Data::CleanUp(void) {
 
 }
 void CC_Data::SetToDefaults(void) {
-    memset(Name,0,24);
-    memset(Password,0,24);
+    Name.clear();
+    Password.clear();
     memset(IPAddress,0,255);
     memset(Port,0,10);
     memset(MasterPort,0,10);
@@ -84,7 +84,7 @@ void CC_Data::SetToDefaults(void) {
     memset(szServerVersion,0,15);
     memset(ServerMessage,0,1024);
     memset(ServerName,0,1024);
-    strcpy(Name,"Enter Your Name");
+    Name="Enter Your Name";
     bSavePassword=true;
     strcpy(ServerMessage,"No server message.");
     strcpy(ServerName,"Ember Server");
@@ -133,13 +133,13 @@ void CC_Data::ClearProfiles(void) {
 }
 bool CC_Data::bLoad(void) {
     SetToDefaults();
-    pLog->_Add("LOADING CONFIG FROM %s",filename);
+    pLog->_Add("LOADING CONFIG FROM %s",filename.c_str());
     FILE *fp;
     char In[256];
     char temp[1024];
     float f;
     vector <string> lin;
-    fp=fopen(filename,"rt");
+    fp=fopen(filename.c_str(),"rt");
     if(!fp) return false;
     while(fgets(In,255,fp)) {
         In[strlen(In)-1]=0;
@@ -147,12 +147,12 @@ bool CC_Data::bLoad(void) {
         if(lin.size()>1) {
             strcpy(temp,lin[1].c_str());
             if(dlcs_strcasecmp(lin[0].c_str(),"name")) {
-                strcpy(Name,lin[1].c_str());
-                pLog->_Add(" Name [%s]",Name);
+                Name.assign(lin[1].c_str());
+                pLog->_Add(" Name [%s]",Name.c_str());
                 continue;
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"password")) {
-                strcpy(Password,lin[1].c_str());
+                Password.assign(lin[1].c_str());
                 continue;
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"save password")) {
@@ -233,7 +233,7 @@ bool CC_Data::bLoad(void) {
     }
     fclose(fp);
     if(bSavePassword==false) {
-        memset(Password,0,sizeof(Password));
+        Password.clear();
         bSave();
     }
     return true;
@@ -243,17 +243,17 @@ bool CC_Data::bSave(void) {
     char Temp[256];
     char Temp3[_MAX_PATH];
     char Temp4[_MAX_PATH];
-    fout =fopen(filename,"w");
+    fout =fopen(filename.c_str(),"w");
     if(!fout)
         return false;
     fputs("***************************************************************\n",fout);
     fputs("** DLStorm initialization file                               **\n",fout);
     fputs("***************************************************************\n",fout);
     fputs("NOTE: Try renaming this file if the program fails.\n",fout);
-    sprintf(Temp,"Name=%s\n",Name);
+    sprintf(Temp,"Name=%s\n",Name.c_str());
     fputs(Temp,fout);
     if(bSavePassword)
-        sprintf(Temp,"Password=%s\n",Password);
+        sprintf(Temp,"Password=%s\n",Password.c_str());
     else
         strcpy(Temp,"Password=\n");
     fputs(Temp,fout);

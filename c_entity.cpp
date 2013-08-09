@@ -35,38 +35,26 @@ C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel
     pModel=pInModel;
 }
 C_Entity::~C_Entity() {
-    if(bMadeLog)
-        dlcsm_delete(pLog);
+    if(bMadeLog) dlcsm_delete(pLog);
+    dlcsm_delete(pSelectTimer);
 }
 void C_Entity::Initialize(void) {
+    name.clear();
     pSelectTimer=new CTimer(200);
     bMadeLog=true;
     pTexture=0;
-    pNext=0;
-    pPrev=0;
     pLog=0;
     pGAF=0;
     pGFX=0;
     pModel=0;
     name="Unknown";
     type=ENTITY_INVISIBLE;
-/*    life_points=100;
-    mana_points=100;
-    power_points=100;
-    rage_points=100;
-    at_sta=15;
-    at_int=15;
-    at_spi=15;
-    at_wis=15;
-    at_agi=15;
-    at_con=15; */
-    resource_min=0;       // 0 = infinite resources
-    resource_max=0;       // 0 = infinite resources
-    respawn_min=0;        // 0 = infinite respawns
-    respawn_max=0;        // 0 = infinite respawns
-    respawn_time_min=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
-    respawn_time_max=ENTITY_DEFAULT_RESPAWN_TIME;   // 0 = default; default is 5 minutes (30000)
-
+    resource_min=0;
+    resource_max=0;
+    respawn_min=0;
+    respawn_max=0;
+    respawn_time_min=ENTITY_DEFAULT_RESPAWN_TIME;
+    respawn_time_max=ENTITY_DEFAULT_RESPAWN_TIME;
     loc.x=0;
     loc.y=0;
     loc.z=0;
@@ -82,10 +70,8 @@ void C_Entity::Initialize(void) {
     color.r=1.0f;
     color.g=1.0f;
     color.b=1.0f;
-
     iModelAnim=0;
     iModelAnimFrame=0;
-
 }
 void C_Entity::DrawLight(void) {
 
@@ -114,14 +100,11 @@ void C_Entity::DrawLight(void) {
 
 }
 void C_Entity::Draw(bool bSelecting) {
-
     glEnable(GL_TEXTURE_2D);
-
     if(!pGFX) return;
-
     switch(type) {
-
         case ENTITY_INVISIBLE:
+            return;
         case ENTITY_STATIC:
         case ENTITY_STATIC_ANIMATED:
         case ENTITY_PLAYER:
@@ -194,30 +177,24 @@ void C_Entity::Draw(bool bSelecting) {
         }
     }
 
+    bool bFoundTex=false;
+    CGLTexture *pTex;
+    pTex=pTexture;
+    if(pTex) if(pTex->glBmap) bFoundTex=true;
+    if(!bFoundTex) {
+        pTex=pGFX->pDefaultTexture;
+        if(pTex) if(pTex->glBmap) bFoundTex=true;
+    }
 
-
-
-    if(pModel) {
-        pModel->Draw(pTexture);
-    } else {
-        if(pTexture) {
-            if(pTexture->glBmap) {
-                glBindTexture(GL_TEXTURE_2D, pTexture->glBmap);
-            }
-            else {
-                glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
-            }
-        }
-        else {
-            glBindTexture(GL_TEXTURE_2D, pGFX->pDefaultTexture);
-        }
+    if(pModel) pModel->Draw(0);
+    else {
+        if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D, pTex->glBmap);
         pGFX->DrawCube();
     }
     glPopMatrix();
 }
 void C_Entity::Save() {
-    /*
-    dlcsm_make_filename(filename);
+/*  dlcsm_make_filename(filename);
     ifstream myFile ("data.bin", ios::out | ios::binary);
     if(myFile) {
 
@@ -253,13 +230,13 @@ void C_Entity::Save() {
     }
     */
 }
-bool C_Entity::push_event(C_Entity *rcv_entity,int event,char *args,C_Entity *action_entity) {
+bool C_Entity::push_event(C_Entity *rcv_entity,int event,string args,C_Entity *action_entity) {
     if(!rcv_entity) return false;
     if(!action_entity) action_entity=this;
     rcv_entity->exec_event(event,args,action_entity);
     return true;
 }
-bool C_Entity::exec_event(tEntityEvent event, char *args, C_Entity *action_entity) {
+bool C_Entity::exec_event(tEntityEvent event, string args, C_Entity *action_entity) {
     if(action_entity==0) action_entity=this;
     switch(event) {
     case ENTITY_EVENT_NONE:
@@ -281,18 +258,18 @@ bool C_Entity::exec_event(tEntityEvent event, char *args, C_Entity *action_entit
     }
     return true;
 }
-void C_Entity::on_death(char *args,C_Entity *entity) {
+void C_Entity::on_death(string args,C_Entity *entity) {
     if(entity==0) return;
     pLog->AddEntry(va("%s is slain by %s.",name.c_str(),entity->name.c_str()));
 }
-void C_Entity::on_target(char *args,C_Entity *entity) {
+void C_Entity::on_target(string args,C_Entity *entity) {
     if(entity==0) return;
     if(entity!=pTargetEntity) {
         pTargetEntity=entity;
         pLog->AddEntry(va("%s targetted %s...",name.c_str(),entity->name.c_str()));
     }
 }
-void C_Entity::on_attack(char *args,C_Entity *entity) {
+void C_Entity::on_attack(string args,C_Entity *entity) {
     if(entity==0) return;
     /*
     int attack_dmg=atoi(args);
@@ -310,10 +287,10 @@ void C_Entity::on_attack(char *args,C_Entity *entity) {
     }
     */
 }
-void C_Entity::on_heal(char *args,C_Entity *entity) {
+void C_Entity::on_heal(string args,C_Entity *entity) {
     if(entity==0) return;
     int heal;
-    heal=atoi(args);
+    heal=atoi(args.c_str());
     pLog->AddEntry(va("%s healed %s for %d...",entity->name.c_str(),name.c_str(),heal));
 
 }

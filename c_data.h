@@ -31,9 +31,9 @@ class C_Profile {
 public:
     C_Profile();
     ~C_Profile();
-    char name[TINYNAME_SIZE];
+    string name;
     bool savepw;
-    char passwd[TINYNAME_SIZE];
+    string passwd;
     C_Profile *pNext;
 };
 /////////////////////////// CC_Data class
@@ -59,9 +59,9 @@ public:
     bool DiscardProfile(void);
     bool AddProfile(void);
     ///////////////////////////////////////////////////////////////
-    char            filename[FILENAME_SIZE];
-    char			Name[TINYNAME_SIZE];
-    char			Password[TINYNAME_SIZE];
+    string filename;
+    string Name;
+    string Password;
     bool			bSavePassword;
     char			ServerMessage[FILENAME_SIZE];
     char			ServerName[FILENAME_SIZE];

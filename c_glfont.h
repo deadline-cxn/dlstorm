@@ -34,9 +34,9 @@ public:
     CLog*       pLog;
     CGLFont*    pNext;
     int         iWhich;
-    char        szFile[1024];          // file name of the font
-    char        Set1[64];              // name of font 0
-    char        Set2[64];              // name of font 1
+    string      filename;          // file name of the font
+    // char        Set1[64];              // name of font 0
+    // char        Set2[64];              // name of font 1
     GLfloat     width;              // specify the width of one drawn character
     GLfloat     height;             // specify the height of one drawn character
     u_char      r;                   // default r color
@@ -51,7 +51,7 @@ public:
     //GLuint    pFontTexture;       // Storage For Our Font Texture
     //GLuint    pFontMaskTexture;   // Storage For Our Font Texture
 
-    GLuint      Load(const char *file);
+    GLuint      Load(string f);
     GLvoid      Reload();
     GLvoid      Kill();
 
