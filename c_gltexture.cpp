@@ -44,25 +44,6 @@ CGLTexture::CGLTexture(CLog *pInLog, const char *file) {
     LoadGL(file);
 }
 CGLTexture::~CGLTexture() { if(bMadeLog) dlcsm_delete(pLog); if(glIsTexture(glBmap)) glDeleteTextures(1,&glBmap); glBmap=0;}
-
-/*
-Vector Vector::operator+(Vector other){
-	Vector v(other.x + x,other.y+y,other.z+z);
-	return v;
-}
-Vector Vector::operator-(Vector other){
-	Vector v(-other.x+x,-other.y+y,-other.z+z);
-	return v;
-}
-Vector Vector::operator/(int d){
-	Vector v(x/d,-y/d,z/d);
-	return v;
-}
-bool Vector::operator==(Vector other){
-	return ((other.x==x) && (other.y==y) && (other.z==z));
-}
-*/
-
 void CGLTexture::Initialize() {
     bMadeLog=true;
     pLog=0;
@@ -128,7 +109,6 @@ bool CGLTexture::Clear(u_char R,u_char G,u_char B) {
 GLuint CGLTexture::LoadGL(const char *file) {
     glBmap=0;
     filename=file;
-    // pLog->_Add(" CGLTexture::LoadGL() Loading GL file %s",filename.c_str());
 	ILuint imageID;
 	ILboolean success;
 	ILenum error;
@@ -144,38 +124,25 @@ GLuint CGLTexture::LoadGL(const char *file) {
 			error = ilGetError();
 			pLog->_Add("  CGLTexture::LoadGL() Image conversion failed - IL reports error: %d %s",error,iluErrorString(error));
 			return 0;
-		}
-
+        }
         width=ilGetInteger(IL_IMAGE_WIDTH);
         height=ilGetInteger(IL_IMAGE_HEIGHT);
         format=ilGetInteger(IL_IMAGE_FORMAT);
         bpp=ilGetInteger(IL_IMAGE_BPP)*8;
-
-        /*
-        pLog->_Add("IMAGE DATA: [%s] %dx%d %d bpp (format %d)",
-                   filename.c_str(),
-                   width,
-                   height,
-                   bpp,
-                   format
-                   ); */
-
         glEnable(GL_TEXTURE_2D);
 		glGenTextures(1, &glBmap);
 		glBindTexture(GL_TEXTURE_2D, glBmap);
-
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexImage2D(GL_TEXTURE_2D,  0,
-					 ilGetInteger(IL_IMAGE_BPP),	// Image colour depth
-					 ilGetInteger(IL_IMAGE_WIDTH),	// Image width
+					 ilGetInteger(IL_IMAGE_BPP),
+					 ilGetInteger(IL_IMAGE_WIDTH),
 					 ilGetInteger(IL_IMAGE_HEIGHT),	 0,
 					 ilGetInteger(IL_IMAGE_FORMAT),
 					 GL_UNSIGNED_BYTE,
 					 ilGetData());
-
  	}
   	else {
 		error = ilGetError();
@@ -185,7 +152,6 @@ GLuint CGLTexture::LoadGL(const char *file) {
  	ilDeleteImages(1, &imageID);
     return glBmap;
 }
-
 bool CGLTexture::Draw2d(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) { return Draw2d(x,y,x2,y2,r,g,b,255,255,255);}
 bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b) {   return Draw(x,y,x2,y2,r,g,b,255,255,255); }
 bool CGLTexture::Draw(int x,int y,int x2,int y2,u_char r,u_char g,u_char b,u_char r2,u_char g2,u_char b2) {

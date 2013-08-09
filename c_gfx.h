@@ -110,12 +110,11 @@ public:
     CLog*       pLog;
     CGAF*       pGAF;
 
-    CGLTexture* pDefaultTexture; // default texture storage
+    CGLTexture*     pDefaultTexture; // default texture storage
     vector<CGLTexture*> textures;
+    vector<CGLModel*>   models;
+    vector<C_Entity*>   entities;
 
-    CGLModel*   pFirstModel; // model storage
-    C_Entity*   pFirstNTT;      // Entities
-    C_Entity*   pFirstMapNTT;   // Map Entities
     C_Entity*   pSelectedEntity;// Selected Entity
     GLuint      _glRendermode;
 
@@ -151,12 +150,10 @@ public:
 
     // OpenGL 3D Model Management (CGLModel Class)
     bool        LoadModels(void);
-    CGLModel*   GetModel(char* inname);
+    CGLModel*   GetModel(string inname);
     CGLModel*   GetRandomModel(void);
     int         GetTotalModels(void);
     bool        DestroyModels(void);
-    void        DeleteModel(CGLModel* pModel);
-    CGLModel*   NewModel(void);
 
     // 2D Draw Functions
     void        DrawVertice(int x, int y);
@@ -189,7 +186,7 @@ public:
     void        SelectEntity(C_Entity* pEntity);
     void        SelectClosestEntity(void);
     void        InitializeEntities(void);
-    C_Entity*    MakeEntity(char *inname,float x, float y, float z);
+    void        MakeEntity(string inname,float x, float y, float z);
     void        DeleteEntity(C_Entity* pEntity);
     void        ClearEntities(void);
     void        LoadEntities(CVector3 WhichSector);

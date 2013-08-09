@@ -48,7 +48,7 @@ void C_Entity::Initialize(void) {
     pGAF=0;
     pGFX=0;
     pModel=0;
-    strcpy(name,"unknown");
+    name="Unknown";
     type=ENTITY_INVISIBLE;
 /*    life_points=100;
     mana_points=100;
@@ -283,13 +283,13 @@ bool C_Entity::exec_event(tEntityEvent event, char *args, C_Entity *action_entit
 }
 void C_Entity::on_death(char *args,C_Entity *entity) {
     if(entity==0) return;
-    pLog->AddEntry(va("%s is slain by %s.",name,entity->name));
+    pLog->AddEntry(va("%s is slain by %s.",name.c_str(),entity->name.c_str()));
 }
 void C_Entity::on_target(char *args,C_Entity *entity) {
     if(entity==0) return;
     if(entity!=pTargetEntity) {
         pTargetEntity=entity;
-        pLog->AddEntry(va("%s targetted %s...",name,entity->name));
+        pLog->AddEntry(va("%s targetted %s...",name.c_str(),entity->name.c_str()));
     }
 }
 void C_Entity::on_attack(char *args,C_Entity *entity) {
@@ -314,7 +314,7 @@ void C_Entity::on_heal(char *args,C_Entity *entity) {
     if(entity==0) return;
     int heal;
     heal=atoi(args);
-    pLog->AddEntry(va("%s healed %s for %d...",entity->name,name,heal));
+    pLog->AddEntry(va("%s healed %s for %d...",entity->name.c_str(),name.c_str(),heal));
 
 }
 

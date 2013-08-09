@@ -20,9 +20,6 @@
 #define _DLCS_C_GUI
 #include "dlstorm.h"
 #include "c_gui_chat_enum.h"
-#include <map>
-#include <algorithm>
-
 #include "c_gfx.h"
 #include "c_gaf.h"
 #include "c_glfont.h"

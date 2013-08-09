@@ -105,7 +105,7 @@ public:
     ~C_Entity();
 
     // Basic info
-    char        name[TEXTNAME_SIZE];
+    string      name; //char        name[TEXTNAME_SIZE];
     int         type;
     bool        hidden;
     bool        bSelected;

@@ -31,14 +31,14 @@ public:
     CGLMaterial();
     ~CGLMaterial();
     CGLMaterial* pNext;
-    char    name[FILENAME_SIZE];
+    string  name;
     int     iMaterialIndex;
-    char    DiffuseTexture[FILENAME_SIZE];
-    char    NormalTexture[FILENAME_SIZE];
-    char    HeightTexture[FILENAME_SIZE];
-    char    OpacityTexture[FILENAME_SIZE];
-    char    ShininessTexture[FILENAME_SIZE];
-    char    SpecularTexture[FILENAME_SIZE];
+    string DiffuseTexture;
+    //aiString NormalTexture;
+    //aiString HeightTexture;
+    //aiString OpacityTexture;
+    //aiString ShininessTexture;
+    //aiString  SpecularTexture;
     void    Initialize(void);
 };
 /////////////////////////////// CGLMesh class
@@ -47,7 +47,7 @@ public:
     CGLMesh();
     ~CGLMesh();
     CGLMesh* pNext;
-    char    name[FILENAME_SIZE];
+    string  name;
     int     iMeshIndex;
     int     iMaterialIndex;
     int     numTriangles;
@@ -64,26 +64,23 @@ public:
     CGLModel();
     CGLModel(C_GFX* pGFX, CLog *pInLog);
     ~CGLModel();
-    char        name[FILENAME_SIZE];
-    bool        bMadeLog;
-    CLog*       pLog;
-    CGLModel*   pNext;
-    CGLModel*   pPrev;
-    CGAF*       pGAF;
-    C_GFX*      pGFX;
-
-    CGLMesh*     pFirstMesh;
-    CGLMaterial* pFirstMaterial;
-
-    int         numMeshes;
-    int         numMaterials;
-
-    void         Initialize(void);
-    bool         Load(char* filename);
-    bool         Draw(CGLTexture* pTexture);
-    CGLMesh*     GetMesh(int x);
-    CGLMaterial* GetMaterial(int x);
-    CGLMaterial* GetMaterial(char* inDiffuseTex);
+    string                  name;
+    vector<CGLMesh*>        meshes;
+    vector<CGLMaterial*>    materials;
+    int                     numMeshes;
+    int                     numMaterials;
+    void                    Initialize(void);
+    bool                    Load(string filename);
+    bool                    Draw(CGLTexture* pTexture);
+    CGLMaterial*            GetMaterial(string diffuse_tex);
+    bool                    bMadeLog;
+    CLog*                   pLog;
+    CGLModel*               pNext;
+    CGLModel*               pPrev;
+    CGAF*                   pGAF;
+    C_GFX*                  pGFX;
 };
 
 #endif // _DLCS_CGLMODEL
+    //  CGLMesh*                GetMesh(int x);
+    //  CGLMaterial*            GetMaterial(int x);

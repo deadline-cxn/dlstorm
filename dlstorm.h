@@ -465,6 +465,7 @@ typedef struct tagSECTOR  { int numtriangles; TRIANGLE* triangle; } SECTOR;
 // SHORTCUTS
 #define vecstr                  vector <string>
 #define vecint                  vector <int>
+#define dlcsm_erase_vector(x,y) for(vector<x>::iterator it=y.begin();it!=y.end();){dlcsm_delete(*it);it=y.erase(it);pLog->_Add("Deleting vector [%d]",y.size()); }
 // MISC MACROS
 #define GetRValue(rgb)          ((BYTE)(rgb))
 #define GetGValue(rgb)          ((BYTE)(((WORD)(rgb)) >> 8))
@@ -531,7 +532,7 @@ char*   dlcs_get_os_version(char *x);
 char*   dlcs_get_hostname(char *x);
 char*   dlcs_get_ipaddress(char *x);
 bool    dlcs_isdir(char *dir);
-string dlcs_filetype(string pathName);
+string  dlcs_filetype(string pathName);
 int     dlcs_mkdir(char *szDirectoryName);
 int     dlcs_chdir(char *szDirectory);
 char*   dlcs_getcwd(char *x);
