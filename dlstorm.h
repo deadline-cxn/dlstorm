@@ -2,8 +2,7 @@
  **
  **   DLSTORM   Deadline's Code Storm Library
  **
- **          /\
- **   ---- D/L \----
+ **          /\ **   ---- D/L \----
  **       \/
  **
  **   License:      BSD
@@ -757,6 +756,7 @@ void Sys_PumpEvents( void );
 #include <algorithm>
 #include <fstream>
 #include "md5.h"
+#ifndef _DLCS_CONSOLE
 #include "SDL.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -766,6 +766,7 @@ void Sys_PumpEvents( void );
 #include <il.h>
 #include <ilu.h>
 #include <ilut.h>
+#endif
 using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////
 // Windows type structs for non windows conversions
@@ -909,6 +910,11 @@ char*   dlcs_convert_time(char *x,struct tm*);
 char*   dlcs_timestamp(char* x);
 char*   dlcs_readable_timestamp(char* x,char* in);
 char*   dlcs_get_filetype(char* x,char* in);
+string  dlcs_get_webpage(string url);
+
+string  dlcs_dns_lookup(string hostname);
+string  dlcs_inet_aton(string ip);
+string  dlcs_inet_ntoa(string ip);
 };
 using namespace DLCODESTORM;
 

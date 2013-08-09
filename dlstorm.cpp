@@ -440,3 +440,87 @@ string DLCODESTORM::dlcs_get_ipaddress() {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+
+string  DLCODESTORM::dlcs_get_webpage(string url) {
+
+    return url;
+
+    string host;
+    vector<string> strx;
+    strx=dlcs_explode(url,"/");
+    host=strx[1];
+
+
+    int s, error;
+    struct sockaddr_in addr;
+    struct sockaddr_in t_addr;
+
+    if((s = socket(AF_INET,SOCK_STREAM,0))<0) { cout<<"Error 01: creating socket failed!\n"; close(s);        return 1;     }
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(80);
+
+
+    // dlcs_inet_ntoa(url);
+    // NET_GetAddrFromName(url, &addr.sin_addr);
+
+    // inet_aton("10.1.10.198",&addr.sin_addr);
+    // char *ip = inet_ntoa(their_addr.sin_addr);
+
+
+    error = connect(s,(sockaddr*)&addr,sizeof(addr));
+    if(error!=0) {
+        cout<<"Error 02: conecting to server failed!\n";
+        close(s);
+        return 1;
+    }
+
+    string hostname   = "3dnetlabs.info";
+    string page       = "/files/";
+    string get_string = "GET "+page+" http/1.1\nHOST: "+hostname+"\n\n";
+
+    int x=get_string.length();
+    char msg[x];
+
+    strcpy(msg,get_string.c_str());
+    char answ[1024];
+
+    send(s,msg,sizeof(msg),0);
+
+    ssize_t len;
+    string whatthefuck;
+	while((len = recv(s, answ, 1024, 0)) > 0)
+        // cout.write(answ, len);
+        for(int zz=0;zz<len;zz++) whatthefuck+=answ[zz];
+    cout << std::flush;
+
+	close(s);
+
+	cout << whatthefuck << endl;
+}
+
+
+string DLCODESTORM::dlcs_dns_lookup(string url) {
+    string ip;
+    struct hostent *h;
+    struct sockaddr_in *to;
+    struct sockaddr whereto;
+    to=(struct sockaddr_in *)&whereto;
+    to->sin_family =AF_INET;
+    to->sin_addr.s_addr = inet_addr(url.c_str());
+    if(to->sin_addr.s_addr != -1) ip="UNKNOWN";
+    else {
+        h=gethostbyname(url.c_str());
+        if(!h) ip="UNKNOWN";
+        else {
+            to->sin_family =h->h_addrtype;
+            memcpy(&(to->sin_addr.s_addr), h->h_addr, h->h_length);
+            ip.assign(h->h_name);
+        }
+    }
+    return ip;
+}
+string DLCODESTORM::dlcs_inet_ntoa(string ip) {
+    return ip;
+}
+
+
