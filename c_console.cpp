@@ -27,14 +27,6 @@ C_CONS::C_CONS(CGAF *pInGAF, CLog *pInLog) {
     Init();
 }
 C_CONS::~C_CONS() {
-
-    for( svm_i=varmap.begin(); svm_i!=varmap.end(); ++svm_i) {
-        if(get_cvartype((*svm_i).first.c_str())==CVAR_STRING)
-            delete [] ((*svm_i).second);
-        else
-            delete ((*svm_i).second);
-    }
-
     varmap.clear();
 }
 bool C_CONS::Init(void) {
@@ -258,13 +250,12 @@ void C_CONS::RegInt(char *name,int x) {
 }
 
 void C_CONS::_Execute(const char *cmd) {
-
-    int i,j;
+    int i;
+    //,j;
     char temp[1024];
     memset(temp,0,1024);
 
-    int cQuoteCount=0;
-    bool bQuote2=0;
+    int cQuoteCount=0; // bool bQuote2=0;
     char cmd2[1024];
     memset(cmd2,0,1024);
     strcpy(cmd2,cmd);
@@ -283,8 +274,7 @@ void C_CONS::_Execute(const char *cmd) {
             if(cQuoteCount&1) {
                 cmd2[i]= ''; // Check " - Any ; in between quotes will temp change to 0xFF
                 break;
-            } else
-                bQuote2=true;
+            } // else bQuote2=true;
             break;
         default:
             break;

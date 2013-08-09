@@ -1,24 +1,35 @@
 /***************************************************************
-    DLSTORM Deadline's Code Storm Library
-    Author: Seth Parson
-
-****************************************************************/
-#include "dlstorm.h"
-#ifdef _DL_INCLUDE_LOG
-CLog* p_Log;
-void dLog(const char *fmt, ...) {
-    if(!p_Log) return;
-    char ach[1024];
-    va_list va;
-    va_start( va, fmt );
-    vsprintf( ach, fmt, va );
-    va_end( va );
-    p_Log->_Add(ach);
-}
-#endif
-// __stdcall DllMain() { return 0; }
+ **
+ **   DLSTORM   Deadline's Code Storm Library
+ **
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **
+ **   License:      BSD
+ **   Copyright:    2013
+ **   File:         dlstorm.cpp
+ **   Description:  DLCODESTORM Namespace, where the magic happens
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ******************************************************************************/
+#include "dlstorm.h" // __stdcall DllMain() { return 0; }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-vector <string> dlcs_explode(const string &delimiter, const string &str) {
+char _DLCODESTORM_vx[1024]; // keep this in the global space TODO: improve this
+const char *DLCODESTORM::va(const char *format, ...) {
+    memset(_DLCODESTORM_vx,0,1024);
+    va_list argptr;
+    va_start(argptr, format);
+    vsprintf(_DLCODESTORM_vx, format,argptr);
+    va_end (argptr);
+    return (_DLCODESTORM_vx);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+vector<string> DLCODESTORM::dlcs_explode(const string &delimiter, const string &str) {
     vector <string> arr;
     arr.clear();
     int strleng=str.length();
@@ -44,7 +55,7 @@ vector <string> dlcs_explode(const string &delimiter, const string &str) {
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char* dlcs_get_filetype(char* x, char* in) {
+char* DLCODESTORM::dlcs_get_filetype(char* x, char* in) {
     vector <string> ft;
     ft=dlcs_explode(".",in);
     ft.size();
@@ -52,15 +63,19 @@ char* dlcs_get_filetype(char* x, char* in) {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-bool dlcs_istrue(char *text) {
-    if(dlcs_strcasecmp(text,"on"))      return true;
-    if(dlcs_strcasecmp(text,"1"))       return true;
-    if(dlcs_strcasecmp(text,"true"))    return true;
-    if(dlcs_strcasecmp(text,"yes"))     return true;
+bool DLCODESTORM::dlcs_istrue(string text) {
+    dlcsm_make_str(t);
+    strcpy( t, tolower(text.c_str()));
+    text.assign(t);
+
+    if(text=="on")  return true;
+    if(text=="1")   return true;
+    if(text=="true")return true;
+    if(text=="yes")  return true;
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-vector <string> dlcs_dir_to_vector(char *szDir, char *szWildCard) {
+vector<string> DLCODESTORM::dlcs_dir_to_vector(char *szDir, char *szWildCard) {
     vector <string> diro;
     diro.clear();
 
@@ -116,7 +131,7 @@ vector <string> dlcs_dir_to_vector(char *szDir, char *szWildCard) {
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-bool dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
+bool DLCODESTORM::dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
 #ifdef _WINDOWS_
     FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
@@ -163,91 +178,21 @@ bool dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-inline int dlcs_length(const char* s) {
-    return s?strlen(s):0;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_trim_lf(char *x) {
+char* DLCODESTORM::dlcs_trim_lf(char* x) {
     if((x[strlen(x)-1]=='\n') || (x[strlen(x)-1]=='\r')) x[strlen(x)-1]=0;
     if((x[strlen(x)-1]=='\n') || (x[strlen(x)-1]=='\r')) x[strlen(x)-1]=0;
+    return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_charreplace(char *str, char cold,char cnew) {
-    for(int i=0; i<(int)strlen(str); i++) {
-        if(str[i]==cold)
-            str[i]=cnew;
-    }
-    return (str);
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-char* dlcs_strreplace(char *str, const char* what, const char* to) {
-    int i, j, k, m, n, delta;
-    int n1, n2, n3;
-    char* p, *q;
-    if (!str || !what)
-        return 0;
-    if (!to)
-        to = "";
-    n1 = dlcs_length(str);
-    n2 = dlcs_length(what);
-    n = n1 - n2 + 1;
-    for (i = 0; i < n; ++i) {
-        for (j = 0; j < n2 && what[j] == str[i+j]; ++j)
-            ;
-        if (j == n2) { // found
-            n3 = dlcs_length(to);
-            delta = n3 - n2;
-            m = n1 - i - n2;
-            if (delta < 0) { /* move left */
-                p = str + (i + n2 + delta);
-                q = p - delta;
-                for (k = 0; k <= m; ++k)
-                    p[k] = q[k];
-            } else if (delta > 0) { /* move right */
-                q = str + n1 - m;
-                p = q + delta;
-                for (k = m; k >= 0; --k)
-                    p[k] = q[k];
-            }
-            for (k = 0; k < n3; ++k)
-                str[i+k] = to[k];
-            return str + i + n3;
-        }
-    }
-    return 0;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-char* dlcs_strreplaceall(char* str, const char* what, const char* to) {
-    char* p = str;
-    while ((p=dlcs_strreplace(p,what,to)) != 0);
-    return str;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-string dlcs_md5_digest(string str) { // return a md5 digest of text
+string DLCODESTORM::dlcs_md5_digest(string str) { // return a md5 digest of text
     return md5(str);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_encrypt(char *text) {
-    char ntext[1024];
-    memset(ntext,0,1024);
-    char ntext2[1024];
-    memset(ntext2,0,1024);
-    int i;
-    strcpy(ntext,text);
-    for(i=0; i<(int)strlen(ntext); i++) {
-        ntext2[i] = ntext[i]<<2;
-        if(ntext2[i]==0) ntext2[i]=1;
-        if(ntext2[i]=='|') ntext2[i]=1;
-    }
-    return (ntext2);
-}
+string DLCODESTORM::dlcs_encrypt(string text) { return text; } // TODO
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_decrypt(char *text) {
-
-    return (text);
-}
+string DLCODESTORM::dlcs_decrypt(string text) { return (text); } // TODO
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_get_time(char *x) {
+char *DLCODESTORM::dlcs_get_time(char *x) {
     struct tm *dc;
     time_t td;
     time(&td);
@@ -257,7 +202,7 @@ char *dlcs_get_time(char *x) {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_convert_time(char *x,struct tm* dc) {
+char *DLCODESTORM::dlcs_convert_time(char *x,struct tm* dc) {
     time_t td;
     time(&td);
     dc=localtime(&td);
@@ -266,31 +211,21 @@ char *dlcs_convert_time(char *x,struct tm* dc) {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_timestamp(char *x) {
+char *DLCODESTORM::dlcs_timestamp(char *x) {
     time_t td;
     time( &td );
     strcpy(x,va("%ld",td));
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_readable_timestamp(char *x,char *in) {
+char *DLCODESTORM::dlcs_readable_timestamp(char *x,char *in) {
     long wtf;
     wtf=atoi(in);
     strcpy(x,ctime(&wtf));
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char _vx[1024]; // keep this in the global space TODO: improve this
-const char *va(const char *format, ...) {
-    memset(_vx,0,1024);
-    va_list argptr;
-    va_start(argptr, format);
-    vsprintf(_vx, format,argptr);
-    va_end (argptr);
-    return (_vx);
-}
-////////////////////////////////////////////////////////////////////////////////////////////////
-int dlcs_hex_to_dec(char *pa) {
+int DLCODESTORM::dlcs_hex_to_dec(char *pa) {
     if(pa==0) return 0;
     if(!strlen(pa)) return 0;
     char a;
@@ -308,7 +243,7 @@ int dlcs_hex_to_dec(char *pa) {
     return result;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int dlcs_bin_to_dec(char *pa) {
+int DLCODESTORM::dlcs_bin_to_dec(char *pa) {
     if(!pa) return 0;
     if(!strlen(pa)) return 0;
     int result=0;
@@ -324,7 +259,7 @@ int dlcs_bin_to_dec(char *pa) {
     return result;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void dlcs_suspend_power_management(void) {
+void DLCODESTORM::dlcs_suspend_power_management(void) {
 #ifdef DLCSM_WINDOWS
 /*
     TCHAR szPath[MAX_PATH];
@@ -348,7 +283,7 @@ void dlcs_suspend_power_management(void) {
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-long dlcs_get_tickcount(void) {
+long DLCODESTORM::dlcs_get_tickcount(void) {
 #ifdef _WIN32
     return GetTickCount();
 #else
@@ -366,7 +301,7 @@ long dlcs_get_tickcount(void) {
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int dlcs_strcasecmp(const char *szOne,const char *szTwo) {
+int DLCODESTORM::dlcs_strcasecmp(const char *szOne,const char *szTwo) {
     int rval=0;
 #ifdef _WIN32
     if(strcasecmp(szOne,szTwo)==0) rval=1;
@@ -376,14 +311,14 @@ int dlcs_strcasecmp(const char *szOne,const char *szTwo) {
     return rval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-bool dlcs_isdir(char *dir) {
+bool DLCODESTORM::dlcs_isdir(char *dir) {
     struct stat st;
     if(stat(dir,&st)==-1) return false;
     if(st.st_mode&S_IFDIR) return true;
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-string dlcs_filetype(string pathName){
+string DLCODESTORM::dlcs_filetype(string pathName){
 	// Finds the last persiod character of the string
 	int period = pathName.find_last_of(".");
 	// I use  + 1 because I don't really need the to include the period
@@ -391,7 +326,7 @@ string dlcs_filetype(string pathName){
 	return ext;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int dlcs_mkdir(char *szDirectoryName) {
+int DLCODESTORM::dlcs_mkdir(char *szDirectoryName) {
     int returnval=0;
 #ifdef _WIN32
     if(_mkdir(szDirectoryName)==0) returnval=1;
@@ -402,7 +337,7 @@ int dlcs_mkdir(char *szDirectoryName) {
     return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int dlcs_chdir(char *szDirectory) {
+int DLCODESTORM::dlcs_chdir(char *szDirectory) {
     int returnval=0;
 #ifdef _WIN32
     if(_chdir(szDirectory)==0) returnval=1;
@@ -412,17 +347,18 @@ int dlcs_chdir(char *szDirectory) {
     return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_getcwd(char *x) {
-    getcwd(x,_MAX_PATH);
+string DLCODESTORM::dlcs_getcwd() {
+    char buffer[FILENAME_SIZE];
+    getcwd(buffer,FILENAME_SIZE);
+    string x;
+    x.assign(buffer);
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_get_os_version(char *x) {
-#ifdef _WIN32
-    char szTemp[128];
-    memset(szTemp,0,128);
-    char szTemp2[128];
-    memset(szTemp2,0,128);
+string DLCODESTORM::dlcs_get_os_version() {
+    string x="Unknown OS";
+#ifdef DLCSM_WINDOWS
+    dlcsm_make_str(szTemp); dlcsm_make_str(szTemp2);
     OSVERSIONINFOEX osvi;
     BOOL bOsVersionInfoEx;
     ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
@@ -430,7 +366,7 @@ char *dlcs_get_os_version(char *x) {
     if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) ) {
         osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
         if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) ) {
-            strcpy(x,"unknown");
+            x="Windows Unknown Version";
             return x;
         }
     }
@@ -465,36 +401,42 @@ char *dlcs_get_os_version(char *x) {
         if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90) strcpy(szTemp,"Windows ME");
         break;
     }
-    strcpy(x,szTemp);
-    return x;
-#else
-    strcpy(x,CPUSTRING);
-    return x;
+    x.assign(szTemp);
 #endif
+#ifdef DLCSM_LINUX
+    x.assign("LINUX");
+    int z;
+    struct utsname l_un;
+    z=uname(&l_un);
+    if(z==-1) {}
+    else x.assign( va("%s %s %s", l_un.sysname, l_un.release, l_un.version));
+#endif
+    return x;
 }
-char *dlcs_get_hostname(char *x) {
-    gethostname(x, HOST_NAME_MAX);
+string DLCODESTORM::dlcs_get_hostname() {
+    char y [HOST_NAME_MAX]; memset(y,0,HOST_NAME_MAX);
+    string x;
+    gethostname(y, HOST_NAME_MAX);
+    x.assign(y);
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *dlcs_get_ipaddress(char *x) {
-    strcpy(x,"127.0.0.1"); // TODO: Add actual computer ip address here
-    dlcsm_make_str(tmp);
-    dlcs_get_hostname(tmp);
-    struct hostent *phe = gethostbyname(tmp);
+string DLCODESTORM::dlcs_get_ipaddress() {
+    string x;
+    char y [FILENAME_SIZE]; memset(y,0,FILENAME_SIZE);
+    strcpy(y,"127.0.0.1"); // TODO: Add actual computer ip address here
+    strcpy(y,dlcs_get_hostname().c_str());
+    struct hostent *phe = gethostbyname(y);
     if (phe == 0) {
-        strcpy(x,"ERROR");
+        x="ERROR";
         return x;
     }
-    // strcpy(x,"IP:");
     for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
         struct in_addr addr;
         memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-        strcpy(x,inet_ntoa(addr));
+        x.assign(inet_ntoa(addr));
         return x;
     }
-
-
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////

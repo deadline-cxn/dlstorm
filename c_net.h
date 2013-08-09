@@ -19,7 +19,7 @@
 #define _DLCS_C_NET
 #include "dlstorm.h"
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
-#ifndef _WIN32
+#ifndef DLSCM_WINDOWS
 #ifdef SOCKET
 #undef SOCKET
 #endif
@@ -274,8 +274,8 @@ public:
     int               nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr);
     int               nSend(char *pBuf, int iLen, struct sockaddr *pAddr);
     SOCKET             iSocket;
-    struct sockaddr_in ToAddr;
-    struct sockaddr_in FromAddr;
+    struct  sockaddr_in ToAddr;
+    struct  sockaddr_in FromAddr;
 #pragma pack(1)
 struct {
     unsigned int  iLen;

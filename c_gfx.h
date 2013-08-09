@@ -98,6 +98,7 @@ public:
     ~C_GFX();
 
     // GFX Class Members
+    SDL_Surface* pScreen;
     bool        bSDLFailed;
     int         VideoFlags;
     bool        bFullScreen;
@@ -109,18 +110,17 @@ public:
     CLog*       pLog;
     CGAF*       pGAF;
 
-    CGLTexture*     pDefaultTexture; // default texture storage
-
     vector<CGLTexture*> textures;
     vector<CGLModel*>   models;
     vector<C_Entity*>   entities;
 
+    CGLTexture* pDefaultTexture; // default texture pointer
     C_Entity*   pSelectedEntity;// Selected Entity
     GLuint      _glRendermode;
 
     CVector3    Sector;
 
-    string      WindowCaption;
+    string      windowcaption;
     bool        bEditEntities;
 
     v3ops       OpRot;

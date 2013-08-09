@@ -39,7 +39,7 @@ CLog::CLog(char *szFilename, bool bQ) {
 }
 CLog::~CLog() { }
 void CLog::Initialize(void) {
-#ifdef _DEBUG_DLCS_LOG
+#ifdef _DLCS_DEBUG_LOG
     bDebug=true;
 #else
     bDebug=false;

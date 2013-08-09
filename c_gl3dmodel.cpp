@@ -55,8 +55,8 @@ CGLModel::CGLModel(C_GFX* pinGFX, CLog *pInLog) {
 }
 
 CGLModel::~CGLModel() {
-    dlcsm_erase_vector(CGLMesh*,meshes);
-    dlcsm_erase_vector(CGLMaterial*,materials);
+    dlcsm_delete_vector(CGLMesh*,meshes);
+    dlcsm_delete_vector(CGLMaterial*,materials);
     if(bMadeLog) dlcsm_delete(pLog);
 }
 void CGLModel::Initialize() {
@@ -150,37 +150,41 @@ CGLMaterial* CGLModel::GetMaterial(int x){
 }
 
 CGLMaterial* CGLModel::GetMaterial(string inDiffuseTex){
-    for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it)
-        { if((**it).DiffuseTexture==name) return &(**it); } return 0; }
+    for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
+        if((**it).DiffuseTexture==name)
+            return &(**it);
+    }
+    return 0;
+}
+
 bool CGLModel::Draw(CGLTexture* pTexture) {
     if(!pGFX) return 0;
     glEnable(GL_TEXTURE_2D);
     bool            bMatFound;
-    CGLTexture*     pTex;
-    CGLMesh*        pMesh;
-    CGLMaterial*    pMat;
+    CGLTexture*     pTex=0;
+    CGLMesh*        pMesh=0;
+    CGLMaterial*    pMat=0;
     for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
         pMesh=(*it);
         bMatFound=false;
-        pMat=GetMaterial(pMat->iMaterialIndex);
-
-        if(pTexture) if(pTexture->glBmap) { pTex=pTexture; bMatFound=true; }
-
-        if(!bMatFound) pTex=pGFX->GetTexture(pMat->DiffuseTexture);
-        if(pTex) if(pTex->glBmap) bMatFound=true;
-        if(!bMatFound) pTex=pGFX->pDefaultTexture;
-
-        if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY); //glClientActiveTexture(GL_TEXTURE0_ARB);
-        glVertexPointer(3,GL_FLOAT,0,   pMesh->vertexArray);
-        glNormalPointer(GL_FLOAT,0,     pMesh->normalArray);
-        glTexCoordPointer(2,GL_FLOAT,0, pMesh->uvArray);
-        glDrawArrays(GL_TRIANGLES,0,    pMesh->numTriangles);
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_NORMAL_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        if(pMesh) {
+            pMat=GetMaterial(pMesh->iMaterialIndex);
+            if(pTexture) if(pTexture->glBmap) { pTex=pTexture; bMatFound=true; }
+            if(!bMatFound) pTex=pGFX->GetTexture(pMat->DiffuseTexture);
+            if(pTex) if(pTex->glBmap) bMatFound=true;
+            if(!bMatFound) pTex=pGFX->pDefaultTexture;
+            if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glEnableClientState(GL_NORMAL_ARRAY);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY); //glClientActiveTexture(GL_TEXTURE0_ARB);
+            glVertexPointer(3,GL_FLOAT,0,   pMesh->vertexArray);
+            glNormalPointer(GL_FLOAT,0,     pMesh->normalArray);
+            glTexCoordPointer(2,GL_FLOAT,0, pMesh->uvArray);
+            glDrawArrays(GL_TRIANGLES,0,    pMesh->numTriangles);
+            glDisableClientState(GL_VERTEX_ARRAY);
+            glDisableClientState(GL_NORMAL_ARRAY);
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
     }
     return true;
 }

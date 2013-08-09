@@ -114,7 +114,14 @@ GLuint CGLTexture::LoadGL(string f) {
 	ILenum error;
 	ilGenImages(1, &imageID);
 	ilBindImage(imageID);
+
+	pLog->_DebugAdd(
+"CGLTEXTURE::LoadGL FILE(%s) CWD(%s)",
+        filename.c_str(),
+	dlcs_getcwd().c_str());
+
 	success = ilLoadImage(filename.c_str());
+
 	if (success) {
 		ILinfo ImageInfo;
 		iluGetImageInfo(&ImageInfo);

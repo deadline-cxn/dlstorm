@@ -251,15 +251,13 @@ void C_GCTRL::attach_default_children(void) {
             strcpy(datafilltarget,pGUI->last_control_clicked->datafilltarget);
             strcpy(action,pGUI->last_control_clicked->action);
         }
+        string x=dlcs_getcwd();
         if(strlen(action)) {
-            dlcs_getcwd(temp);
-            // strcpy(temp,dlcs_getcwd());
             dlcs_chdir(action);
-dirs=dlcs_dir_to_vector(temp,"*.*");
+            dirs=dlcs_dir_to_vector(x.c_str(),"*.*");
             dlcs_chdir(temp);
         } else {
-            dlcs_getcwd(temp);
-            dirs=dlcs_dir_to_vector(temp,"*.*");
+            dirs=dlcs_dir_to_vector(x.c_str(),"*.*");
         }
 
         sort(dirs.begin(), dirs.end());
@@ -2076,10 +2074,9 @@ void C_GUI::call_do_line(char *line) {
 
     pLog->_DebugAdd("   GUI->call_do_line");
 
-    char temp[1024];
-    memset(temp,0,1024);
-    std::vector <std::string> vs;
-    std::vector <std::string> vin;
+    string temp;
+    vector<string> vs;
+    vector<string> vin;
     static C_GSTMP *stump;
     static C_GCTRL *ctrl;
     int prop=0;
@@ -2144,9 +2141,9 @@ void C_GUI::call_do_line(char *line) {
                     cab_call((char *)vin[1].c_str());
                 } else {
                     if(dlcs_strcasecmp((char *)vin[0].c_str(),"name")) {
-                        dlcs_getcwd(temp);
+                        temp= dlcs_getcwd();
                         pLog->_DebugAdd("Loading GUI file -> %s",
-                                        va("%s%cgumps%c%s",temp,PATH_SEP,PATH_SEP,vin[1].c_str()) );
+                                        va("%s%cgumps%c%s",temp.c_str(),PATH_SEP,PATH_SEP,vin[1].c_str()) );
                     }
                 }
             }

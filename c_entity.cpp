@@ -188,13 +188,16 @@ void C_Entity::Draw(bool bSelecting) {
         if(pTex) if(pTex->glBmap) bFoundTex=true;
     }
 
-//    if(pModel) pModel->Draw(0);
-//
- //   else {
+
+   if(pModel) pModel->Draw(0);
+
+    else {
         if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D, pTex->glBmap);
         pGFX->DrawCube();
- //   }
+    }
+
     glPopMatrix();
+
 }
 void C_Entity::Save() {
 /*  dlcsm_make_filename(filename);

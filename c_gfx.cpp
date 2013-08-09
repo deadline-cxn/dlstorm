@@ -281,8 +281,8 @@ dummy
     if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); }
     if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {    }
     else {        pLog->_Add("SDL_VideoModeOK failure");         return false;    }
-
-    if(!SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
+    pScreen=SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags);
+    if(!pScreen) {
         bSDLFailed=true;
         pLog->_Add("SDL_SetVideoMode failed");
         return false;
@@ -355,8 +355,8 @@ void C_GFX::SetWindowTitle(string fmt, ...) {
     va_start(va, f2);
     vsprintf(ach, f2, va);
     va_end(va);
-    WindowCaption.assign(ach);
-    SDL_WM_SetCaption(WindowCaption.c_str(),0);
+    windowcaption.assign(ach);
+    SDL_WM_SetCaption(windowcaption.c_str(),0);
 }
 void C_GFX::ToggleFullScreen(void) {
 #ifdef __linux__
@@ -387,6 +387,7 @@ void C_GFX::ShutDownGFX(void) {
     pLog->_Add("Textures shut down...");
     DestroyModels();
     pLog->_Add("Models shut down...");
+    SDL_FreeSurface(pScreen);
 
 }
 int C_GFX::InitGL(int x, int y) {
@@ -484,7 +485,7 @@ CGLTexture* C_GFX::GetRandomTexture(void) {
 }
 
 bool C_GFX::DestroyTextures(void) {
-    dlcsm_erase_vector(CGLTexture*,textures); /*  for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {  lcsm_delete(*it);   it = textures.erase(it);    }*/
+    dlcsm_delete_vector(CGLTexture*,textures); /*  for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {  lcsm_delete(*it);   it = textures.erase(it);    }*/
     return true;
 }
 //////////////////////////////////////////////////////////////// MODELS
@@ -522,7 +523,7 @@ CGLModel* C_GFX::GetRandomModel(void) {
     }
     return false;
 }
-bool C_GFX::DestroyModels(void) { dlcsm_erase_vector(CGLModel*,models); return true; }
+bool C_GFX::DestroyModels(void) { dlcsm_delete_vector(CGLModel*,models); return true; }
 //////////////////////////////////////////////////////////////// RENDER SCENE
 void C_GFX::RenderScene(int mx, int my) {
     glRenderMode(_glRendermode);
@@ -1125,7 +1126,7 @@ void C_GFX::DeleteEntity(C_Entity* pEntity) {
         }
     }
 }
-void C_GFX::ClearEntities(void) { dlcsm_erase_vector(C_Entity*,entities); entities.clear(); }
+void C_GFX::ClearEntities(void) { dlcsm_delete_vector(C_Entity*,entities); entities.clear(); }
 void C_GFX::LoadEntities(CVector3 WhichSector) { }
 void C_GFX::SaveEntities(CVector3 WhichSector) { }
 
