@@ -114,19 +114,12 @@ GLuint CGLTexture::LoadGL(string f) {
 	ILenum error;
 	ilGenImages(1, &imageID);
 	ilBindImage(imageID);
-
-	pLog->_DebugAdd(
-"CGLTEXTURE::LoadGL FILE(%s) CWD(%s)",
-        filename.c_str(),
-	dlcs_getcwd().c_str());
-
 	success = ilLoadImage(filename.c_str());
-
 	if (success) {
 		ILinfo ImageInfo;
 		iluGetImageInfo(&ImageInfo);
 		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT) iluFlipImage();
-		success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+		success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 		if (!success){
 			error = ilGetError();
 			pLog->_Add("  CGLTexture::LoadGL() Image conversion failed - IL reports error: %d %s",error,iluErrorString(error));
@@ -143,13 +136,13 @@ GLuint CGLTexture::LoadGL(string f) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D,  0,
-					 ilGetInteger(IL_IMAGE_BPP),
-					 ilGetInteger(IL_IMAGE_WIDTH),
-					 ilGetInteger(IL_IMAGE_HEIGHT),	 0,
-					 ilGetInteger(IL_IMAGE_FORMAT),
-					 GL_UNSIGNED_BYTE,
-					 ilGetData());
+		glTexImage2D(   GL_TEXTURE_2D,  0,
+                        ilGetInteger(IL_IMAGE_BPP),
+                        ilGetInteger(IL_IMAGE_WIDTH),
+                        ilGetInteger(IL_IMAGE_HEIGHT),	 0,
+                        ilGetInteger(IL_IMAGE_FORMAT),
+                        GL_UNSIGNED_BYTE,
+                        ilGetData());
  	}
   	else {
 		error = ilGetError();

@@ -236,41 +236,48 @@ dummy
     SDL_VideoDriverName(vdriver,sizeof(vdriver));
      pLog->_Add("Video driver[%s]",vdriver);
 
-    SDL_Rect   **VideoModes;
+
+
     VideoModes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
     if(VideoModes == (SDL_Rect **)0){
     } else {
-        if(VideoModes == (SDL_Rect **)-1) pLog->_Add("All resolutions available");
-        else { pLog->_Add("Available Modes"); for(int i=0;VideoModes[i];++i) pLog->_Add("  %d x %d", VideoModes[i]->w, VideoModes[i]->h); }
+        if(VideoModes == (SDL_Rect **)-1) pLog->_DebugAdd("All resolutions available");
+        else {
+            pLog->_DebugAdd("Available Modes");
+            for(int i=0;VideoModes[i];++i)
+                pLog->_DebugAdd("  %d x %d", VideoModes[i]->w, VideoModes[i]->h);
+        }
     }
+
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
+
     if(VideoInfo) {
-        pLog->_Add("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
-        pLog->_Add("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
-        pLog->_Add("VideoInfo->blit_hw [%d]             ",VideoInfo->blit_hw);
-        pLog->_Add("VideoInfo->blit_hw_CC [%d]          ",VideoInfo->blit_hw_CC);
-        pLog->_Add("VideoInfo->blit_hw_A [%d]           ",VideoInfo->blit_hw_A);
-        pLog->_Add("VideoInfo->blit_sw [%d]             ",VideoInfo->blit_sw);
-        pLog->_Add("VideoInfo->blit_sw_CC [%d]          ",VideoInfo->blit_sw_CC);
-        pLog->_Add("VideoInfo->blit_sw_A [%d]           ",VideoInfo->blit_sw_A);
-        pLog->_Add("VideoInfo->blit_fill [%d]           ",VideoInfo->blit_fill);
-        pLog->_Add("VideoInfo->video_mem [%d]           ",VideoInfo->video_mem);
-        pLog->_Add("VideoInfo->vfmt->BitsPerPixel [%d]  ",VideoInfo->vfmt->BitsPerPixel);
-        pLog->_Add("VideoInfo->vfmt->BytesPerPixel [%d] ",VideoInfo->vfmt->BytesPerPixel);
-        pLog->_Add("VideoInfo->vfmt->Rloss [%d]         ",VideoInfo->vfmt->Rloss);
-        pLog->_Add("VideoInfo->vfmt->Gloss [%d]         ",VideoInfo->vfmt->Gloss);
-        pLog->_Add("VideoInfo->vfmt->Bloss [%d]         ",VideoInfo->vfmt->Bloss);
-        pLog->_Add("VideoInfo->vfmt->Aloss [%d]         ",VideoInfo->vfmt->Aloss);
-        pLog->_Add("VideoInfo->vfmt->Rshift [%d]        ",VideoInfo->vfmt->Rshift);
-        pLog->_Add("VideoInfo->vfmt->Gshift [%d]        ",VideoInfo->vfmt->Gshift);
-        pLog->_Add("VideoInfo->vfmt->Bshift [%d]        ",VideoInfo->vfmt->Bshift);
-        pLog->_Add("VideoInfo->vfmt->Ashift [%d]        ",VideoInfo->vfmt->Ashift);
-        pLog->_Add("VideoInfo->vfmt->Rmask [%d]         ",VideoInfo->vfmt->Rmask);
-        pLog->_Add("VideoInfo->vfmt->Gmask [%d]         ",VideoInfo->vfmt->Gmask);
-        pLog->_Add("VideoInfo->vfmt->Bmask [%d]         ",VideoInfo->vfmt->Bmask);
-        pLog->_Add("VideoInfo->vfmt->Amask [%d]         ",VideoInfo->vfmt->Amask);
-        pLog->_Add("VideoInfo->vfmt->colorkey [%d]      ",VideoInfo->vfmt->colorkey);
-        pLog->_Add("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
+        pLog->_DebugAdd("VideoInfo->hw_available [%d]        ",VideoInfo->hw_available);
+        pLog->_DebugAdd("VideoInfo->wm_available [%d]        ",VideoInfo->wm_available);
+        pLog->_DebugAdd("VideoInfo->blit_hw [%d]             ",VideoInfo->blit_hw);
+        pLog->_DebugAdd("VideoInfo->blit_hw_CC [%d]          ",VideoInfo->blit_hw_CC);
+        pLog->_DebugAdd("VideoInfo->blit_hw_A [%d]           ",VideoInfo->blit_hw_A);
+        pLog->_DebugAdd("VideoInfo->blit_sw [%d]             ",VideoInfo->blit_sw);
+        pLog->_DebugAdd("VideoInfo->blit_sw_CC [%d]          ",VideoInfo->blit_sw_CC);
+        pLog->_DebugAdd("VideoInfo->blit_sw_A [%d]           ",VideoInfo->blit_sw_A);
+        pLog->_DebugAdd("VideoInfo->blit_fill [%d]           ",VideoInfo->blit_fill);
+        pLog->_DebugAdd("VideoInfo->video_mem [%d]           ",VideoInfo->video_mem);
+        pLog->_DebugAdd("VideoInfo->vfmt->BitsPerPixel [%d]  ",VideoInfo->vfmt->BitsPerPixel);
+        pLog->_DebugAdd("VideoInfo->vfmt->BytesPerPixel [%d] ",VideoInfo->vfmt->BytesPerPixel);
+        pLog->_DebugAdd("VideoInfo->vfmt->Rloss [%d]         ",VideoInfo->vfmt->Rloss);
+        pLog->_DebugAdd("VideoInfo->vfmt->Gloss [%d]         ",VideoInfo->vfmt->Gloss);
+        pLog->_DebugAdd("VideoInfo->vfmt->Bloss [%d]         ",VideoInfo->vfmt->Bloss);
+        pLog->_DebugAdd("VideoInfo->vfmt->Aloss [%d]         ",VideoInfo->vfmt->Aloss);
+        pLog->_DebugAdd("VideoInfo->vfmt->Rshift [%d]        ",VideoInfo->vfmt->Rshift);
+        pLog->_DebugAdd("VideoInfo->vfmt->Gshift [%d]        ",VideoInfo->vfmt->Gshift);
+        pLog->_DebugAdd("VideoInfo->vfmt->Bshift [%d]        ",VideoInfo->vfmt->Bshift);
+        pLog->_DebugAdd("VideoInfo->vfmt->Ashift [%d]        ",VideoInfo->vfmt->Ashift);
+        pLog->_DebugAdd("VideoInfo->vfmt->Rmask [%d]         ",VideoInfo->vfmt->Rmask);
+        pLog->_DebugAdd("VideoInfo->vfmt->Gmask [%d]         ",VideoInfo->vfmt->Gmask);
+        pLog->_DebugAdd("VideoInfo->vfmt->Bmask [%d]         ",VideoInfo->vfmt->Bmask);
+        pLog->_DebugAdd("VideoInfo->vfmt->Amask [%d]         ",VideoInfo->vfmt->Amask);
+        pLog->_DebugAdd("VideoInfo->vfmt->colorkey [%d]      ",VideoInfo->vfmt->colorkey);
+        pLog->_DebugAdd("VideoInfo->vfmt->alpha [%d]         ",VideoInfo->vfmt->alpha);
     } else {
         bSDLFailed=true;
         pLog->_Add("Failed getting Video Info : %s",SDL_GetError());
@@ -306,9 +313,6 @@ dummy
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
 
-    VideoInfo = SDL_GetVideoInfo();
-    pLog->_Add("SDL initialized (Video memory:[%d])",VideoInfo->video_mem);
-
     pCamera=new C_Camera();
     if(pCamera) {
         pCamera->Move_Left_Stop();
@@ -321,28 +325,37 @@ dummy
         return false;
     }
 
+    ///////////////////////////////////////////////////////////////////////
+    // Textures
     textures.clear();
-
     if(LoadTextures(pGAF)) {
         pLog->_Add("[%d] base textures loaded",textures.size());
     } else {
         pLog->_Add("Can't initialize base textures");
         return false;
     }
-
     pDefaultTexture=GetTexture("base/testprog.jpg");
-    if(!pDefaultTexture) {
-            pLog->_Add("Can't initialize Default Texture");
+    if(!pDefaultTexture) { pLog->_Add("Can't initialize Default Texture"); return false; }
+
+    ///////////////////////////////////////////////////////////////////////
+    // Models
+    models.clear();
+    if(LoadModels()) {
+        pLog->_Add("[%d] models loaded",models.size());
+    }
+    else {
+        pLog->_Add("Can't initialize models");
         return false;
     }
 
-    models.clear();
+    ///////////////////////////////////////////////////////////////////////
+    // Entities
 
-    if(!LoadModels()) return false;
-
+    entities.clear();
     InitializeEntities();
-
     pSelectedEntity=0;
+
+    pLog->_Add("[%d] entities created",entities.size());
 
     pLog->_Add("GFX Initialized");
     return true;
@@ -372,23 +385,18 @@ void C_GFX::ToggleFullScreen(void) {
     LoadTextures(pGAF);
 }
 void C_GFX::ShutDownGFX(void) {
-
     glFinish();
     glFlush();
     pLog->_Add("OpenGL shut down...");
-
     ClearEntities();
     pLog->_Add("Entities shut down...");
-
     dlcsm_delete(pCamera);
     pLog->_Add("Camera shut down...");
-
     DestroyTextures();
     pLog->_Add("Textures shut down...");
     DestroyModels();
     pLog->_Add("Models shut down...");
     SDL_FreeSurface(pScreen);
-
 }
 int C_GFX::InitGL(int x, int y) {
     float ratio = (float) x / (float) y;
@@ -454,7 +462,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
                     }
                     else {
                         textures.push_back(pTexture);
-                        pLog->_Add("Texture[%s] width[%d] height[%d] bpp[%d] GL[%d] )",
+                        pLog->_DebugAdd("Texture[%s] width[%d] height[%d] bpp[%d] GL[%d] )",
                                             pTexture->filename.c_str(),
                                             pTexture->width,
                                             pTexture->height,
@@ -483,7 +491,6 @@ CGLTexture* C_GFX::GetRandomTexture(void) {
     return false;
 
 }
-
 bool C_GFX::DestroyTextures(void) {
     dlcsm_delete_vector(CGLTexture*,textures); /*  for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {  lcsm_delete(*it);   it = textures.erase(it);    }*/
     return true;
@@ -501,7 +508,6 @@ bool C_GFX::LoadModels(void) {
             if( (!((dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,".."))))  &&
                 (!dlcs_isdir(va("models/%s",epdf->d_name)))) {
                 filename.assign(va("models/%s",epdf->d_name));
-                pLog->_Add("Loadin the model [%s]",filename.c_str());
                 pModel=new CGLModel(this,pLog);
                 if(pModel->Load(filename))  models.push_back(pModel);
                 else                        dlcsm_delete(pModel);
@@ -1003,7 +1009,7 @@ void C_GFX::MakeEntity(string name,float x, float y, float z) {
     C_Entity *pNTT = new C_Entity(pLog,pGAF,this,0);
     if(pNTT) {
         pNTT->name=name;
-        pLog->_Add("ENTITY IS NAMED [%s]",pNTT->name.c_str());
+        pLog->_DebugAdd("ENTITY IS NAMED [%s]",pNTT->name.c_str());
 
         if(x) pNTT->loc.x=x;
         else  pNTT->loc.x     = (((float)rand()/(float)RAND_MAX)*1250)-625;
@@ -1060,7 +1066,7 @@ void C_GFX::MakeEntity(string name,float x, float y, float z) {
             pNTT->pModel=GetRandomModel();
             pNTT->pTexture=0;
             if(pNTT->pModel)
-                pLog->_Add("Entity :%s", pNTT->pModel->name.c_str());
+                pLog->_DebugAdd("Entity :%s", pNTT->pModel->name.c_str());
             //pNTT->loc.x = 0.0f;
             pNTT->loc.y = 0.0f;
             //pNTT->loc.z = 0.0f;
@@ -1075,7 +1081,7 @@ void C_GFX::MakeEntity(string name,float x, float y, float z) {
             pNTT->autorot.z = 0.0f;
         }
         if(pNTT->pTexture) if(pNTT->pTexture->glBmap)
-        pLog->_Add("Entity texture set to [%s] GL[%d]", pNTT->pTexture->filename.c_str(), pNTT->pTexture->glBmap);
+        pLog->_DebugAdd("Entity texture set to [%s] GL[%d]", pNTT->pTexture->filename.c_str(), pNTT->pTexture->glBmap);
         entities.push_back(pNTT);
     }
 }

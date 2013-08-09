@@ -16,14 +16,15 @@
  ***************************************************************/
 #ifndef _DLCS_C_SOUND
 #define _DLCS_C_SOUND
-#ifdef DLCSM_WINDOWS
 #include "dlstorm.h"
 #include "fmod.h"
+#include "c_log.h"
 #define MAX_CHANNELS 32
 //////////////////////////////////// C_Sound class
 class C_Sound {
 public:
     C_Sound();
+    C_Sound(CLog* pLogIn);
     ~C_Sound();
     char *FMODVersion(void);
     char InitializeSound();
@@ -36,16 +37,14 @@ public:
     void SetSoundVolume(float f);
     int  PlaySample(char* szFilename);
     FMUSIC_MODULE * fmusic;
-    typedef struct
-     samplelist {
-        FSOUND_SAMPLE *sptr;
-    };
+    typedef struct samplelist { FSOUND_SAMPLE *sptr; };
     samplelist *sample;
     unsigned char svol;
     unsigned char mvol;
     bool bfmod;
+    CLog* pLog;
+    bool bLogCreated;
 };
-#endif
 
 #endif // _DLCS_C_SOUND
 

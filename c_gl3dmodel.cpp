@@ -68,7 +68,7 @@ void CGLModel::Initialize() {
     name.clear();
 }
 bool CGLModel::Load(string filename) {
-    pLog->_Add("============================================================");
+    pLog->_DebugAdd("============================================================");
     CGLMaterial* pMat;
     CGLMesh*     pMesh;
     name=filename;
@@ -76,23 +76,22 @@ bool CGLModel::Load(string filename) {
     const aiScene *scene = aiImportFile(filename.c_str(),aiProcessPreset_TargetRealtime_MaxQuality); // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
     if(!scene) {
         pLog->_Add("Model load error %s",filename.c_str());
-        pLog->_Add("============================================================");
         return false;
     }
     numMaterials=scene->mNumMaterials;
     numMeshes=scene->mNumMeshes;
-    pLog->_Add("MODEL[%s] MESHES[%d] MATERIALS[%d]",name.c_str(),numMeshes,numMaterials);
+    pLog->_DebugAdd("MODEL[%s] MESHES[%d] MATERIALS[%d]",name.c_str(),numMeshes,numMaterials);
     for(int i=0;i<numMaterials;i++) {
         pMat=new CGLMaterial;
-        materials.push_back(pMat);
         pMat->iMaterialIndex=i;
+        materials.push_back(pMat);
         aiMaterial *material = scene->mMaterials[i];
         aiString str;
         material->Get(AI_MATKEY_NAME,str);
         pMat->name.assign(str.C_Str());
         material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE,0),str);
         pMat->DiffuseTexture.assign(str.C_Str());
-        pLog->_Add("diffuse = %s",pMat->DiffuseTexture.c_str());
+        pLog->_DebugAdd("  Diffuse Material = %s",pMat->DiffuseTexture.c_str());
 //      pMat->DiffuseTexture.erase(pMat->DiffuseTexture.find("..\\"),3);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_NORMALS,	0 ), pMat->NormalTexture);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_HEIGHT,	    0 ), pMat->HeightTexture);
@@ -100,17 +99,18 @@ bool CGLModel::Load(string filename) {
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_SHININESS,	0 ), pMat->ShininessTexture);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_SPECULAR,	0 ), pMat->SpecularTexture);
     }
-    pLog->_Add("%d Materials loaded",materials.size());
+    pLog->_DebugAdd("%d Materials loaded",materials.size());
 
     for(int i=0;i<numMeshes;i++) {
         pMesh=new CGLMesh;
+        pMesh->iMeshIndex       = i;
         meshes.push_back(pMesh);
         aiMesh *inMesh = scene->mMeshes[i];
-        pMesh->iMeshIndex       = i;
+
         pMesh->iMaterialIndex   = inMesh->mMaterialIndex;
         pMesh->numTriangles     = inMesh->mNumFaces*3;
         pMesh->numUvCoords      = inMesh->GetNumUVChannels();
-        pLog->_Add("Meshindex[%d] MaterialIndex[%d] NumTri[%d] NumUV[%d]",
+        pLog->_DebugAdd("Meshindex[%d] MaterialIndex[%d] NumTri[%d] NumUV[%d]",
                     pMesh->iMeshIndex, pMesh->iMaterialIndex,  pMesh->numTriangles, pMesh->numUvCoords);
         pMesh->uvArray      = new float[inMesh->mNumFaces*3*2];
         pMesh->vertexArray  = new float[inMesh->mNumFaces*3*3];
@@ -133,26 +133,28 @@ bool CGLModel::Load(string filename) {
         pMesh->normalArray  -= inMesh->mNumFaces*3*3;
         pMesh->vertexArray  -= inMesh->mNumFaces*3*3;
     }
-    pLog->_Add("Model loaded: %s (%d)",name.c_str(),this);
+    pLog->_DebugAdd("Model loaded: %s (%d)",name.c_str(),this);
     return true;
 }
 CGLMesh* CGLModel::GetMesh(int x){
     for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
-            if((**it).iMeshIndex==x) return &(**it);
+            if((*it)->iMeshIndex==x) return &(**it);
     }
     return 0;
 }
 CGLMaterial* CGLModel::GetMaterial(int x){
     for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
-            if((**it).iMaterialIndex==x) return &(**it);
+            if((*it)->iMaterialIndex==x) return &(**it);
     }
     return 0;
 }
 
-CGLMaterial* CGLModel::GetMaterial(string inDiffuseTex){
+CGLMaterial* CGLModel::GetMaterial(string name){
+    pLog->_Add("%s",name.c_str());
+
     for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
-        if((**it).DiffuseTexture==name)
-            return &(**it);
+        if((*it)->DiffuseTexture==name) return &(**it);
+        pLog->_Add("%s %s",(*it)->DiffuseTexture.c_str(),name.c_str());
     }
     return 0;
 }
@@ -160,23 +162,33 @@ CGLMaterial* CGLModel::GetMaterial(string inDiffuseTex){
 bool CGLModel::Draw(CGLTexture* pTexture) {
     if(!pGFX) return 0;
     glEnable(GL_TEXTURE_2D);
-    bool            bMatFound;
+
     CGLTexture*     pTex=0;
     CGLMesh*        pMesh=0;
     CGLMaterial*    pMat=0;
+
     for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
         pMesh=(*it);
-        bMatFound=false;
         if(pMesh) {
+
+
             pMat=GetMaterial(pMesh->iMaterialIndex);
-            if(pTexture) if(pTexture->glBmap) { pTex=pTexture; bMatFound=true; }
-            if(!bMatFound) pTex=pGFX->GetTexture(pMat->DiffuseTexture);
-            if(pTex) if(pTex->glBmap) bMatFound=true;
-            if(!bMatFound) pTex=pGFX->pDefaultTexture;
+            pLog->_Add(" %s --- %s",
+                       name.c_str(),
+                       pMat->DiffuseTexture.c_str()
+                       );
+
+
+            pTex=pGFX->GetTexture(pMat->DiffuseTexture);
+
+            if(!pTex) if(pTexture) if(pTexture->glBmap) pTex=pTexture;
+            if(!pTex) pTex=pGFX->pDefaultTexture;
             if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
+
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_TEXTURE_COORD_ARRAY); //glClientActiveTexture(GL_TEXTURE0_ARB);
+            glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+             //glClientActiveTexture(GL_TEXTURE0_ARB);
             glVertexPointer(3,GL_FLOAT,0,   pMesh->vertexArray);
             glNormalPointer(GL_FLOAT,0,     pMesh->normalArray);
             glTexCoordPointer(2,GL_FLOAT,0, pMesh->uvArray);

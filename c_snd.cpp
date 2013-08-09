@@ -15,30 +15,33 @@
  **
  ***************************************************************/
 #include "c_snd.h"
-#ifdef DLCSM_WINDOWS
+
 C_Sound::C_Sound() {
+    pLog=new CLog("sound.log");
+    bLogCreated=true;
+    InitializeSound();
+}
+C_Sound::C_Sound(CLog* pInLog) {
+    pLog=pInLog;
+    bLogCreated=false;
+    InitializeSound();
+}
+C_Sound::~C_Sound() {
+    ShutDownSound();
+    if(bLogCreated) dlcsm_delete(pLog);
+}
+
+char C_Sound::InitializeSound() {
     fmusic=0;
     svol=255;
     mvol=64;
-}
-
-C_Sound::~C_Sound() {
-
-}
-
-
-
-char C_Sound::InitializeSound() {
     char x;
-
     x = FSOUND_Init(44100, MAX_CHANNELS, 0);
     if(x) {
         bfmod=1;
-
-        //MAX_CHANNELS = 6;//FSOUND_GetMaxChannels();
-
+        //MAX_CHANNELS = 6;
+        //FSOUND_GetMaxChannels();
         //Log("Max channels:[%d]",MAX_CHANNELS);
-
         sample = new samplelist[MAX_CHANNELS];
         for(int i=0; i<MAX_CHANNELS; i++) {
             sample[i].sptr=0;
@@ -46,14 +49,13 @@ char C_Sound::InitializeSound() {
         }
         //DLog("What");
     } else {
-        //Log("FMOD initialization failure...");
-        //pClientData->bSound=0;
-        //pClientData->bMusic=0;
-        //pClientData->bAudioFailure=1;
+        pLog->_Add("FMOD initialization failure...");
         bfmod=0;
     }
-    if(x) //Log("FMOD initialized");
+    if(x) {
+        pLog->_Add("FMOD %s initialized",FMODVersion());
         return x;
+    }
 }
 
 char *C_Sound::FMODVersion() {
@@ -65,7 +67,6 @@ void C_Sound::ShutDownSound(void) {
     StopAudio();
     FSOUND_Close();
     delete [] sample;
-    //DLog("FMOD soundsystem shutdown...");
 }
 
 int C_Sound::PlaySample(char* szFilename) {
@@ -142,5 +143,5 @@ void C_Sound::SetSoundVolume(float f) {
     FSOUND_SetSFXMasterVolume(svol);
 }
 
-#endif // DLCSM_WINDOWS
+
 

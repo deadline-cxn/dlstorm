@@ -517,20 +517,7 @@ C6700+	_TMS320C6700_PLUS
 C6740	_TMS320C6740
 TMS470
 Type	Macro
-Identification	__TMS470__
-
-
-
-
-
-
-
-
-
-
-
-
-                     */
+Identification	__TMS470__              */
 
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -546,20 +533,6 @@ Identification	__TMS470__
 #define DLCSM_WINDOWS
 #endif
 #ifdef DLCSM_WINDOWS
-#define byte unsigned char
-#define sbyte char
-#define _word unsigned short
-#define sword short
-#define _dword unsigned long
-#define sdword long
-#define qword unsigned _int64
-#define sqword _int64
-#define dwbool unsigned long
-#define bbool unsigned char
-#define u_char unsigned char
-#define u_short unsigned short
-#define u_int unsigned int
-#define u_long unsigned long
 #define	MAC_STATIC
 #undef QDECL
 #define	QDECL	__cdecl
@@ -849,7 +822,7 @@ typedef struct { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define dlcsm_delete_array(x)   if(x) delete [] x; x=0;
 #define dlcsm_malloc(x,y)       (x*) malloc(sizeof(x) * y);
 #define dlcsm_free(x)           if(x) free(x); x=0;
-#define dlcsm_delete_vector(x,y) for(vector<x>::iterator i=y.begin();i!=y.end(); ){ dlcsm_delete(*i);i=y.erase(i); pLog->_Add("Deleting vector [%d]",y.size()); }
+#define dlcsm_delete_vector(x,y) for(vector<x>::iterator i=y.begin();i!=y.end(); ){ dlcsm_delete(*i);i=y.erase(i); pLog->_DebugAdd("Deleting vector [%d]",y.size()); }
 #define dlcsm_gl_delete(x)      if(glIsTexture(x)) glDeleteTextures(1,&x); x=0;
 #define LONGRGB(r,g,b)          ((long)(((u_char)(r)|((u_short)((u_char)(g))<<8))|(((long)(u_char)(b))<<16)))
 // MATH MACROS
@@ -869,20 +842,13 @@ typedef struct { int numtriangles; TRIANGLE* triangle; } SECTOR;
 #define dlcsm_make_str(x)       char x[TEXTNAME_SIZE]; memset(x,0,TEXTNAME_SIZE);
 #define dlcsm_make_lstr(x,y)    char x[y]; memset(x,0,y);
 // #define dlcsm_zero(x)           memset(x,0,sizeof(x));
-////////////////////////////////////////////////////////////////////////////////////////
-// Do a log if defined
-#ifdef _DL_INCLUDE_LOG
-#include "c_log.h"
-class CLog;
-extern CLog* p_Log;
-extern "C" void dLog(const char *format, ...);
-#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // DL Code Storm Library functions and definitions
 namespace DLCODESTORM {
 const char *va(const char *format, ...);
-vector<string>  dlcs_explode(const string &delimiter, const string &explodeme);
-vector<string>  dlcs_dir_to_vector(char *szDir, char *szWildCard);
+vector<string> dlcs_explode(const string &delimiter, const string &explodeme);
+vector<string> dlcs_dir_to_vector(char *szDir, char *szWildCard);
 bool    dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard);
 string  dlcs_md5_digest(string str);
 string  dlcs_encrypt(string text);
@@ -901,7 +867,6 @@ int     dlcs_mkdir(char *szDirectoryName);
 int     dlcs_chdir(char *szDirectory);
 string  dlcs_getcwd(void);
 int     dlcs_strcasecmp(const char* szOne,const char* szTwo);
-// int     dlcs_str2mem(char *string, char &mem);
 char*   dlcs_trim_lf(char* x);
 char*   dlcs_charreplace(char* str, char cold,char cnew);
 char*   dlcs_strreplace(char* str, const char* what, const char* to);

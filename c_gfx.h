@@ -110,6 +110,8 @@ public:
     CLog*       pLog;
     CGAF*       pGAF;
 
+    SDL_Rect   **VideoModes;
+
     vector<CGLTexture*> textures;
     vector<CGLModel*>   models;
     vector<C_Entity*>   entities;

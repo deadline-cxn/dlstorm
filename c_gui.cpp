@@ -3208,12 +3208,12 @@ bool C_GUI::loadFonts(void) {
                     pFont->iWhich=x;
                     x++;
                     if(!pFont->pFontTex) {
-                        pLog->AddEntry("ERROR LOADING %s (CGLTEXTURE OBJECT DESTROYED)\n",fx.c_str());//epdf->d_name);
+                        pLog->_DebugAdd("ERROR LOADING %s (CGLTEXTURE OBJECT DESTROYED)",fx.c_str());//epdf->d_name);
                         if(pFont==pFirstFont) { dlcsm_delete(pFirstFont); pFont=0; }
                         else dlcsm_delete(pFirstFont);
                         if(pOldFont) pOldFont->pNext=0;
                     } else {
-                        pLog->AddEntry("Font texture %s loaded (OPENGL[%d]) \n",pFont->pFontTex->filename.c_str(),pFont->pFontTex->glBmap);
+                        pLog->_DebugAdd("Font texture %s loaded (OPENGL[%d])",pFont->pFontTex->filename.c_str(),pFont->pFontTex->glBmap);
                     }
 
             }

@@ -79,7 +79,7 @@ GLvoid C_MouseCursor::load(string f) {
     else {
         pTexture=new CGLTexture(pLog);
         pTexture->LoadGL(filename);
-        pLog->_Add("MOUSE TEXTURE: %s\n",pTexture->filename.c_str());
+        pLog->_DebugAdd("MOUSE TEXTURE: %s\n",pTexture->filename.c_str());
     }
     /*  if(!strlen(file)) return;
         strcpy(filename,file);
