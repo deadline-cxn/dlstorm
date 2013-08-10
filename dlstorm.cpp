@@ -77,104 +77,59 @@ bool DLCODESTORM::dlcs_istrue(string text) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 vector<string> DLCODESTORM::dlcs_dir_to_vector(char *szDir, char *szWildCard) {
     vector <string> diro;
+    string f;
+    string d;
+    d.assign(szDir);
     diro.clear();
-
-
-#ifdef DLCS_WINDOWS
-    //FILE *fp;
-    HANDLE          dirsearch;  // Directory handle for reading directory information
-    WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
-    char szCurrentDir[_MAX_PATH];
-    GetCurrentDirectory(_MAX_PATH,szCurrentDir);
-    SetCurrentDirectory(szDir);
-    dirsearch = FindFirstFile( szWildCard, &FileData );
-    if(dirsearch==INVALID_HANDLE_VALUE) return diro;
-
-    //fp=fopen(szFile,"wt");
-    //if(!fp) return false;
-
-    while(GetLastError() != ERROR_NO_MORE_FILES) {
-        if(!strcmp(FileData.cFileName,".")) {
-            FindNextFile(dirsearch, &FileData);
-            continue;
+    DIR *dpdf;
+    struct dirent *epdf;
+    dpdf = opendir(szDir);
+    if (dpdf != NULL) {
+        while (epdf = readdir(dpdf)) {
+            if((!((dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,".."))))) {
+                f.assign(va("%s%c%s",szDir,PATH_SEP,epdf->d_name));
+                if(!dlcs_isdir(f.c_str())) {
+                    diro.push_back(f);
+                }
+                else {
+                    vector<string>x=dlcs_dir_to_vector(f.c_str(),szWildCard);
+                    diro.insert( diro.end(), x.begin(), x.end() );
+                }
+            }
         }
-        if(!strcmp(FileData.cFileName,"..")) {
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-
-        if(!strcmp(FileData.cFileName,".")) {
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-
-        if(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            diro.push_back( va("<DIR> %s",FileData.cFileName) );
-            //fputs("<DIR>.",fp);
-            //fputs(FileData.cFileName,fp);
-            //fputc('\n',fp);
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-        diro.push_back(FileData.cFileName);
-        //fputs(FileData.cFileName,fp);
-        //fputc('\n',fp);
-        FindNextFile(dirsearch, &FileData);
     }
-    FindClose(dirsearch);
-    SetCurrentDirectory(szCurrentDir);
-    //fclose(fp);
-
-#endif
-
+    closedir(dpdf);
     return diro;
-
+/* #include <fnmatch.h>
+int fnmatch(const char *pattern, const char *string, int flags);
+Description
+The fnmatch() function checks whether the string argument matches the pattern argument, which is a shell wildcard pattern.
+The flags argument modifies the behavior; it is the bitwise OR of zero or more of the following flags:
+FNM_NOESCAPE If this flag is set, treat backslash as an ordinary character, instead of an escape character.
+FNM_PATHNAME If this flag is set, match a slash in string only with a slash in pattern and not by an asterisk (*) or a question mark (?) metacharacter, nor by a bracket expression ([]) containing a slash.
+FNM_PERIOD   If this flag is set, a leading period in string has to be matched exactly by a period in pattern. A period is considered to be leading if it is the first character in string, or if both FNM_PATHNAME is set and the period immediately follows a slash.
+FNM_FILE_NAME This is a GNU synonym for FNM_PATHNAME.
+FNM_LEADING_DIR If this flag (a GNU extension) is set, the pattern is considered to be matched if it matches an initial segment of string which is followed by a slash. This flag is mainly for the internal use of glibc and is only implemented in certain cases.
+FNM_CASEFOLD  If this flag (a GNU extension) is set, the pattern is matched case-insensitively.
+Return Value  Zero if string matches pattern, FNM_NOMATCH if there is no match or another nonzero value if there is an error.*/
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool DLCODESTORM::dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
-#ifdef DLCS_WINDOWS
     FILE *fp;
-    HANDLE          dirsearch;  // Directory handle for reading directory information
-    WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
-    char szCurrentDir[_MAX_PATH];
-    GetCurrentDirectory(_MAX_PATH,szCurrentDir);
-    SetCurrentDirectory(szDir);
-    dirsearch = FindFirstFile( szWildCard, &FileData );
-    if(dirsearch==INVALID_HANDLE_VALUE) return false;
     fp=fopen(szFile,"wt");
     if(!fp) return false;
-    while(GetLastError() != ERROR_NO_MORE_FILES) {
-        if(!strcmp(FileData.cFileName,".")) {
-            FindNextFile(dirsearch, &FileData);
-            continue;
+    DIR *dpdf;
+    struct dirent *epdf;
+    dpdf = opendir(szDir);
+    if (dpdf != NULL) {
+        while (epdf = readdir(dpdf)) {
+            if(!((dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,".."))))
+               if(!dlcs_isdir(epdf->d_name))
+                fputs(epdf->d_name,fp);
         }
-
-        if(!strcmp(FileData.cFileName,"..")) {
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-
-        if(!strcmp(FileData.cFileName,".")) {
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-
-        if(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            fputs("<DIR>.",fp);
-            fputs(FileData.cFileName,fp);
-            fputc('\n',fp);
-
-            FindNextFile(dirsearch, &FileData);
-            continue;
-        }
-        fputs(FileData.cFileName,fp);
-        fputc('\n',fp);
-        FindNextFile(dirsearch, &FileData);
     }
-    FindClose(dirsearch);
-    SetCurrentDirectory(szCurrentDir);
+    closedir(dpdf);
     fclose(fp);
-#endif
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,6 +271,12 @@ bool DLCODESTORM::dlcs_isdir(char *dir) {
     if(stat(dir,&st)==-1) return false;
     if(st.st_mode&S_IFDIR) return true;
     return false;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+int DLCODESTORM::dlcs_get_filesize(string f) {
+    struct stat st;
+    if(stat(f.c_str(),&st)==-1) return false;
+    return st.st_size;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_filetype(string pathName){

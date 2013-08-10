@@ -67,8 +67,11 @@ namespace DLCODESTORM {
     string  dlcs_get_os_version(void);
     string  dlcs_get_hostname(void);
     string  dlcs_get_ipaddress(void);
+
     bool    dlcs_isdir(char *dir);
+    int     dlcs_get_filesize(string file);
     string  dlcs_filetype(string pathName);
+
     int     dlcs_mkdir(char *szDirectoryName);
     int     dlcs_chdir(char *szDirectory);
     string  dlcs_getcwd(void);
