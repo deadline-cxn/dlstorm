@@ -1103,8 +1103,8 @@ void C_GFX::SelectEntity(C_Entity* pEntity) {
 }
 void C_GFX::SelectClosestEntity(void) {
     ClearSelectEntity();
-    CVector3 thisloc;
-    CVector3 v;
+    dlcs_V3 thisloc;
+    dlcs_V3 v;
     thisloc=pCamera->loc;
     float dist;
     float closestDist = 1000000000.0f;
@@ -1133,8 +1133,8 @@ void C_GFX::DeleteEntity(C_Entity* pEntity) {
     }
 }
 void C_GFX::ClearEntities(void) { dlcsm_delete_vector(C_Entity*,entities); entities.clear(); }
-void C_GFX::LoadEntities(CVector3 WhichSector) { }
-void C_GFX::SaveEntities(CVector3 WhichSector) { }
+void C_GFX::LoadEntities(dlcs_V3 WhichSector) { }
+void C_GFX::SaveEntities(dlcs_V3 WhichSector) { }
 
 
 

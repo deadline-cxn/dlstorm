@@ -80,7 +80,7 @@ vector<string> DLCODESTORM::dlcs_dir_to_vector(char *szDir, char *szWildCard) {
     diro.clear();
 
 
-#ifdef _WINDOWS_
+#ifdef DLCS_WINDOWS
     //FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
@@ -132,7 +132,7 @@ vector<string> DLCODESTORM::dlcs_dir_to_vector(char *szDir, char *szWildCard) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool DLCODESTORM::dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
-#ifdef _WINDOWS_
+#ifdef DLCS_WINDOWS
     FILE *fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
@@ -260,7 +260,7 @@ int DLCODESTORM::dlcs_bin_to_dec(char *pa) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void DLCODESTORM::dlcs_suspend_power_management(void) {
-#ifdef DLCSM_WINDOWS
+#ifdef DLCS_WINDOWS
 /*
     TCHAR szPath[MAX_PATH];
     HINSTANCE hInstKernel32 = NULL;
@@ -357,7 +357,7 @@ string DLCODESTORM::dlcs_getcwd() {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_get_os_version() {
     string x="Unknown OS";
-#ifdef DLCSM_WINDOWS
+#ifdef DLCS_WINDOWS
     dlcsm_make_str(szTemp); dlcsm_make_str(szTemp2);
     OSVERSIONINFOEX osvi;
     BOOL bOsVersionInfoEx;
@@ -401,7 +401,78 @@ string DLCODESTORM::dlcs_get_os_version() {
         if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90) strcpy(szTemp,"Windows ME");
         break;
     }
+    /*
+
+ PGPI pGPI = (PGPI) GetProcAddress(
+            GetModuleHandle(TEXT("kernel32.dll")),
+            "GetProductInfo");
+
+
+    pGPI( osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+     switch( dwType )  {
+        case PRODUCT_ULTIMATE:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Ultimate Edition" ));
+           break;
+        case PRODUCT_PROFESSIONAL:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Professional" ));
+           break;
+        case PRODUCT_HOME_PREMIUM:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Home Premium Edition" ));
+           break;
+        case PRODUCT_HOME_BASIC:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Home Basic Edition" ));
+           break;
+        case PRODUCT_ENTERPRISE:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition" ));
+           break;
+        case PRODUCT_BUSINESS:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Business Edition" ));
+           break;
+        case PRODUCT_STARTER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Starter Edition" ));
+           break;
+        case PRODUCT_CLUSTER_SERVER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Cluster Server Edition" ));
+           break;
+        case PRODUCT_DATACENTER_SERVER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Datacenter Edition" ));
+           break;
+        case PRODUCT_DATACENTER_SERVER_CORE:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Datacenter Edition (core installation)" ));
+           break;
+        case PRODUCT_ENTERPRISE_SERVER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition" ));
+           break;
+        case PRODUCT_ENTERPRISE_SERVER_CORE:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition (core installation)" ));
+           break;
+        case PRODUCT_ENTERPRISE_SERVER_IA64:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Enterprise Edition for Itanium-based Systems" ));
+           break;
+        case PRODUCT_SMALLBUSINESS_SERVER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Small Business Server" ));
+           break;
+        case PRODUCT_SMALLBUSINESS_SERVER_PREMIUM:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Small Business Server Premium Edition" ));
+           break;
+        case PRODUCT_STANDARD_SERVER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Standard Edition" ));
+           break;
+        case PRODUCT_STANDARD_SERVER_CORE:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Standard Edition (core installation)" ));
+           break;
+        case PRODUCT_WEB_SERVER:
+           // StringCchCat(pszOS, BUFSIZE, TEXT("Web Server Edition" ));
+           break;
+        default:
+            break;
+        }
+        }
+        */
+
+
     x.assign(szTemp);
+
 #endif
 #ifdef DLCSM_LINUX
     x.assign("LINUX");

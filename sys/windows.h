@@ -8,23 +8,26 @@
  **
  **   License:      BSD
  **   Copyright:    2013
- **   File:         gnu.h
- **   Description:  GNU compatibility
+ **   File:         sys/windows.h
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
  **
  ***************************************************************/
-#ifndef DLCS_S_GNU_H
-#define DLCS_S_GNU_H
-#ifndef DLCS_WINDOWS
-#include "dlstorm.h"
-typedef unsigned char byte;
-extern "C" long GetTickCount(void);
-extern "C" void Sleep(int ms);
-extern "C" int _kbhit(void);
-extern "C" int _getch(void);
-extern "C" void close_keyboard(void);
-#endif // DLCS_WINDOWS
-#endif // DLCS_S_GNU_H
+#ifndef _DLCS_SYS_WINDOWS
+#define _DLCS_SYS_WINDOWS
+#define	PATH_SEP '\\'
+#include <windows.h>
+#include <winbase.h>
+#include <tchar.h>
+#include <winsock2.h>
+#include <direct.h>
+#include <conio.h>
+#ifndef _MMEDIA_
+#define _MMEDIA_
+#include <mmsystem.h>
+#include <mmreg.h>
+#endif//_MMEDIA
+#endif // _DLCS_SYS_WINDOWS
+

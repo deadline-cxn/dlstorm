@@ -68,6 +68,7 @@ void CGLModel::Initialize() {
     name.clear();
 }
 bool CGLModel::Load(string filename) {
+    vector<string> strx;
     pLog->_DebugAdd("============================================================");
     CGLMaterial* pMat;
     CGLMesh*     pMesh;
@@ -92,6 +93,8 @@ bool CGLModel::Load(string filename) {
         material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE,0),str);
         pMat->DiffuseTexture.assign(str.C_Str());
         pLog->_DebugAdd("  Diffuse Material = %s",pMat->DiffuseTexture.c_str());
+        strx=dlcs_explode("\\",pMat->DiffuseTexture);
+        pMat->DiffuseTexture=strx.back();
 //      pMat->DiffuseTexture.erase(pMat->DiffuseTexture.find("..\\"),3);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_NORMALS,	0 ), pMat->NormalTexture);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_HEIGHT,	    0 ), pMat->HeightTexture);
@@ -153,7 +156,15 @@ CGLMaterial* CGLModel::GetMaterial(string name){
     pLog->_Add("%s",name.c_str());
 
     for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
-        if((*it)->DiffuseTexture==name) return &(**it);
+
+        if(
+           (*it)->DiffuseTexture
+
+           ==
+
+           name)
+
+            return &(**it);
         pLog->_Add("%s %s",(*it)->DiffuseTexture.c_str(),name.c_str());
     }
     return 0;
@@ -173,13 +184,10 @@ bool CGLModel::Draw(CGLTexture* pTexture) {
 
 
             pMat=GetMaterial(pMesh->iMaterialIndex);
-            pLog->_Add(" %s --- %s",
-                       name.c_str(),
-                       pMat->DiffuseTexture.c_str()
-                       );
 
+            //pLog->_Add(" %s --- %s", name.c_str(), pMat->DiffuseTexture.c_str() );
 
-            pTex=pGFX->GetTexture(pMat->DiffuseTexture);
+            pTex=pGFX->GetTexture("base/"+pMat->DiffuseTexture);
 
             if(!pTex) if(pTexture) if(pTexture->glBmap) pTex=pTexture;
             if(!pTex) pTex=pGFX->pDefaultTexture;

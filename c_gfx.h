@@ -63,9 +63,9 @@ public:
     void        mouseMovement(int x, int y);
     C_Entity*   pFollowEntity;
     float       bounce;
-    CVector3    loc;
-    CVector3    rot;
-    CVector3    scale;
+    dlcs_V3    loc;
+    dlcs_V3    rot;
+    dlcs_V3    scale;
 
     bool        bMovingLeft;
     bool        bMovingRight;
@@ -120,7 +120,7 @@ public:
     C_Entity*   pSelectedEntity;// Selected Entity
     GLuint      _glRendermode;
 
-    CVector3    Sector;
+    dlcs_V3    Sector;
 
     string      windowcaption;
     bool        bEditEntities;
@@ -191,8 +191,8 @@ public:
     void        MakeEntity(string inname,float x, float y, float z);
     void        DeleteEntity(C_Entity* pEntity);
     void        ClearEntities(void);
-    void        LoadEntities(CVector3 WhichSector);
-    void        SaveEntities(CVector3 WhichSector);
+    void        LoadEntities(dlcs_V3 WhichSector);
+    void        SaveEntities(dlcs_V3 WhichSector);
     void        DrawEntities(void);
 };
 #endif // _DLCS_C_GAF
