@@ -15,10 +15,9 @@
  **
  ***************************************************************/
 #include "c_snd.h"
-
 C_Sound::C_Sound() {
-    pLog=new CLog("sound.log");
-    bLogCreated=true;
+    pLog=0;
+    bLogCreated=false;
     InitializeSound();
 }
 C_Sound::C_Sound(CLog* pInLog) {
@@ -30,7 +29,6 @@ C_Sound::~C_Sound() {
     ShutDownSound();
     if(bLogCreated) dlcsm_delete(pLog);
 }
-
 char C_Sound::InitializeSound() {
     fmusic=0;
     svol=255;
@@ -49,11 +47,14 @@ char C_Sound::InitializeSound() {
         }
         //DLog("What");
     } else {
-        pLog->_Add("FMOD initialization failure...");
+
+        Log("FMOD init failure...");
         bfmod=0;
     }
     if(x) {
-        pLog->_Add("FMOD %s initialized",FMODVersion());
+        Log("FMOD initialized ");
+        Log(FMODVersion());
+
         return x;
     }
 }
@@ -142,6 +143,14 @@ void C_Sound::SetSoundVolume(float f) {
     svol=(u_char)f;
     FSOUND_SetSFXMasterVolume(svol);
 }
-
+void C_Sound::Log(string x) {
+    if(pLog) {
+#ifndef _DLCS_CONSOLE
+        pLog->_Add(x.c_str());
+#endif
+    } else {
+        cout << x << endl;
+    }
+}
 
 

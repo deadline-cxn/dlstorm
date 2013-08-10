@@ -286,8 +286,9 @@ dummy
     if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces...");}
     else { VideoFlags |= SDL_SWSURFACE; pLog->_Add("Software surfaces..."); }
     if(VideoInfo->blit_hw) { VideoFlags |= SDL_HWACCEL; pLog->_Add("Hardware acceleration enabled!"); }
+
     if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {    }
-    else {        pLog->_Add("SDL_VideoModeOK failure");         return false;    }
+    else { pLog->_Add("SDL_VideoModeOK failure");         return false;    }
     pScreen=SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags);
     if(!pScreen) {
         bSDLFailed=true;

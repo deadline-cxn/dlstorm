@@ -26,6 +26,7 @@ public:
     C_Sound();
     C_Sound(CLog* pLogIn);
     ~C_Sound();
+    void Log(string x);
     char *FMODVersion(void);
     char InitializeSound();
     void ShutDownSound(void);
@@ -42,6 +43,7 @@ public:
     unsigned char svol;
     unsigned char mvol;
     bool bfmod;
+    bool bConsoleMode;
     CLog* pLog;
     bool bLogCreated;
 };
