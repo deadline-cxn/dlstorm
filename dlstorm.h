@@ -57,6 +57,7 @@ namespace DLCODESTORM {
     vector<string> dlcs_dir_to_vector(char *szDir, char *szWildCard);
     bool    dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard);
     string  dlcs_md5_digest(string str);
+    string  dlcs_md5_file(string file);
     string  dlcs_encrypt(string text);
     string  dlcs_decrypt(string text);
     bool    dlcs_istrue(string text);

@@ -89,7 +89,9 @@
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <fcntl.h>
 #include "md5.h"
+// #include "openssl/md5.h"
 
 ////////////////////////////////////////////////////////////////////////////////////
 // System independant

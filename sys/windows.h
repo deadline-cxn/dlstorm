@@ -29,5 +29,20 @@
 #include <mmsystem.h>
 #include <mmreg.h>
 #endif//_MMEDIA
+
+
+
+#define PROT_READ   0x0001
+#define PROT_WRITE  0x0002
+#define PROT_EXEC   0x0004
+#define PROT_NONE   0x0008
+
+#define MAP_SHARED  0x0001
+#define MAP_PRIVATE 0x0002
+#define MAP_FIXED   0x0004
+
+#define MAP_FAILED  ((void *)-1)
+
+
 #endif // _DLCS_SYS_WINDOWS
 

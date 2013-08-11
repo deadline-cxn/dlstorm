@@ -149,6 +149,35 @@ char* DLCODESTORM::dlcs_trim_lf(char* x) {
 string DLCODESTORM::dlcs_md5_digest(string str) { // return a md5 digest of text
     return md5(str);
 }
+string DLCODESTORM::dlcs_md5_file(string file) { // return md5 digest of file
+    string in_md5;
+    string out_md5;
+    /*(int file_descript;
+    char* file_buffer;
+    file_descript = open(file.c_str(), O_RDONLY);
+    if(file_descript < 0) out_md5="(ERROR)";
+    else {
+        struct stat statbuf;
+        if(fstat(file_descript, &statbuf) < 0) out_md5="(ERROR)";
+        else {
+            file_buffer =
+
+            // mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, file_descript, 0);
+
+            for(i=0; i <MD5_DIGEST_LENGTH; i++) {
+                printf("%02x",md[i]);
+            }
+            MD5((unsigned char*) file_buffer, file_size, result);
+            print_md5_sum(result);
+            // printf("  %s\n", argv[1]);
+            }
+        in_md5.assign(file_buffer)
+        out_md5=md5(in_md5);
+    }
+    */
+    return out_md5;
+
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_encrypt(string text) { return text; } // TODO
 ////////////////////////////////////////////////////////////////////////////////////////////////
