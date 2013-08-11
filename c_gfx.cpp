@@ -537,6 +537,7 @@ void C_GFX::RenderScene(int mx, int my) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     DrawFog();
     DrawSkyBox(); // TODO: Fix Skybox
+    // DrawStarField(1);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     pCamera->Go();
@@ -679,7 +680,7 @@ void C_GFX::Draw3DBox(RECT rect) {
 }
 //////////////////////////////////////////////////////////////// MISC 3D DRAW FUNCTIONS
 void C_GFX::DrawFog(void) {
-    /*  GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
+/*  GLfloat fogColor[4] = {0.5, 0.5, 0.5, 1.0};
     GLfloat density = 0.02; //set the density to 0.3 which isacctually quite thick
     glEnable (GL_FOG);              //enable this for fog
     glFogi (GL_FOG_MODE, GL_EXP2); //set the fog mode to GL_EXP2
@@ -688,7 +689,7 @@ void C_GFX::DrawFog(void) {
     glHint (GL_FOG_HINT, GL_NICEST); // set the fog to look the nicest, may slow down on older cards
     glFogf (GL_FOG_START, 10.0f);
     glFogf (GL_FOG_END, 680.0f);   // Enable Pointers
-    //glFogi (GL_FOG_MODE, GL_LINEAR); */
+    glFogi (GL_FOG_MODE, GL_LINEAR); */
 }
 void C_GFX::DrawSun(void) {
     static float der;

@@ -76,9 +76,7 @@ void C_Entity::Initialize(void) {
 void C_Entity::DrawLight(void) {
 
      if(type==ENTITY_LIGHT) {
-        // glLoadIdentity();
         glPushMatrix();
-        // pGFX->pCamera->Go();
         GLfloat ambient[]   = { 0.2f, 0.2f, 0.2f, 1.0f};
         GLfloat location[]  = { loc.x, loc.y, loc.z, 1.0f};
         GLfloat diffuse[]   = { 1.0f, 1.0f, 1.0f, 1.0f};
@@ -188,11 +186,10 @@ void C_Entity::Draw(bool bSelecting) {
         if(pTex) if(pTex->glBmap) bFoundTex=true;
     }
 
-
-   if(pModel) pModel->Draw(0);
-
+    if(pModel) pModel->Draw(pTex);
     else {
-        if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D, pTex->glBmap);
+        if(pTex) if(pTex->glBmap)
+            glBindTexture(GL_TEXTURE_2D, pTex->glBmap);
         pGFX->DrawCube();
     }
 

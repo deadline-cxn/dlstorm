@@ -3408,6 +3408,8 @@ int  C_GUI::processKeyboard() {
                 case '\\':
                     ikey=(SDLKey)'|';
                     break;
+                default:
+                    break;
                 }
             }
 
@@ -3515,6 +3517,8 @@ int  C_GUI::processKeyboard() {
                 case '\\':
                     ikey=(SDLKey)'|';
                     break;
+                default:
+                    break;
                 }
             }
 
@@ -3591,6 +3595,8 @@ int  C_GUI::processKeyboard() {
                 case SDLK_PAGEDOWN:
                     break;
                 case SDLK_PAGEUP:
+                    break;
+                default:
                     break;
 
                 }

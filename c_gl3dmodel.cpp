@@ -152,21 +152,11 @@ CGLMaterial* CGLModel::GetMaterial(int x){
     }
     return 0;
 }
-
 CGLMaterial* CGLModel::GetMaterial(string name){
     pLog->_Add("%s",name.c_str());
-
     for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
-
-        if(
-           (*it)->DiffuseTexture
-
-           ==
-
-           name)
-
+        if((*it)->DiffuseTexture==name)
             return &(**it);
-        pLog->_Add("%s %s",(*it)->DiffuseTexture.c_str(),name.c_str());
     }
     return 0;
 }
@@ -174,26 +164,22 @@ CGLMaterial* CGLModel::GetMaterial(string name){
 bool CGLModel::Draw(CGLTexture* pTexture) {
     if(!pGFX) return 0;
     glEnable(GL_TEXTURE_2D);
-
     CGLTexture*     pTex=0;
     CGLMesh*        pMesh=0;
     CGLMaterial*    pMat=0;
-
     for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
         pMesh=(*it);
         if(pMesh) {
-
-
-            pMat=GetMaterial(pMesh->iMaterialIndex);
-
-            //pLog->_Add(" %s --- %s", name.c_str(), pMat->DiffuseTexture.c_str() );
-
-            pTex=pGFX->GetTexture("base/"+pMat->DiffuseTexture);
-
-            if(!pTex) if(pTexture) if(pTexture->glBmap) pTex=pTexture;
-            if(!pTex) pTex=pGFX->pDefaultTexture;
-            if(pTex) if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
-
+            if(!pTexture) {
+                pMat=GetMaterial(pMesh->iMaterialIndex);
+                pTex=pGFX->GetTexture("base/"+pMat->DiffuseTexture);
+                if(!pTex) pTex=pGFX->pDefaultTexture;
+            }
+            else {
+                if(pTexture->glBmap) pTex=pTexture;
+                else pTex=pGFX->pDefaultTexture;
+            }
+            if(pTex)  if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_NORMAL_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
