@@ -17,6 +17,7 @@
  **
  ******************************************************************************/
 #include "dlstorm.h" // __stdcall DllMain() { return 0; }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 char _DLCODESTORM_vx[1024]; // keep this in the global space TODO: improve this
 const char *DLCODESTORM::va(const char *format, ...) {
@@ -64,10 +65,7 @@ char* DLCODESTORM::dlcs_get_filetype(char* x, char* in) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool DLCODESTORM::dlcs_istrue(string text) {
-    dlcsm_make_str(t);
-    strcpy( t, tolower(text.c_str()));
-    text.assign(t);
-
+    text=dlcs_tolower(text);
     if(text=="on")  return true;
     if(text=="1")   return true;
     if(text=="true")return true;
@@ -75,7 +73,16 @@ bool DLCODESTORM::dlcs_istrue(string text) {
     return false;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-vector<string> DLCODESTORM::dlcs_dir_to_vector(char *szDir, char *szWildCard) {
+string DLCODESTORM::dlcs_tolower(string z) {
+    dlcsm_make_filename(x);
+    strcpy(x,z.c_str());
+    int i=0;
+    while (x[i]) { x[i] = tolower(x[i]); i++; }
+    z.assign(x);
+    return z;
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
+vector<string> DLCODESTORM::dlcs_dir_to_vector(char* szDir, char* szWildCard) {
     vector <string> diro;
     string f;
     string d;
@@ -472,65 +479,39 @@ string DLCODESTORM::dlcs_get_ipaddress() {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-
 string  DLCODESTORM::dlcs_get_webpage(string url) {
-
-    return url;
-
+    string rstr;
     string host;
     vector<string> strx;
     strx=dlcs_explode(url,"/");
     host=strx[1];
-
-
     int s, error;
     struct sockaddr_in addr;
-    struct sockaddr_in t_addr;
-
     if((s = socket(AF_INET,SOCK_STREAM,0))<0) { cout<<"Error 01: creating socket failed!\n"; close(s);        return 1;     }
     addr.sin_family = AF_INET;
     addr.sin_port = htons(80);
-
-
-    // dlcs_inet_ntoa(url);
-    // NET_GetAddrFromName(url, &addr.sin_addr);
-
-    // inet_aton("10.1.10.198",&addr.sin_addr);
-    // char *ip = inet_ntoa(their_addr.sin_addr);
-
-
     error = connect(s,(sockaddr*)&addr,sizeof(addr));
     if(error!=0) {
-        cout<<"Error 02: conecting to server failed!\n";
+        rstr= "Error: conecting to server failed!";
         close(s);
-        return 1;
+        return rstr;
     }
-
     string hostname   = "3dnetlabs.info";
     string page       = "/files/";
     string get_string = "GET "+page+" http/1.1\nHOST: "+hostname+"\n\n";
-
     int x=get_string.length();
     char msg[x];
-
     strcpy(msg,get_string.c_str());
     char answ[1024];
-
     send(s,msg,sizeof(msg),0);
-
     ssize_t len;
-    string whatthefuck;
 	while((len = recv(s, answ, 1024, 0)) > 0)
-        // cout.write(answ, len);
-        for(int zz=0;zz<len;zz++) whatthefuck+=answ[zz];
-    cout << std::flush;
-
+        for(int zz=0;zz<len;zz++)
+            rstr+=answ[zz];
 	close(s);
-
-	cout << whatthefuck << endl;
+	return rstr;
 }
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_dns_lookup(string url) {
     string ip;
     struct hostent *h;
@@ -551,8 +532,9 @@ string DLCODESTORM::dlcs_dns_lookup(string url) {
     }
     return ip;
 }
+////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_inet_ntoa(string ip) {
     return ip;
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////
 

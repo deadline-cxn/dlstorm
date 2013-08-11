@@ -16,8 +16,14 @@
  ***************************************************************/
 #ifndef _DLCS_C_SOUND
 #define _DLCS_C_SOUND
+
+#ifdef DLCS_WINDOWS
+
+
 #include "dlstorm.h"
+
 #include "fmod.h"
+
 #include "c_log.h"
 #define MAX_CHANNELS 32
 //////////////////////////////////// C_Sound class
@@ -48,5 +54,6 @@ public:
     bool bLogCreated;
 };
 
+#endif // DLCS_WINDOWS
 #endif // _DLCS_C_SOUND
 

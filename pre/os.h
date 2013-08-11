@@ -18,14 +18,6 @@
  ***************************************************************/
 #ifndef _DLCS_PRE_OS
 #define _DLCS_PRE_OS
-namespace DLCODESTORM {
-    bool bDLCS_OS;
-    enum _DLCS_OS_ENUM {
-        DLCS_OS_WINDOWS,
-        DLCS_OS_LINUX,
-        DLCS_OS_FREEBSD,
-    };
-};
 #define DLCS_SYSTEM_NONWINDOWS "sys/nonwindows.h"
 // WINDOWS
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)

@@ -14,6 +14,8 @@
  **   Email:        defectiveseth@gmail.com
  **
  ***************************************************************/
+ #ifdef DLCS_WINDOWS
+
 #include "c_snd.h"
 C_Sound::C_Sound() {
     pLog=0;
@@ -154,3 +156,4 @@ void C_Sound::Log(string x) {
 }
 
 
+#endif // DLCS_WINDOWS

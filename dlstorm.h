@@ -52,6 +52,13 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////////
 // DL Code Storm Library functions and definitions
 namespace DLCODESTORM {
+/* bool bDLCS_OS;
+    enum _DLCS_OS_ENUM {
+        DLCS_OS_WINDOWS,
+        DLCS_OS_LINUX,
+        DLCS_OS_FREEBSD,
+    };
+    */
     const char *va(const char *format, ...);
     vector<string> dlcs_explode(const string &delimiter, const string &explodeme);
     vector<string> dlcs_dir_to_vector(char *szDir, char *szWildCard);
@@ -67,8 +74,8 @@ namespace DLCODESTORM {
     string  dlcs_get_os_version(void);
     string  dlcs_get_hostname(void);
     string  dlcs_get_ipaddress(void);
-
-    bool    dlcs_isdir(char *dir);
+    string  dlcs_tolower(string);
+    bool    dlcs_isdir(char* dir);
     int     dlcs_get_filesize(string file);
     string  dlcs_filetype(string pathName);
 
