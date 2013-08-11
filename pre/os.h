@@ -18,37 +18,49 @@
  ***************************************************************/
 #ifndef _DLCS_PRE_OS
 #define _DLCS_PRE_OS
+#define DLCS_OS_WINDOWS 1
+#define DLCS_OS_LINUX 2
+#define DLCS_OS_FREEBSD 3
+#define DLCS_OS_MACOSX 4
+#define DLCS_OS_MACOS 5
+#define DLCS_OS_ANDROID 6
 #define DLCS_SYSTEM_NONWINDOWS "sys/nonwindows.h"
 // WINDOWS
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
 #define DLCS_WINDOWS
 #define DLCS_SYSTEM_H "sys/windows.h"
 #undef  DLCS_SYSTEM_NONWINDOWS
+#define DLCS_OS_WHICH DLCS_OS_WINDOWS
 #endif
 // MAC OS X Server defines
 #if defined(__MACH__) && defined(__APPLE__)
 #define DLCS_MACOSX
 #define DLCS_SYSTEM_H "sys/macosx.h"
+#define DLCS_OS_WHICH DLCS_OS_MACOSX
 #endif
 // MAC Defines
 #ifdef __MACOS__
 #define DLCS_MACOS
 #define DLCS_SYSTEM_H "sys/macos.h"
+#define DLCS_OS_WHICH DLCS_OS_MACOS
 #endif
 // LINUX Defines
 #ifdef __linux__
 #define DLCS_LINUX
 #define DLCS_SYSTEM_H "sys/linux.h"
+#define DLCS_OS_WHICH DLCS_OS_LINUX
 #endif
 // FREEBSD Defines
 #ifdef FREEBSD_NATIVE
 #define DLCS_FREEBSD
 #define DLCS_SYSTEM_H "sys/freebsd.h"
+#define DLCS_OS_WHICH DLCS_OS_FREEBSD
 #endif
 // ANDROID
 #ifdef __ANDROID__
 #define DLCS_ANDROID
 #define DLCS_SYSTEM_H "sys/android.h"
+#define DLCS_OS_WHICH DLCS_OS_ANDROID
 #endif
 
 #include DLCS_SYSTEM_H
@@ -72,18 +84,15 @@
 #include <map>
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include "md5.h"
 
 ////////////////////////////////////////////////////////////////////////////////////
 // System independant
 
-// typedef struct { float x, y; }                  dlcs_V2;
 typedef struct { float x, y, z; }               dlcs_V3;
 typedef struct { float r, g, b; }               dlcs_C3;
 typedef struct { float u,v; }                   dlcs_TC;
-// typedef struct { float x, y, z; float u, v; }   dlcs_V;
-// typedef struct { VERTEX  vertex[3]; } TRIANGLE;
-// typedef struct { int numtriangles; TRIANGLE* triangle; } SECTOR;
 
 #ifndef _DLCS_CONSOLE
 #endif // _DLCS_CONSOLE
@@ -117,8 +126,6 @@ typedef struct { float u,v; }                   dlcs_TC;
 #define FILENAME_SIZE 1024
 
 #include "macros.h"
-
-
 
 #if !defined(PRODUCT_ULTIMATE)
 #define PRODUCT_UNDEFINED                       0x00000000

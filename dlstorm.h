@@ -52,13 +52,6 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////////////
 // DL Code Storm Library functions and definitions
 namespace DLCODESTORM {
-/* bool bDLCS_OS;
-    enum _DLCS_OS_ENUM {
-        DLCS_OS_WINDOWS,
-        DLCS_OS_LINUX,
-        DLCS_OS_FREEBSD,
-    };
-    */
     const char *va(const char *format, ...);
     vector<string> dlcs_explode(const string &delimiter, const string &explodeme);
     vector<string> dlcs_dir_to_vector(char *szDir, char *szWildCard);
