@@ -65,6 +65,10 @@
 
 #include DLCS_SYSTEM_H
 
+#ifdef DLCS_SYSTEM_NONWINDOWS
+#include DLCS_SYSTEM_NONWINDOWS
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // STANDARD INCLUDES
 

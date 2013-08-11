@@ -88,13 +88,14 @@ bool CGLModel::Load(string filename) {
         materials.push_back(pMat);
         aiMaterial *material = scene->mMaterials[i];
         aiString str;
+
         material->Get(AI_MATKEY_NAME,str);
-        pMat->name.assign(str.C_Str());
+        pMat->name.assign(str.data);
         material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE,0),str);
-        pMat->DiffuseTexture.assign(str.C_Str());
-        pLog->_DebugAdd("  Diffuse Material = %s",pMat->DiffuseTexture.c_str());
+        pMat->DiffuseTexture.assign(str.data);
         strx=dlcs_explode("\\",pMat->DiffuseTexture);
         pMat->DiffuseTexture=strx.back();
+        pLog->_Add("  Diffuse Material = %s",pMat->DiffuseTexture.c_str());
 //      pMat->DiffuseTexture.erase(pMat->DiffuseTexture.find("..\\"),3);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_NORMALS,	0 ), pMat->NormalTexture);
 //        material->Get( AI_MATKEY_TEXTURE( aiTextureType_HEIGHT,	    0 ), pMat->HeightTexture);

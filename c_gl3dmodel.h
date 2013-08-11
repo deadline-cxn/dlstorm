@@ -21,9 +21,16 @@
 #include "c_gltexture.h"
 #include "c_log.h"
 #include "s_gnu.h"
+#ifdef DLCS_WINDOWS
 #include "../SDK/assimp/include/assimp/cimport.h"
 #include "../SDK/assimp/include/assimp/scene.h"
 #include "../SDK/assimp/include/assimp/postprocess.h"
+#else
+#include <assimp/assimp.h>
+#include <assimp/aiScene.h>
+#include <assimp/aiTypes.h>
+#include <assimp/aiPostProcess.h>
+#endif
 class C_GFX;
 /////////////////////////////// CGLMaterial class
 class CGLMaterial {
