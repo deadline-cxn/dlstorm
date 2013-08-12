@@ -72,6 +72,7 @@ namespace DLCODESTORM {
     bool    dlcs_isdir(char* dir);
     int     dlcs_get_filesize(string file);
     string  dlcs_filetype(string pathName);
+    int     dlcs_count_words(string s,string x);
 
     int     dlcs_mkdir(char *szDirectoryName);
     int     dlcs_chdir(char *szDirectory);

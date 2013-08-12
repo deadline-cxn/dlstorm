@@ -22,6 +22,8 @@
 #include <winbase.h>
 #include <tchar.h>
 #include <winsock2.h>
+#define _WIN32_WINNT 0x501
+#include <ws2tcpip.h>
 #include <direct.h>
 #include <conio.h>
 #ifndef _MMEDIA_
