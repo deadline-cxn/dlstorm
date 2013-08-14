@@ -643,8 +643,7 @@ string DLCODESTORM::dlcs_dns_lookup(string url) {
                 //if(iRetval) printf("WSAAddressToString failed with %u\n", WSAGetLastError() );
                 //else        printf("\tIPv6 address %s\n", ipstringbuffer);
                 break;
-            case AF_NETBIOS:
-                break;
+            //case AF_NETBIOS:                break;
             default:
                 break;
         }
