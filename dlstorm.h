@@ -87,6 +87,7 @@ namespace DLCODESTORM {
     char*   dlcs_readable_timestamp(char* x,char* in);
     char*   dlcs_get_filetype(char* x,char* in);
     string  dlcs_get_webpage(string url);
+    void    dlcs_get_webpage2(string url,char *x);
     string  dlcs_dns_lookup(string hostname);
     string  dlcs_inet_aton(string ip);
     string  dlcs_inet_ntoa(string ip);

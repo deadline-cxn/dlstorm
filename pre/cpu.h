@@ -21,7 +21,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Determine CPU type
-#define CPUSTRING "UNKOWN PROCESSOR"
 #if defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #define CPUSTRING "AMD64 (x86_64)"
 #endif
@@ -75,6 +74,10 @@
 #endif
 #ifdef _M_ALPHA
 #define     CPUSTRING	"Alpha"
+#endif
+
+#ifndef CPUSTRING
+#define CPUSTRING "Unknown processor"
 #endif
 
 #endif // _DLCS_PRE_CPU

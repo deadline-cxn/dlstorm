@@ -508,6 +508,9 @@ string DLCODESTORM::dlcs_get_ipaddress() {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+void DLCODESTORM::dlcs_get_webpage2(string url, char *x) {
+ 
+}
 string  DLCODESTORM::dlcs_get_webpage(string url) {
     string rstr, host, page; page.clear();
     string uri;
