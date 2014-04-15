@@ -1,7 +1,17 @@
 DLStorm
 =======
 
-Deadline Code Storm. Utilities and C++ classes with the intent to make game programming with C/C++ easier.
+Deadline Code Storm.
+In order for this package to work you must define either:
+
+#define _DLCS_CONSOLE
+or
+#define _DLCS_SDL
+
+_DLCS_CONSOLE will create a console only application
+_DLCS_SDL will create a SDL application
+
+Utilities and C++ classes with the intent to make game programming with C/C++ easier.
 I will start documenting these functions and add examples soon.
 
 Consists of various C/C++ classes and files
