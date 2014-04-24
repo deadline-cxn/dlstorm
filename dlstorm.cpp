@@ -471,7 +471,7 @@ string DLCODESTORM::dlcs_get_os_version() {
     x.assign(szTemp);
 
 #endif
-#ifdef DLCSM_LINUX
+#ifdef DLCS_LINUX
     x.assign("LINUX");
     int z;
     struct utsname l_un;
