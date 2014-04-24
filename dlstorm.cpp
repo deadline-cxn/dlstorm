@@ -509,7 +509,7 @@ string DLCODESTORM::dlcs_get_ipaddress() {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void DLCODESTORM::dlcs_get_webpage2(string url, char *x) {
- 
+
 }
 string  DLCODESTORM::dlcs_get_webpage(string url) {
     string rstr, host, page; page.clear();
@@ -593,7 +593,6 @@ int DLCODESTORM::dlcs_count_words(string instr,string word) {
     word.assign(tolower(word.c_str()));
     size_t found;
     int wl=word.length();
-
     found=s.find(word); if(found) count++;
     while(1) {
         found=s.find(word,found+1);
@@ -602,9 +601,7 @@ int DLCODESTORM::dlcs_count_words(string instr,string word) {
         else
             return count;
     }
-
     return count;
-
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_dns_lookup(string url) {
