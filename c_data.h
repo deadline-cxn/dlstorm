@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2016
  **   File:         c_data.h
  **   Class:        CC_Data
  **                 C_Profile
@@ -17,7 +17,7 @@
 #ifndef _DLCS_DATA_STORAGE_CLASS
 #define _DLCS_DATA_STORAGE_CLASS
 #include "dlstorm.h"
-#include "c_log.h"
+// #include "c_log.h"
 /////////////////////////// Game play modes
 #define PLAY            0
 #define BUILD_GHOST     1
@@ -40,9 +40,9 @@ public:
 class CC_Data {
 public:
     CC_Data(void);
-    CC_Data(CLog* pInLog);
+    // CC_Data(CLog* pInLog);
     CC_Data(char* filename);
-    CC_Data(char* filename,CLog *pLog);
+    //CC_Data(char* filename,CLog *pLog);
     ~CC_Data(void);
     void Initialize(void);
     bool bLoad(void);
@@ -74,7 +74,7 @@ public:
     bool			bLog;
     bool			bDownload;
     bool            bSound;					    	// Is sound system present?
-    bool			 bMusic;					    	// Play Music? (MIDI only for now)
+    bool			bMusic;					    	// Play Music? (MIDI only for now)
     float           fSoundVolume;
     float           fMusicVolume;
     bool            bFullScreen;
@@ -109,7 +109,7 @@ public:
     long            dwRetroTimer;
     char            cRetroMode;
     bool            bCreatedLog;
-    CLog            *pLog;
+    //CLog            *pLog;
     int            GAME_MODE;
 };
 

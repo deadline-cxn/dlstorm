@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2016
  **   File:         dlstorm.cpp
  **   Description:  DLCODESTORM Namespace, where the magic happens
  **   Author:       Seth Parson
@@ -95,11 +95,11 @@ vector<string> DLCODESTORM::dlcs_dir_to_vector(char* szDir, char* szWildCard) {
         while (epdf = readdir(dpdf)) {
             if((!((dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,".."))))) {
                 f.assign(va("%s%c%s",szDir,PATH_SEP,epdf->d_name));
-                if(!dlcs_isdir(f.c_str())) {
+                if(!dlcs_isdir((char *)f.c_str())) {
                     diro.push_back(f);
                 }
                 else {
-                    vector<string>x=dlcs_dir_to_vector(f.c_str(),szWildCard);
+                    vector<string>x=dlcs_dir_to_vector((char *)f.c_str(),szWildCard);
                     diro.insert( diro.end(), x.begin(), x.end() );
                 }
             }
@@ -540,7 +540,7 @@ string  DLCODESTORM::dlcs_get_webpage(string url) {
     if((s = socket(AF_INET,SOCK_STREAM,0))<0) {
             // cout<<"Error 01: creating socket failed!\n";
         close(s);
-        return 1;
+        return (string) "1";
     }
     addr.sin_family = AF_INET;
     char ip[1024]; memset(ip,0,1024);
@@ -589,8 +589,8 @@ string  DLCODESTORM::dlcs_get_webpage(string url) {
 int DLCODESTORM::dlcs_count_words(string instr,string word) {
     unsigned int count=0;
     string s;
-    s.assign(tolower(instr.c_str()));
-    word.assign(tolower(word.c_str()));
+    s.assign(dlcs_tolower(instr.c_str()));
+    word.assign(dlcs_tolower(word.c_str()));
     size_t found;
     int wl=word.length();
     found=s.find(word); if(found) count++;

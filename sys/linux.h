@@ -39,6 +39,7 @@
 #include <tcl.h>
 #include <curses.h>
 
+#define DEL delete
 
 #endif // _DLCS_SYS_LINUX
 

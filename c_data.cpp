@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2016
  **   File:         c_data.h
  **   Class:        CC_Data
  **                 C_Profile
@@ -25,37 +25,16 @@ C_Profile::C_Profile() {
 C_Profile::~C_Profile() { }
 //////////////////// CC_Data class
 CC_Data::CC_Data() {
-    pLog=new CLog("cdata.log");
-    bCreatedLog=true;
     Initialize();
     bLoad();
 }
-CC_Data::CC_Data(CLog *pInLog) {
-    bCreatedLog=false;
-    pLog=pInLog;
-    Initialize();
-    bLoad();
-}
-
 CC_Data::CC_Data(char* infilename) {
-    pLog=new CLog("cdata.log");
-    bCreatedLog=true;
-    Initialize();
-    filename.assign(infilename);
-    bLoad();
-}
-
-CC_Data::CC_Data(char* infilename, CLog* pInLog) {
-    bCreatedLog=false;
-    pLog=pInLog;
     Initialize();
     filename.assign(infilename);
     bLoad();
 }
 CC_Data::~CC_Data() {
     CleanUp();
-    if(bCreatedLog)
-        dlcsm_delete(pLog);
 }
 void CC_Data::Initialize(void) {
     filename="client.ini";
@@ -72,7 +51,6 @@ void CC_Data::Initialize(void) {
 void CC_Data::CleanUp(void) {
     ClearFavoriteServers();
     ClearProfiles();
-
 }
 void CC_Data::SetToDefaults(void) {
     Name.clear();
@@ -133,7 +111,6 @@ void CC_Data::ClearProfiles(void) {
 }
 bool CC_Data::bLoad(void) {
     SetToDefaults();
-    pLog->_Add("LOADING CONFIG FROM %s",filename.c_str());
     FILE *fp;
     char In[256];
     char temp[1024];
@@ -148,7 +125,6 @@ bool CC_Data::bLoad(void) {
             strcpy(temp,lin[1].c_str());
             if(dlcs_strcasecmp(lin[0].c_str(),"name")) {
                 Name.assign(lin[1].c_str());
-                pLog->_Add(" Name [%s]",Name.c_str());
                 continue;
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"password")) {
@@ -211,22 +187,18 @@ bool CC_Data::bLoad(void) {
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"fullscreen")) {
                 bFullScreen=dlcs_istrue(temp);
-                pLog->_Add(" bFullScreen [%d]",bFullScreen);
                 continue;
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"screen width")) {
                 ScreenWidth=atoi(lin[1].c_str());
-                pLog->_Add(" ScreenWidth [%d]",ScreenWidth);
                 continue;
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"screen height")) {
                 ScreenHeight=atoi(lin[1].c_str());
-                pLog->_Add(" ScreenHeight [%d]",ScreenHeight);
                 continue;
             }
             if(dlcs_strcasecmp(lin[0].c_str(),"screen colors")) {
                 ScreenColors=atoi(lin[1].c_str());
-                pLog->_Add(" ScreenColors [%d]",ScreenColors);
                 continue;
             }
         }
@@ -330,4 +302,3 @@ bool CC_Data::LoadProfiles(void) {
     }
     return false;
 }
-

@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2016
  **   File:         c_log.cpp
  **   Class:        CLog
  **   Description:  Log file class
@@ -20,14 +20,14 @@ CLog::CLog() {
     memset(logfile,0,_MAX_PATH);
     strcpy(logfile,"log.log");
     Initialize();
-    if(bDebug) _Add("DEBUGGING ACTIVE");
+//    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::CLog(char *szFilename) {
     Initialize();
     SetName(szFilename);
     Restart();
     LineFeedsOn();
-    if(bDebug) _Add("DEBUGGING ACTIVE");
+//    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::CLog(char *szFilename, bool bQ) {
     Initialize();
@@ -35,7 +35,7 @@ CLog::CLog(char *szFilename, bool bQ) {
     bQuiet=bQ;
     Restart();
     LineFeedsOn();
-    if(bDebug) _Add("DEBUGGING ACTIVE");
+//    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::~CLog() { }
 void CLog::Initialize(void) {

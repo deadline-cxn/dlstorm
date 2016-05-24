@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2016
  **   File:         pre/os.h
  **   Description:  Determine the operating system
  **   Author:       Seth Parson
@@ -242,7 +242,7 @@ typedef struct { float u,v; }                   dlcs_TC;
     Linux kernel    __linux__
                     linux	Obsolete (not POSIX compliant)
                     __linux	Obsolete (not POSIX compliant)
-                        (Systems based on the Linux kernel define these macros. There are two major Linux-based operating systems: GNU/Linux and Android, and numerous others like Ångström or OpenEmbedded)
+                        (Systems based on the Linux kernel define these macros. There are two major Linux-based operating systems: GNU/Linux and Android, and numerous others like Ã…ngstrÃ¶m or OpenEmbedded)
     LynxOS          __Lynx__
     MacOS           macintosh
                     Macintosh

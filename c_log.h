@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2016
  **   File:         c_log.h
  **   Class:        CLog
  **   Description:  Log file class
