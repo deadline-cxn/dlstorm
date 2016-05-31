@@ -56,11 +56,11 @@ vector<string> DLCODESTORM::dlcs_explode(const string &delimiter, const string &
 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char* DLCODESTORM::dlcs_get_filetype(char* x, char* in) {
+char const * DLCODESTORM::dlcs_get_filetype(char const * x, char const * in) {
     vector <string> ft;
     ft=dlcs_explode(".",in);
     ft.size();
-    strcpy(x,ft[ft.size()].c_str());
+    strcpy((char *)x,ft[ft.size()].c_str());
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ string DLCODESTORM::dlcs_tolower(string z) {
     return z;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-vector<string> DLCODESTORM::dlcs_dir_to_vector(char* szDir, char* szWildCard) {
+vector<string> DLCODESTORM::dlcs_dir_to_vector(char const * szDir, char const * szWildCard) {
     vector <string> diro;
     string f;
     string d;
@@ -121,7 +121,7 @@ FNM_CASEFOLD  If this flag (a GNU extension) is set, the pattern is matched case
 Return Value  Zero if string matches pattern, FNM_NOMATCH if there is no match or another nonzero value if there is an error.*/
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-bool DLCODESTORM::dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
+bool DLCODESTORM::dlcs_dir_to_file(char const * szDir,char const * szFile,char const * szWildCard) {
     FILE *fp;
     fp=fopen(szFile,"wt");
     if(!fp) return false;
@@ -140,7 +140,7 @@ bool DLCODESTORM::dlcs_dir_to_file(char *szDir,char *szFile,char *szWildCard) {
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char* DLCODESTORM::dlcs_trim_lf(char* x) {
+char  * DLCODESTORM::dlcs_trim_lf(char * x) {
     if((x[strlen(x)-1]=='\n') || (x[strlen(x)-1]=='\r')) x[strlen(x)-1]=0;
     if((x[strlen(x)-1]=='\n') || (x[strlen(x)-1]=='\r')) x[strlen(x)-1]=0;
     return x;
@@ -183,40 +183,43 @@ string DLCODESTORM::dlcs_encrypt(string text) { return text; } // TODO
 ////////////////////////////////////////////////////////////////////////////////////////////////
 string DLCODESTORM::dlcs_decrypt(string text) { return (text); } // TODO
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *DLCODESTORM::dlcs_get_time(char *x) {
+char const *DLCODESTORM::dlcs_get_time(char const * x) {
     struct tm *dc;
     time_t td;
     time(&td);
     dc=localtime(&td);
-    strcpy(x,asctime(dc));
-    x[strlen(x)-1]=0;
+    strcpy((char *)x,asctime(dc));
+    //x[strlen(x)-1]=0;
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *DLCODESTORM::dlcs_convert_time(char *x,struct tm* dc) {
+char const *DLCODESTORM::dlcs_convert_time(char const * x, struct tm* dc) {
+    //char y[1024];
+    //memset(y,0,1024);
+    //strcpy(y,(char *)x);
     time_t td;
     time(&td);
     dc=localtime(&td);
-    strcpy(x,asctime(dc));
-    x[strlen(x)-1]=0;
+    strcpy((char *)x,asctime(dc));
+    //x[strlen(y)-1]=0;
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *DLCODESTORM::dlcs_timestamp(char *x) {
+char const *DLCODESTORM::dlcs_timestamp(char const * x) {
     time_t td;
     time( &td );
-    strcpy(x,va("%ld",td));
+    strcpy((char *)x,va("%ld",td));
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-char *DLCODESTORM::dlcs_readable_timestamp(char *x,char *in) {
+char const *DLCODESTORM::dlcs_readable_timestamp(char const * x,char const * in) {
     long wtf;
     wtf=atoi(in);
-    strcpy(x,ctime(&wtf));
+    strcpy((char *)x,ctime(&wtf));
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int DLCODESTORM::dlcs_hex_to_dec(char *pa) {
+int DLCODESTORM::dlcs_hex_to_dec(char const * pa) {
     if(pa==0) return 0;
     if(!strlen(pa)) return 0;
     char a;
@@ -234,7 +237,7 @@ int DLCODESTORM::dlcs_hex_to_dec(char *pa) {
     return result;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int DLCODESTORM::dlcs_bin_to_dec(char *pa) {
+int DLCODESTORM::dlcs_bin_to_dec(char const * pa) {
     if(!pa) return 0;
     if(!strlen(pa)) return 0;
     int result=0;
@@ -292,7 +295,7 @@ long DLCODESTORM::dlcs_get_tickcount(void) {
 #endif
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int DLCODESTORM::dlcs_strcasecmp(const char *szOne,const char *szTwo) {
+int DLCODESTORM::dlcs_strcasecmp(char const * szOne, char const * szTwo) {
     int rval=0;
 #ifdef _WIN32
     if(strcasecmp(szOne,szTwo)==0) rval=1;
@@ -302,7 +305,7 @@ int DLCODESTORM::dlcs_strcasecmp(const char *szOne,const char *szTwo) {
     return rval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-bool DLCODESTORM::dlcs_isdir(char *dir) {
+bool DLCODESTORM::dlcs_isdir(char const * dir) {
     struct stat st;
     if(stat(dir,&st)==-1) return false;
     if(st.st_mode&S_IFDIR) return true;
@@ -323,7 +326,7 @@ string DLCODESTORM::dlcs_filetype(string pathName){
 	return ext;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int DLCODESTORM::dlcs_mkdir(char *szDirectoryName) {
+int DLCODESTORM::dlcs_mkdir(char const * szDirectoryName) {
     int returnval=0;
 #ifdef _WIN32
     if(_mkdir(szDirectoryName)==0) returnval=1;
@@ -334,7 +337,7 @@ int DLCODESTORM::dlcs_mkdir(char *szDirectoryName) {
     return returnval;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-int DLCODESTORM::dlcs_chdir(char *szDirectory) {
+int DLCODESTORM::dlcs_chdir(char const * szDirectory) {
     int returnval=0;
 #ifdef _WIN32
     if(_chdir(szDirectory)==0) returnval=1;
@@ -508,7 +511,7 @@ string DLCODESTORM::dlcs_get_ipaddress() {
     return x;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-void DLCODESTORM::dlcs_get_webpage2(string url, char *x) {
+void DLCODESTORM::dlcs_get_webpage2(string url, char const * x) {
 
 }
 string  DLCODESTORM::dlcs_get_webpage(string url) {
