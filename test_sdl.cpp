@@ -9,7 +9,8 @@ CC_Data *pData;
 int main() { // int, char*[]
     pData=new CC_Data();
     pLog=new CLog("test.log");
-    pLog->AddEntry("testing test.cpp");
+    
+    pLog->AddEntry("hi");
     DEL(pLog);
     DEL(pData);
     return 0;
