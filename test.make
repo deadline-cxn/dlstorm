@@ -3,15 +3,18 @@ g++ test.cpp \
     md5.cpp \
     c_log.cpp \
     c_data.cpp \
+    c_gfx.cpp \
     -o test \
     -D _DLCS_SDL \
     -Wno-write-strings \
     -Wno-format-security \
-    -I /home/sparson/develop/projects/SDK/SDL-1.2.15/include \
     -I /home/sparson/develop/projects/dlstorm \
     -I /home/sparson/develop/projects/dlstorm/sys \
     -I /home/sparson/develop/projects/dlstorm/pre \
-    -I /usr/include/tcl8.6
+    -I /usr/include/tcl8.6 \
+    -I /home/sparson/develop/projects/SDK/SDL-1.2.15/include  \
+    -I /usr/include/GL/ \
+    -I /home/sparson/develop/projects/SDK/DevIL-SDK-x86-1.7.8/include/IL
 
 
 
