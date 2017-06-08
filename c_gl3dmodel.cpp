@@ -68,17 +68,19 @@ void CGLModel::Initialize() {
     name.clear();
 }
 bool CGLModel::Load(string filename) {
+    /*
     vector<string> strx;
     pLog->_DebugAdd("============================================================");
     CGLMaterial* pMat;
     CGLMesh*     pMesh;
     name=filename;
     if(name.empty()) name = "EMPTY";
-    const aiScene *scene = aiImportFile(filename.c_str(),aiProcessPreset_TargetRealtime_MaxQuality); // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
+    /*
+    // const aiScene *scene = aiImportFile(filename.c_str(),aiProcessPreset_TargetRealtime_MaxQuality); // importer.ReadFile(filename,aiProcessPreset_TargetRealtime_Fast);
     if(!scene) {
         pLog->_Add("Model load error %s",filename.c_str());
         return false;
-    }
+    } 
     numMaterials=scene->mNumMaterials;
     numMeshes=scene->mNumMeshes;
     pLog->_DebugAdd("MODEL[%s] MESHES[%d] MATERIALS[%d]",name.c_str(),numMeshes,numMaterials);
@@ -138,6 +140,7 @@ bool CGLModel::Load(string filename) {
         pMesh->vertexArray  -= inMesh->mNumFaces*3*3;
     }
     pLog->_DebugAdd("Model loaded: %s (%d)",name.c_str(),this);
+     * */
     return true;
 }
 CGLMesh* CGLModel::GetMesh(int x){

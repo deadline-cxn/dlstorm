@@ -16,21 +16,26 @@
  ***************************************************************/
 #ifndef _DLCS_CGLMODEL
 #define _DLCS_CGLMODEL
+
 #include "dlstorm.h"
 #include "c_gfx.h"
 #include "c_gltexture.h"
 #include "c_log.h"
 #include "s_gnu.h"
+
+/*
 #ifdef DLCS_WINDOWS
 #include "../SDK/assimp/include/assimp/cimport.h"
 #include "../SDK/assimp/include/assimp/scene.h"
 #include "../SDK/assimp/include/assimp/postprocess.h"
 #else
+ */
+
 //#include "assimp.h"
 //#include "aiScene.h"
 //#include "aiTypes.h"
 //#include "aiPostProcess.h"
-#endif
+// #endif
 class C_GFX;
 /////////////////////////////// CGLMaterial class
 class CGLMaterial {

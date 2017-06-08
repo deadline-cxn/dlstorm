@@ -28,8 +28,12 @@
 #include "c_gltexture.h"
 #include "c_gl3dmodel.h"
 #include "c_entity.h"
+#include "il.h"
+#include "ilut.h"
+
 class C_Entity;
 class CGLModel;
+
 class C_Camera {
 public:
     C_Camera();
@@ -108,7 +112,9 @@ public:
     int         ScreenWidth;
     int         ScreenHeight;
     int         ScreenColors;
+    
     C_Camera*   pCamera;
+    
     bool        bCreatedLog;
     CLog*       pLog;
     CGAF*       pGAF;

@@ -18,6 +18,8 @@
  **
  ***************************************************************/
 #include "c_gfx.h"
+
+
 //////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
 C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
@@ -156,6 +158,8 @@ void C_Camera::mouseMovement(int x, int y) {
     lx=x;
     ly=y;
 }
+ 
+ 
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, string wincaption, CLog *pUSELOG, CGAF *pUSEGAF) {
     InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
@@ -217,6 +221,7 @@ dummy
     pDefaultTexture=0;
 
     pCamera=0;
+    
     bCreatedLog=false;
     bFullScreen =FullScreen;
     ScreenWidth =w;
@@ -307,7 +312,7 @@ dummy
         pLog->_Add("Can't initialize OpenGL");
         return false;
     }
-
+    
 	ilutRenderer(ILUT_OPENGL);
 	ilInit();
 	iluInit();
@@ -391,8 +396,10 @@ void C_GFX::ShutDownGFX(void) {
     pLog->_Add("OpenGL shut down...");
     ClearEntities();
     pLog->_Add("Entities shut down...");
+    
     dlcsm_delete(pCamera);
     pLog->_Add("Camera shut down...");
+    
     DestroyTextures();
     pLog->_Add("Textures shut down...");
     DestroyModels();
@@ -489,7 +496,7 @@ CGLTexture* C_GFX::GetRandomTexture(void) {
         if(x==y) return &(**it);
         y++;
     }
-    return false;
+    return NULL;
 
 }
 bool C_GFX::DestroyTextures(void) {
@@ -520,7 +527,7 @@ bool C_GFX::LoadModels(void) {
 }
 CGLModel *C_GFX::GetModel(string inname) {
     for(vector<CGLModel*>::iterator it = models.begin() ; it != models.end(); ++it) {
-            if((**it).name==inname) return &(**it); } return false; }
+            if((**it).name==inname) return &(**it); } return NULL; }
 int C_GFX::GetTotalModels(void) { return models.size(); }
 CGLModel* C_GFX::GetRandomModel(void) {
     int x=(rand()%models.size())+1; int y=0;
@@ -528,7 +535,7 @@ CGLModel* C_GFX::GetRandomModel(void) {
         if(x==y) return &(**it);
         y++;
     }
-    return false;
+    return NULL;
 }
 bool C_GFX::DestroyModels(void) { dlcsm_delete_vector(CGLModel*,models); return true; }
 //////////////////////////////////////////////////////////////// RENDER SCENE
@@ -540,7 +547,9 @@ void C_GFX::RenderScene(int mx, int my) {
     // DrawStarField(1);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
+    
     pCamera->Go();
+    
     DrawEntities();
 }
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
@@ -831,6 +840,7 @@ void C_GFX::DrawSkyBox(void) {
     glColor4f(1.0f,1.0f,1.0f,1.0f);
 
     glTranslatef(pCamera->loc.x, pCamera->loc.y, pCamera->loc.z);
+    
     glScalef(1200.0f,1200.0f,1200.0f);
 
 
@@ -1107,7 +1117,9 @@ void C_GFX::SelectClosestEntity(void) {
     ClearSelectEntity();
     dlcs_V3 thisloc;
     dlcs_V3 v;
+    
     thisloc=pCamera->loc;
+    
     float dist;
     float closestDist = 1000000000.0f;
     pSelectedEntity=0;

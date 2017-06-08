@@ -55,6 +55,74 @@ void CLog::Initialize(void) {
 void CLog::SetName(char *szFilename) {
     strcpy(logfile,szFilename);
 }
+
+void CLog::_Add(const char *fmt, ...) {
+
+    if(!bActive) return;
+    char ach[512];
+    char temp[512];
+    va_list va;
+    va_start( va, fmt );
+    vsprintf( ach, fmt, va );
+    va_end( va );
+    time_t td;
+    struct tm *dc;
+    time(&td);
+    dc=localtime(&td);
+    strcpy(temp,asctime(dc));
+    temp[strlen(temp)-1]=0;
+
+    FILE *fp=fopen(logfile,"a+");
+    if(fp) {
+        if(!bLineFeeds) {
+            fprintf(fp,"%s%s%s%s",szBegin,temp,szEnd,ach);
+            if(!bQuiet)
+                printf("%s%s%s%s",szBegin,temp,szEnd,ach);
+
+        } else {
+            fprintf(fp,"%s%s%s%s\n",szBegin,temp,szEnd,ach);
+            if(!bQuiet)
+                printf("%s%s%s%s\n",szBegin,temp,szEnd,ach);
+
+        }
+        fclose(fp);
+    }    
+}
+
+void CLog::_DebugAdd(const char *fmt, ...) {
+
+    if(!bActive) return;
+    char ach[512];
+    char temp[512];
+    va_list va;
+    va_start( va, fmt );
+    vsprintf( ach, fmt, va );
+    va_end( va );
+    time_t td;
+    struct tm *dc;
+    time(&td);
+    dc=localtime(&td);
+    strcpy(temp,asctime(dc));
+    temp[strlen(temp)-1]=0;
+
+    FILE *fp=fopen(logfile,"a+");
+    if(fp) {
+        if(!bLineFeeds) {
+            fprintf(fp,"%s%s%s%s",szBegin,temp,szEnd,ach);
+            if(!bQuiet)
+                printf("%s%s%s%s",szBegin,temp,szEnd,ach);
+
+        } else {
+            fprintf(fp,"%s%s%s%s\n",szBegin,temp,szEnd,ach);
+            if(!bQuiet)
+                printf("%s%s%s%s\n",szBegin,temp,szEnd,ach);
+
+        }
+        fclose(fp);
+    }    
+}
+
+
 void CLog::AddEntry(char *fmt, ...) {
     if(!bActive) return;
     char ach[512];

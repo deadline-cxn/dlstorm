@@ -236,7 +236,7 @@ void C_Entity::Save() {
     }
     */
 }
-bool C_Entity::push_event(C_Entity *rcv_entity,int event,string args,C_Entity *action_entity) {
+bool C_Entity::push_event(C_Entity *rcv_entity,tEntityEvent event,string args,C_Entity *action_entity) {
     if(!rcv_entity) return false;
     if(!action_entity) action_entity=this;
     rcv_entity->exec_event(event,args,action_entity);

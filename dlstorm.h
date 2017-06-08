@@ -44,8 +44,8 @@ _DLCS_DEVIL
 #define _DLCS_DEBUG_SND 1
 #endif
 
-#include "pre/os.h"
-#include "pre/cpu.h"
+#include "os.h"
+#include "cpu.h"
 
 using namespace std;
 

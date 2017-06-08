@@ -22,6 +22,8 @@
 #include <gl.h> 
 #include <glu.h> 
 //#include <glaux.h>
+#include "il.h"
+#include "ilut.h"
 
 /////////////////////////////// CGLTexture class
 class CGLTexture {

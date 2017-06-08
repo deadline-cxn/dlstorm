@@ -168,7 +168,7 @@ public:
     void    Draw(bool bSelecting);
     void    DrawLight(void);
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
-    bool    push_event(C_Entity *rcv_entity, int event, string args, C_Entity *action_entity);
+    bool    push_event(C_Entity *rcv_entity, tEntityEvent event, string args, C_Entity *action_entity);
     /*************************************************************************************************************************
        use: push_event(entity,event,event_args,entity_to_take_action_on (if 0 it will action self));
            example:
