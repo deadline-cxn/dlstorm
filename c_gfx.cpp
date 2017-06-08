@@ -162,7 +162,11 @@ void C_Camera::mouseMovement(int x, int y) {
  
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
 C_GFX::C_GFX(int w, int h, int c, bool FullScreen, string wincaption, CLog *pUSELOG, CGAF *pUSEGAF) {
-    InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF);
+    if(!InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF)) {
+        ShutDownGFX();
+        SDL_Quit();
+        pLog->_Add("SDL shut down (INIT)...");
+    }
 }
 C_GFX::~C_GFX() {
     ShutDownGFX();
@@ -340,7 +344,7 @@ dummy
         pLog->_Add("Can't initialize base textures");
         return false;
     }
-    pDefaultTexture=GetTexture("base/testprog.jpg");
+    pDefaultTexture=GetTexture("base/test.jpg");
     if(!pDefaultTexture) { pLog->_Add("Can't initialize Default Texture"); return false; }
 
     ///////////////////////////////////////////////////////////////////////
