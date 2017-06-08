@@ -12,7 +12,7 @@ int main() {
     pLog = new CLog("test.log");
     pGFX = new C_GFX(640,480,16,true,"test",pLog,0);
     int i=0;
-    while(i<123421452151) i++;
+    while(i<12) i++;
     pLog->AddEntry("testing test.cpp");
     DEL(pGFX);
     DEL(pLog);

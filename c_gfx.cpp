@@ -362,7 +362,7 @@ dummy
     // Entities
 
     entities.clear();
-    InitializeEntities();
+    // InitializeEntities();
     pSelectedEntity=0;
 
     pLog->_Add("[%d] entities created",entities.size());
