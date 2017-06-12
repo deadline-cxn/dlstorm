@@ -27,6 +27,4 @@ g++ test.cpp \
     -I /usr/include/ \
     -I /usr/include/IL/ 
 
- 
-
 #    c_gl3dmodel.cpp \

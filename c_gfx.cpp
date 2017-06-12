@@ -320,7 +320,7 @@ dummy
     pLog->_Add("SDL GFX Initialized");
     return true;
 }
-void C_GFX::Init3d() {
+bool C_GFX::Init3d() {
     if(InitGL(ScreenWidth, ScreenHeight)) {
         pLog->_Add("OpenGL initialized");
     }
@@ -572,6 +572,15 @@ CGLModel* C_GFX::GetRandomModel(void) {
 bool C_GFX::DestroyModels(void) { dlcsm_delete_vector(CGLModel*,models); return true; }
  */
 
+/*
+void C_GFX::setpixel(int x, int y, Uint8 r, Uint8 g, Uint8 b){
+    Uint32 *pixmem32;
+    Uint32 colour;  
+    colour = SDL_MapRGB( pScreen->format, r, g, b );
+    pixmem32 = (Uint32*) pScreen->pixels  + y + x;
+    *pixmem32 = colour;
+}
+ */
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
 void C_GFX::DrawRect(RECT rc, long color) {
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
@@ -950,7 +959,7 @@ void C_GFX::DrawStarField(int iDir) {
             star[y].speed=(rand()%24)*0.48f+1.3f;
             strcpy(star[y].gfx,"base/star1.png");
             if((rand()%100)>50)
-                strcpy(star[y].gfx,"base/star2.png");
+                strcpy(star[y].gfx,"base/star2.jpg");
         }
         bstars=1;
     }

@@ -141,7 +141,7 @@ public:
     v3ops       OpScale;
 
     // GFX System level functions
-    void        Init3d(void);
+    bool        Init3d(void);
     int         InitGL(int x, int y);
     void        BeginScene(void);
     void        SetWindowTitle(string fmt, ...);
@@ -170,6 +170,10 @@ public:
     int         GetTotalModels(void);
     bool        DestroyModels(void);
      */
+     
+     
+    // void setpixel(int x, int y, Uint8 r, Uint8 g, Uint8 b);
+
 
     // 2D Draw Functions
     void        DrawVertice(int x, int y);

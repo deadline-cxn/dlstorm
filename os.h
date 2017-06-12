@@ -29,6 +29,7 @@
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
 #define DLCS_WINDOWS
 #define DLCS_SYSTEM_H "windows.h"
+#define OSSTRING "Windows"
 #undef  DLCS_SYSTEM_NONWINDOWS
 #define DLCS_OS_WHICH DLCS_OS_WINDOWS
 #endif
@@ -36,30 +37,35 @@
 #if defined(__MACH__) && defined(__APPLE__)
 #define DLCS_MACOSX
 #define DLCS_SYSTEM_H "macosx.h"
+#define OSSTRING "Mac OSX"
 #define DLCS_OS_WHICH DLCS_OS_MACOSX
 #endif
 // MAC Defines
 #ifdef __MACOS__
 #define DLCS_MACOS
 #define DLCS_SYSTEM_H "macos.h"
+#define OSSTRING "Mac OS"
 #define DLCS_OS_WHICH DLCS_OS_MACOS
 #endif
 // LINUX Defines
 #ifdef __linux__
 #define DLCS_LINUX
 #define DLCS_SYSTEM_H "linux.h"
+#define OSSTRING "Linux"
 #define DLCS_OS_WHICH DLCS_OS_LINUX
 #endif
 // FREEBSD Defines
 #ifdef FREEBSD_NATIVE
 #define DLCS_FREEBSD
 #define DLCS_SYSTEM_H "freebsd.h"
+#define OSSTRING "FreeBSD"
 #define DLCS_OS_WHICH DLCS_OS_FREEBSD
 #endif
 // ANDROID
 #ifdef __ANDROID__
 #define DLCS_ANDROID
 #define DLCS_SYSTEM_H "android.h"
+#define OSSTRING "Android"
 #define DLCS_OS_WHICH DLCS_OS_ANDROID
 #endif
 
