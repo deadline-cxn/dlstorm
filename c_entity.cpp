@@ -19,37 +19,37 @@
 #include "c_entity.h"
 
 ///////////////////////////// C_Entity class
-C_Entity::C_Entity() {
-    Initialize();
-}
-C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX) {
+// C_Entity::C_Entity() {    Initialize();}
+C_Entity::C_Entity() { // CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX) {
     Initialize();
     bMadeLog=false;
-    pLog=pInLog;
-    pGAF=pInGAF;
-    pGFX=pInGFX;
+    //pLog=pInLog;
+    //pGAF=pInGAF;
+    //pGFX=pInGFX;
 }
+/*
 C_Entity::C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel) {
     Initialize();
     bMadeLog=false;
-    pLog=pInLog;
-    pGAF=pInGAF;
-    pGFX=pInGFX;
-    pModel=pInModel;
+    //pLog=pInLog;
+    //pGAF=pInGAF;
+    //pGFX=pInGFX;
+    //pModel=pInModel;
 }
+ */
 C_Entity::~C_Entity() {
-    if(bMadeLog) dlcsm_delete(pLog);
-    dlcsm_delete(pSelectTimer);
+    // if(bMadeLog) dlcsm_delete(pLog);
+    // dlcsm_delete(pSelectTimer);
 }
 void C_Entity::Initialize(void) {
     name.clear();
-    pSelectTimer=new CTimer(200);
+    // pSelectTimer=new CTimer(200);
     bMadeLog=true;
-    pTexture=0;
-    pLog=0;
-    pGAF=0;
-    pGFX=0;
-    pModel=0;
+    //pTexture=0;
+    //pLog=0;
+    //pGAF=0;
+    //pGFX=0;
+    //pModel=0;
     name="Unknown";
     type=ENTITY_INVISIBLE;
     resource_min=0;
@@ -79,6 +79,7 @@ void C_Entity::Initialize(void) {
 void C_Entity::DrawLight(void) {
 
      if(type==ENTITY_LIGHT) {
+         /*
         glPushMatrix();
         GLfloat ambient[]   = { 0.2f, 0.2f, 0.2f, 1.0f};
         GLfloat location[]  = { loc.x, loc.y, loc.z, 1.0f};
@@ -97,10 +98,13 @@ void C_Entity::DrawLight(void) {
         glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 15.0);
         glLightf(GL_LIGHT0, GL_SPOT_EXPONENT, 12.0f);
         glPopMatrix();
+         */
     }
 
 }
 void C_Entity::Draw(bool bSelecting) {
+    
+    /*
 
     glEnable(GL_TEXTURE_2D);
 
@@ -197,6 +201,7 @@ void C_Entity::Draw(bool bSelecting) {
     }
 
     glPopMatrix();
+     */
 
 }
 void C_Entity::Save() {
@@ -266,13 +271,13 @@ bool C_Entity::exec_event(tEntityEvent event, string args, C_Entity *action_enti
 }
 void C_Entity::on_death(string args,C_Entity *entity) {
     if(entity==0) return;
-    pLog->AddEntry(va("%s is slain by %s.",name.c_str(),entity->name.c_str()));
+    // pLog->AddEntry(va("%s is slain by %s.",name.c_str(),entity->name.c_str()));
 }
 void C_Entity::on_target(string args,C_Entity *entity) {
     if(entity==0) return;
     if(entity!=pTargetEntity) {
         pTargetEntity=entity;
-        pLog->AddEntry(va("%s targetted %s...",name.c_str(),entity->name.c_str()));
+        // pLog->AddEntry(va("%s targetted %s...",name.c_str(),entity->name.c_str()));
     }
 }
 void C_Entity::on_attack(string args,C_Entity *entity) {
@@ -296,7 +301,7 @@ void C_Entity::on_heal(string args,C_Entity *entity) {
     if(entity==0) return;
     int heal;
     heal=atoi(args.c_str());
-    pLog->AddEntry(va("%s healed %s for %d...",entity->name.c_str(),name.c_str(),heal));
+    // pLog->AddEntry(va("%s healed %s for %d...",entity->name.c_str(),name.c_str(),heal));
 
 }
 

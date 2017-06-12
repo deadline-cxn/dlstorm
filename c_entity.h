@@ -17,15 +17,18 @@
 #ifndef _DLCS_C_ENTITY
 #define _DLCS_C_ENTITY
 #include "dlstorm.h"
-#include "c_waypoint.h"
-#include "c_log.h"
-#include "c_gaf.h"
-#include "c_gfx.h"
-#include "c_gl3dmodel.h"
-#include "c_timer.h"
-class CGLModel;
-class C_GFX;
+
+// #include "c_waypoint.h"
+// #include "c_log.h"
+// #include "c_gaf.h"
+// #include "c_gfx.h"
+// #include "c_gl3dmodel.h"
+// #include "c_timer.h"
+// class CGLModel;
+// class C_GFX;
+
 #define ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes
+
 enum tEntityActions {
     // Actions:
     ENTITY_ACT_NONE,
@@ -100,8 +103,8 @@ enum tEntityEvent { // Interaction events
 class C_Entity {
 public:
     C_Entity();
-    C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX);
-    C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel);
+    //C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX);
+    //C_Entity(CLog *pInLog, CGAF *pInGAF, C_GFX *pInGFX, CGLModel *pInModel);
     ~C_Entity();
 
     // Basic info
@@ -118,18 +121,21 @@ public:
     dlcs_V3    scale;      // vector for the scale matrix
     dlcs_V3    dir;        // direction vector (which way the entity is facing)
     dlcs_C3     color;      // color of the entity;
-    GLfloat     trans;      // use this for fading in and out, and for ghost/window effects
-    GLint       glname;     // for picking
-    CGLModel*   pModel;             // pointer to model data to use
+    
+    // GLfloat     trans;      // use this for fading in and out, and for ghost/window effects
+    // GLint       glname;     // for picking
+    
+    
+    // CGLModel*   pModel;             // pointer to model data to use
     int         iModelAnim;         // The current index into pAnimations list (NEW)
     int         iModelAnimFrame;    // The current frame of the current animation (NEW)
-    CGLTexture* pTexture;           // use this texture for rendering (overrides pModel texture)
+    // CGLTexture* pTexture;           // use this texture for rendering (overrides pModel texture)
 
-    CTimer*     pSelectTimer;
+    // CTimer*     pSelectTimer;
     bool        bSelectMode;
 
     // Movement
-    CWayPoint*  pFirstWayPoint;
+    // CWayPoint*  pFirstWayPoint;
 
     // Sound
     char        soundname[FILENAME_SIZE];    // sound filename
@@ -138,9 +144,9 @@ public:
     float       soundvolume;
 
     bool        bMadeLog;
-    CLog*       pLog; // pointer to log
-    CGAF*       pGAF; // pointer to GAF
-    C_GFX*      pGFX; // pointer to GFX
+    // CLog*       pLog; // pointer to log
+    // CGAF*       pGAF; // pointer to GAF
+    // C_GFX*      pGFX; // pointer to GFX
 
     /************************************************************************************************************************
     RESPAWN EXAMPLES:
