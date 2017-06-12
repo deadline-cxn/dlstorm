@@ -955,7 +955,7 @@ void C_GFX::DrawStarField(int iDir) {
                        SDL_GetVideoSurface()->w
                        -100);
             star[y].y= rand()%
-            SDL_GetVideoSurface()->h;//            -150;
+            SDL_GetVideoSurface()->h-150;//            -150;
             star[y].speed=(rand()%24)*0.48f+1.3f;
             strcpy(star[y].gfx,"base/star1.png");
             if((rand()%100)>50)
