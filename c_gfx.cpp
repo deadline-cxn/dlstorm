@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         c_gfx.cpp
  **   Class:        C_GFX
  **                 C_Camera
@@ -25,7 +25,7 @@ C_Camera::C_Camera() { Initialize(); }
 C_Camera::~C_Camera() {  }
 //////////////////////////////////////////////////////////////// C_Camera FUNCTIONS
 void C_Camera::Initialize() {
-    pFollowEntity=0;
+    // pFollowEntity=0;
     bounce=0.0f;
     loc.x=1.0f;
     loc.y=1.0f;
@@ -54,12 +54,14 @@ void C_Camera::Go() {
     glTranslatef(-loc.x,-loc.y,-loc.z);
 }
 void C_Camera::Update() {
-    if(pFollowEntity) {
+    
+    /*if(pFollowEntity) {
         loc.x=pFollowEntity->loc.x;
         loc.y=pFollowEntity->loc.y;
         loc.z=pFollowEntity->loc.z;
         // todo add camera angles
     } else {
+     */
         Move_Left();
         Move_Right();
         Move_Forward();
@@ -68,7 +70,7 @@ void C_Camera::Update() {
         Move_Down();
         Rotate_Left();
         Rotate_Right();
-    }
+    //}
 }
 void C_Camera::Rotate_Left_Start() { bRotatingLeft=true; }
 void C_Camera::Rotate_Left_Stop()  { bRotatingLeft=false; }
@@ -161,8 +163,9 @@ void C_Camera::mouseMovement(int x, int y) {
  
  
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
-C_GFX::C_GFX(int w, int h, int c, bool FullScreen, string wincaption, CLog *pUSELOG, CGAF *pUSEGAF) {
-    if(!InitializeGFX(w,h,c,FullScreen,wincaption,pUSELOG,pUSEGAF)) {
+C_GFX::C_GFX(int w, int h, int c, bool FullScreen, string wincaption, bool use3d, CLog *pUSELOG, CGAF *pUSEGAF) {
+    bUse3d=use3d;
+    if(!InitializeGFX(w,h,c,FullScreen,wincaption,use3d,pUSELOG,pUSEGAF)) {
         ShutDownGFX();
         SDL_Quit();
         pLog->_Add("SDL shut down (INIT)...");
@@ -174,10 +177,10 @@ C_GFX::~C_GFX() {
     pLog->_Add("SDL shut down...");
 }
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
-bool C_GFX::InitializeGFX( int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG,CGAF *pUSEGAF) {
-    bEditEntities=false;
-    entities.clear();
-    models.clear();
+bool C_GFX::InitializeGFX( int w, int h, int c, bool FullScreen, string wincaption, bool use3d, CLog *pUSELOG,CGAF *pUSEGAF) {
+    //bEditEntities=false;
+    // entities.clear();
+    // models.clear();
     textures.clear();
     pLog=pUSELOG;
     pGAF=pUSEGAF;
@@ -232,24 +235,27 @@ dummy
     ScreenHeight=h;
     ScreenColors=c;
 
-    VideoFlags = SDL_OPENGL|SDL_HWPALETTE|SDL_DOUBLEBUF;
+    VideoFlags = SDL_HWPALETTE|SDL_DOUBLEBUF;
+    
     if(bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
+    
+    if(use3d) {
+        VideoFlags |= SDL_OPENGL;
+        SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 ); // tell SDL that the GL drawing is going to be double buffered
+        SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE,  16 );
+    }
 
     SDL_version ver;
     SDL_VERSION(&ver);
     pLog->_Add("SDL Version %d.%d.%d",ver.major,ver.minor,ver.patch);
-        dlcsm_make_str(vdriver);
+    dlcsm_make_str(vdriver);
     SDL_VideoDriverName(vdriver,sizeof(vdriver));
-     pLog->_Add("Video driver[%s]",vdriver);
-
-
+    pLog->_Add("Video driver[%s]",vdriver);
 
     VideoModes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
     if(VideoModes == (SDL_Rect **)0){
-    } else {
+    }
+    else {
         if(VideoModes == (SDL_Rect **)-1) pLog->_DebugAdd("All resolutions available");
         else {
             pLog->_DebugAdd("Available Modes");
@@ -304,10 +310,17 @@ dummy
         pLog->_Add("SDL_SetVideoMode failed");
         return false;
     }
+    
+    if(bUse3d) {
+        if(!Init3d()) return false;
+    }
 
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(wincaption);
-
+    pLog->_Add("SDL GFX Initialized");
+    return true;
+}
+void C_GFX::Init3d() {
     if(InitGL(ScreenWidth, ScreenHeight)) {
         pLog->_Add("OpenGL initialized");
     }
@@ -349,25 +362,23 @@ dummy
 
     ///////////////////////////////////////////////////////////////////////
     // Models
-    models.clear();
-    if(LoadModels()) {
-        pLog->_Add("[%d] models loaded",models.size());
-    }
-    else {
-        pLog->_Add("Can't initialize models");
-        return false;
-    }
+    // models.clear();
+    //if(LoadModels()) {
+        //pLog->_Add("[%d] models loaded",models.size());
+    //}
+    //else {
+        //pLog->_Add("Can't initialize models");
+        //return false;
+    //}
 
     ///////////////////////////////////////////////////////////////////////
     // Entities
-
-    entities.clear();
+    // entities.clear();
     // InitializeEntities();
-    pSelectedEntity=0;
-
-    pLog->_Add("[%d] entities created",entities.size());
-
-    pLog->_Add("GFX Initialized");
+    // pSelectedEntity=0;
+    //     pLog->_Add("[%d] entities created",entities.size());
+        
+    pLog->_Add("3D GFX Initialized");
     return true;
 }
 void C_GFX::SetWindowTitle(string fmt, ...) {
@@ -395,19 +406,24 @@ void C_GFX::ToggleFullScreen(void) {
     LoadTextures(pGAF);
 }
 void C_GFX::ShutDownGFX(void) {
-    glFinish();
-    glFlush();
-    pLog->_Add("OpenGL shut down...");
-    ClearEntities();
-    pLog->_Add("Entities shut down...");
+    
+    if(bUse3d) {
+        glFinish();
+        glFlush();
+        pLog->_Add("OpenGL shut down...");
+    }
+    
+    
+    // ClearEntities();
+    // pLog->_Add("Entities shut down...");
     
     dlcsm_delete(pCamera);
     pLog->_Add("Camera shut down...");
     
     DestroyTextures();
     pLog->_Add("Textures shut down...");
-    DestroyModels();
-    pLog->_Add("Models shut down...");
+    //DestroyModels();
+    //pLog->_Add("Models shut down...");
     SDL_FreeSurface(pScreen);
 }
 int C_GFX::InitGL(int x, int y) {
@@ -440,17 +456,27 @@ int C_GFX::InitGL(int x, int y) {
     }
     return true; // Initialization Went OK
 }
-void C_GFX::EndScene(void) {
-    FlipSurfaces();
-}
-void C_GFX::FlipSurfaces(void) {
-    glFlush();
-    SDL_GL_SwapBuffers();
-}
+
 void C_GFX::BeginScene(void) {
     GetFade(0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(pCamera) pCamera->Update();
+}
+//////////////////////////////////////////////////////////////// RENDER SCENE
+void C_GFX::RenderScene(int mx, int my) {
+    glRenderMode(_glRendermode);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // DrawFog();
+    // DrawSkyBox(); // TODO: Fix Skybox
+    // DrawStarField(1);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    // pCamera->Go();    
+    // DrawEntities();
+}
+void C_GFX::EndScene(void) {
+    glFlush();
+    SDL_GL_SwapBuffers();
 }
 void C_GFX::SetScreenRes(int x,int y,int cl, bool fs) {
     //ShutDownGFX();
@@ -507,8 +533,10 @@ bool C_GFX::DestroyTextures(void) {
     dlcsm_delete_vector(CGLTexture*,textures); /*  for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {  lcsm_delete(*it);   it = textures.erase(it);    }*/
     return true;
 }
+/*
 //////////////////////////////////////////////////////////////// MODELS
 bool C_GFX::LoadModels(void) {
+    
     pLog->AddEntry("Loading models...\n");
     string filename;
     CGLModel *pModel;
@@ -542,20 +570,8 @@ CGLModel* C_GFX::GetRandomModel(void) {
     return NULL;
 }
 bool C_GFX::DestroyModels(void) { dlcsm_delete_vector(CGLModel*,models); return true; }
-//////////////////////////////////////////////////////////////// RENDER SCENE
-void C_GFX::RenderScene(int mx, int my) {
-    glRenderMode(_glRendermode);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    DrawFog();
-    DrawSkyBox(); // TODO: Fix Skybox
-    // DrawStarField(1);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    
-    pCamera->Go();
-    
-    DrawEntities();
-}
+ */
+
 //////////////////////////////////////////////////////////////// MISC 2D DRAW FUNCTIONS
 void C_GFX::DrawRect(RECT rc, long color) {
     DrawRectangle(rc.left,rc.top,rc.left+rc.right,rc.top+rc.bottom,color);
@@ -1008,6 +1024,8 @@ u_char C_GFX::GetFade(char cWhichFade) {
     if(cWhichFade==4) return cFader4;
     return 0;
 }
+
+/*
 //////////////////////////////////////////////////////////////// ENTITY FUNCTIONS
 void C_GFX::InitializeEntities(void) {
     pLog->_Add(" GOING NUTS WITH ENTITIES!!!!!!!!!!!! ");
@@ -1154,5 +1172,5 @@ void C_GFX::ClearEntities(void) { dlcsm_delete_vector(C_Entity*,entities); entit
 void C_GFX::LoadEntities(dlcs_V3 WhichSector) { }
 void C_GFX::SaveEntities(dlcs_V3 WhichSector) { }
 
-
+*/
 

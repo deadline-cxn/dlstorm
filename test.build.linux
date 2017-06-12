@@ -3,15 +3,19 @@ g++ test.cpp \
     c_log.cpp \
     c_entity.cpp \
     c_timer.cpp \
-    c_data.cpp \
     c_var.cpp \
     md5.cpp \
+    c_gfx.cpp \
+    c_gaf.cpp \
+    c_gltexture.cpp \
+    s_gnu.cpp \
     -o test \
       /usr/lib/x86_64-linux-gnu/libGL.so \
       /usr/lib/x86_64-linux-gnu/libGLU.so \
       /usr/lib/x86_64-linux-gnu/libIL.so \
       /usr/lib/x86_64-linux-gnu/libILU.so \
       /usr/lib/x86_64-linux-gnu/libILUT.so \
+      /usr/lib/x86_64-linux-gnu/libz.a \
     `sdl-config --cflags --libs` \
     -fpermissive \
     -D _DLCS_SDL \
@@ -20,10 +24,9 @@ g++ test.cpp \
     -I /usr/include/tcl8.6 \
     -I /usr/include/SDL  \
     -I /usr/include/GL/ \
+    -I /usr/include/ \
     -I /usr/include/IL/ 
 
  
 
-#    c_gfx.cpp \
-#    c_gltexture.cpp \
 #    c_gl3dmodel.cpp \

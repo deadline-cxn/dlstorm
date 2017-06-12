@@ -1,2 +1,47 @@
-(Mon Jun 12 14:03:47 2017):testing test.cpp
-(Mon Jun 12 14:03:47 2017):vars.ini
+(Mon Jun 12 16:21:29 2017):testing test.cpp
+(Mon Jun 12 16:21:29 2017):vars.ini
+(Mon Jun 12 16:21:29 2017):Init SDL GFX Subsystem...
+(Mon Jun 12 16:21:29 2017):SDL Version 1.2.15
+(Mon Jun 12 16:21:29 2017):Video driver[x11]
+(Mon Jun 12 16:21:29 2017):Available Modes
+(Mon Jun 12 16:21:29 2017):  3286 x 1080
+(Mon Jun 12 16:21:29 2017):  1366 x 768
+(Mon Jun 12 16:21:29 2017):  1280 x 1024
+(Mon Jun 12 16:21:29 2017):  1280 x 960
+(Mon Jun 12 16:21:29 2017):  1280 x 800
+(Mon Jun 12 16:21:29 2017):  1152 x 864
+(Mon Jun 12 16:21:29 2017):  1024 x 768
+(Mon Jun 12 16:21:29 2017):  832 x 624
+(Mon Jun 12 16:21:29 2017):  800 x 600
+(Mon Jun 12 16:21:29 2017):  720 x 400
+(Mon Jun 12 16:21:29 2017):  640 x 480
+(Mon Jun 12 16:21:29 2017):VideoInfo->hw_available [0]        
+(Mon Jun 12 16:21:29 2017):VideoInfo->wm_available [1]        
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_hw [0]             
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_hw_CC [0]          
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_hw_A [0]           
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_sw [0]             
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_sw_CC [0]          
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_sw_A [0]           
+(Mon Jun 12 16:21:29 2017):VideoInfo->blit_fill [0]           
+(Mon Jun 12 16:21:29 2017):VideoInfo->video_mem [0]           
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->BitsPerPixel [32]  
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->BytesPerPixel [4] 
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Rloss [0]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Gloss [0]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Bloss [0]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Aloss [8]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Rshift [16]        
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Gshift [8]        
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Bshift [0]        
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Ashift [0]        
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Rmask [16711680]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Gmask [65280]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Bmask [255]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->Amask [0]         
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->colorkey [0]      
+(Mon Jun 12 16:21:29 2017):VideoInfo->vfmt->alpha [255]         
+(Mon Jun 12 16:21:29 2017):Software surfaces...
+(Mon Jun 12 16:21:29 2017):SDL GFX Initialized
+(Mon Jun 12 16:21:32 2017):SDL shut down...
+(Mon Jun 12 16:21:32 2017):Ending...
