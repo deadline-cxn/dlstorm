@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2016
+ **   Copyright:    2017
  **   File:         pre/os.h
  **   Description:  Determine the operating system
  **   Author:       Seth Parson

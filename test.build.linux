@@ -3,6 +3,8 @@ g++ test.cpp \
     c_log.cpp \
     c_entity.cpp \
     c_timer.cpp \
+    c_data.cpp \
+    c_var.cpp \
     md5.cpp \
     -o test \
       /usr/lib/x86_64-linux-gnu/libGL.so \
@@ -21,7 +23,7 @@ g++ test.cpp \
     -I /usr/include/IL/ 
 
  
-#    c_data.cpp \
+
 #    c_gfx.cpp \
 #    c_gltexture.cpp \
 #    c_gl3dmodel.cpp \

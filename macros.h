@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         macros.h
  **   Description:  Macros
  **   Author:       Seth Parson
@@ -55,6 +55,8 @@
 #define dlcsm_make_str(x)       char x[TEXTNAME_SIZE]; memset(x,0,TEXTNAME_SIZE);
 #define dlcsm_make_lstr(x,y)    char x[y]; memset(x,0,y);
 // #define dlcsm_zero(x)           memset(x,0,sizeof(x));
+
+#define dl_debug(x) printf(x);
 
 #endif // _DLCS_MACROS
 

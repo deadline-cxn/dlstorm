@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         gnu.h
  **   Description:  GNU compatibility
  **   Author:       Seth Parson

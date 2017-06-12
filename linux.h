@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         sys/linux.h
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
@@ -17,8 +17,10 @@
  ***************************************************************/
 #ifndef _DLCS_SYS_LINUX
 #define _DLCS_SYS_LINUX
+
 #define	MAC_STATIC
 #define	PATH_SEP '/'
+#define DEL delete
 
 #include <sys/utsname.h>
 #include <sys/un.h>
@@ -38,8 +40,6 @@
 #include <unistd.h>
 #include <tcl.h>
 #include <curses.h>
-
-#define DEL delete
 
 #endif // _DLCS_SYS_LINUX
 

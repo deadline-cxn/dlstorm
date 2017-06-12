@@ -1,22 +1,31 @@
 #include "dlstorm.h"
 #include "c_log.h"
-// #include "c_data.h"
-// #include "c_gfx.h"
+#include "c_var.h"
 
 CLog *pLog;
-// CC_Data *pData;
-// C_GFX *pGFX;
+CVarSet *pData;
+
 
 int main() {
-    // pData = new CC_Data();
-    pLog = new CLog("test.log");
-    // pGFX = new C_GFX(640,480,16,true,"test",pLog,0);
-    int i=0;
-    while(i<12) i++;
+    pLog  = new CLog("test.log");
     pLog->AddEntry("testing test.cpp");
-    // DEL(pData);    
-    // DEL(pGFX);
+    
+    pData = new CVarSet();
+    pData->bLoad();
+    
+    
+    
+    
+    
+    pLog->AddEntry(pData->filename.c_str());
+    
+        
+    
+    
+    
+    
+    pData->bSave();    
+    DEL(pData);
     DEL(pLog);
-
     return 0;
 }

@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         pre/cpu.h
  **   Description:  Determine the CPU type
  **   Author:       Seth Parson

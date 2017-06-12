@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2016
+ **   Copyright:    2017
  **   File:         dlstorm.cpp
  **   Description:  DLCODESTORM Namespace, where the magic happens
  **   Author:       Seth Parson

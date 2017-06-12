@@ -1,4 +1,4 @@
-Copyright (c) 1998-2013, Seth T. Parson
+Copyright (c) 1998-2017, Seth T. Parson
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

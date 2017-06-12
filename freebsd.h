@@ -7,7 +7,7 @@
  **       \/
  **
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         sys/freebsd.h
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
@@ -17,6 +17,7 @@
  ***************************************************************/
 #ifndef _DLCS_SYS_FREEBSD
 #define _DLCS_SYS_FREEBSD
+
 #define	MAC_STATIC
 #define	PATH_SEP '/'
 

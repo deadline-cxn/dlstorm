@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2016
+ **   Copyright:    2017
  **   File:         c_entity.cpp
  **   Class:        C_Entity
  **   Description:  Generic entity object for games

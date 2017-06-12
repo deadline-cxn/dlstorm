@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2017
  **   File:         c_snd.h
  **   Class:        C_Sound
  **   Description:  FMOD wrapper class

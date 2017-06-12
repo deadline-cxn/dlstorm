@@ -1,5 +1,20 @@
 /***************************************************************
- **      EMBER                                                **
+ **
+ **   DLSTORM   Deadline's Code Storm Library
+ **
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **
+ **   License:      BSD
+ **   Copyright:    2017
+ **   File:         gnu.cpp
+ **   Description:  GNU compatibility
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
  ***************************************************************/
 
 // Make win32 system funcs for *nix so I don't have to recode 5000 lines of code...

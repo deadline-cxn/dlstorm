@@ -13,6 +13,16 @@
 #include "c_timer.h"
 //#include "c_map.h"
 
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////// Game play modes
+#define PLAY            0
+#define BUILD_GHOST     1
+#define BUILD           2
+#define SPECTATOR       3
+#define SPECTATOR_LOGIN 4
+#define CHATROOM        5
+#define LOGIN           6
+
 #define G_CORE        1 // Always will be on
 #define G_SDL         2
 #define G_FMOD        4
