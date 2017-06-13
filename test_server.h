@@ -20,9 +20,9 @@
 
 /////////////////////////////////////////
 #define NET_REVISION 1
-#define TEST_S_BUILD "1"
+#define TEST_S_BUILD 1
 #define COPYRIGHT "(C) 2017 Seth Parson"
-#define VERSION "1"
+#define VERSION "v1.0"
 
 #define DEFAULT_GAME_SERVER_IP   "localhost"
 #define DEFAULT_GAME_SERVER_PORT 40404

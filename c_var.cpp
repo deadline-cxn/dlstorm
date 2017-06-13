@@ -51,9 +51,9 @@ void CVarSet::Init() {
     cvar_type_format_map[CVAR_FLOAT]  = "%0.3f";
     filename="vars.ini";
 }
-void CVarSet::set_cvar(char *name, char *value) {
+void CVarSet::set_cvar(const char *name, char *value) {
     
-    printf("CVarSet: Setting %s to %s\n",name,value);
+    // printf("CVarSet: Setting %s to %s\n",name,value);
     int ivartype;
     bool bFound;
     int *newint;
@@ -65,6 +65,14 @@ void CVarSet::set_cvar(char *name, char *value) {
             break;
         }
     }
+    if(!bFound) {
+        char *newchars=new char[256];
+        varmap[name]=newchars;
+        strcpy(newchars,value);
+    } else {
+        strcpy( (char *)(varmap.find(name)->second), value);
+    }
+    /*
     switch(ivartype) {
     case CVAR_BOOL:
         (*(bool *)(*svm_i).second) = atoi(value);
@@ -105,8 +113,9 @@ void CVarSet::set_cvar(char *name, char *value) {
         }
         break;
     }
+    */
 }
-void CVarSet::get_cvar(char *name, char *value) {
+void CVarSet::get_cvar(const char *name, char *value) {
     int ivartype;
     ivartype=get_cvartype(name);
     strcpy(value,"NULL");
@@ -143,7 +152,7 @@ void CVarSet::get_cvar(char *name, char *value) {
         break;
     }
 }
-const char * CVarSet::get_cvar(char *name) {
+const char * CVarSet::get_cvar(const char *name) {
     // char * value;
     // memset(value,0,1024);
     /*
@@ -183,7 +192,7 @@ const char * CVarSet::get_cvar(char *name) {
         break;
     }
      */
-     return varmap.find(name)->second;
+     return (const char *) varmap.find(name)->second;
 
 }
 char * CVarSet::get_cvarformat(int t) {
@@ -229,7 +238,7 @@ bool CVarSet::bLoad(void) {
         In[strlen(In)-1]=0;
         lin = dlcs_explode("=",In);
         if(lin.size()>1) {
-            set_cvar(lin[0].c_str(),lin[1].c_str());
+            set_cvar(lin[0].c_str(),(char *)lin[1].c_str());
         }
     }
     fclose(fp);
@@ -245,7 +254,7 @@ bool CVarSet::bSave(void) {
     for( svm_i=varmap.begin(); svm_i!=varmap.end(); ++svm_i) {
          sprintf(Temp,"%s=%s\n",
          (*svm_i).first.c_str(),
-         (char *)(*svm_i).second);
+         (const char *)(*svm_i).second);
          fputs(Temp,fout);
     }
     return true;

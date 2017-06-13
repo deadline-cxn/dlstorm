@@ -1,17 +1,13 @@
-Test Server 1(AMD64 (x86_64)) Net(1) Build(4294685) (C) 2017 Seth Parson
+Test Server v1.0(AMD64 (x86_64)) Net(1) Build(4294673) (C) 2017 Seth Parson
 test_server.ini loaded
- s_name = Test Server
-name  = [Test Server]
-admin = [defectiveseth@gmail.com]
-web   = [www.sethcoder.com]
-MOTD  = [Welcome to the Test Server!]
+s_name = [Test Server]
+s_admin_email = [defectiveseth@gmail.com]
+s_website_link = [www.sethcoder.com]
+s_motd = [Welcome to the Test Server!]
 World loaded...
 (Type '/help' for help on commands)
-Listening on port [40276]
->help
->/quit
->/j
+Listening on port [40404]
+>kill
 >/kill
 test_server.ini saved
-Closed user database
 Server killed

@@ -57,7 +57,6 @@ void ShowHelp(void){
 }
 
 int main(int argc, char *argv[]){
-    printf("Test Server\n");
     bool bquiet=false;
     char nargs;
     if(argc>1){ nargs=1;
@@ -927,7 +926,7 @@ CServer::CServer(bool bIsQuiet){
     pFirstPlayer=0;
     initSocket();
     if(Listen(atoi(pVars->get_cvar("i_port")), true)==-1)
-        Log("ERROR LISTENING ON PORT %d\n",pVars->get_cvar("i_port"));
+        Log("ERROR LISTENING ON PORT %d\n",atoi(pVars->get_cvar("i_port")));
     Log("Listening on port [%d]", iGetLocalPort());
 }
 /////////////////////////////////////////
@@ -1049,16 +1048,17 @@ void CServer::start_up(void){
 
     load_data();
     
-    Log("name  = [%s]",pVars->get_cvar("s_name"));
-    Log("admin = [%s]",pVars->get_cvar("s_admin_email"));
-    Log("web   = [%s]",pVars->get_cvar("s_website_link"));
-    Log("MOTD  = [%s]",pVars->get_cvar("s_motd"));
+    Log("s_name = [%s]",pVars->get_cvar("s_name"));
+    Log("s_admin_email = [%s]",pVars->get_cvar("s_admin_email"));
+    Log("s_website_link = [%s]",pVars->get_cvar("s_website_link"));
+    Log("s_motd = [%s]",pVars->get_cvar("s_motd"));
 
     load_world();
 
     Log("(Type '/help' for help on commands)");
     //Log("АБВллллллллллллллллллллллллллллллллллллллллллллллллллллллллллллВБА");
 
+/*
     C_GSC *c_x=0;
     c_x=new C_GSC(pLog,this);
     strcpy(c_x->username,"seth");
@@ -1069,6 +1069,7 @@ void CServer::start_up(void){
     // pc->health->current_value=2;
     DEL(c_x);
     // DEL(pc);
+     */
 
 }
 /////////////////////////////////////////
@@ -1083,8 +1084,7 @@ void CServer::shut_down(void){
     RemoveConsoleHistory();
 
     // sqlite3_close(pDB);
-
-    Log("Closed user database");
+    // Log("Closed user database");
 
     ///////////////////////////////////////////
 /*
