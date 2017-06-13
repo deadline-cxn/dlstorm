@@ -1,0 +1,34 @@
+g++ test_server.cpp \
+    dlstorm.cpp  \
+    c_log.cpp \
+    c_entity.cpp \
+    c_timer.cpp \
+    c_var.cpp \
+    md5.cpp \
+    s_gnu.cpp \
+    c_net.cpp \
+    -o test_server \
+    -fpermissive \
+    -Wno-write-strings \
+    -Wno-format-security \
+    -I /usr/include/tcl8.6 \
+    -I /usr/include/  \
+    -D _DLCS_CONSOLE
+ 
+
+#    -D _DLCS_SDL \
+#     `sdl-config --cflags --libs` \
+# -I /usr/include/IL/ 
+#    -I /usr/include/SDL  \
+#    -I /usr/include/GL/ \
+#    c_gl3dmodel.cpp \
+#    c_gfx.cpp \
+#    c_gaf.cpp \
+#    c_gltexture.cpp \
+#      /usr/lib/x86_64-linux-gnu/libGL.so \
+#      /usr/lib/x86_64-linux-gnu/libGLU.so \
+#      /usr/lib/x86_64-linux-gnu/libIL.so \
+#      /usr/lib/x86_64-linux-gnu/libILU.so \
+#      /usr/lib/x86_64-linux-gnu/libILUT.so \
+#    /usr/lib/x86_64-linux-gnu/libz.a \
+

@@ -55,7 +55,7 @@ void CLog::Initialize(void) {
 void CLog::SetName(char *szFilename) {
     strcpy(logfile,szFilename);
 }
-
+/*
 void CLog::_Add(const char *fmt, ...) {
 
     if(!bActive) return;
@@ -122,7 +122,7 @@ void CLog::_DebugAdd(const char *fmt, ...) {
     }    
 }
 
-
+*/
 void CLog::AddEntry(char *fmt, ...) {
     if(!bActive) return;
     char ach[512];

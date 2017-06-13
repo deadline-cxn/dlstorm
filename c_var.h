@@ -50,6 +50,7 @@ public:
     void Init();
     void                set_cvar(char *name, char *value);
     void                get_cvar(char *name, char *value);
+    const char *        get_cvar(char *name);
     int                 get_cvartype(const char *s);
     const char *        get_cvartype_string(int t);
     const char *        get_cvarformatted(const char *f,void *cv);

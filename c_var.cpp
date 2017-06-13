@@ -52,6 +52,8 @@ void CVarSet::Init() {
     filename="vars.ini";
 }
 void CVarSet::set_cvar(char *name, char *value) {
+    
+    printf("CVarSet: Setting %s to %s\n",name,value);
     int ivartype;
     bool bFound;
     int *newint;
@@ -140,6 +142,49 @@ void CVarSet::get_cvar(char *name, char *value) {
         strcpy(value,"UNKNOWN");
         break;
     }
+}
+const char * CVarSet::get_cvar(char *name) {
+    // char * value;
+    // memset(value,0,1024);
+    /*
+    int ivartype;
+    ivartype=get_cvartype(name);
+    strcpy(value,"NULL");
+    switch(ivartype) {
+    case CVAR_BOOL:
+        strcpy(value, va(get_cvarformat(ivartype), (*(bool *) varmap.find(name)->second)));
+        break;
+    case CVAR_INT:
+        strcpy(value, va(get_cvarformat(ivartype), (*(int *) varmap.find(name)->second)));
+        break;
+    case CVAR_UINT:
+        strcpy(value, va(get_cvarformat(ivartype), (*(unsigned int *) varmap.find(name)->second)));
+        break;
+    case CVAR_CHAR:
+        strcpy(value, va(get_cvarformat(ivartype), (*(char *) varmap.find(name)->second)));
+        break;
+    case CVAR_UCHAR:
+        strcpy(value, va(get_cvarformat(ivartype), (*(unsigned char *) varmap.find(name)->second)));
+        break;
+    case CVAR_FLOAT:
+        strcpy(value, va(get_cvarformat(ivartype), (*(float *) varmap.find(name)->second)));
+        break;
+    case CVAR_LONG:
+        strcpy(value, va(get_cvarformat(ivartype), (*(long *) varmap.find(name)->second)));
+        break;
+    case CVAR_ULONG:
+        strcpy(value, va(get_cvarformat(ivartype), (*(unsigned long *) varmap.find(name)->second)));
+        break;
+    case CVAR_STRING:
+        strcpy(value, va(get_cvarformat(ivartype), (char *)(varmap.find(name)->second)));
+        break;
+    default:
+        strcpy(value,"UNKNOWN");
+        break;
+    }
+     */
+     return varmap.find(name)->second;
+
 }
 char * CVarSet::get_cvarformat(int t) {
     return (char *)cvar_type_format_map[t].c_str();

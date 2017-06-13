@@ -47,6 +47,11 @@ _DLCS_DEVIL
 #include "os.h"
 #include "cpu.h"
 
+
+// Other common defines
+
+#define MAX_TEXT_LEN 1024
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////////////
