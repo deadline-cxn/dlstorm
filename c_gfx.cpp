@@ -392,9 +392,10 @@ void C_GFX::SetWindowTitle(string fmt, ...) {
     windowcaption.assign(ach);
     SDL_WM_SetCaption(windowcaption.c_str(),0);
 }
-void C_GFX::ToggleFullScreen(void) {
+
+bool C_GFX::ToggleFullScreen(void) {
 #ifdef __linux__
-    SDL_WM_ToggleFullScreen(pScreen);
+    return SDL_WM_ToggleFullScreen(pScreen);
 #endif
     const SDL_VideoInfo * VideoInfo = SDL_GetVideoInfo();
     if(VideoInfo->hw_available) { VideoFlags |= SDL_HWSURFACE; pLog->_Add("Hardware surfaces..."); }
@@ -404,7 +405,9 @@ void C_GFX::ToggleFullScreen(void) {
     SDL_SetVideoMode(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags^SDL_FULLSCREEN);
     InitGL(ScreenWidth,ScreenHeight);
     LoadTextures(pGAF);
+    return true;
 }
+
 void C_GFX::ShutDownGFX(void) {
     
     if(bUse3d) {
@@ -490,7 +493,7 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     struct dirent *epdf;
     dpdf = opendir("base");
     if (dpdf != NULL) {
-        while (epdf = readdir(dpdf)) {
+        while ((epdf = readdir(dpdf))) {
             if((!(dlcs_strcasecmp(epdf->d_name,".")) || (dlcs_strcasecmp(epdf->d_name,".."))) && (!dlcs_isdir(epdf->d_name))) {
                 pTexture=new CGLTexture(pLog,va("base/%s",epdf->d_name));
                 if(pTexture) {
@@ -677,7 +680,7 @@ void C_GFX::DrawTransparentBar(int iX,int iY,int iX2,int iY2,long color1,long co
     glEnable(GL_DEPTH_TEST);
 }
 void C_GFX::DrawVertice(int x, int y) {
-    DrawBar(x,y,x+2,y+2,LONGRGB(255,0,0),LONGRGB(0,0,255));
+    DrawBar(x,y,x+2,y+2,dlcsm_LONGRGB(255,0,0),dlcsm_LONGRGB(0,0,255));
 }
 void C_GFX::DrawTexture(int x,int y,int x2,int y2,string name,u_char r,u_char g,u_char b) {
     CGLTexture *pTexture;
@@ -699,22 +702,22 @@ void C_GFX::Draw3DBox(RECT rect) {
               rect.top,
               rect.left+rect.right-2,
               rect.top+rect.bottom-2,
-              LONGRGB(240,240,240),
-              LONGRGB(240,240,240));
+              dlcsm_LONGRGB(240,240,240),
+              dlcsm_LONGRGB(240,240,240));
 
     DrawBar(  rect.left+2,
               rect.top+2,
               rect.left+rect.right,
               rect.top+rect.bottom,
-              LONGRGB(80,80,80),
-              LONGRGB(80,80,80));
+              dlcsm_LONGRGB(80,80,80),
+              dlcsm_LONGRGB(80,80,80));
 
     DrawBar(  rect.left+2,
               rect.top+2,
               rect.left+rect.right-2,
               rect.top+rect.bottom-2,
-              LONGRGB(180,180,180),
-              LONGRGB(180,180,180));
+              dlcsm_LONGRGB(180,180,180),
+              dlcsm_LONGRGB(180,180,180));
 }
 //////////////////////////////////////////////////////////////// MISC 3D DRAW FUNCTIONS
 void C_GFX::DrawFog(void) {
@@ -943,7 +946,7 @@ void C_GFX::DrawStarField(int iDir) {
     };
     static stra star[500];
     static bool bstars;
-    static float ffy;
+    // static float ffy;
     static float fff;
     static float dir=-.405f;
     int y;
@@ -1183,3 +1186,51 @@ void C_GFX::SaveEntities(dlcs_V3 WhichSector) { }
 
 */
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+C2DFont::C2DFont() { }
+C2DFont::C2DFont(char *file) { Load(file); }
+C2DFont::~C2DFont() { }
+void C2DFont::Load(char *file) { Font = SDL_LoadBMP(file); if(Font) SDL_SetColorKey(Font, SDL_SRCCOLORKEY,SDL_MapRGB(Font->format, 0, 0, 0)); }
+void C2DFont::Write(int x, int y, char *string,int bank)
+{
+    char c;
+    int getx;
+    int gety;
+    bool draw;
+    SDL_Rect src_rect;
+    SDL_Rect dst_rect;
+    src_rect.h=15;
+    src_rect.w=15;
+    dst_rect.x=x;
+    dst_rect.y=y;
+    for(unsigned int i=0;i<strlen(string);i++)
+    {
+        c=string[i];
+        draw=0;
+        if((c>32) && (c<128))
+        {
+            getx=(c-32)*16;
+            gety=0;
+
+            while(getx>255)
+            {
+                gety+=16;
+                getx-=256;
+            }
+            draw=1;
+        }
+        if(draw)
+        {
+            src_rect.x=getx;
+            src_rect.y=gety+(bank*128);
+            SDL_BlitSurface(Font, &src_rect, SDL_GetVideoSurface(), &dst_rect);
+        }
+        dst_rect.x+=10;
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

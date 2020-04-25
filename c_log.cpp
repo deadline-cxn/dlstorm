@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_log.cpp
  **   Class:        CLog
  **   Description:  Log file class
@@ -22,14 +22,14 @@ CLog::CLog() {
     Initialize();
 //    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
-CLog::CLog(char *szFilename) {
+CLog::CLog(const char *szFilename) {
     Initialize();
     SetName(szFilename);
     Restart();
     LineFeedsOn();
 //    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
-CLog::CLog(char *szFilename, bool bQ) {
+CLog::CLog(const char *szFilename, bool bQ) {
     Initialize();
     SetName(szFilename);
     bQuiet=bQ;
@@ -52,7 +52,7 @@ void CLog::Initialize(void) {
     bLineFeeds = false;
     bQuiet = true;
 }
-void CLog::SetName(char *szFilename) {
+void CLog::SetName(const char *szFilename) {
     strcpy(logfile,szFilename);
 }
 /*
@@ -123,7 +123,7 @@ void CLog::_DebugAdd(const char *fmt, ...) {
 }
 
 */
-void CLog::AddEntry(char *fmt, ...) {
+void CLog::AddEntry(const char *fmt, ...) {
     if(!bActive) return;
     char ach[512];
     char temp[512];
@@ -155,7 +155,7 @@ void CLog::AddEntry(char *fmt, ...) {
     }
 
 }
-void CLog::AddEntryNoTime(char *fmt, ...) {
+void CLog::AddEntryNoTime(const char *fmt, ...) {
     if(!bActive) return;
     char ach[512];
     va_list va;

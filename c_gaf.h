@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2020
  **   File:         c_gaf.h
  **   Class:        CGAF
  **   Description:  Game Archive File
@@ -36,7 +36,7 @@
 struct GAFFile_Header;
 struct GAFFile_ElmHeader;
 class  CGAF;
-typedef void (*GAF_SCANCALLBACK)(GAFFile_ElmHeader *ElmInfo,LPSTR FullPath);
+typedef void (*GAF_SCANCALLBACK)(GAFFile_ElmHeader *ElmInfo,const char * FullPath);
 struct GAFFile_Header {
     DWORD Size;			// Size of this header
     DWORD Version;		// Version
@@ -67,6 +67,9 @@ public:
 #ifdef GAFDEBUG
     CLog *CabLog;
 #endif
+    CGAF();
+    CGAF(const char *file,int comp);
+    virtual ~CGAF();
 
     // Remove Many files...
     // Allows removal of many files without rebuilding the nuk every time.
@@ -75,24 +78,24 @@ public:
     // GAF.ManyFileRemove( "OldFile.Txt" );
     // GAF.ManyFileRemove( "Graphics/SpaceShip.bmp" );
     // GAF.ManyFileEnd();
-    bool ManyFileRemove ( LPSTR Name ); // Call once for each file.
+    bool ManyFileRemove ( const char * Name ); // Call once for each file.
     bool ManyFileEnd ( void );          // End the ManyFileRemove (You MUST call this!)
 
     // Define the description in the Header of the NUK file.
     // 0 to 255 chars in size.
-    bool SetFileDescription(LPSTR Desc, bool _bWriteHeader = false);
+    bool SetFileDescription(const char * Desc, bool _bWriteHeader = false);
 
     // Return a pointer to the NukeFile_ElmHeader structure describing 'Name'.
     // Returns NULL if file doesn't exists.
-    GAFFile_ElmHeader *GetFileInfo(LPSTR Name);
+    GAFFile_ElmHeader *GetFileInfo(const char * Name);
 
     // Change compression-level of a file.
-    bool ChangeCompression(LPSTR Name,DWORD clevel);
+    bool ChangeCompression(const char * Name,DWORD clevel);
 
     // Allocate memory, and extract a file into it.
-    GAF_FileBuffer GetFile(LPSTR Name);
+    GAF_FileBuffer GetFile(const char * Name);
 
-    void GetFile(LPSTR Name, GAF_FileBuffer gfb);
+    void GetFile(const char * Name, GAF_FileBuffer gfb);
 
     //void *GetSurface(char *fb);
 
@@ -116,98 +119,95 @@ public:
     }
 
     // Add a file, with the IndexName 'Name'.
-    bool AddFile(LPSTR Name,LPSTR filename);
-    bool AddFileFromMem(LPSTR Name,unsigned char *fb,int size);
+    bool AddFile(const char * Name,const char * filename);
+    bool AddFileFromMem(const char * Name,unsigned char *fb,int size);
 
     // Extract a file to file. If the file is compressed, this function will uncompress it.
     // ect. ExtractFile_ToFile("Graphics/SpaceShip.bmp","C:\\SpaceShip.bmp");
-    bool ExtractFile_ToFile(LPSTR Name,LPSTR FileName);
+    bool ExtractFile_ToFile(const char * Name,const char * FileName);
 
     // Extract a file to memory. If the file is compressed, this function will uncompress it.
     // ect.
     // void Buffer=malloc(GetFileSize(Name));
     // ExtractFile_ToMem(Name,Buffer);
-    bool ExtractFile_ToMem(LPSTR Name,void *dest);
+    bool ExtractFile_ToMem(const char * Name,void *dest);
 
     // Get the size of a file.
     // If file is compressed, this functions returns the uncompressed size.
-    int GetFileSize(LPSTR Name);
+    int GetFileSize(const char * Name);
 
     // Get the size of a file.
     // If file is compressed, this functions returns the compressed size.
-    int GetCompressedFileSize(LPSTR Name);
+    int GetCompressedFileSize(const char * Name);
 
     // -------------------------------------------------------------------
     // Add all files and directories (if SubDirs=true).
     // ect. AddDir("TestDir","C:\\stuff",true);
-    // LPSTR Dest                       The Name of destination dir in the nuk
+    // char * Dest                       The Name of destination dir in the nuk
     //                                      file.  This can be "" or NULL to
     //                                      place dirname at the root of the
     //                                      nuk file.
     //										Please note, Dest MUST already exist in
     //                                      the nuk file!
-    // LPSTR dirname						The location of the source folder on
+    // char * dirname						The location of the source folder on
     //                                      your system.
     //										Omit any trailing '\\' characters. i.e.
     //                                      "C:\\stuff" NOT "C:\\stuff\\"
     // bool SubDirs							true to add SubFolders from `dirname`
     //                                      also, else just the contents of
     //                                      `dirname`
-    bool AddDir(LPSTR Name);
-    bool AddDir(LPSTR Dest,LPSTR dirname,bool SubDirs);
-    bool AddDirFilesToRoot(LPSTR dir, bool SubDirs);
+    bool AddDir(const char * Name);
+    bool AddDir(const char * Dest,const char * dirname,bool SubDirs);
+    bool AddDirFilesToRoot(const char * dir, bool SubDirs);
 
     // Move a file or a directory + content
-    bool Move(LPSTR Name,LPSTR Destination);
+    bool Move(const char * Name,const char * Destination);
 
     // Rename a file or a directory
     // ect. Rename("Testdir/image.bmp","stuff.bmp");
-    bool Rename(LPSTR Name,LPSTR NewName);
+    bool Rename(const char * Name,const char * NewName);
 
     // Remove a directory and all it's content
-    bool RemoveDir(LPSTR Name);
+    bool RemoveDir(const char * Name);
 
     // Removes a file.
-    bool RemoveFile(LPSTR Name);
+    bool RemoveFile(const char * Name);
 
     // Scan Directory - Calls 'CallBack' with this information about the elements in the dir
-    bool ScanDir(LPSTR Name,GAF_SCANCALLBACK CallBack);
+    bool ScanDir(const char * Name,GAF_SCANCALLBACK CallBack);
 
     // Uses ScanDir to scan this dir and all subdirs, for elements.
-    bool ScanTree(LPSTR Name,GAF_SCANCALLBACK CallBack);
+    bool ScanTree(const char * Name,GAF_SCANCALLBACK CallBack);
 
     // Seek to the position of the file 'Name' and return a filehandle. Returns NULL on error.
-    FILE * Seek(LPSTR Name);
+    FILE * Seek(const char * Name);
 
     // Creates a dir.
-    bool CreateDir(LPSTR Name);
+    bool CreateDir(const char * Name);
 
     // Create an empty file, with the size 'Size'. (ect. CreateFile("Image.raw",ImageWidth*ImageHeight); )
-    bool CreateFile(LPSTR Name, DWORD Size);
+    bool CreateFile(const char * Name, DWORD Size);
 
     // Close the current file.
     bool Close();
 
     // Create a new, and empty, NukeFile.
-    bool Create(LPSTR fn);
+    bool Create(const char * fn);
 
     // Open an existing NukeFile.
     // The FileDescription in the NukeFile must match the specified filedescripion.
     // (Use SetFileDescription)
     // `_bIgnoreDescription = true` to ignore the NUK file's description.
-    bool Open ( LPSTR fn, bool _bIgnoreDescription = false );
-    CGAF();
-    CGAF(char *file,int comp);
-    virtual ~CGAF();
-    bool AddFile_Compress(LPSTR Name,LPSTR filename);
-    bool CreateCompFile(LPSTR Name, DWORD CompSize, DWORD Size, DWORD clevel);
+    bool Open ( const char * fn, bool _bIgnoreDescription = false );
+    bool AddFile_Compress(const char * Name,const char * filename);
+    bool CreateCompFile(const char * Name, DWORD CompSize, DWORD Size, DWORD clevel);
     DWORD CompLevel;
     int GetFullLength();
-    int FindDirNumber(LPSTR Name);
-    int FindDir(LPSTR Name);
-    int FindFile(LPSTR Name);
-    int Find(LPSTR Name);
-    bool AddDirEx(LPSTR Dest,LPSTR dirname,bool SubDirs);
+    int FindDirNumber(const char * Name);
+    int FindDir(const char * Name);
+    int FindFile(const char * Name);
+    int Find(const char * Name);
+    bool AddDirEx(const char * Dest,const char * dirname,bool SubDirs);
     char FileDesc[GAF_DESCSIZE];
     bool ScanTreeEx(int DirNumber,GAF_SCANCALLBACK CallBack);
     bool RemoveDir(int DirNumber);
@@ -218,12 +218,12 @@ public:
     int NumElements;
     GAFFile_ElmHeader *Elements;
     GAFFile_Header Header;
-    bool SplitNameAndDir(LPSTR Source,LPSTR FileName,LPSTR Dir);
-    bool GetFullPath(int n,LPSTR Dest);
+    bool SplitNameAndDir(const char * Source, char * FileName, char * Dir);
+    bool GetFullPath(int n, char * Dest);
     int TempDir;
     bool CheckSlash(char c);
-    int GetNumSlashes(LPSTR String);
-    int GetUntilSlash(LPSTR Source,LPSTR Dest);
+    int GetNumSlashes(const char * String);
+    int GetUntilSlash(const char * Source,char * Dest);
     void CopyData(FILE *Source,FILE *Dest,int Size);
     bool WriteHeader();
     int FileSize(FILE *f);

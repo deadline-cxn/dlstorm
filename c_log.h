@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_log.h
  **   Class:        CLog
  **   Description:  Log file class
@@ -17,27 +17,28 @@
 #ifndef _DLCS_C_LOG
 #define _DLCS_C_LOG
 #include "dlstorm.h"
+#include "os.h"
 ///////////////////////////////// CLog class
 class CLog {
 public:
     CLog(void);
-    CLog(char *szFilename);
-    CLog(char *szFilename, bool bQ);
+    CLog(const char *szFilename);
+    CLog(const char *szFilename, bool bQ);
     virtual ~CLog(void);
     void Initialize(void);
-    void AddEntry(char *fmt, ...);
-    void AddEntryNoTime(char *fmt, ...);
+    void AddEntry(const char *fmt, ...);
+    void AddEntryNoTime(const char *fmt, ...);
     void AddLineSep(void);
-    void SetName(char *szFilename);
+    void SetName(const char *szFilename);
     void Off(void);
     void On(void);
     void LineFeedsOn(void);
     void LineFeedsOff(void);
     bool IsActive(void);
     bool Restart(void);
-    char szBegin[TEXTNAME_SIZE];
-    char szEnd[TEXTNAME_SIZE];
-    char szLineSep[TEXTNAME_SIZE];
+    char szBegin[_TEXTNAME_SIZE];
+    char szEnd[_TEXTNAME_SIZE];
+    char szLineSep[_TEXTNAME_SIZE];
     char logfile[_MAX_PATH];
     char currentdir[_MAX_PATH];
     char logdir[_MAX_PATH];

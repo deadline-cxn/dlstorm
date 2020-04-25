@@ -28,8 +28,8 @@
 #include "c_gltexture.h"
 // #include "c_gl3dmodel.h"
 // #include "c_entity.h"
-#include "il.h"
-#include "ilut.h"
+#include "IL/il.h"
+#include "IL/ilut.h"
 
 // class C_Entity;
 // class CGLModel;
@@ -98,7 +98,23 @@ typedef struct {
     bool        bZn;
 } v3ops;
 
-class C_GFX {
+
+class C2DFont
+{
+public:
+
+    C2DFont();
+    C2DFont(char *file);
+    ~C2DFont();
+
+    void Write(int x, int y, char *string,int bank);
+    void Load(char *file);
+
+    SDL_Surface *Font;
+    
+};
+
+class C_GFX : public C2DFont {
 
 public:
     C_GFX(int w, int h, int c, bool FullScreen, string wincaption,bool use3d, CLog *pUSELOG, CGAF *pUSEGAF);
@@ -147,7 +163,7 @@ public:
     void        SetWindowTitle(string fmt, ...);
     void        ShutDownGFX(void);
     bool        InitializeGFX(int w, int h, int c, bool FullScreen, string wincaption,bool use3d,CLog *pUSELOG, CGAF *pUSEGAF);
-    void        ToggleFullScreen(void);
+    bool        ToggleFullScreen(void);
     GLvoid      ReSizeGLScene(GLsizei width, GLsizei height);
     void        SetScreenRes(int x,int y,int cl, bool fs);
     // void        FlipSurfaces(void);
