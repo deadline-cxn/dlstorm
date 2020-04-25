@@ -49,6 +49,7 @@ extern "C" {
     int     dlcs_mkdir(const char *szDirectoryName);
     int     dlcs_chdir(const char *szDirectory);
     char   *dlcs_getcwd(void);
+    bool    dlcs_file_exists(const char *szFile);
     bool    dlcs_isdir(char const * dir);
     int     dlcs_strcasecmp(const char *szOne,const char *szTwo);
     char   *dlcs_strreplace(char cold,char cnew, char *strg);

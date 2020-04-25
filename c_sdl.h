@@ -18,6 +18,7 @@
 #pragma comment( lib, "SDL.lib" )
 #pragma comment( lib, "SDL_image.lib" )
 
+class CSprite;
 class CMouse;
 class C2DFont;
 //#define SDL_RGB(r,g,b) SDL_MapRGB(GFX->screen->format,r,g,b)
@@ -48,6 +49,7 @@ public:
     SDL_Renderer *renderer;
     SDL_Surface *screen;
     SDL_Surface *Icon;
+    CSprite     *pFirstSprite;
     void         ZeroVars(void);
     bool         Begin(const char *an,Uint32 width, Uint32 height, Uint32 bpp, SDL_Surface *icon);
     bool         Begin(const char *an,Uint32 width, Uint32 height, Uint32 bpp, const char *icon);
@@ -66,8 +68,21 @@ public:
     void        RebuildGAF(void);
     void        Write(int x, int y, const char *string,int bank);
 
+    void        SpritesDraw(void);
+    void        SpriteAdd(const char *name, const char *file);
+    void        SpriteDel(const char * name);
+    void        SpritesClear(void);
+    void        SpriteChangeRect(const char *name,int which,int x, int y, int w, int h);
+    CSprite    *SpriteFind(const char *name);
+    CSprite    *SpriteFindLast(void);
+    void        SpriteShow(const char *name);
+    void        SpriteHide(const char *name);
+    void        SpriteSetAnimated(const char *name,bool animated);
+    void        SpriteSetAnimFrame(const char *name,int frame);
+    void        SpriteSetAnimFrames(const char *name,int frames);
+    void        SpriteSetAnimSpeed(const char *name,long speed);
+    void        SpriteSetAnimLoop(const char *name,bool loop);
 };
-
 
 class CMouse {
 public:
@@ -122,15 +137,11 @@ public:
     CSprite(CSDL_Wrap *inSDL,SDL_Surface *source_surface);
     CSprite(CSDL_Wrap *inSDL,SDL_Surface *source_surface,SDL_Surface *target_surface);
     ~CSprite();
+    char Name[64];
+    CSprite *pNextSprite;
     CSDL_Wrap *SDL;
     float x;
     float y;
-    int health;
-    int mana;
-    int power;
-    int status;
-    int weapon1;
-    int weapon2;
     SDL_Surface *source_surface;
     SDL_Surface *target_surface;
     SDL_Rect rect[256];

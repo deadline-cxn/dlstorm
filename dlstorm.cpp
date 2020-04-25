@@ -207,6 +207,15 @@ char *dlcs_getcwd(void) {
     return string;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+bool dlcs_file_exists(const char *szFile) {
+    struct stat st;
+    if (stat(szFile, &st) == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////
 bool dlcs_isdir(char const * dir) {
     struct stat st;
     if(stat(dir,&st)==-1) return false;

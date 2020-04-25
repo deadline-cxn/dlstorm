@@ -1,8 +1,7 @@
 
 #include "c_game.h"
 
-CGame::CGame()
-{
+CGame::CGame() {
 	screen_width=800;
 	screen_height=600;
 	screen_colors=32;
@@ -36,7 +35,7 @@ void CGame::Start(char *APP_NAME,Uint16 iFlags) {
     Log->AddEntry((char *)"------------------------------------------------------");
     Log->AddEntry((char *)va("%s! Started...",APP_NAME));
     if(flags&G_SDL) {
-        SDL = new CSDL_Wrap((char *)APP_NAME,screen_width,screen_height,screen_colors,(char *)"gfx/icon.bmp");
+        SDL = new CSDL_Wrap(APP_NAME,screen_width,screen_height,screen_colors,"gfx/icon.bmp");
         if(!SDL) ShutDown();
         if(!SDL->InitSuccess) {
             Log->AddEntry((char *)"SDL Subsystem Init FAILURE!");
@@ -56,8 +55,10 @@ void CGame::Start(char *APP_NAME,Uint16 iFlags) {
 
 void CGame::ShutDown() {
     Log->AddEntry((char *)"Game shutting down...");
+
     // dlcsm_delete(SND);
     // Log->AddEntry((char *)"Game shutting down... SND");
+    
     dlcsm_delete(SDL);
     Log->AddEntry((char *)"Game shutting down... SDL");
     dlcsm_delete(Log);

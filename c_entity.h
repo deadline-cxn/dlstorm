@@ -101,6 +101,10 @@ public:
     int     mana_points;
     int     power_points;
     int     rage_points;
+    
+    int     status;
+    int     weapon1;
+    int     weapon2;
 
     int     at_sta;
     int     at_int;

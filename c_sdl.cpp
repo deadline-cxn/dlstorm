@@ -10,10 +10,12 @@ CSDL_Wrap::CSDL_Wrap(const char *appname,Uint32 nw,Uint32 nh,Uint32 nb)         
 CSDL_Wrap::CSDL_Wrap(const char *appname,Uint32 nw,Uint32 nh,Uint32 nb,SDL_Surface *icon)   { ZeroVars(); Begin(appname,nw,nh,nb,icon); }
 CSDL_Wrap::CSDL_Wrap(const char *appname,Uint32 nw,Uint32 nh,Uint32 nb,const char *icon)    { ZeroVars(); Begin(appname,nw,nh,nb,icon); }
 CSDL_Wrap::~CSDL_Wrap() {
+    zl("CSDL_Wrap (DECONSTRUCTING)");
     DEL(pMouse);
     DEL(GAF);
-    DEL(Log);
     DEL(Font);
+    SpritesClear();
+    DEL(Log);
     SDL_Quit();
 }
 
@@ -47,12 +49,17 @@ bool CSDL_Wrap::Begin(const char *appname,Uint32 nw, Uint32 nh, Uint32 np, SDL_S
 
 
 void CSDL_Wrap::RebuildGAF(void) {
-    zl("Rebuilding gfx.gaf GAF...");
-    remove("gfx.gaf");
-    CGAF *gaf;
-    gaf=new CGAF("gfx.gaf",GAFCOMP_BEST);
-    gaf->AddDir("","gfx",1);
-    DEL(gaf);
+    if(!dlcs_file_exists("gfx.gaf")) {
+        zl("Rebuilding gfx.gaf GAF...");
+        remove("gfx.gaf");
+        CGAF *gaf;
+        gaf=new CGAF("gfx.gaf",GAFCOMP_BEST);
+        gaf->AddDir("","gfx",1);
+        DEL(gaf);
+    }
+    else {
+        zl("gfx.gaf GAF exists, not rebuilding...");
+    }
 }
 
 bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon) {
@@ -225,6 +232,95 @@ void CSDL_Wrap::DrawMap() {
 void CSDL_Wrap::Write(int x, int y, const char *string,int bank) {
     Font->Write(x,y,string,bank);
 }
+
+void CSDL_Wrap::SpritesDraw(void) {
+
+}
+void CSDL_Wrap::SpriteAdd(const char *name, const char *file) {
+    zl(va("Adding sprite %s",name));
+    CSprite *whichSprite;
+    whichSprite=0;
+    whichSprite=SpriteFindLast();
+    if(whichSprite==0) {
+        pFirstSprite=new CSprite(this);
+        strcpy(pFirstSprite->Name,name);
+        pFirstSprite->source_surface=LoadGAFSurface(file);
+        return;
+    }
+
+    if(whichSprite) {
+        whichSprite->pNextSprite=new CSprite(this);
+        if(whichSprite->pNextSprite) {
+            whichSprite=whichSprite->pNextSprite;
+            strcpy(whichSprite->Name,name);
+            whichSprite->source_surface=LoadGAFSurface(file);
+        }
+    }
+}
+void CSDL_Wrap::SpriteDel(const char * name) {
+
+}
+
+void CSDL_Wrap::SpritesClear(void) {
+    CSprite *whichSprite;
+    CSprite *delSprite;
+    whichSprite=pFirstSprite;
+    while(whichSprite) {
+        delSprite=whichSprite;
+        whichSprite=whichSprite->pNextSprite;
+        zl(va("Removing sprite %s",delSprite->Name));
+        DEL(delSprite);
+    }
+
+}
+
+void CSDL_Wrap::SpriteChangeRect(const char *name,int which,int x, int y, int w, int h) {
+
+}
+CSprite *CSDL_Wrap::SpriteFind(const char *name) {
+    CSprite *indexSprite;
+    CSprite *whichSprite;
+    whichSprite=0;
+    indexSprite=pFirstSprite;
+    while(indexSprite) {
+        if(dlcs_strcasecmp(pFirstSprite->Name,name)) whichSprite=indexSprite;
+        indexSprite=indexSprite->pNextSprite;
+    }
+    return whichSprite;
+}
+CSprite *CSDL_Wrap::SpriteFindLast(void) {
+    CSprite *indexSprite;
+    CSprite *whichSprite;
+    whichSprite=0;
+    indexSprite=pFirstSprite;
+    while(indexSprite) {
+        whichSprite=indexSprite;
+        indexSprite=indexSprite->pNextSprite;
+    }
+    return whichSprite;
+}
+void CSDL_Wrap::SpriteShow(const char *name) {
+
+}
+void CSDL_Wrap::SpriteHide(const char *name) {
+
+}
+void CSDL_Wrap::SpriteSetAnimated(const char *name,bool animated) {
+
+}
+void CSDL_Wrap::SpriteSetAnimFrame(const char *name,int frame) {
+
+}
+void CSDL_Wrap::SpriteSetAnimFrames(const char *name,int frames) {
+
+}
+void CSDL_Wrap::SpriteSetAnimSpeed(const char *name,long speed) {
+
+}
+void CSDL_Wrap::SpriteSetAnimLoop(const char *name,bool loop) {
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,6 +397,8 @@ CSprite::~CSprite() {
 }
 
 void CSprite::Init() {
+    memset(Name,0,0);
+    pNextSprite=0;
     x=0;
     y=0;
     visible=false;
