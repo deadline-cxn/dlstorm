@@ -244,7 +244,7 @@ typedef struct RECT { long top; long left; long bottom; long right; } rchiw;
 
 //#define	MAKERGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
 //#define	MAKERGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
-#define zl(x)                  Log->AddEntry(x);
+#define zl(x)                  if(Log) { Log->AddEntry(x); }
 #define s_MAKEDWORD(a,b,c,d)   ((a)+(b<<8)+(c<<16)+(d<<24))
 #define s_MAKEWORD(a,b)        ((a)+(b<<8))
 #define PI                     3.145f

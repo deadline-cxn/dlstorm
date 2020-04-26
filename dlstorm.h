@@ -33,6 +33,8 @@
 #include <errno.h>
 #endif
 
+#include <vector>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,7 +46,7 @@ extern "C" {
     int     dlcs_hex_to_dec(const char *pa);
     int     dlcs_bin_to_dec(const char *pa);
     long    dlcs_get_tickcount(void);
-    char   *dlcs_getos(void);                  
+    // char   *dlcs_getos(void);                  
     char   *dlcs_get_os_version(void);
     int     dlcs_mkdir(const char *szDirectoryName);
     int     dlcs_chdir(const char *szDirectory);

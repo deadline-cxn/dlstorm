@@ -225,37 +225,35 @@ bool dlcs_isdir(char const * dir) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 char *dlcs_get_os_version(void) {
 #ifdef _WIN32
-    char szTemp[128];
-    memset(szTemp,0,128);
-    char szTemp2[128];
-    memset(szTemp2,0,128);
+
+    char szTemp[128];  memset(szTemp,0,128);
+    char szTemp2[128]; memset(szTemp2,0,128);
+    strcpy(szTemp,"Unknown");
     OSVERSIONINFOEX osvi;
     BOOL bOsVersionInfoEx;
     ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+
     osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-    if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) )
-    {
+    if( !(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO *) &osvi)) ) {
         osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
         if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) ) return strdup("unknown");
     }
-    switch (osvi.dwPlatformId)
-    {        
+
+    switch (osvi.dwPlatformId) {
         case VER_PLATFORM_WIN32_NT:
             if(osvi.dwMajorVersion <= 4 ) strcpy(szTemp,"Windows NT ");
-            if(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0)
+            if(osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0) { 
                 strcpy(szTemp,"Windows 2000 ");
-            else if(bOsVersionInfoEx)
-            {
-                strcpy(szTemp,"Windows XP (or higher) ");
             }
-            if ( osvi.dwMajorVersion <= 4 )
-            {
+            else if(bOsVersionInfoEx) {
+                strcpy(szTemp,va("%ld %ld Windows XP (or higher) ",osvi.dwPlatformId,osvi.dwMajorVersion));
+            }
+            if ( osvi.dwMajorVersion <= 4 ) {
                 sprintf(    szTemp2,"version %ld.%ld %s (Build %ld)",
                             osvi.dwMajorVersion,
                             osvi.dwMinorVersion,
                             osvi.szCSDVersion,
                             osvi.dwBuildNumber & 0xFFFF );
-
                 strcat(szTemp,szTemp2);
             }
             else
@@ -265,20 +263,18 @@ char *dlcs_get_os_version(void) {
             }
             break;
         case VER_PLATFORM_WIN32_WINDOWS:
-            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0)
-            {
+            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 0) {
                 sprintf(szTemp,"Windows 95 %s",osvi.szCSDVersion);
             }
-            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10)
-            {
+            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 10) {
                 sprintf(szTemp,"Windows 98 %s",osvi.szCSDVersion);
             } 
-            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90)
-            {
+            if(osvi.dwMajorVersion == 4 && osvi.dwMinorVersion == 90) {
                 strcpy(szTemp,"Windows ME");
             } 
             break;
     }
+
     return strdup(szTemp);
 #else
     return strdup(CPUSTRING);

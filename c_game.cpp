@@ -1,137 +1,151 @@
-
+/***************************************************************
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2020
+ **   File:         c_game.cpp
+ **   Description:  Game Class
+ **   Author:       Seth Parson aka Deadline
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#include "dlstorm.h"
 #include "c_game.h"
+#include <vector>
 
 CGame::CGame() {
+    ZeroVars();
+    if(!Log) Log=new CLog("game.log");
 	screen_width=800;
 	screen_height=600;
 	screen_colors=32;
 }
 
-CGame::CGame(char *APP_NAME,Uint16 iFlags) {
+CGame::CGame(const char *inAPP_NAME,Uint16 iFlags) {
+    ZeroVars();
+    if(!Log) Log=new CLog(va("%s.log",inAPP_NAME));
 	screen_width=800;
 	screen_height=600;
 	screen_colors=32;
-    Start(APP_NAME,iFlags);
+    Start(inAPP_NAME,iFlags);
 }
 
-CGame::CGame(char *APP_NAME,Uint32 iScreenWidth,Uint32 iScreenHeight,Uint32 iScreenColors,Uint16 iFlags) {
+CGame::CGame(const char *inAPP_NAME,Uint32 iScreenWidth,Uint32 iScreenHeight,Uint32 iScreenColors,Uint16 iFlags) {
+    ZeroVars();
+    if(!Log) Log=new CLog(va("%s.log",inAPP_NAME));
 	screen_width=iScreenWidth;
 	screen_height=iScreenHeight;
 	screen_colors=iScreenColors;
-    Start(APP_NAME,iFlags);
+    Start(inAPP_NAME,iFlags);
+}
+
+void CGame::ZeroVars(void) {
+    bShowConsole=0;
+    Log=0;
+    Console=0;
+    SDL=0;
+    pFirstActor=0;
 }
 
 CGame::~CGame() {
     ShutDown();
 }
 
-void CGame::Start(char *APP_NAME,Uint16 iFlags) {
+void CGame::Start(const char *inAPP_NAME,Uint16 iFlags) {
     G_QUIT=false;
     flags=iFlags;
-    Log=0;
     SDL=0;
+    Console=new C_CONS();
     // SND=0;
-    Log=new CLog((char *)va("%s.log",APP_NAME));
-    Log->AddEntry((char *)"------------------------------------------------------");
-    Log->AddEntry((char *)va("%s! Started...",APP_NAME));
+    zl("------------------------------------------------------");
+    zl(va("%s! Started...",inAPP_NAME));
     if(flags&G_SDL) {
-        SDL = new CSDL_Wrap(APP_NAME,screen_width,screen_height,screen_colors,"gfx/icon.bmp");
+        SDL = new CSDL_Wrap(inAPP_NAME,screen_width,screen_height,screen_colors,"gfx/icon.bmp");
         if(!SDL) ShutDown();
         if(!SDL->InitSuccess) {
-            Log->AddEntry((char *)"SDL Subsystem Init FAILURE!");
+            zl("SDL Subsystem Init FAILURE!");
             ShutDown();
             return;
         }
     }
-    Log->AddEntry((char *)"SDL Subsystem Initialized...");
+
+    ConsoleSurface=SDL->LoadGAFSurface("gfx/console.jpg");
+
+    zl("SDL Subsystem Initialized...");
     if(flags&G_FMOD) {
         // SND = new CFMOD();
-        // Log->AddEntry((char *)"SND Subsystem Initialized...");
+        // zl("SND Subsystem Initialized...");
     }
     srand(time(NULL));
     UserInit();
-    Log->AddEntry((char *)"UserInit() Completed...");
+    zl("UserInit() Completed...");
 }
 
 void CGame::ShutDown() {
-    Log->AddEntry((char *)"Game shutting down...");
+    zl("Game shutting down...");
+
+    ActorsClear();
 
     // dlcsm_delete(SND);
-    // Log->AddEntry((char *)"Game shutting down... SND");
+    // zl("Game shutting down... SND");
     
     dlcsm_delete(SDL);
-    Log->AddEntry((char *)"Game shutting down... SDL");
+    zl("Game shutting down... SDL");
+    DEL(Console);
     dlcsm_delete(Log);
     G_QUIT=true;
 }
 
-bool CGame::Inject(Uint16 TYPE,char *name) {
+bool CGame::Inject(Uint16 TYPE,const char *name) {
     return true;
 }
 
 bool CGame::UpdateGFXStart() {
     if(!SDL) return false;
-    // SDL->ClearScreen(0);
+    SDL->ClearScreen(SDL_MapRGB(SDL_GetWindowSurface(SDL->window)->format,255,0,0));
+    // SDL->DrawSprites();
     
-    // SDL->ClearScreen(SDL_MapRGB(SDL->screen->format,0,0,0));
-    // Core Engine Draws here...
-    //SDL->DrawSprites();
     return false;
-}
-
-bool CGame::DrawVortex() {
-    /* // CSprite     *spaceship;
-    // CSprite     *grape;
-    spaceship   = new CSprite();
-    spaceship->source_surface = SDL->Cab->GetSurface("gfx/spaceship.bmp");
-    spaceship->animated=false;
-    spaceship->SetRect(0,0,0,32,32);
-    spaceship->xspeed=2;
-    grape       = new CSprite();
-    grape->source_surface = SDL->Cab->GetSurface("gfx/grape.tga");
-    if(grape->source_surface)
-    grape->SetRect(0,0,0,grape->source_surface->w,grape->source_surface->h);
-    //dlcsm_delete(spaceship);    //dlcsm_delete(grape);
-    ///////////////////////////////////
-    // Test Vars
-    //    static int cx=rand()%SDL->w;
-    //static int cy=rand()%SDL->h;
-    // int x,y;
-    //SDL->DrawMap();
-    //   spaceship->x+=spaceship->xspeed;
-    if(spaceship->x>SDL->w+32)
-    {
-    spaceship->x=-32;
-    spaceship->y+=32;
-    if(spaceship->y>SDL->h+32)
-    {
-        spaceship->y=32;
-    }
-    }
-    spaceship->Draw();
-    grape->Draw(100,100);
-    cx+=rand()%5-2; if(rand()%500>450) { if(cx<GetMouseX()) cx++; if(cx>GetMouseX())cx--; }
-    cy+=rand()%5-2; if(rand()%500>450) { if(cy<GetMouseY()) cy++; if(cy>GetMouseY())cy--; }
-    if(cx>(SDL->w-1)) cx=SDL->w-1;
-    if(cx<1) cx=1;
-    if(cy>(SDL->h-1)) cy=SDL->h-1;
-    if(cy<1) cy=1;
-    // SDL->putpixel(rand()%SDL->w,rand()%SDL->h,RGB(0,0,rand()%256));
-    for(x=-1;x<2;x++)
-    for(y=-1;y<2;y++)
-        SDL->putpixel(cx+x,cy+y,RGB(0,rand()%256,rand()%256));*/
-    // end junk to test with
-    //////////////////////////////////////////////////////////////////////////////////////////*/
-    return 0;
 }
 
 bool CGame::UpdateGFXEnd() {
     if(!SDL) {
         G_QUIT=true;
         return false;
-    }    
+    }
+    DrawConsole();
     SDL->Flip();
     return false;
+}
+
+void CGame::DrawConsole() {
+    if(!bShowConsole) { return; }
+
+    SDL_Rect srect,drect;
+    srect.h=500;
+    srect.w=1920;
+    srect.x=0;
+    srect.y=0;
+    drect.h=500;
+    drect.w=1920;
+    drect.x=0;
+    drect.y=0;
+    SDL_BlitSurface(ConsoleSurface,&srect,SDL_GetWindowSurface(SDL->window),&drect);
+
+    int l=0;
+    for(vector<string>::const_iterator i = Console->buf.begin(); i != Console->buf.end(); ++i) {
+        SDL->Write(10,10+(l*14),(*i).c_str(),0);
+        l++;
+    }
+}
+
+void CGame::ConsoleLog(const char *szEntry) {
+    Console->AddLine(szEntry);
+    zl(va("CONSOLE_LOG:%s",szEntry));
 }
 
 bool CGame::UpdateInput() {
@@ -139,23 +153,18 @@ bool CGame::UpdateInput() {
     SDL_Event event;
     G_KEYDOWN=0;
     SDL_PollEvent(&event);
-    switch (event.type)     {
-
+    switch (event.type) {
         case SDL_MOUSEWHEEL:
             SDL->pMouse->UpdateWheel(event);
             break;
-
         case SDL_KEYDOWN:
             G_KEYDOWN=event.key.keysym.sym;
             break;
-
         // case SDL_VIDEOEXPOSE:            break;
         // case SDL_VIDEORESIZE:            break;
-
         case SDL_QUIT:
             G_QUIT=true;
             break;
-
         default:
             break;
     }
@@ -164,11 +173,127 @@ bool CGame::UpdateInput() {
 }
 
 bool CGame::Loop() {
+    UpdateActorAnimations();
     UpdateGFXStart();
     UserGFX();
     UpdateGFXEnd();
-    UpdateInput();
-
+    UpdateInput();    
     return G_QUIT;
 }
 
+void CGame::UpdateActorAnimations(void) {
+    CGameActor *index;
+    CGameActorAnimation *Anim;
+    index=pFirstActor;
+    while(index) {
+        Anim=index->Animation(index->szCurrentAnimation);
+        if(Anim) {
+            if( dlcs_get_tickcount() - Anim->animtimer >
+                    Anim->animation_speed ) {
+                Anim->animtimer=dlcs_get_tickcount();
+                Anim->IncrementCurrentFrame();
+            }
+        }
+        index=index->pNext;
+    }
+}
+
+void CGame::ActorAdd(const char *name) {
+    zl(va("Adding game actor %s",name));
+    CGameActor *which;
+    which=0;
+    which=ActorFindLast();
+    if(which==0) {
+        pFirstActor=new CGameActor(this,name);
+        return;
+    }
+    if(which) {
+        which->pNext=new CGameActor(this,name);
+    }
+}
+
+void CGame::ActorsClear(void) {
+    CGameActor *which;
+    CGameActor *delActor;
+    which=pFirstActor;
+    while(which) {
+        delActor=which;
+        which=which->pNext;
+        zl(va("Removing actor %s",delActor->szName));
+        DEL(delActor);
+    }
+}
+
+CGameActor *CGame::Actor(const char *name) { return ActorFind(name); }
+CGameActor *CGame::ActorFind(const char *name) {
+    CGameActor *index;
+    CGameActor *which;
+    which=0;
+    index=pFirstActor;
+    while(index) {
+        if(dlcs_strcasecmp(index->szName,name)) which=index;
+        index=index->pNext;
+    }
+    return which;
+}
+
+CGameActor *CGame::ActorFindLast(void) {
+    CGameActor *index;
+    CGameActor *which;
+    which=0;
+    index=pFirstActor;
+    while(index) {
+        which=index;
+        index=index->pNext;
+    }
+    return which;
+}
+
+void CGame::ActorDel(const char * name) { }
+void CGame::ActorChangeRect(const char *name,int which,int x, int y, int w, int h) { }
+void CGame::ActorShow(const char *name) { }
+void CGame::ActorHide(const char *name) { }
+void CGame::ActorSetAnimated(const char *name,bool animated) { }
+void CGame::ActorSetAnimFrame(const char *name,int frame) { }
+void CGame::ActorSetAnimFrames(const char *name,int frames) { }
+void CGame::ActorSetAnimSpeed(const char *name,long speed) { }
+void CGame::ActorSetAnimLoop(const char *name,bool loop) { }
+void CGame::ActorDraw(const char *name) {
+    CGameActor *pActor;
+    SDL_Surface *pWhichSurface;
+    SDL_Rect srect;
+    SDL_Rect drect;    
+    pWhichSurface=0;
+    pActor=0;
+    pActor=ActorFind(name);
+    if(pActor) {
+        if(pActor->pCurrentAnimation) {
+            pWhichSurface = pActor->pCurrentAnimation->pCurrentFrame->pSurface;
+            srect.h  = pActor->pCurrentAnimation->pCurrentFrame->rect.h;
+            srect.w  = pActor->pCurrentAnimation->pCurrentFrame->rect.w;
+            srect.x  = pActor->pCurrentAnimation->pCurrentFrame->rect.x;
+            srect.y  = pActor->pCurrentAnimation->pCurrentFrame->rect.y;
+        }
+        else {
+            pWhichSurface=pActor->source_surface;
+            srect.h=pActor->rect[pActor->animation_frame].h;
+            srect.w=pActor->rect[pActor->animation_frame].w;
+            srect.x=pActor->rect[pActor->animation_frame].x;
+            srect.y=pActor->rect[pActor->animation_frame].y;
+        }
+        drect.x=pActor->x;
+        drect.y=pActor->y;
+        drect.w=srect.w;
+        drect.h=srect.h;
+        SDL_BlitSurface(pWhichSurface,&srect,SDL_GetWindowSurface(this->SDL->window),&drect);
+    }
+}
+void CGame::ActorMoveTo(const char *name,int x, int y) {
+    CGameActor *pActor;
+    pActor=0;
+    pActor=ActorFind(name);
+    if(pActor) {
+        pActor->x=x;
+        pActor->y=y;
+    }
+}

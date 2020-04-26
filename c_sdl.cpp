@@ -1,3 +1,18 @@
+/***************************************************************
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2020
+ **   File:         c_sdl.cpp
+ **   Description:  SDL Wrapper Class
+ **   Author:       Seth Parson aka Deadline
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 #include "c_sdl.h"
 #include "dlstorm.h"
 #include "SDL.h"
@@ -20,6 +35,7 @@ CSDL_Wrap::~CSDL_Wrap() {
 }
 
 void CSDL_Wrap::ZeroVars(void) {
+    pFirstSprite=0;
     window=0;
     renderer=0;
     GAF=0;
@@ -29,16 +45,17 @@ void CSDL_Wrap::ZeroVars(void) {
 
 bool CSDL_Wrap::Begin(const char *appname,Uint32 nw, Uint32 nh, Uint32 np, const char *icon) {
     if(!Log) Log=new CLog("gfx.log");
+    RebuildGAF();
     Icon=LoadGAFSurface(icon);
     return Begin(appname,nw,nh,np,Icon);
 }
 
 bool CSDL_Wrap::Begin(const char *appname,Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface *icon) {
     if(!Log) Log=new CLog("gfx.log");
+    RebuildGAF();
     zl("CSDL_Wrap::Begin(2)...");
     pMouse=new CMouse();
     Font=new C2DFont(this);
-    RebuildGAF();
     w=nw; h=nh; b=np;
     if(!GAF) GAF=new CGAF("gfx.gaf",GAFCOMP_BEST);
     Icon=icon;
@@ -194,15 +211,21 @@ void CSDL_Wrap::PutPixel(int x, int y, Uint32 pixel) {
 }
 
 void CSDL_Wrap::ClearScreen(Uint32 color) {
-    //SDL_Rect barea2; barea2.x=0; barea2.y=0; barea2.w=screen->w;barea2.h=screen->h;
-    //SDL_FillRect(screen, &barea2, color);
-    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    // SDL_RenderClear(renderer);
+    SDL_Surface *screen;
+    screen = SDL_GetWindowSurface(window);
+    SDL_Rect barea2; barea2.x=0; barea2.y=0; barea2.w=screen->w;barea2.h=screen->h;
+    SDL_FillRect(screen, &barea2, color);
+    //
+    //
+    //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+    //SDL_RenderClear(renderer);
+    //SDL_RenderPresent(renderer);
 }
 
 void CSDL_Wrap::Flip() {
+    
     SDL_UpdateWindowSurface(window);
-    // SDL_RenderPresent(renderer);
+    
     // if(videoflags&&SDL_DOUBLEBUF) SDL_Flip(screen);
 }
 
@@ -238,22 +261,22 @@ void CSDL_Wrap::SpritesDraw(void) {
 }
 void CSDL_Wrap::SpriteAdd(const char *name, const char *file) {
     zl(va("Adding sprite %s",name));
-    CSprite *whichSprite;
-    whichSprite=0;
-    whichSprite=SpriteFindLast();
-    if(whichSprite==0) {
+    CSprite *which;
+    which=0;
+    which=SpriteFindLast();
+    if(which==0) {
         pFirstSprite=new CSprite(this);
-        strcpy(pFirstSprite->Name,name);
+        strcpy(pFirstSprite->szName,name);
         pFirstSprite->source_surface=LoadGAFSurface(file);
         return;
     }
 
-    if(whichSprite) {
-        whichSprite->pNextSprite=new CSprite(this);
-        if(whichSprite->pNextSprite) {
-            whichSprite=whichSprite->pNextSprite;
-            strcpy(whichSprite->Name,name);
-            whichSprite->source_surface=LoadGAFSurface(file);
+    if(which) {
+        which->pNext=new CSprite(this);
+        if(which->pNext) {
+            which=which->pNext;
+            strcpy(which->szName,name);
+            which->source_surface=LoadGAFSurface(file);
         }
     }
 }
@@ -262,42 +285,41 @@ void CSDL_Wrap::SpriteDel(const char * name) {
 }
 
 void CSDL_Wrap::SpritesClear(void) {
-    CSprite *whichSprite;
+    CSprite *which;
     CSprite *delSprite;
-    whichSprite=pFirstSprite;
-    while(whichSprite) {
-        delSprite=whichSprite;
-        whichSprite=whichSprite->pNextSprite;
-        zl(va("Removing sprite %s",delSprite->Name));
+    which=pFirstSprite;
+    while(which) {
+        delSprite=which;
+        which=which->pNext;
+        zl(va("Removing sprite %s",delSprite->szName));
         DEL(delSprite);
     }
-
 }
 
 void CSDL_Wrap::SpriteChangeRect(const char *name,int which,int x, int y, int w, int h) {
 
 }
 CSprite *CSDL_Wrap::SpriteFind(const char *name) {
-    CSprite *indexSprite;
-    CSprite *whichSprite;
-    whichSprite=0;
-    indexSprite=pFirstSprite;
-    while(indexSprite) {
-        if(dlcs_strcasecmp(pFirstSprite->Name,name)) whichSprite=indexSprite;
-        indexSprite=indexSprite->pNextSprite;
+    CSprite *index;
+    CSprite *which;
+    which=0;
+    index=pFirstSprite;
+    while(index) {
+        if(dlcs_strcasecmp(index->szName,name)) which=index;
+        index=index->pNext;
     }
-    return whichSprite;
+    return which;
 }
 CSprite *CSDL_Wrap::SpriteFindLast(void) {
-    CSprite *indexSprite;
-    CSprite *whichSprite;
-    whichSprite=0;
-    indexSprite=pFirstSprite;
-    while(indexSprite) {
-        whichSprite=indexSprite;
-        indexSprite=indexSprite->pNextSprite;
+    CSprite *index;
+    CSprite *which;
+    which=0;
+    index=pFirstSprite;
+    while(index) {
+        which=index;
+        index=index->pNext;
     }
-    return whichSprite;
+    return which;
 }
 void CSDL_Wrap::SpriteShow(const char *name) {
 
@@ -374,10 +396,10 @@ void C2DFont::Write(int x, int y, const char *string,int bank) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
+CSprite::CSprite() { }
 CSprite::CSprite(CSDL_Wrap *inSDL) {
-    SDL=inSDL;
     Init();
+    SDL=inSDL;
     source_surface=NULL;
     target_surface=SDL_GetWindowSurface(SDL->window);
 }
@@ -397,8 +419,8 @@ CSprite::~CSprite() {
 }
 
 void CSprite::Init() {
-    memset(Name,0,0);
-    pNextSprite=0;
+    memset(szName,0,_TEXTNAME_SIZE);
+    pNext=0;
     x=0;
     y=0;
     visible=false;
@@ -408,8 +430,8 @@ void CSprite::Init() {
     for(int i=0;i<256;i++) {
         rect[i].x=0;
         rect[i].y=0;
-        rect[i].w=0;
-        rect[i].h=0;
+        rect[i].w=64;
+        rect[i].h=64;
     }
     xdir=0;
     ydir=0;

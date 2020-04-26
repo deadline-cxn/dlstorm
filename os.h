@@ -357,6 +357,7 @@ typedef struct { float u,v; }                   dlcs_TC;
 #define _MAX_PATH 1024
 #endif
 #define _TINYNAME_SIZE 32
+#define _NAME_SIZE     64
 #define _TEXTNAME_SIZE 256
 #define _FILENAME_SIZE 1024
 

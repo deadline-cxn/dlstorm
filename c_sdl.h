@@ -1,7 +1,21 @@
-/* Seth's SDL Graphics Wrapper */
+/***************************************************************
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2020
+ **   File:         c_sdl.cpp
+ **   Description:  SDL Wrapper Class Header File
+ **   Author:       Seth Parson aka Deadline
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
 
-#ifndef _SDL_GFX_LIBRARY
-#define _SDL_GFX_LIBRARY
+#ifndef _DLCS_SDL_WRAPPER_CLASS
+#define _DLCS_SDL_WRAPPER_CLASS
 
 #ifdef TEST_VGA16
 #define NUM_COLORS  16
@@ -133,15 +147,16 @@ public:
 
 class CSprite {
 public:
+    CSprite();
     CSprite(CSDL_Wrap *inSDL);
     CSprite(CSDL_Wrap *inSDL,SDL_Surface *source_surface);
     CSprite(CSDL_Wrap *inSDL,SDL_Surface *source_surface,SDL_Surface *target_surface);
     ~CSprite();
-    char Name[64];
-    CSprite *pNextSprite;
+    char szName[_NAME_SIZE];
+    CSprite *pNext;
     CSDL_Wrap *SDL;
-    float x;
-    float y;
+    int x;
+    int y;
     SDL_Surface *source_surface;
     SDL_Surface *target_surface;
     SDL_Rect rect[256];
@@ -151,18 +166,18 @@ public:
     long animation_speed;
     bool animation_loop;
     bool animated;
+    long animtimer;
     void Init(void);
     void LoadSurface(const char *filename);
     void LoadMemSurface(unsigned char *fb);
     void SetColorKey(int r, int g, int b);
     void Draw(float x, float y);
     void Draw();
-    void SetRect(int which,int x, int y, int w, int h);
-    long animtimer;
+    void SetRect(int which,int x, int y, int w, int h);    
     float xdir;
     float ydir;
     float xspeed;
     float yspeed;
 };
 
-#endif
+#endif // _DLCS_SDL_WRAPPER_CLASS

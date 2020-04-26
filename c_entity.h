@@ -1,12 +1,22 @@
-/* Seth's Game Entity Class */
+/***************************************************************
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2020
+ **   File:         c_entity.h
+ **   Description:  Base Entity Class Header File
+ **   Author:       Seth Parson aka Deadline
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ **
+ ***************************************************************/
+#ifndef _DLCS_ENTITY_CLASS
+#define _DLCS_ENTITY_CLASS
 
-#ifndef SETH_GAME_ENTITY
-#define SETH_GAME_ENTITY
-
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
-
+#include "c_event.h"
 #include "dlstorm.h"
 #include "c_log.h"
 
@@ -25,49 +35,6 @@
 #define G_ENTITY_PROP           11
 #define G_ENTITY_ITEM           20 // Items... like a gun or backpack that the other entities can use or inventory
 
-// Interaction event types:
-#define G_ENTITY_HOVER          1
-#define G_ENTITY_CLICK          2
-#define G_ENTITY_DOUBLE_CLICK   3
-#define G_ENTITY_NEAR           4
-#define G_ENTITY_FAR            5
-#define G_ENTITY_LEAVE          6
-#define G_ENTITY_ENTER          7
-#define G_ENTITY_WAIT           8
-#define G_ENTITY_MOVE           9
-#define G_ENTITY_CREATE         10
-#define G_ENTITY_DESTROY        11
-#define G_ENTITY_TIMER_CYCLE    12
-#define G_ENTITY_USE            13
-#define G_ENTITY_SPEAK          14
-#define G_ENTITY_SOUND          15
-#define G_ENTITY_ATTACK         16
-#define G_ENTITY_RESET          17
-#define G_ENTITY_HEAL           18
-#define G_ENTITY_DIAGNOSE       19
-#define G_ENTITY_TARGET         20
-#define G_ENTITY_DEATH          21
-#define G_ENTITY_SPAWN          22
-#define G_ENTITY_RESURRECT      24
-
-// Actions:
-#define G_ENTITY_ACT_NONE       0
-// sensory actions: (CPU AI CONTROLLED)
-#define G_ENTITY_ACT_PATH       11
-#define G_ENTITY_ACT_DIAGNOSE   5   // diagnose self
-#define G_ENTITY_ACT_OBSERVE    14
-#define G_ENTITY_ACT_LISTEN     16
-// reactionary actions:
-#define G_ENTITY_ACT_MOVE       2
-#define G_ENTITY_ACT_TARGET     1
-#define G_ENTITY_ACT_ATTACK     3
-#define G_ENTITY_ACT_CONSUME    4
-#define G_ENTITY_ACT_USE        15
-#define G_ENTITY_ACT_SPEAK      6
-#define G_ENTITY_ACT_SOUND      7
-#define G_ENTITY_ACT_CREATE     8
-#define G_ENTITY_ACT_MERGE      9   // two entities merge
-#define G_ENTITY_ACT_SPLIT      10  // one entity splits into two (or more)
 
 #define G_ENTITY_DEFAULT_RESPAWN_TIME   30000 // 5 minutes
 
@@ -81,37 +48,18 @@ class CEntity;
 };
 */
 
-class CEntity
-{
+class CEntity : public CEvent {
 public:
     CEntity();
     CEntity(const char *nm);
     ~CEntity();
-
-    CLog    *Log;
-
-    char    name[1024];
+    char    szName[_NAME_SIZE];
     int     type;
-
-    int     x;
-    int     y;
-    int     z;
-
     int     life_points;
     int     mana_points;
     int     power_points;
     int     rage_points;
-    
     int     status;
-    int     weapon1;
-    int     weapon2;
-
-    int     at_sta;
-    int     at_int;
-    int     at_spi;
-    int     at_wis;
-    int     at_agi;
-    int     at_con;
 
     // A power up would be:                             resource_min 1, resource_max 1, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
     // A mine node would be:                            resource_min 1, resource_max 6, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
@@ -120,81 +68,18 @@ public:
 
     int     resource_min;       // 0 = infinite resources   
     int     resource_max;       // 0 = infinite resources
-
     int     respawn_min;        // 0 = infinite respawns
     int     respawn_max;        // 0 = infinite respawns
-
     long    respawn_time_min;   // 0 = default; default is 5 minutes (30000)
     long    respawn_time_max;   // 0 = default; default is 5 minutes (30000)
 
     CEntity *parent;
-
     CEntity *next;
     CEntity *prev;
-
     CEntity *target;
 
     void    set_defaults(void);
-
     bool    roam(void); //  brains of the entity, includes movement and other checking called once per cycle
-
-    bool    push_event(CEntity *rcv_entity, int event, const char *args, CEntity *action_entity);
-    bool    exec_event(int event, const char *args, CEntity *action_entity);
-        
-    /* use: push_event(entity,event,event_args,entity_to_take_action_on (if 0 it will action self));
-       example:
-        current_entity->push_event(current_entity->target,G_ENTITY_ATTACK,"243",current_entity);
-        target->exec_event(sending_entity,G_ENTITY_ATTACK,"243",sending_entity);
-        target->on_attack("243",sending_entity);             */
-
-    void on_create(const char *args,CEntity *entity);
-    void on_destroy(const char *args,CEntity *entity);
-    void on_near(const char *args,CEntity *entity);
-    void on_far(const char *args,CEntity *entity);
-    void on_leave(const char *args,CEntity *entity);
-    void on_enter(const char *args,CEntity *entity);
-    void on_wait(const char *args,CEntity *entity);
-    void on_hover(const char *args,CEntity *entity);
-    void on_click(const char *args, CEntity *entity);
-    void on_double_click(const char *args, CEntity *entity);
-    void on_timer_cycle(const char *args, CEntity *entity);
-    void on_use(const char *args, CEntity *entity);
-    void on_speak(const char *args, CEntity *entity);
-    void on_sound(const char *args, CEntity *entity);
-    void on_attack(const char *args, CEntity *entity);
-    void on_target(const char *args, CEntity *entity);
-    void on_heal(const char *args, CEntity *entity);
-    void on_reset(const char *args, CEntity *entity);
-    void on_death(const char *args, CEntity *entity);
-    
-    bool act_move(CEntity *entity);
-    bool act_target(CEntity *entity);
-    bool act_attack(CEntity *entity);
-    bool act_consume(CEntity *entity);
-    bool act_use(CEntity *entity);
-    bool act_speak(CEntity *entity);
-    bool act_sound(CEntity *entity);
-    bool act_create(CEntity *entity);
-    bool act_merge(CEntity *entity);
-    bool act_split(CEntity *entity);
-    bool act_path(CEntity *entity);
-    bool act_diagnose(CEntity *entity);
-    bool act_observe(CEntity *entity);
-    bool act_listen(CEntity *entity);
-
-
-
 };
 
-
-
-
-
-
-
-
-
-
-
-
-#endif // SETH_ENTITY_CLASS
+#endif // _DLCS_ENTITY_CLASS
