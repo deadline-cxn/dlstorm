@@ -15,21 +15,23 @@
  ***************************************************************/
 #include "c_console.h"
 C_CONS::C_CONS() { Init(); }
-C_CONS::~C_CONS() { }
+C_CONS::~C_CONS() {}
 
 bool C_CONS::Init(void) {
-    iLines=32;
+    iLines = 32;
     buf.clear();
     return 1;
 }
 
 void C_CONS::AddLine(const char *fmt, ...) {
-    if(buf.size()> iLines) { buf.erase (buf.begin()); }
+    if (buf.size() > iLines) {
+        buf.erase(buf.begin());
+    }
     char ach[512];
-    memset(ach,0,512);
+    memset(ach, 0, 512);
     va_list vaz;
-    va_start(vaz,fmt);
-    vsprintf(ach,fmt,vaz);
+    va_start(vaz, fmt);
+    vsprintf(ach, fmt, vaz);
     va_end(vaz);
     buf.push_back(ach);
 }

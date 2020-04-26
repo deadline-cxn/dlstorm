@@ -15,29 +15,30 @@
  ***************************************************************/
 #ifndef _DLCS_C_CONS
 #define _DLCS_C_CONS
-#include "dlstorm.h"
-#include <vector>
 #include <string>
-using std::vector;
+#include <vector>
+
+#include "dlstorm.h"
 using std::string;
+using std::vector;
 
 //#define _DLCS_MAX_CONSOLE_BUFFER      1024    // Lines in console scrollback buffer
 //#define MAX_CONSOLE_MULTI_COMMANDS    32      // Number of console commands on a single line seperated by ;
 //#define MAX_CONSOLE_INPUT_BUFFER      10		// Number of console commands to scroll back to execute again
 
 class C_CONS {
-public:
+   public:
     C_CONS();
     ~C_CONS();
 
-    vector<string>  buf; // buffer vector
-    unsigned int iLines;
-    bool    Init(void);
-    void    AddLine(const char *fmt, ...);
+    vector<string> buf;  // buffer vector
+    unsigned int   iLines;
+    bool           Init(void);
+    void           AddLine(const char *fmt, ...);
 
-    //void                _Execute(const char *cmd);
-    //void                RegFunc(char *name, void *func);
-    //void                RegVar(char *name, void *var);
-    //void                RegInt(char *name, int x);
+    // void                _Execute(const char *cmd);
+    // void                RegFunc(char *name, void *func);
+    // void                RegVar(char *name, void *var);
+    // void                RegInt(char *name, int x);
 };
-#endif // _DLCS_C_CONS
+#endif  // _DLCS_C_CONS

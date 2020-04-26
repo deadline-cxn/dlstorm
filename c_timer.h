@@ -20,7 +20,7 @@
 #define TIMER_DEFAULT 200
 ////////////////////////////// CTimer class
 class CTimer {
-public:
+   public:
     CTimer();
     CTimer(long dur);
     ~CTimer();
@@ -29,5 +29,4 @@ public:
     void Reset(void);
     bool Up(void);
 };
-#endif // _DLCS_CTIMER
-
+#endif  // _DLCS_CTIMER

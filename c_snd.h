@@ -19,41 +19,39 @@
 
 #ifdef DLCS_WINDOWS
 
-
-#include "dlstorm.h"
-
-#include "fmod.h"
-
 #include "c_log.h"
+#include "dlstorm.h"
+#include "fmod.h"
 #define MAX_CHANNELS 32
 //////////////////////////////////// C_Sound class
 class C_Sound {
-public:
+   public:
     C_Sound();
     C_Sound(CLog* pLogIn);
     ~C_Sound();
-    void Log(string x);
-    char *FMODVersion(void);
-    char InitializeSound();
-    void ShutDownSound(void);
-    char PlayMusic(char* szFilename);
-    void StopMusic(void);
-    void StopAudio(void);
-    void StopSound(void);
-    void SetMusicVolume(float f);
-    void SetSoundVolume(float f);
-    int  PlaySample(char* szFilename);
-    FMUSIC_MODULE * fmusic;
-    typedef struct samplelist { FSOUND_SAMPLE *sptr; };
-    samplelist *sample;
+    void           Log(string x);
+    char*          FMODVersion(void);
+    char           InitializeSound();
+    void           ShutDownSound(void);
+    char           PlayMusic(char* szFilename);
+    void           StopMusic(void);
+    void           StopAudio(void);
+    void           StopSound(void);
+    void           SetMusicVolume(float f);
+    void           SetSoundVolume(float f);
+    int            PlaySample(char* szFilename);
+    FMUSIC_MODULE* fmusic;
+    typedef struct samplelist {
+        FSOUND_SAMPLE* sptr;
+    };
+    samplelist*   sample;
     unsigned char svol;
     unsigned char mvol;
-    bool bfmod;
-    bool bConsoleMode;
-    CLog* pLog;
-    bool bLogCreated;
+    bool          bfmod;
+    bool          bConsoleMode;
+    CLog*         pLog;
+    bool          bLogCreated;
 };
 
-#endif // DLCS_WINDOWS
-#endif // _DLCS_C_SOUND
-
+#endif  // DLCS_WINDOWS
+#endif  // _DLCS_C_SOUND

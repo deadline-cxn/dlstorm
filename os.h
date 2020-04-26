@@ -72,7 +72,8 @@
                         For more information see the FreeBSD porters handbook.
     GNU             __GNU__
                     __gnu_hurd__
-                        (GNU/Hurd The official name of this operating system is GNU. Hurd is the kernel in the GNU operating system. It is often listed as GNU/Hurd since there is also GNU/Linux and GNU/kFreeBSD, which are most of the GNU operating system with the Linux and FreeBSD kernels respectively.)
+                        (GNU/Hurd The official name of this operating system is GNU. Hurd is the kernel in the GNU operating system. It is often listed as GNU/Hurd since there is also GNU/Linux and GNU/kFreeBSD, which are most of the GNU operating system with the Linux and FreeBSD kernels
+respectively.)
 
     GNU/kFreeBSD    __FreeBSD_kernel__ && __GLIBC__
                         (one of the Debian distros that is based on the FreeBSD kernel rather than the Linux or Hurd kernels)
@@ -239,54 +240,54 @@
 
 #ifndef _DLCS_PRE_OS
 #define _DLCS_PRE_OS
-#define DLCS_OS_WINDOWS 1
-#define DLCS_OS_LINUX 2
-#define DLCS_OS_FREEBSD 3
-#define DLCS_OS_MACOSX 4
-#define DLCS_OS_MACOS 5
-#define DLCS_OS_ANDROID 6
+#define DLCS_OS_WINDOWS        1
+#define DLCS_OS_LINUX          2
+#define DLCS_OS_FREEBSD        3
+#define DLCS_OS_MACOSX         4
+#define DLCS_OS_MACOS          5
+#define DLCS_OS_ANDROID        6
 #define DLCS_SYSTEM_NONWINDOWS "nonwindows.h"
 // WINDOWS
 #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
 #define DLCS_WINDOWS
 #define DLCS_SYSTEM_H "dlcs_windows.h"
-#define OSSTRING "Windows"
-#undef  DLCS_SYSTEM_NONWINDOWS
+#define OSSTRING      "Windows"
+#undef DLCS_SYSTEM_NONWINDOWS
 #define DLCS_OS_WHICH DLCS_OS_WINDOWS
 #endif
 // MAC OS X Server defines
 #if defined(__MACH__) && defined(__APPLE__)
 #define DLCS_MACOSX
 #define DLCS_SYSTEM_H "macosx.h"
-#define OSSTRING "Mac OSX"
+#define OSSTRING      "Mac OSX"
 #define DLCS_OS_WHICH DLCS_OS_MACOSX
 #endif
 // MAC Defines
 #ifdef __MACOS__
 #define DLCS_MACOS
 #define DLCS_SYSTEM_H "dlcs_macos.h"
-#define OSSTRING "Mac OS"
+#define OSSTRING      "Mac OS"
 #define DLCS_OS_WHICH DLCS_OS_MACOS
 #endif
 // LINUX Defines
 #ifdef __linux__
 #define DLCS_LINUX
 #define DLCS_SYSTEM_H "dlcs_linux.h"
-#define OSSTRING "Linux"
+#define OSSTRING      "Linux"
 #define DLCS_OS_WHICH DLCS_OS_LINUX
 #endif
 // FREEBSD Defines
 #ifdef FREEBSD_NATIVE
 #define DLCS_FREEBSD
 #define DLCS_SYSTEM_H "freebsd.h"
-#define OSSTRING "FreeBSD"
+#define OSSTRING      "FreeBSD"
 #define DLCS_OS_WHICH DLCS_OS_FREEBSD
 #endif
 // ANDROID
 #ifdef __ANDROID__
 #define DLCS_ANDROID
 #define DLCS_SYSTEM_H "android.h"
-#define OSSTRING "Android"
+#define OSSTRING      "Android"
 #define DLCS_OS_WHICH DLCS_OS_ANDROID
 #endif
 
@@ -299,25 +300,27 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 // STANDARD INCLUDES
 
-#include <dirent.h>
-#include <time.h>
 #include <assert.h>
+#include <dirent.h>
+#include <fcntl.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 #include <memory.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
+#include <time.h>
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
+#include <map>
 #include <sstream>
-#include <fcntl.h>
+#include <string>
+#include <vector>
+
 #include "md5.h"
 
 // #include "openssl/md5.h"
@@ -325,30 +328,37 @@
 ////////////////////////////////////////////////////////////////////////////////////
 // System independant
 
-typedef struct { float x, y, z; }               dlcs_V3;
-typedef struct { float r, g, b; }               dlcs_C3;
-typedef struct { float u,v; }                   dlcs_TC;
+typedef struct {
+    float x, y, z;
+} dlcs_V3;
+typedef struct {
+    float r, g, b;
+} dlcs_C3;
+typedef struct {
+    float u, v;
+} dlcs_TC;
 
 #ifndef _DLCS_CONSOLE
-#endif // _DLCS_CONSOLE
+#endif  // _DLCS_CONSOLE
 
 #ifdef _DLCS_SDL
 #include "SDL.h"
-#endif // _DLCS_SDL
+#endif  // _DLCS_SDL
 
 #ifdef _DLCS_OPENGL
 #include <GL/gl.h>
-#include <GL/glu.h>
 #include <GL/glext.h>
+#include <GL/glu.h>
+
 #include "glerrors.h"
-#endif // _DLCS_OPENGL
+#endif  // _DLCS_OPENGL
 
 #ifdef _DLCS_DEVIL
 #define ILUT_USE_OPENGL
 #include <il.h>
 #include <ilu.h>
 #include <ilut.h>
-#endif // ILUT_USE_OPENGL
+#endif  // ILUT_USE_OPENGL
 
 #ifndef _HOST_NAME_MAX
 #define _HOST_NAME_MAX 255
@@ -364,35 +374,33 @@ typedef struct { float u,v; }                   dlcs_TC;
 #include "macros.h"
 
 #if !defined(PRODUCT_ULTIMATE)
-#define PRODUCT_UNDEFINED                       0x00000000
-#define PRODUCT_ULTIMATE                        0x00000001
-#define PRODUCT_HOME_BASIC                      0x00000002
-#define PRODUCT_HOME_PREMIUM                    0x00000003
-#define PRODUCT_ENTERPRISE                      0x00000004
-#define PRODUCT_HOME_BASIC_N                    0x00000005
-#define PRODUCT_BUSINESS                        0x00000006
-#define PRODUCT_STANDARD_SERVER                 0x00000007
-#define PRODUCT_DATACENTER_SERVER               0x00000008
-#define PRODUCT_SMALLBUSINESS_SERVER            0x00000009
-#define PRODUCT_ENTERPRISE_SERVER               0x0000000A
-#define PRODUCT_STARTER                         0x0000000B
-#define PRODUCT_DATACENTER_SERVER_CORE          0x0000000C
-#define PRODUCT_STANDARD_SERVER_CORE            0x0000000D
-#define PRODUCT_ENTERPRISE_SERVER_CORE          0x0000000E
-#define PRODUCT_ENTERPRISE_SERVER_IA64          0x0000000F
-#define PRODUCT_BUSINESS_N                      0x00000010
-#define PRODUCT_WEB_SERVER                      0x00000011
-#define PRODUCT_CLUSTER_SERVER                  0x00000012
-#define PRODUCT_HOME_SERVER                     0x00000013
-#define PRODUCT_STORAGE_EXPRESS_SERVER          0x00000014
-#define PRODUCT_STORAGE_STANDARD_SERVER         0x00000015
-#define PRODUCT_STORAGE_WORKGROUP_SERVER        0x00000016
-#define PRODUCT_STORAGE_ENTERPRISE_SERVER       0x00000017
-#define PRODUCT_SERVER_FOR_SMALLBUSINESS        0x00000018
-#define PRODUCT_SMALLBUSINESS_SERVER_PREMIUM    0x00000019
-#define PRODUCT_UNLICENSED                      0xABCDABCD
+#define PRODUCT_UNDEFINED                    0x00000000
+#define PRODUCT_ULTIMATE                     0x00000001
+#define PRODUCT_HOME_BASIC                   0x00000002
+#define PRODUCT_HOME_PREMIUM                 0x00000003
+#define PRODUCT_ENTERPRISE                   0x00000004
+#define PRODUCT_HOME_BASIC_N                 0x00000005
+#define PRODUCT_BUSINESS                     0x00000006
+#define PRODUCT_STANDARD_SERVER              0x00000007
+#define PRODUCT_DATACENTER_SERVER            0x00000008
+#define PRODUCT_SMALLBUSINESS_SERVER         0x00000009
+#define PRODUCT_ENTERPRISE_SERVER            0x0000000A
+#define PRODUCT_STARTER                      0x0000000B
+#define PRODUCT_DATACENTER_SERVER_CORE       0x0000000C
+#define PRODUCT_STANDARD_SERVER_CORE         0x0000000D
+#define PRODUCT_ENTERPRISE_SERVER_CORE       0x0000000E
+#define PRODUCT_ENTERPRISE_SERVER_IA64       0x0000000F
+#define PRODUCT_BUSINESS_N                   0x00000010
+#define PRODUCT_WEB_SERVER                   0x00000011
+#define PRODUCT_CLUSTER_SERVER               0x00000012
+#define PRODUCT_HOME_SERVER                  0x00000013
+#define PRODUCT_STORAGE_EXPRESS_SERVER       0x00000014
+#define PRODUCT_STORAGE_STANDARD_SERVER      0x00000015
+#define PRODUCT_STORAGE_WORKGROUP_SERVER     0x00000016
+#define PRODUCT_STORAGE_ENTERPRISE_SERVER    0x00000017
+#define PRODUCT_SERVER_FOR_SMALLBUSINESS     0x00000018
+#define PRODUCT_SMALLBUSINESS_SERVER_PREMIUM 0x00000019
+#define PRODUCT_UNLICENSED                   0xABCDABCD
 #endif
 
-#endif//_DLCS_PRE_OS
-
-
+#endif  //_DLCS_PRE_OS

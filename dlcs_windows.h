@@ -17,20 +17,20 @@
  ***************************************************************/
 #ifndef _DLCS_SYS_WINDOWS
 #define _DLCS_SYS_WINDOWS
-#define	PATH_SEP '\\'
-#include <winsock2.h>
-#include <windows.h>
-#include <winbase.h>
+#define PATH_SEP '\\'
 #include <tchar.h>
+#include <winbase.h>
+#include <windows.h>
+#include <winsock2.h>
 //#define _WIN32_WINNT 0x501
-#include <ws2tcpip.h>
-#include <direct.h>
 #include <conio.h>
+#include <direct.h>
+#include <ws2tcpip.h>
 #ifndef _MMEDIA_
 #define _MMEDIA_
-#include <mmsystem.h>
 #include <mmreg.h>
-#endif//_MMEDIA
+#include <mmsystem.h>
+#endif  //_MMEDIA
 
 #define PROT_READ   0x0001
 #define PROT_WRITE  0x0002
@@ -41,5 +41,4 @@
 #define MAP_FIXED   0x0004
 #define MAP_FAILED  ((void *)-1)
 
-#endif // _DLCS_SYS_WINDOWS
-
+#endif  // _DLCS_SYS_WINDOWS

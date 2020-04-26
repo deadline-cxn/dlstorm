@@ -18,10 +18,9 @@
 #ifndef _DLCS_SYS_FREEBSD
 #define _DLCS_SYS_FREEBSD
 
-#define	MAC_STATIC
-#define	PATH_SEP '/'
+#define MAC_STATIC
+#define PATH_SEP '/'
 
 #include <malloc.h>
 
-#endif // _DLCS_SYS_FREEBSD
-
+#endif  // _DLCS_SYS_FREEBSD

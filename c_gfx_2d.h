@@ -28,26 +28,25 @@
 //#include "ilut.h"
 
 class C_GFX2D {
-
-public:
-    C_GFX2D(int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG);
+   public:
+    C_GFX2D(int w, int h, int c, bool FullScreen, string wincaption, CLog *pUSELOG);
     ~C_GFX2D();
-    SDL_Surface* pScreen;
-    string      windowcaption;
-    bool        bCreatedLog;
-    CLog*       pLog;
-    SDL_Rect   **VideoModes;
-    bool        bSDLFailed;
-    int         VideoFlags;
-    bool        bFullScreen;
-    int         ScreenWidth;
-    int         ScreenHeight;
-    int         ScreenColors;
-    void        SetWindowTitle(string fmt, ...);
-    void        ShutDownGFX(void);
-    bool        InitializeGFX(int w, int h, int c, bool FullScreen, string wincaption,CLog *pUSELOG);
-    void        Flip(void);
-    u_char      GetFade(char cWhichFade);
+    SDL_Surface *pScreen;
+    string       windowcaption;
+    bool         bCreatedLog;
+    CLog *       pLog;
+    SDL_Rect **  VideoModes;
+    bool         bSDLFailed;
+    int          VideoFlags;
+    bool         bFullScreen;
+    int          ScreenWidth;
+    int          ScreenHeight;
+    int          ScreenColors;
+    void         SetWindowTitle(string fmt, ...);
+    void         ShutDownGFX(void);
+    bool         InitializeGFX(int w, int h, int c, bool FullScreen, string wincaption, CLog *pUSELOG);
+    void         Flip(void);
+    u_char       GetFade(char cWhichFade);
     /*
     void        DrawVertice(int x, int y);
     void        DrawBar(RECT rc,long color);
@@ -61,7 +60,6 @@ public:
     void        Draw3DBox(RECT rect);
     void        Draw3DBox(int x, int y, int x2, int y2);
      */
-    
 };
-#endif // _DLCS_SDL
-#endif // _DLCS_C_GAF
+#endif  // _DLCS_SDL
+#endif  // _DLCS_C_GAF

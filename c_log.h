@@ -20,7 +20,7 @@
 #include "os.h"
 ///////////////////////////////// CLog class
 class CLog {
-public:
+   public:
     CLog(void);
     CLog(const char *szFilename);
     CLog(const char *szFilename, bool bQ);
@@ -47,8 +47,8 @@ public:
     bool disable;
     bool bDebug;
     bool bQuiet;
-    void _Add(const char *fmt, ...); // user defined
-    void _DebugAdd(const char *fmt, ...); // user defined
+    void _Add(const char *fmt, ...);       // user defined
+    void _DebugAdd(const char *fmt, ...);  // user defined
 };
 
-#endif // _DLCS_C_LOG
+#endif  // _DLCS_C_LOG

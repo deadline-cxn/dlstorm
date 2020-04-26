@@ -19,52 +19,52 @@
 CGLMaterial::CGLMaterial() { Initialize(); }
 CGLMaterial::~CGLMaterial() {}
 void CGLMaterial::Initialize() {
-    iMaterialIndex=0;
+    iMaterialIndex = 0;
     name.clear();
 }
 /////////////////////////////////// CGLMesh class
 CGLMesh::CGLMesh() { Initialize(); }
 CGLMesh::~CGLMesh() {
-    if(vertexArray) delete [] vertexArray;
-    if(normalArray) delete [] normalArray;
-    if(uvArray)     delete [] uvArray;
+    if (vertexArray) delete[] vertexArray;
+    if (normalArray) delete[] normalArray;
+    if (uvArray) delete[] uvArray;
 }
-void CGLMesh::Initialize(){
-    iMeshIndex=0;
-    numTriangles=0;
-    numUvCoords=0;
-    vertexArray=0;
-    normalArray=0;
-    uvArray=0;
+void CGLMesh::Initialize() {
+    iMeshIndex   = 0;
+    numTriangles = 0;
+    numUvCoords  = 0;
+    vertexArray  = 0;
+    normalArray  = 0;
+    uvArray      = 0;
     name.clear();
 }
 /////////////////////////////////// CGLModel class
 CGLModel::CGLModel() {
     Initialize();
-    bMadeLog=1;
-    pLog=new CLog("CGLModel.log");
+    bMadeLog = 1;
+    pLog     = new CLog("CGLModel.log");
     pLog->Restart();
     pLog->_DebugAdd("CGLModel::CGLModel()");
 }
-CGLModel::CGLModel(C_GFX* pinGFX, CLog *pInLog) {
+CGLModel::CGLModel(C_GFX* pinGFX, CLog* pInLog) {
     Initialize();
-    pGFX=pinGFX;
-    bMadeLog=0;
-    pLog=pInLog;
+    pGFX     = pinGFX;
+    bMadeLog = 0;
+    pLog     = pInLog;
     pLog->_DebugAdd("CGLModel::CGLModel(CLog *pInLog)");
 }
 
 CGLModel::~CGLModel() {
-    dlcsm_delete_vector(CGLMesh*,meshes);
-    dlcsm_delete_vector(CGLMaterial*,materials);
-    if(bMadeLog) dlcsm_delete(pLog);
+    dlcsm_delete_vector(CGLMesh*, meshes);
+    dlcsm_delete_vector(CGLMaterial*, materials);
+    if (bMadeLog) dlcsm_delete(pLog);
 }
 void CGLModel::Initialize() {
-    pLog=0;
-    pGAF=0;
-    bMadeLog=0;
-    numMeshes=0;
-    numMaterials=0;
+    pLog         = 0;
+    pGAF         = 0;
+    bMadeLog     = 0;
+    numMeshes    = 0;
+    numMaterials = 0;
     name.clear();
 }
 bool CGLModel::Load(string filename) {
@@ -80,7 +80,7 @@ bool CGLModel::Load(string filename) {
     if(!scene) {
         pLog->_Add("Model load error %s",filename.c_str());
         return false;
-    } 
+    }
     numMaterials=scene->mNumMaterials;
     numMeshes=scene->mNumMeshes;
     pLog->_DebugAdd("MODEL[%s] MESHES[%d] MATERIALS[%d]",name.c_str(),numMeshes,numMaterials);
@@ -143,54 +143,55 @@ bool CGLModel::Load(string filename) {
      * */
     return true;
 }
-CGLMesh* CGLModel::GetMesh(int x){
-    for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
-            if((*it)->iMeshIndex==x) return &(**it);
+CGLMesh* CGLModel::GetMesh(int x) {
+    for (vector<CGLMesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it) {
+        if ((*it)->iMeshIndex == x) return &(**it);
     }
     return 0;
 }
-CGLMaterial* CGLModel::GetMaterial(int x){
-    for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
-            if((*it)->iMaterialIndex==x) return &(**it);
+CGLMaterial* CGLModel::GetMaterial(int x) {
+    for (vector<CGLMaterial*>::iterator it = materials.begin(); it != materials.end(); ++it) {
+        if ((*it)->iMaterialIndex == x) return &(**it);
     }
     return 0;
 }
-CGLMaterial* CGLModel::GetMaterial(string name){
-    pLog->_Add("%s",name.c_str());
-    for(vector<CGLMaterial*>::iterator it = materials.begin() ; it != materials.end(); ++it) {
-        if((*it)->DiffuseTexture==name)
-            return &(**it);
+CGLMaterial* CGLModel::GetMaterial(string name) {
+    pLog->_Add("%s", name.c_str());
+    for (vector<CGLMaterial*>::iterator it = materials.begin(); it != materials.end(); ++it) {
+        if ((*it)->DiffuseTexture == name) return &(**it);
     }
     return 0;
 }
 
 bool CGLModel::Draw(CGLTexture* pTexture) {
-    if(!pGFX) return 0;
+    if (!pGFX) return 0;
     glEnable(GL_TEXTURE_2D);
-    CGLTexture*     pTex=0;
-    CGLMesh*        pMesh=0;
-    CGLMaterial*    pMat=0;
-    for(vector<CGLMesh*>::iterator it = meshes.begin() ; it != meshes.end(); ++it) {
-        pMesh=(*it);
-        if(pMesh) {
-            if(!pTexture) {
-                pMat=GetMaterial(pMesh->iMaterialIndex);
-                pTex=pGFX->GetTexture("base/"+pMat->DiffuseTexture);
-                if(!pTex) pTex=pGFX->pDefaultTexture;
+    CGLTexture*  pTex  = 0;
+    CGLMesh*     pMesh = 0;
+    CGLMaterial* pMat  = 0;
+    for (vector<CGLMesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it) {
+        pMesh = (*it);
+        if (pMesh) {
+            if (!pTexture) {
+                pMat = GetMaterial(pMesh->iMaterialIndex);
+                pTex = pGFX->GetTexture("base/" + pMat->DiffuseTexture);
+                if (!pTex) pTex = pGFX->pDefaultTexture;
+            } else {
+                if (pTexture->glBmap)
+                    pTex = pTexture;
+                else
+                    pTex = pGFX->pDefaultTexture;
             }
-            else {
-                if(pTexture->glBmap) pTex=pTexture;
-                else pTex=pGFX->pDefaultTexture;
-            }
-            if(pTex)  if(pTex->glBmap) glBindTexture(GL_TEXTURE_2D,pTex->glBmap);
+            if (pTex)
+                if (pTex->glBmap) glBindTexture(GL_TEXTURE_2D, pTex->glBmap);
             glEnableClientState(GL_VERTEX_ARRAY);
             glEnableClientState(GL_NORMAL_ARRAY);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-             //glClientActiveTexture(GL_TEXTURE0_ARB);
-            glVertexPointer(3,GL_FLOAT,0,   pMesh->vertexArray);
-            glNormalPointer(GL_FLOAT,0,     pMesh->normalArray);
-            glTexCoordPointer(2,GL_FLOAT,0, pMesh->uvArray);
-            glDrawArrays(GL_TRIANGLES,0,    pMesh->numTriangles);
+            // glClientActiveTexture(GL_TEXTURE0_ARB);
+            glVertexPointer(3, GL_FLOAT, 0, pMesh->vertexArray);
+            glNormalPointer(GL_FLOAT, 0, pMesh->normalArray);
+            glTexCoordPointer(2, GL_FLOAT, 0, pMesh->uvArray);
+            glDrawArrays(GL_TRIANGLES, 0, pMesh->numTriangles);
             glDisableClientState(GL_VERTEX_ARRAY);
             glDisableClientState(GL_NORMAL_ARRAY);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -198,5 +199,3 @@ bool CGLModel::Draw(CGLTexture* pTexture) {
     }
     return true;
 }
-
-

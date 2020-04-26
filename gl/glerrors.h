@@ -19,14 +19,14 @@
 #include <winsock2.h>
 #ifndef _MMEDIA_
 #define _MMEDIA_
-#include <mmsystem.h>
 #include <mmreg.h>
-#endif//_MMEDIA
-#endif//_WIN32
-#include <stdio.h>
-#include <string.h>
+#include <mmsystem.h>
+#endif  //_MMEDIA
+#endif  //_WIN32
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <stdio.h>
+#include <string.h>
 extern "C" char *GL_Error(GLenum err);
-extern "C" void GL_ClearErrors(void);
-#endif // _DLCS_GL_ERRORS
+extern "C" void  GL_ClearErrors(void);
+#endif  // _DLCS_GL_ERRORS

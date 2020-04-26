@@ -30,7 +30,7 @@
 // f_  = float
 
 enum convar_types {
-    CVAR_NULL=0,
+    CVAR_NULL = 0,
     CVAR_BOOL,
     CVAR_STRING,
     CVAR_CHAR,
@@ -43,28 +43,28 @@ enum convar_types {
 };
 
 class CVarSet {
-public:
+   public:
     CVarSet();
     CVarSet(char *infilename);
     ~CVarSet();
-    void Init();
-    void                set_cvar(const char *name, char *value);
-    void                get_cvar(const char *name, char *value);
-    const char *        get_cvar(const char *name);
-    int                 get_cvartype(const char *s);
-    const char *        get_cvartype_string(int t);
-    const char *        get_cvarformatted(const char *f,void *cv);
-    char *              get_cvarformat(int t);
+    void        Init();
+    void        set_cvar(const char *name, char *value);
+    void        get_cvar(const char *name, char *value);
+    const char *get_cvar(const char *name);
+    int         get_cvartype(const char *s);
+    const char *get_cvartype_string(int t);
+    const char *get_cvarformatted(const char *f, void *cv);
+    char *      get_cvarformat(int t);
     // cvar map
-    typedef void *strvar_t;
-    typedef map<string, strvar_t> strvarmap_t;
-    map <string, strvar_t>::iterator svm_i;
-    strvarmap_t varmap;
-    map <string, int>   cvar_type_map;  // cvar type map
-    map <int, string>   cvar_type_format_map; // cvar type format map
-    string filename;
-    bool bLoad(void);
-    bool bSave(void);
+    typedef void *                  strvar_t;
+    typedef map<string, strvar_t>   strvarmap_t;
+    map<string, strvar_t>::iterator svm_i;
+    strvarmap_t                     varmap;
+    map<string, int>                cvar_type_map;         // cvar type map
+    map<int, string>                cvar_type_format_map;  // cvar type format map
+    string                          filename;
+    bool                            bLoad(void);
+    bool                            bSave(void);
 };
 
-#endif // _DLCS_CVAR
+#endif  // _DLCS_CVAR

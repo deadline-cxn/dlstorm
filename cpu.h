@@ -24,20 +24,20 @@
 #if defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #define CPUSTRING "AMD64 (x86_64)"
 #endif
-#if defined(__i386__)|| defined(i386) || defined(__i386)
+#if defined(__i386__) || defined(i386) || defined(__i386)
 #define CPUSTRING "Intel IA-32 (386)"
 #endif
 #ifdef __i486__
 #define CPUSTRING "Intel IA-32 (486)"
 #endif
 #ifdef __i586__
-#define	CPUSTRING "Intel IA-32 (586)"
+#define CPUSTRING "Intel IA-32 (586)"
 #endif
 #ifdef __i686__
-#define	CPUSTRING "Intel IA-32 (686)"
+#define CPUSTRING "Intel IA-32 (686)"
 #endif
 #if defined(__IA32__) || defined(_M_I86) || defined(_M_IX86) || defined(__X86__) || defined(_X86_) || defined(__I86__) || defined(__INTEL__)
-#define	CPUSTRING "Intel IA-32 (x86)"
+#define CPUSTRING "Intel IA-32 (x86)"
 #endif
 #if defined(__ia64__) || defined(_IA64) || defined(__IA64__)
 #define CPUSTRING "Intel IA-64"
@@ -52,36 +52,35 @@
 #define CPUSTRING "PowerPC"
 #endif
 #ifdef __powerpc__
-#define  CPUSTRING   "PowerPC"
+#define CPUSTRING "PowerPC"
 #endif
 #ifdef __powerpc64__
-#define CPUSTRING  "PowerPC"
+#define CPUSTRING "PowerPC"
 #endif
 #ifdef __POWERPC__
-#define  CPUSTRING   "PowerPC"
+#define CPUSTRING "PowerPC"
 #endif
 #ifdef __ppc__
-#define      CPUSTRING   "PowerPC"
+#define CPUSTRING "PowerPC"
 #endif
 #ifdef __ppc64__
-#define    CPUSTRING   "PowerPC"
+#define CPUSTRING "PowerPC"
 #endif
 #ifdef __alpha__
-#define	CPUSTRING	"Alpha"
+#define CPUSTRING "Alpha"
 #endif
 #ifdef __alpha
-#define	    CPUSTRING	"Alpha"
+#define CPUSTRING "Alpha"
 #endif
 #ifdef _M_ALPHA
-#define     CPUSTRING	"Alpha"
+#define CPUSTRING "Alpha"
 #endif
 
 #ifndef CPUSTRING
 #define CPUSTRING "Unknown processor"
 #endif
 
-#endif // _DLCS_PRE_CPU
-
+#endif  // _DLCS_PRE_CPU
 
 /*
 
@@ -352,4 +351,3 @@ C6740	_TMS320C6740
 TMS470
 Type	Macro
 Identification	__TMS470__             */
-

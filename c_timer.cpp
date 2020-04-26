@@ -17,23 +17,19 @@
 #include "c_timer.h"
 ////////////////////////////// CTimer class
 CTimer::CTimer() {
-    duration=TIMER_DEFAULT;
+    duration = TIMER_DEFAULT;
     Reset();
 }
 CTimer::CTimer(long dur) {
-    duration=dur;
+    duration = dur;
     Reset();
 }
-CTimer::~CTimer() { }
-void CTimer::Reset() {
-    currenttick=dlcs_get_tickcount();
-}
+CTimer::~CTimer() {}
+void CTimer::Reset() { currenttick = dlcs_get_tickcount(); }
 bool CTimer::Up() {
-    if((dlcs_get_tickcount()-currenttick) > duration) {
+    if ((dlcs_get_tickcount() - currenttick) > duration) {
         Reset();
         return true;
     }
     return false;
 }
-
-
