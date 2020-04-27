@@ -161,7 +161,7 @@ void CLog::AddEntryNoTime(const char *fmt, ...) {
     if (fp) {
         if (!bLineFeeds) {
             fprintf(fp, "%s", ach);
-            if (!bQuiet) printf(ach);
+            if (!bQuiet) printf("%s\n",ach);
         } else {
             fprintf(fp, "%s\n", ach);
             if (!bQuiet) printf("%s\n", ach);

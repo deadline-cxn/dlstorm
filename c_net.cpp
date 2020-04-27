@@ -395,7 +395,6 @@ int CCSocket::OpenSocket(const char *pAddress, int iPort) {
 #endif
 
     iSocket             = -1;
-    unsigned long _true = 1;
 
     if ((iSocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
 
@@ -424,7 +423,6 @@ int CCSocket::OpenSocket(const char *pAddress, int iPort) {
     return iSocket;
 }
 int CCSocket::zOpenSocket(int iPort) {
-    unsigned long      _true = 1;
     int                newsocket;
     struct sockaddr_in address;
     if ((newsocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
@@ -460,7 +458,6 @@ int CCSocket::zOpenSocket(int iPort) {
     return newsocket;
 }
 int CCSocket::zOpenSocket(const char *pAddress, int iPort) {
-    unsigned long      _true = 1;
     int                newsocket;
     struct sockaddr_in address;
     if ((newsocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
@@ -510,7 +507,7 @@ int CCSocket::CheckNewConnections(void) {
 int CCSocket::nRecv(char *pBuf, int iLen, struct sockaddr *pAddr) { return nRecv(iSocket, pBuf, iLen, pAddr); }
 int CCSocket::nRecv(SOCKET iSocket, char *pBuff, int iLen, struct sockaddr *pAddr) {
     int iAddrlen = sizeof(struct sockaddr);
-    int err, errnum;
+    int err;
 #ifndef _WIN32
     fd_set         readfds;
     struct timeval tv;
@@ -530,6 +527,7 @@ int CCSocket::nRecv(SOCKET iSocket, char *pBuff, int iLen, struct sockaddr *pAdd
 #endif
 
 #ifdef _WIN32
+    int errnum;
 
     err = recvfrom(iSocket, pBuff, iLen, 0, (struct sockaddr *)pAddr, &iAddrlen);
 
@@ -721,10 +719,10 @@ int NET_Shutdown(void) {
     return 0;
 }
 const char *NET_pGetLastError(void) {
-    int i, err;
 #ifdef _WIN32
+    int err;
     err = WSAGetLastError();
-    for (i = 0; i < iNumMessages; i++) {
+    for (int i = 0; i < iNumMessages; i++) {
         if (pErrorList[i].iID == err) {
             return (const char *)pErrorList[i].pMessage;
         }
