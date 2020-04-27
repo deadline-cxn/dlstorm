@@ -20,11 +20,12 @@
 
 #define MAC_STATIC
 #define PATH_SEP '/'
+#undef  DEL
 #define DEL      delete
 
 #include <arpa/inet.h>
 #include <ctype.h>
-#include <curses.h>
+#include <curses.h> // apt-get install libncurses5-dev
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -36,8 +37,8 @@
 #include <sys/un.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
-#include <tcl.h>
-#include <term.h>
+#include <tcl.h> // apt install tcl-dev
+#include <term.h> // apt install libncurses5-dev
 #include <termios.h>
 #include <unistd.h>
 

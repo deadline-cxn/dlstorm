@@ -2,7 +2,9 @@
 #define _C_SQLITE_DB
 
 #include "dlstorm.h"
-#include "sqlite3.h"
+
+// apt install libsqlite3-dev / will install it to /usr/include/sqlite3.h
+#include "sqlite3.h" 
 
 using namespace std;
 

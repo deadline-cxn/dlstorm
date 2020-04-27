@@ -5,7 +5,9 @@
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Windows type structs for non windows conversions
+
 #ifndef DLCS_WINDOWS
+/*
 #ifndef RECT
 typedef struct tagRECT {
     long left;
@@ -14,7 +16,7 @@ typedef struct tagRECT {
     long bottom;
 } RECT;
 #endif
-
+*/
 typedef long LONG;
 
 #ifndef DWORD

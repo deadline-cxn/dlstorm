@@ -50,7 +50,7 @@ void CCSocket::initSocket(void) {
 
     pReceiveBuffer = (char *)malloc(iCurReceiveSize);
     if (!pReceiveBuffer) {
-        dlcsm_free(pSendBuffer);
+        FREE(pSendBuffer);
         return;
     }
 
@@ -69,14 +69,14 @@ void CCSocket::initSocket(void) {
 }
 CCSocket::~CCSocket() {
     CloseSocket(iSocket);
-    dlcsm_free(pSendBuffer);
-    dlcsm_free(pReceiveBuffer);
+    FREE(pSendBuffer);
+    FREE(pReceiveBuffer);
 }
 void CCSocket::SendReliableMessage(CPacket *pMessage) {
     if (!pMessage) return;
     SendReliableMessage(pMessage->pGetPacketBuffer(), pMessage->iGetCurSize());
 }
-void CCSocket::SendReliableMessage(char *pData, int iSize) {
+void CCSocket::SendReliableMessage(const char *pData, int iSize) {
     unsigned int iPacketLen;
     unsigned int iDataLen;
     unsigned int eom;
@@ -109,7 +109,7 @@ void CCSocket::SendReliableMessage(char *pData, int iSize) {
     PacketBuffer.iSequence = htonl(iSendSequence++);
     memcpy(PacketBuffer.pData, pSendBuffer, iDataLen);
     bCanSend = false;
-    ret      = nSend((char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
+    ret      = nSend((const char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
     if ((ret == -1) || (ret != (int)iPacketLen)) return;
     dLastSendTime = dlcs_get_tickcount();
     iPacketsSent++;
@@ -129,7 +129,7 @@ void CCSocket::SendMessageNext() {
     PacketBuffer.iSequence = htonl(iSendSequence++);
     memcpy(PacketBuffer.pData, pSendBuffer, iDataLen);
     bSendNext = false;
-    ret       = nSend((char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
+    ret       = nSend((const char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
     if ((ret == -1) || (ret != (int)iPacketLen)) return;
     dLastSendTime = dlcs_get_tickcount();
     iPacketsSent++;
@@ -156,7 +156,7 @@ void CCSocket::ReSendMessage(void) {
     PacketBuffer.iSequence = htonl(iSendSequence - 1);
     memcpy(PacketBuffer.pData, pSendBuffer, iDataLen);
     bSendNext = false;
-    ret       = nSend((char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
+    ret       = nSend((const char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
     if ((ret == -1) || (ret != (int)iPacketLen)) return;
     dLastSendTime = dlcs_get_tickcount();
     iPacketsReSent++;
@@ -170,7 +170,7 @@ int CCSocket::SendUnreliableMessage(CPacket *pMessage) {
     if (!pMessage) return -4;
     return SendUnreliableMessage(pMessage->pGetPacketBuffer(), pMessage->iGetCurSize());
 }
-int CCSocket::SendUnreliableMessage(char *pData, int iSize) {
+int CCSocket::SendUnreliableMessage(const char *pData, int iSize) {
     int iPacketLen;
     int ret;
     if (iSize < 0) return -1;
@@ -180,14 +180,14 @@ int CCSocket::SendUnreliableMessage(char *pData, int iSize) {
     PacketBuffer.iLen      = htonl(iPacketLen | NET_FLAG_UNRELIABLE);
     PacketBuffer.iSequence = htonl(iUnreliableSendSequence++);
     memcpy(PacketBuffer.pData, pData, iSize);
-    ret = nSend((char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
-    if ((ret == -1) || (ret != iPacketLen)) {
-        return ret;
-    }
+    ret = nSend((const char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
+    // if ((ret == -1) || (ret != iPacketLen)) { }
     iPacketsSent++;
+    return ret;
 }
+
 int CCSocket::iGetMessage() {
-    unsigned int iLength;
+    int          iLength;
     unsigned int iFlags;
     int          err = 0;
     unsigned int iSequence;
@@ -279,7 +279,7 @@ int CCSocket::iGetMessage() {
         if (iFlags & NET_FLAG_RELIABLE) {
             PacketBuffer.iLen      = ntohl(NET_HEADERSIZE | NET_FLAG_ACK);
             PacketBuffer.iSequence = ntohl(iSequence);
-            if (nSend((char *)&PacketBuffer, NET_HEADERSIZE, (struct sockaddr *)&ToAddr) == -1) {
+            if (nSend((const char *)&PacketBuffer, NET_HEADERSIZE, (struct sockaddr *)&ToAddr) == -1) {
                 printf("ya done goofed 7\n");
                 return -1;
             }
@@ -313,7 +313,7 @@ int CCSocket::iGetMessage() {
     if (bSendNext) SendMessageNext();
     return err;
 }
-char *CCSocket::pcGetMessage() {
+const char *CCSocket::pcGetMessage() {
     assert(pReceiveBuffer != NULL);
     if (iLastLength)
         return PacketBuffer.pData;
@@ -385,7 +385,7 @@ int  CCSocket::Listen(int iHostPort, int iState) {
     return 0;
 }
 int CCSocket::OpenSocket(int iPort) { return OpenSocket("127.0.0.1", iPort); }
-int CCSocket::OpenSocket(char *pAddress, int iPort) {
+int CCSocket::OpenSocket(const char *pAddress, int iPort) {
     ToAddr.sin_family = AF_INET;
     ToAddr.sin_port   = htons((short)iPort);
 #ifdef _WIN32
@@ -459,7 +459,7 @@ int CCSocket::zOpenSocket(int iPort) {
 
     return newsocket;
 }
-int CCSocket::zOpenSocket(char *pAddress, int iPort) {
+int CCSocket::zOpenSocket(const char *pAddress, int iPort) {
     unsigned long      _true = 1;
     int                newsocket;
     struct sockaddr_in address;
@@ -544,8 +544,8 @@ int CCSocket::nRecv(SOCKET iSocket, char *pBuff, int iLen, struct sockaddr *pAdd
     // if(err==-1) { Log("%s on recvfrom()",NET_pGetLastError()); }
     return err;
 }
-int CCSocket::nSend(char *pBuf, int iLen, struct sockaddr *pAddr) { return nSend(iSocket, pBuf, iLen, pAddr); }
-int CCSocket::nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr) {
+int CCSocket::nSend(const char *pBuf, int iLen, struct sockaddr *pAddr) { return nSend(iSocket, pBuf, iLen, pAddr); }
+int CCSocket::nSend(SOCKET iSocket, const char *pBuf, int iLen, struct sockaddr *pAddr) {
     int err;
 #ifdef SIMULATE_CONNECTION
     if (!(rand() % 10)) return iLen;
@@ -559,16 +559,16 @@ int CCSocket::nSend(SOCKET iSocket, char *pBuf, int iLen, struct sockaddr *pAddr
     return err;
 }
 int CCSocket::NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr) {
-    int          addrlen = sizeof(struct sockaddr);
-    unsigned int a;
+    int addrlen = sizeof(struct sockaddr);
     memset(pAddr, 0, sizeof(struct sockaddr));
+    int a;
 #ifdef _WIN32
-    getsockname(iSocket, (struct sockaddr *)pAddr, &addrlen);
+    a = getsockname(iSocket, (struct sockaddr *)pAddr, &addrlen);
 #else
-    getsockname(iSocket, (struct sockaddr *)pAddr, (socklen_t *)&addrlen);
+    a = getsockname(iSocket, (struct sockaddr *)pAddr, (socklen_t *)&addrlen);
 #endif
-    a = ((struct sockaddr_in *)pAddr)->sin_addr.s_addr;
-    return 0;
+    // unsigned int a; // a = ((struct sockaddr_in *)pAddr)->sin_addr.s_addr;
+    return a;
 }
 void CCSocket::SetRemotePort(int iPort) {
     if (iPort > 0xffff) return;
@@ -606,10 +606,10 @@ CPacket::CPacket(int iSize) {
     iPacketLen    = 0;
     bUserAlloc    = false;
 }
-CPacket::CPacket(int iSize, char *pBuffer) {
+CPacket::CPacket(int iSize, const char *pBuffer) {
     if (iSize < 0) return;
     if (pBuffer == NULL) return;
-    pPacketBuffer = pBuffer;
+    pPacketBuffer = (char *)pBuffer;
     iPacketLen = iPacketSize = iSize;
     iPacketCursor            = 0;
     bUserAlloc               = true;
@@ -627,10 +627,10 @@ void CPacket::DumpPacket(void) {
     printf("-==========================================================[End Packet]=-");
 }
 int  CPacket::iGetMaxSize(void) { return iPacketSize; }
-void CPacket::SetMaxSize(int iSize, char *pBuffer) {
+void CPacket::SetMaxSize(int iSize, const char *pBuffer) {
     if (iSize < 0) return;
     if ((bUserAlloc) && (pBuffer)) {
-        pPacketBuffer = pBuffer;
+        pPacketBuffer = (char *)pBuffer;
         iPacketSize   = iSize;
         return;
     }
@@ -649,49 +649,49 @@ void CPacket::Reset(void) {
     iPacketCursor = 0;
     iPacketLen    = 0;
 }
-void  CPacket::Rewind(void) { iPacketCursor = 0; }
-char *CPacket::pGetPacketBuffer(void) { return pPacketBuffer; }
-void  CPacket::Write(int Val) { WRITE(int) }
-void  CPacket::Write(long Val) { WRITE(long) }
-void  CPacket::Write(char Val) { WRITE(char) }
-void  CPacket::Write(short Val) { WRITE(short) }
-void  CPacket::Write(float Val) { WRITE(float) }
-void  CPacket::Write(char *Val) {
+void        CPacket::Rewind(void) { iPacketCursor = 0; }
+const char *CPacket::pGetPacketBuffer(void) { return pPacketBuffer; }
+void        CPacket::Write(int Val) { WRITE(int) }
+void        CPacket::Write(long Val) { WRITE(long) }
+void        CPacket::Write(char Val) { WRITE(char) }
+void        CPacket::Write(short Val) { WRITE(short) }
+void        CPacket::Write(float Val) { WRITE(float) }
+void        CPacket::Write(const char *Val) {
     int i = strlen(Val) + 1;
     if (pPacketBuffer == NULL) return;
     if (iPacketLen + i > iPacketSize) return;
     strcpy(pPacketBuffer + iPacketLen, Val);
     iPacketLen += i;
 }
-void CPacket::Write(char *Val, int iSize) {
+void CPacket::Write(const char *Val, int iSize) {
     if (!iSize) return;
     if (pPacketBuffer == NULL) return;
     if (iPacketLen + iSize > iPacketSize) return;
     memcpy(pPacketBuffer + iPacketLen, Val, iSize);
     iPacketLen += iSize;
 }
-char *CPacket::pWrite(int iSize) {
+const char *CPacket::pWrite(int iSize) {
     if (!iSize) return NULL;
     if (!pPacketBuffer) return NULL;
     if (iPacketLen + iSize > iPacketSize) return NULL;
     iPacketLen += iSize;
     return pPacketBuffer + iPacketLen - iSize;
 }
-int   CPacket::iRead(void) { READ(int) }
-long  CPacket::dwRead(void) { READ(long) }
-char  CPacket::cRead(void) { READ(char) }
-short CPacket::sRead(void) { READ(short) }
-float CPacket::fRead(void) { READ(float) }
-char *CPacket::pRead(void) {
+int         CPacket::iRead(void) { READ(int) }
+long        CPacket::dwRead(void) { READ(long) }
+char        CPacket::cRead(void) { READ(char) }
+short       CPacket::sRead(void) { READ(short) }
+float       CPacket::fRead(void) { READ(float) }
+const char *CPacket::pRead(void) {
     int i;
     if (iPacketLen < 1) return ("null");
     if (!pPacketBuffer) return ("null");
     i = iPacketCursor;
     iPacketCursor += strlen(pPacketBuffer + iPacketCursor) + 1;
     if (iPacketCursor > iPacketLen) return ("null");
-    return (char *)(pPacketBuffer + i);
+    return (const char *)(pPacketBuffer + i);
 }
-char *CPacket::pRead(int iSize) {
+const char *CPacket::pRead(int iSize) {
     int i;
     if (iSize == 0) return ("null");
     if (iPacketLen < 1) return ("null");
@@ -699,7 +699,7 @@ char *CPacket::pRead(int iSize) {
     i = iPacketCursor;
     iPacketCursor += iSize;
     if (iPacketCursor > iPacketLen) return ("null");
-    return (char *)(pPacketBuffer + i);
+    return (const char *)(pPacketBuffer + i);
 }
 /////////////////////////// Network utility functions
 int NET_Init() {
@@ -720,16 +720,16 @@ int NET_Shutdown(void) {
 #endif
     return 0;
 }
-char *NET_pGetLastError(void) {
+const char *NET_pGetLastError(void) {
     int i, err;
 #ifdef _WIN32
     err = WSAGetLastError();
     for (i = 0; i < iNumMessages; i++) {
         if (pErrorList[i].iID == err) {
-            return (char *)pErrorList[i].pMessage;
+            return (const char *)pErrorList[i].pMessage;
         }
     }
-    return (char *)pErrorList[0].pMessage;
+    return (const char *)pErrorList[0].pMessage;
 #else
     return (strerror(errno));
 #endif
@@ -740,15 +740,15 @@ void FinishCtlPacket(CPacket *pPacket) {
 }
 int NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName) {
     struct hostent *hostentry;
-    hostentry = gethostbyaddr((char *)&((struct sockaddr_in *)pAddr)->sin_addr, sizeof(struct in_addr), AF_INET);
+    hostentry = gethostbyaddr((const char *)&((struct sockaddr_in *)pAddr)->sin_addr, sizeof(struct in_addr), AF_INET);
     if (hostentry) {
-        strncpy(pName, (char *)hostentry->h_name, NET_NAMELEN - 1);
+        strncpy(pName, (const char *)hostentry->h_name, NET_NAMELEN - 1);
         return 0;
     }
     strcpy(pName, NET_pAddrToString(pAddr));
     return 0;
 }
-int NET_GetAddrFromName(char *pName, struct sockaddr *pAddr) {
+int NET_GetAddrFromName(const char *pName, struct sockaddr *pAddr) {
     struct hostent *hostentry;
     hostentry = gethostbyname(pName);
     if (!hostentry) return SOCKET_ERROR;
@@ -762,12 +762,12 @@ int NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2) {
     if (((struct sockaddr_in *)pAddr1)->sin_port != ((struct sockaddr_in *)pAddr2)->sin_port) return 1;
     return 0;
 }
-char *NET_pAddrToString(struct sockaddr *pAddr) {
+const char *NET_pAddrToString(struct sockaddr *pAddr) {
     static char buffer[22];
     if (pAddr == NULL)
         strcpy(buffer, "error!");
     else {
-        int taddr = ((struct sockaddr_in *)pAddr)->sin_addr.s_addr;
+        // int taddr = ((struct sockaddr_in *)pAddr)->sin_addr.s_addr;
         int haddr = ntohl(((struct sockaddr_in *)pAddr)->sin_addr.s_addr);
         sprintf(buffer, "%d.%d.%d.%d:%d", (haddr >> 24) & 0xff, (haddr >> 16) & 0xff, (haddr >> 8) & 0xff, haddr & 0xff, ntohs(((struct sockaddr_in *)pAddr)->sin_port));
     }

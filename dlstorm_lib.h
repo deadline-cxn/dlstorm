@@ -109,6 +109,8 @@
 #include <direct.h>
 #include <io.h>
 #include <winsock2.h>
+#include <ws2tcpip.h>
+
 #ifndef _MMEDIA_
 #define _MMEDIA_
 #include <mmreg.h>
@@ -293,7 +295,7 @@ typedef struct RECT {
 // Network junk
 
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
-
+/*
 #ifndef _WIN32
 #ifdef SOCKET
 #undef SOCKET
@@ -334,5 +336,6 @@ typedef struct RECT {
 #define NET_BUFFERED_SIZE             512
 #define NET_BUFFERED_QUEUE            3
 #define NET_FILE_XFER_BLOCK_SIZE      1024
+*/
 
 #endif  // _DEADLINE_CODE_STORM_LIB
