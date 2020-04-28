@@ -16,9 +16,9 @@
  ***************************************************************/
 #ifndef _DLCS_CGLTEXTURE
 #define _DLCS_CGLTEXTURE
+
 #include <gl.h>
 #include <glu.h>
-
 #include "c_gaf.h"
 #include "c_log.h"
 #include "dlcs.h"

@@ -41,13 +41,20 @@ CSDL_Wrap::CSDL_Wrap(const char *appname, Uint32 nw, Uint32 nh, Uint32 nb, const
     ZeroVars();
     Begin(appname, nw, nh, nb, icon);
 }
+CSDL_Wrap::CSDL_Wrap(const char *appname, Uint32 nw, Uint32 nh, Uint32 nb, const char *icon, bool fullscreen, CLog *inlog, CGAF *ingaf) {
+    ZeroVars();
+    pLog=inlog;
+    pGAF=ingaf;
+    Begin(appname,nw,nh,nb,icon);
+}
+
 CSDL_Wrap::~CSDL_Wrap() {
-    zl("CSDL_Wrap (DECONSTRUCTING)");
+    pLog->AddEntry("CSDL_Wrap (DECONSTRUCTING)");
     DEL(pMouse);
-    DEL(GAF);
+    DEL(pGAF);
     DEL(Font);
     SpritesClear();
-    DEL(Log);
+    DEL(pLog);
     SDL_Quit();
 }
 
@@ -55,28 +62,28 @@ void CSDL_Wrap::ZeroVars(void) {
     pFirstSprite = 0;
     window       = 0;
     renderer     = 0;
-    GAF          = 0;
-    Log          = 0;
+    pGAF         = 0;
+    pLog         = 0;
     Font         = 0;
 }
 
 bool CSDL_Wrap::Begin(const char *appname, Uint32 nw, Uint32 nh, Uint32 np, const char *icon) {
-    if (!Log) Log = new CLog("gfx.log");
+    if (!pLog) pLog = new CLog("gfx.pLog");
     RebuildGAF();
     Icon = LoadGAFSurface(icon);
     return Begin(appname, nw, nh, np, Icon);
 }
 
 bool CSDL_Wrap::Begin(const char *appname, Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface *icon) {
-    if (!Log) Log = new CLog("gfx.log");
+    if (!pLog) pLog = new CLog("gfx.pLog");
     RebuildGAF();
-    zl("CSDL_Wrap::Begin(2)...");
+    pLog->AddEntry("CSDL_Wrap::Begin(2)...");
     pMouse = new CMouse();
     Font   = new C2DFont(this);
     w      = nw;
     h      = nh;
     b      = np;
-    if (!GAF) GAF = new CGAF("gfx.gaf", GAFCOMP_BEST);
+    if (!pGAF) pGAF = new CGAF("gfx.gaf", GAFCOMP_BEST);
     Icon = icon;
     strcpy(APP_NAME, appname);
     InitSuccess = Init2D(w, h, b, Icon);
@@ -85,19 +92,19 @@ bool CSDL_Wrap::Begin(const char *appname, Uint32 nw, Uint32 nh, Uint32 np, SDL_
 
 void CSDL_Wrap::RebuildGAF(void) {
     if (!dlcs_file_exists("gfx.gaf")) {
-        zl("Rebuilding gfx.gaf GAF...");
-        remove("gfx.gaf");
-        CGAF *gaf;
-        gaf = new CGAF("gfx.gaf", GAFCOMP_BEST);
-        gaf->AddDir("", "gfx", 1);
-        DEL(gaf);
+        pLog->AddEntry("Rebuilding gfx.gaf gaf...");
+        remove("gfx.pGAF");
+        CGAF *pRebuildGAF;
+        pRebuildGAF = new CGAF("gfx.gaf", GAFCOMP_BEST);
+        pRebuildGAF->AddDir("", "gfx", 1);
+        DEL(pRebuildGAF);
     } else {
-        zl("gfx.gaf GAF exists, not rebuilding...");
+        pLog->AddEntry("gfx.gaf GAF exists, not rebuilding...");
     }
 }
 
 bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon) {
-    zl(va("CSDL_Wrap::Init2D(%d,%d,%d,(SDL_Surface *)%d)", width, height, bpp, icon));
+    pLog->AddEntry(va("CSDL_Wrap::Init2D(%d,%d,%d,(SDL_Surface *)%d)", width, height, bpp, icon));
     if (SDL_Init(SDL_INIT_VIDEO) < 0) return false;
     // videoflags = SDL_HWSURFACE|SDL_HWPALETTE|SDL_DOUBLEBUF|SDL_FULLSCREEN|SDL_NOFRAME;
     /*
@@ -129,40 +136,40 @@ bool CSDL_Wrap::Init2D(int width, int height, int bpp, SDL_Surface *icon) {
     if (icon) SDL_SetWindowIcon(window, icon);
 
     // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
-    // SDL_RenderSetLogicalSize(sdlRenderer, 640, 480);
+    // SDL_RenderSetpLogicalSize(sdlRenderer, 640, 480);
 
     LoadFont("gfx/font.bmp");
-    Log->AddEntry("SDL Video started...");
+    pLog->AddEntry("SDL Video started...");
     return true;
 }
 
 SDL_Surface *CSDL_Wrap::LoadGAFSurface(const char *fn) {
-    zl(va("CSDL_Wrap::LoadGAFSurface(\"%s\")...", fn));
-    if (!GAF) GAF = new CGAF("gfx.gaf", GAFCOMP_BEST);
+    pLog->AddEntry(va("CSDL_Wrap::LoadGAFSurface(\"%s\")...", fn));
+    if (!pGAF) pGAF = new CGAF("gfx.gaf", GAFCOMP_BEST);
     SDL_Surface *what;
     what = 0;
     SDL_RWops *rw;
     rw = 0;
     // unsigned char * fi;
     int gf_size = 0;
-    gf_size     = GAF->GetFileSize(fn);
+    gf_size     = pGAF->GetFileSize(fn);
     if (gf_size >= 0) {
         unsigned char *gfb;
-        gfb  = GAF->GetFile(fn).fb;
+        gfb  = pGAF->GetFile(fn).fb;
         rw   = SDL_RWFromMem(gfb, gf_size);
         what = LoadMemSurface(rw);
         SDL_FreeRW(rw);
 
         SDL_SetColorKey(what, SDL_TRUE, SDL_MapRGB(what->format, 0, 0, 0));
-        zl(va("CSDL_Wrap::LoadGAFSurface(\"%s\") - [%s] loaded to surface [%d]", fn, fn, what));
+        pLog->AddEntry(va("CSDL_Wrap::LoadGAFSurface(\"%s\") - [%s] loaded to surface [%d]", fn, fn, what));
     } else {
-        zl(va("CSDL_Wrap::LoadGAFSurface(\"%s\") - [%s] doesn't appear to be a valid resource.", fn, fn));
+        pLog->AddEntry(va("CSDL_Wrap::LoadGAFSurface(\"%s\") - [%s] doesn't appear to be a valid resource.", fn, fn));
     }
     return what;
 }
 
 SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw) {
-    zl(va("CSDL_Wrap::LoadMemSurface((SDL_RWops *)%d)...", rw));
+    pLog->AddEntry(va("CSDL_Wrap::LoadMemSurface((SDL_RWops *)%d)...", rw));
     SDL_Surface *surface;
     surface = 0;
     if (!rw) return 0;
@@ -214,12 +221,12 @@ SDL_Surface *CSDL_Wrap::LoadMemSurface(SDL_RWops *rw) {
         surface = IMG_LoadTGA_RW(rw);
         return surface;
     }
-    zl(va("CSDL_Wrap::LoadSurface(SDL_RWops *)%d) - end", rw));
+    pLog->AddEntry(va("CSDL_Wrap::LoadSurface(SDL_RWops *)%d) - end", rw));
     return surface;
 }
 
 void CSDL_Wrap::LoadFont(const char *fn) {
-    zl(va("CSDL_Wrap::LoadFont(\"%s\")...", fn));
+    pLog->AddEntry(va("CSDL_Wrap::LoadFont(\"%s\")...", fn));
     Font->FontSurface = LoadGAFSurface(fn);
 }
 
@@ -329,7 +336,7 @@ void CSDL_Wrap::Write(int x, int y, const char *string, int bank) { Font->Write(
 
 void CSDL_Wrap::SpritesDraw(void) {}
 void CSDL_Wrap::SpriteAdd(const char *name, const char *file) {
-    zl(va("Adding sprite %s", name));
+    pLog->AddEntry(va("Adding sprite %s", name));
     CSprite *which;
     which = 0;
     which = SpriteFindLast();
@@ -358,7 +365,7 @@ void CSDL_Wrap::SpritesClear(void) {
     while (which) {
         delSprite = which;
         which     = which->pNext;
-        zl(va("Removing sprite %s", delSprite->szName));
+        pLog->AddEntry(va("Removing sprite %s", delSprite->szName));
         DEL(delSprite);
     }
 }

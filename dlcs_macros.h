@@ -20,10 +20,7 @@
 
 //#define	MAKERGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
 //#define	MAKERGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
-#define zl(x)             \
-    if (Log) {            \
-        Log->AddEntry(x); \
-    }
+// #define zl(x)             \    if (Log) {            \        Log->AddEntry(x); \     }
 #define s_MAKEDWORD(a, b, c, d) ((a) + (b << 8) + (c << 16) + (d << 24))
 #define s_MAKEWORD(a, b)        ((a) + (b << 8))
 #define PI                      3.145f
@@ -113,14 +110,14 @@
 #define dlcsm_tobool(x)          (x ? 1 : 0)
 // STRING MACROS
 #define dlcsm_make_tinyname(x) \
-    char x[TINYNAME_SIZE];     \
-    memset(x, 0, TINYNAME_SIZE);
+    char x[_TINYNAME_SIZE];     \
+    memset(x, 0, _TINYNAME_SIZE);
 #define dlcsm_make_filename(x) \
-    char x[FILENAME_SIZE];     \
-    memset(x, 0, FILENAME_SIZE);
+    char x[_FILENAME_SIZE];     \
+    memset(x, 0, _FILENAME_SIZE);
 #define dlcsm_make_str(x)  \
-    char x[TEXTNAME_SIZE]; \
-    memset(x, 0, TEXTNAME_SIZE);
+    char x[_TEXTNAME_SIZE]; \
+    memset(x, 0, _TEXTNAME_SIZE);
 #define dlcsm_make_lstr(x, y) \
     char x[y];                \
     memset(x, 0, y);

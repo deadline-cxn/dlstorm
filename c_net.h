@@ -243,7 +243,7 @@ class CCSocket {
     CCSocket(int iPort);
     CCSocket(int iPort, bool bListen);
     CCSocket(int iPort, bool bListen, bool What2);
-    ~CCSocket();
+    virtual ~CCSocket();
     void                initSocket(void);
     virtual int         iGetMessage();  // 0 if no incomming data, 1 unreliable, 2 reliable
     virtual const char *pcGetMessage();

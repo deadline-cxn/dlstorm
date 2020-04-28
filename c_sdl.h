@@ -55,21 +55,23 @@ class C2DFont;
 class CSDL_Wrap {
    public:
     CSDL_Wrap();
-    CSDL_Wrap(const char *an);
-    CSDL_Wrap(const char *an, Uint32 w, Uint32 h, Uint32 b);
-    CSDL_Wrap(const char *an, Uint32 w, Uint32 h, Uint32 b, SDL_Surface *icon);
-    CSDL_Wrap(const char *an, Uint32 w, Uint32 h, Uint32 b, const char *icon);
-    // CSDL_Wrap(const char *an,Uint32 w,Uint32 h,Uint32 b, int iFlags, const char *icon);
+    CSDL_Wrap(const char *appname);
+    CSDL_Wrap(const char *appname, Uint32 nw, Uint32 nh, Uint32 nb);
+    CSDL_Wrap(const char *appname, Uint32 nw, Uint32 nh, Uint32 nb, SDL_Surface *icon);
+    CSDL_Wrap(const char *appname, Uint32 nw, Uint32 nh, Uint32 nb, const char *icon);
+    CSDL_Wrap(const char *appname, Uint32 nw, Uint32 nh, Uint32 nb, const char *icon, bool fullscreen, CLog *inlog, CGAF *ingaf);
     ~CSDL_Wrap();
+
     bool          InitSuccess;
     int           w;
     int           h;
     int           b;
     int           videoflags;
+    bool          bFullScreen;
     char          APP_NAME[_MAX_PATH];
     CMouse *      pMouse;
-    CGAF *        GAF;
-    CLog *        Log;
+    CGAF *        pGAF;
+    CLog *        pLog;
     C2DFont *     Font;
     SDL_Window *  window;
     SDL_Renderer *renderer;

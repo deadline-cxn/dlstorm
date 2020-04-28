@@ -15,15 +15,6 @@
 #ifndef _DLCS_LIBRARY
 #define _DLCS_LIBRARY
 
-#include "dlcs_os.h"
-// include OS
-
-#include "dlcs_cpu.h"
-#include "dlcs_macros.h"
-#include "dlcs_standard.h"
-
-using namespace std;
-
 #ifndef _HOST_NAME_MAX
 #define _HOST_NAME_MAX 255
 #endif
@@ -34,6 +25,16 @@ using namespace std;
 #define _NAME_SIZE     64
 #define _TEXTNAME_SIZE 256
 #define _FILENAME_SIZE 1024
+
+#include "dlcs_os.h"
+// include OS
+
+#include "dlcs_cpu.h"
+#include "dlcs_macros.h"
+#include "dlcs_standard.h"
+
+using namespace std;
+
 
 #ifdef __cplusplus
 extern "C" {

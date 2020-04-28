@@ -48,9 +48,11 @@ class CVarSet {
     CVarSet(char *infilename);
     ~CVarSet();
     void        Init();
-    void        set_cvar(const char *name, char *value);
-    void        get_cvar(const char *name, char *value);
-    const char *get_cvar(const char *name);
+    void        set_cvar(const char *name, const char *value);
+    void        set_cvar(const char *name, int value);
+    void        get_cvar(const char *name, const char *value);
+    //const char *get_cvar(const char *name);
+    void *      get_cvar(const char *name);
     int         get_cvartype(const char *s);
     const char *get_cvartype_string(int t);
     const char *get_cvarformatted(const char *f, void *cv);

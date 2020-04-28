@@ -36,9 +36,9 @@ void C_CONS::AddLine(const char *fmt, ...) {
     buf.push_back(ach);
 }
 
-/*
+
 void C_CONS::_Execute(const char *cmd) {
-    int i;
+    unsigned int i;
     //,j;
     char temp[1024];
     memset(temp,0,1024);
@@ -109,16 +109,7 @@ void C_CONS::_Execute(const char *cmd) {
     }
     // pLog->_Add("C_CONS::_Execute 6 > %s...",cmd);
 }
-*/
 
-/*
-void C_CONS::RegFunc(char *name,void *func) {
-    funcmap[name]=(void (*)(const std::string&))func;
-}
-void C_CONS::RegVar(char *name,void *var) {
-    varmap[name]=var;
-}
-void C_CONS::RegInt(char *name,int x) {
-    intmap[name]=x;
-}
-*/
+void C_CONS::RegFunc(char *name,void *func){ funcmap[name]=(void (*)(const std::string&))func; }
+void C_CONS::RegVar(char *name,void *var) { varmap[name]=var; }
+void C_CONS::RegInt(char *name,int x) { intmap[name]=x; }
