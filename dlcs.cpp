@@ -376,7 +376,7 @@ char *dlcs_get_os_version(void) {
 
     return strdup(szTemp);
 #else
-    return strdup(CPUSTRING);
+    return strdup(DLCS_OS_STRING);
 #endif
 }
 

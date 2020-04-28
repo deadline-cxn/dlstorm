@@ -24,7 +24,16 @@
 #define DLCS_OS_STRING         "Linux"
 #define DLCS_OS_WHICH          DLCS_OS_LINUX
 #define PATH_SEP               '/'
-#define DLCS_SYSTEM_NONWINDOWS "dlcs_nonwindows.h"
+
+////////////////////////////////////////////////////////////////
+// GNU
+
+#ifdef __GNUC__
+#define DLCS_GNU
+#include "dlcs_gnu.h"
+#endif
+
+#include "dlcs_nonwindows.h"
 
 // #define MAC_STATIC
 // #define _MAX_PATH 1024
@@ -32,6 +41,7 @@
 #ifdef DEL
 #undef DEL
 #define DEL delete
+#endif
 
 extern void ConsoleSetup(void);
 extern void ConsoleShutDown(void);

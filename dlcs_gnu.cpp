@@ -19,7 +19,7 @@
 
 // Make win32 system funcs for *nix so I don't have to recode 5000 lines of code...
 
-#include "s_gnu.h"
+#include "dlcs_gnu.h"
 
 #ifndef _WIN32
 

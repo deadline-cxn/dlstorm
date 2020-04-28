@@ -286,16 +286,4 @@ respectively.)
 
 #include DLCS_SYSTEM_H
 
-#ifdef DLCS_SYSTEM_NONWINDOWS
-#include DLCS_SYSTEM_NONWINDOWS
-#endif
-
-////////////////////////////////////////////////////////////////
-// GNU
-
-#ifdef __GNUC__
-#define DLCS_GNU
-#include "dlcs_gnu.h"
-#endif
-
 #endif  //_DLCS_OS
