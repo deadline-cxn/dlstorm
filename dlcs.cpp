@@ -13,7 +13,28 @@
  **   Email:        defectiveseth@gmail.com
  **
  ***************************************************************/
-#include "dlstorm.h"
+#include "dlcs.h"
+/*
+class CExplodeList {
+   public:
+    CExplodeList() {
+        memset(text, 0, 1024);
+        pNext = 0;
+    }
+    ~CExplodeList() { DEL(pNext); }
+    char          text[1024];
+    CExplodeList *pNext;
+};
+
+class CText {
+   public:
+    CText();
+    ~CText();
+    char   szText[_MAX_PATH];
+    CText *pNext;
+};
+*/
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 const char *va(const char *format, ...) {
     va_list argptr;

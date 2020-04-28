@@ -1,45 +1,43 @@
 /***************************************************************
- **
  **   DLSTORM   Deadline's Code Storm Library
- **
  **          /\
  **   ---- D/L \----
  **       \/
- **
  **   License:      BSD
- **   Copyright:    2017
- **   File:         sys/linux.h
+ **   Copyright:    2020
+ **   File:         dlcs_linux.h
+ **   Description:  Linux Defines and Includes
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 #ifndef _DLCS_SYS_LINUX
 #define _DLCS_SYS_LINUX
 
-#define MAC_STATIC
-#define PATH_SEP '/'
-#undef  DEL
-#define DEL      delete
+/////////////////////////////////////////////////////////////////
+// LINUX Defines and Includes
 
-#include <arpa/inet.h>
-#include <ctype.h>
-#include <curses.h> // apt-get install libncurses5-dev
-#include <dirent.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/un.h>
-#include <sys/utsname.h>
-#include <sys/wait.h>
-#include <tcl.h> // apt install tcl-dev
-#include <term.h> // apt install libncurses5-dev
-#include <termios.h>
-#include <unistd.h>
+#ifdef __linux__
+
+#define DLCS_LINUX
+#define DLCS_OS_STRING         "Linux"
+#define DLCS_OS_WHICH          DLCS_OS_LINUX
+#define PATH_SEP               '/'
+#define DLCS_SYSTEM_NONWINDOWS "dlcs_nonwindows.h"
+
+// #define MAC_STATIC
+// #define _MAX_PATH 1024
+
+#ifdef DEL
+#undef DEL
+#define DEL delete
+
+extern void ConsoleSetup(void);
+extern void ConsoleShutDown(void);
+extern void LoadPlugIns(void);
+extern void UnLoadPlugIns(void);
+
+#endif
 
 #endif  // _DLCS_SYS_LINUX

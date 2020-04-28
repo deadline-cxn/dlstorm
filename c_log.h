@@ -16,8 +16,8 @@
  ***************************************************************/
 #ifndef _DLCS_C_LOG
 #define _DLCS_C_LOG
-#include "dlstorm.h"
-#include "os.h"
+#include "dlcs.h"
+
 ///////////////////////////////// CLog class
 class CLog {
    public:

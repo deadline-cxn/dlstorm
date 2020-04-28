@@ -18,11 +18,12 @@
  ***************************************************************/
 #ifndef _DLCS_C_GAF_
 #define _DLCS_C_GAF_
-#include <dirent.h>
 
+#include "dlcs.h"
+// wut
 #include "c_log.h"
-#include "dlstorm.h"
 #include "zlib.h"
+
 // Maximum size of a Indexname in CGAF File.
 #define GAF_NAMESIZE 256
 #define GAF_DESCSIZE 256
