@@ -68,14 +68,14 @@ void CSDL_Wrap::ZeroVars(void) {
 }
 
 bool CSDL_Wrap::Begin(const char *appname, Uint32 nw, Uint32 nh, Uint32 np, const char *icon) {
-    if (!pLog) pLog = new CLog("gfx.pLog");
+    if (!pLog) pLog = new CLog("gfx.log");
     RebuildGAF();
     Icon = LoadGAFSurface(icon);
     return Begin(appname, nw, nh, np, Icon);
 }
 
 bool CSDL_Wrap::Begin(const char *appname, Uint32 nw, Uint32 nh, Uint32 np, SDL_Surface *icon) {
-    if (!pLog) pLog = new CLog("gfx.pLog");
+    if (!pLog) pLog = new CLog("gfx.log");
     RebuildGAF();
     pLog->AddEntry("CSDL_Wrap::Begin(2)...");
     pMouse = new CMouse();
