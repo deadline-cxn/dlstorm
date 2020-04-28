@@ -82,7 +82,7 @@ class CGAF {
     bool ManyFileRemove(const char *Name);  // Call once for each file.
     bool ManyFileEnd(void);                 // End the ManyFileRemove (You MUST call this!)
 
-    // Define the description in the Header of the NUK file.
+    // Define the description in the Header of the GAF file.
     // 0 to 255 chars in size.
     bool SetFileDescription(const char *Desc, bool _bWriteHeader = false);
 
@@ -107,10 +107,10 @@ class CGAF {
     // Returns the current default compression level. One of the #defines NFCOMP_****
     DWORD GetCompressionLevel(void) { return CompLevel; }
 
-    // RetVal = true if the This CNukeFile object has an open .NUK file.
+    // RetVal = true if the This CNukeFile object has an open .GAF file.
     bool IsFileOpen(void) { return FileOpen; }
 
-    // Returns the .NUK file's Description (What Builder `NUK File Header (255 Chars max)`
+    // Returns the .GAF file's Description (What Builder `GAF File Header (255 Chars max)`
     LPCSTR GetDescriptionString(void) { return *&Header.Description; }
 
     // Add a file, with the IndexName 'Name'.
@@ -192,7 +192,7 @@ class CGAF {
     // Open an existing NukeFile.
     // The FileDescription in the NukeFile must match the specified filedescripion.
     // (Use SetFileDescription)
-    // `_bIgnoreDescription = true` to ignore the NUK file's description.
+    // `_bIgnoreDescription = true` to ignore the GAF file's description.
     bool               Open(const char *fn, bool _bIgnoreDescription = false);
     bool               AddFile_Compress(const char *Name, const char *filename);
     bool               CreateCompFile(const char *Name, DWORD CompSize, DWORD Size, DWORD clevel);

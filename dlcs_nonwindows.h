@@ -54,7 +54,7 @@ typedef struct RECT {
 typedef long LONG;
 
 #ifndef DWORD
-typedef unsigned long DWORD;
+typedef unsigned int DWORD;
 #endif
 
 #ifndef BYTE
@@ -82,6 +82,6 @@ typedef unsigned int UINT;
 #endif
 
 typedef DWORD COLORREF;
-#endif  // _WIN32
+#endif  // not _WIN32
 
 #endif  // _DLCS_SYS_NONWINDOWS
