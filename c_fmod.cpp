@@ -2,7 +2,7 @@
 
 #include "c_fmod.h"
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 CSample::CSample() {
     memset(name, 0, 256);

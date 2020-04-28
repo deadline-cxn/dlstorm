@@ -3,7 +3,7 @@
 #ifndef _SETH_MAP_BASE2
 #define _SETH_MAP_BASE2
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 #define NOT_A_TELEPORT 65535
 

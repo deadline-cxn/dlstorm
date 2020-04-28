@@ -21,7 +21,7 @@
 #include "c_entity.h"
 #include "c_game.h"
 #include "c_sdl.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 
 class CGame;
 class CGameActor;

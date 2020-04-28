@@ -19,7 +19,7 @@
 #include "c_gaf.h"
 #include "c_gltexture.h"
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 class CGLTexture;
 ///////////////////////////// CGLFont class
 class CGLFont {

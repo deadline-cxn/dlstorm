@@ -20,7 +20,7 @@
 #include "c_gfx.h"
 #include "c_gltexture.h"
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 #include "s_gnu.h"
 
 /*

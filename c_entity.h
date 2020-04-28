@@ -18,7 +18,7 @@
 
 #include "c_event.h"
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 
 // Basic Entity Types:
 #define G_ENTITY_NONE          0

@@ -70,9 +70,7 @@ string         dlcs_md5_file(string file);
 // #define SCREEN_WIDTH  800
 // #define SCREEN_HEIGHT 600
 // #define SCREEN_COLORS 32
-// #define MAX_CONSOLE_BUFFER         1024
-// #define MAX_CONSOLE_MULTI_COMMANDS 256
-// #define MAX_CONSOLE_INPUT_BUFFER   1024
+
 // #define MAX_CHAT_BUFFER            1024
 
 #endif  // _DLCS_LIBRARY

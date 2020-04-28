@@ -8,7 +8,7 @@
  **
  **   License:      BSD
  **   Copyright:    2017
- **   File:         dlstorm.h
+ **   File:         dlcs.h
  **   Description:  DLCODESTORM Namespace, where the magic happens
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
@@ -21,7 +21,7 @@
 
 #if !defined(_DLCS_CONSOLE) && !defined(_DLCS_SDL)
 
-Read_line_24_of_dlstorm_h
+Read_line_24_of_dlcs.h
 
     Deliberate syntax error... You have to define what type of application.
 

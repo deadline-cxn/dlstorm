@@ -1,7 +1,7 @@
 #ifndef _C_SQLITE_DB
 #define _C_SQLITE_DB
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 // apt install libsqlite3-dev / will install it to /usr/include/sqlite3.h
 #include "sqlite3.h" 

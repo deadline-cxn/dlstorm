@@ -25,7 +25,7 @@
 #include "c_gaf.h"
 #include "c_gltexture.h"
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 // #include "c_gl3dmodel.h"
 // #include "c_entity.h"
 #include "IL/il.h"

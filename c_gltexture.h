@@ -21,7 +21,7 @@
 
 #include "c_gaf.h"
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 //#include <glaux.h>
 #include "IL/il.h"
 #include "IL/ilut.h"

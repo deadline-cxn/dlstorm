@@ -19,7 +19,7 @@
 #ifndef DLCS_S_GNU_H
 #define DLCS_S_GNU_H
 #ifndef DLCS_WINDOWS
-#include "dlstorm.h"
+#include "dlcs.h"
 typedef unsigned char byte;
 extern "C" long       GetTickCount(void);
 extern "C" void       Sleep(int ms);

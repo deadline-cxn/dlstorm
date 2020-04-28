@@ -16,7 +16,7 @@
  ***************************************************************/
 #ifndef _DLCS_CVAR
 #define _DLCS_CVAR
-#include "dlstorm.h"
+#include "dlcs.h"
 
 // name convention for the cvars:
 // b_  = bool

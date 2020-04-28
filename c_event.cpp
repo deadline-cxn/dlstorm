@@ -15,7 +15,7 @@
  ***************************************************************/
 #include "c_event.h"
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 CEvent::CEvent() {}
 

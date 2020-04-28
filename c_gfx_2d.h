@@ -21,7 +21,7 @@
 
 #ifdef _DLCS_SDL
 
-#include "dlstorm.h"
+#include "dlcs.h"
 // #include "c_gaf.h"
 #include "c_log.h"
 //#include "il.h"

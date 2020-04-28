@@ -16,7 +16,7 @@
  **   Email:        defectiveseth@gmail.com
  **
  ******************************************************************************/
-#include "dlstorm.h"  // __stdcall DllMain() { return 0; }
+#include "dlcs.h"  // __stdcall DllMain() { return 0; }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 char        _DLCODESTORM_vx[1024];  // keep this in the global space TODO: improve this

@@ -16,7 +16,7 @@
  ***************************************************************/
 #ifndef _DLCS_CTIMER
 #define _DLCS_CTIMER
-#include "dlstorm.h"
+#include "dlcs.h"
 #define TIMER_DEFAULT 200
 ////////////////////////////// CTimer class
 class CTimer {

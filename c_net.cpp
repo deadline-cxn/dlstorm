@@ -394,11 +394,12 @@ int CCSocket::OpenSocket(const char *pAddress, int iPort) {
     inet_pton(AF_INET, pAddress, &(ToAddr.sin_addr));
 #endif
 
-    iSocket             = -1;
+    iSocket = -1;
 
     if ((iSocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
 
 #ifdef _WIN32
+    u_long _true = 1;
     if (ioctlsocket(iSocket, FIONBIO, &_true) == SOCKET_ERROR)
 #else
     bzero(&pAddress, sizeof(pAddress));  // linux func
@@ -427,6 +428,7 @@ int CCSocket::zOpenSocket(int iPort) {
     struct sockaddr_in address;
     if ((newsocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
 #ifdef _WIN32
+    u_long _true = 1;
     if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR)
 #else
     bzero(&address, sizeof(address));  // linux func
@@ -462,6 +464,7 @@ int CCSocket::zOpenSocket(const char *pAddress, int iPort) {
     struct sockaddr_in address;
     if ((newsocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
 #ifdef _WIN32
+    u_long _true = 1;
     if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR)
 #else
     bzero(&address, sizeof(address));  // linux func
@@ -647,14 +650,14 @@ void CPacket::Reset(void) {
     iPacketCursor = 0;
     iPacketLen    = 0;
 }
-void        CPacket::Rewind(void) { iPacketCursor = 0; }
-const char *CPacket::pGetPacketBuffer(void) { return pPacketBuffer; }
-void        CPacket::Write(int Val) { WRITE(int) }
-void        CPacket::Write(long Val) { WRITE(long) }
-void        CPacket::Write(char Val) { WRITE(char) }
-void        CPacket::Write(short Val) { WRITE(short) }
-void        CPacket::Write(float Val) { WRITE(float) }
-void        CPacket::Write(const char *Val) {
+void  CPacket::Rewind(void) { iPacketCursor = 0; }
+char *CPacket::pGetPacketBuffer(void) { return pPacketBuffer; }
+void  CPacket::Write(int Val) { WRITE(int) }
+void  CPacket::Write(long Val) { WRITE(long) }
+void  CPacket::Write(char Val) { WRITE(char) }
+void  CPacket::Write(short Val) { WRITE(short) }
+void  CPacket::Write(float Val) { WRITE(float) }
+void  CPacket::Write(const char *Val) {
     int i = strlen(Val) + 1;
     if (pPacketBuffer == NULL) return;
     if (iPacketLen + i > iPacketSize) return;

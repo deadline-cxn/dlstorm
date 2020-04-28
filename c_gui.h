@@ -18,7 +18,7 @@
  ***************************************************************/
 #ifndef _DLCS_C_GUI
 #define _DLCS_C_GUI
-#include "dlstorm.h"
+#include "dlcs.h"
 #include "c_gui_chat_enum.h"
 #include "c_gfx.h"
 #include "c_gaf.h"

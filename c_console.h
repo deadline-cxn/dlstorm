@@ -18,13 +18,13 @@
 #include <string>
 #include <vector>
 
-#include "dlstorm.h"
+#include "dlcs.h"
 using std::string;
 using std::vector;
 
-//#define _DLCS_MAX_CONSOLE_BUFFER      1024    // Lines in console scrollback buffer
-//#define MAX_CONSOLE_MULTI_COMMANDS    32      // Number of console commands on a single line seperated by ;
-//#define MAX_CONSOLE_INPUT_BUFFER      10		// Number of console commands to scroll back to execute again
+#define MAX_CONSOLE_BUFFER         1024
+#define MAX_CONSOLE_MULTI_COMMANDS 256
+#define MAX_CONSOLE_INPUT_BUFFER   1024
 
 class C_CONS {
    public:

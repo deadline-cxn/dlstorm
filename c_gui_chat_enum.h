@@ -6,7 +6,7 @@
 using std::map;
 using std::string;
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 typedef enum {
     CHANNEL_UNKNOWN,

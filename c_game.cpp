@@ -17,7 +17,7 @@
 
 #include <vector>
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 CGame::CGame() {
     ZeroVars();

@@ -18,7 +18,7 @@
 #ifndef _DLCS_C_NET
 #define _DLCS_C_NET
 
-#include "dlstorm.h"
+#include "dlcs.h"
 
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
 #ifndef DLSCM_WINDOWS
@@ -212,7 +212,7 @@ class CPacket {
     void        SetCurSize(int iNewSize);
     void        Reset(void);
     void        Rewind(void);
-    const char *pGetPacketBuffer(void);
+    char *      pGetPacketBuffer(void);
     void        Write(int Val);
     void        Write(long Val);
     void        Write(char Val);

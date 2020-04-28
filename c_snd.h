@@ -20,7 +20,7 @@
 #ifdef DLCS_WINDOWS
 
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 #include "fmod.h"
 #define MAX_CHANNELS 32
 //////////////////////////////////// C_Sound class

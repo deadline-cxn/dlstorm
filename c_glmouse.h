@@ -20,7 +20,7 @@
 #include "c_gaf.h"
 #include "c_gltexture.h"
 #include "c_log.h"
-#include "dlstorm.h"
+#include "dlcs.h"
 #define C_GLM_DOWNTICK_TIME    60
 #define C_GLM_DOUBLECLICK_TIME 300
 /////////////////////////////////// C_MouseCursor class
