@@ -63,7 +63,7 @@ class CGame {
     CGame(const char *inAPP_NAME, Uint16 iFlags);
     CGame(const char *inAPP_NAME, Uint32 iScreenWidth, Uint32 iScreenHeight, Uint32 iScreenColors, Uint16 iFlags);
     ~CGame();
-    CLog *       Log;
+    CLog *       pLog;
     C_CONS *     Console;
     SDL_Surface *ConsoleSurface;
     CSDL_Wrap *  SDL;

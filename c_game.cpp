@@ -21,7 +21,7 @@
 
 CGame::CGame() {
     ZeroVars();
-    if (!Log) Log = new CLog("game.log");
+    if (!pLog) pLog = new CLog("game.pLog");
     screen_width = 800;
     screen_height = 600;
     screen_colors = 32;
@@ -29,7 +29,7 @@ CGame::CGame() {
 
 CGame::CGame(const char *inAPP_NAME, Uint16 iFlags) {
     ZeroVars();
-    if (!Log) Log = new CLog(va("%s.log", inAPP_NAME));
+    if (!pLog) pLog = new CLog(va("%s.pLog", inAPP_NAME));
     screen_width = 800;
     screen_height = 600;
     screen_colors = 32;
@@ -38,7 +38,7 @@ CGame::CGame(const char *inAPP_NAME, Uint16 iFlags) {
 
 CGame::CGame(const char *inAPP_NAME, Uint32 iScreenWidth, Uint32 iScreenHeight, Uint32 iScreenColors, Uint16 iFlags) {
     ZeroVars();
-    if (!Log) Log = new CLog(va("%s.log", inAPP_NAME));
+    if (!pLog) pLog = new CLog(va("%s.pLog", inAPP_NAME));
     screen_width = iScreenWidth;
     screen_height = iScreenHeight;
     screen_colors = iScreenColors;
@@ -47,7 +47,7 @@ CGame::CGame(const char *inAPP_NAME, Uint32 iScreenWidth, Uint32 iScreenHeight, 
 
 void CGame::ZeroVars(void) {
     bShowConsole = 0;
-    Log = 0;
+    pLog = 0;
     Console = 0;
     SDL = 0;
     pFirstActor = 0;
@@ -61,13 +61,13 @@ void CGame::Start(const char *inAPP_NAME, Uint16 iFlags) {
     SDL = 0;
     Console = new C_CONS();
     // SND=0;
-    zl("------------------------------------------------------");
-    zl(va("%s! Started...", inAPP_NAME));
+    pLog->AddEntry("------------------------------------------------------");
+    pLog->AddEntry(va("%s! Started...", inAPP_NAME));
     if (flags & G_SDL) {
         SDL = new CSDL_Wrap(inAPP_NAME, screen_width, screen_height, screen_colors, "gfx/icon.bmp");
         if (!SDL) ShutDown();
         if (!SDL->InitSuccess) {
-            zl("SDL Subsystem Init FAILURE!");
+            pLog->AddEntry("SDL Subsystem Init FAILURE!");
             ShutDown();
             return;
         }
@@ -75,28 +75,28 @@ void CGame::Start(const char *inAPP_NAME, Uint16 iFlags) {
 
     ConsoleSurface = SDL->LoadGAFSurface("gfx/console.jpg");
 
-    zl("SDL Subsystem Initialized...");
+    pLog->AddEntry("SDL Subsystem Initialized...");
     if (flags & G_FMOD) {
         // SND = new CFMOD();
-        // zl("SND Subsystem Initialized...");
+        // pLog->AddEntry("SND Subsystem Initialized...");
     }
     srand(time(NULL));
     UserInit();
-    zl("UserInit() Completed...");
+    pLog->AddEntry("UserInit() Completed...");
 }
 
 void CGame::ShutDown() {
-    zl("Game shutting down...");
+    pLog->AddEntry("Game shutting down...");
 
     ActorsClear();
 
     // dlcsm_delete(SND);
-    // zl("Game shutting down... SND");
+    // pLog->AddEntry("Game shutting down... SND");
 
     dlcsm_delete(SDL);
-    zl("Game shutting down... SDL");
+    pLog->AddEntry("Game shutting down... SDL");
     DEL(Console);
-    dlcsm_delete(Log);
+    dlcsm_delete(pLog);
     G_QUIT = true;
 }
 
@@ -145,7 +145,7 @@ void CGame::DrawConsole() {
 
 void CGame::ConsoleLog(const char *szEntry) {
     Console->AddLine(szEntry);
-    zl(va("CONSOLE_LOG:%s", szEntry));
+    pLog->AddEntry(va("ConsoleLog: %s", szEntry));
 }
 
 bool CGame::UpdateInput() {
@@ -192,7 +192,7 @@ void CGame::UpdateActorAnimations(void) {
 }
 
 void CGame::ActorAdd(const char *name) {
-    zl(va("Adding game actor %s", name));
+    pLog->AddEntry(va("Adding game actor %s", name));
     CGameActor *which;
     which = 0;
     which = ActorFindLast();
@@ -212,7 +212,7 @@ void CGame::ActorsClear(void) {
     while (which) {
         delActor = which;
         which = which->pNext;
-        zl(va("Removing actor %s", delActor->szName));
+        pLog->AddEntry(va("Removing actor %s", delActor->szName));
         DEL(delActor);
     }
 }
