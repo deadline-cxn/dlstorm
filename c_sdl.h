@@ -11,7 +11,6 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 
 #ifndef _DLCS_SDL_WRAPPER_CLASS
@@ -24,7 +23,19 @@
 #endif
 
 #include "SDL.h"
+// ubuntu linux: - Simple DirectMedia Layer
+// apt install libsdl2-2.0-0 libsdl2-dev
+// path to sdl2 includes: /usr/include/SDL2
 #include "SDL_image.h"
+// ubuntu linux: - SDL Image
+// apt install libsdl2-image-2.0-0 libsdl2-image-dev
+// path to sdl2-image includes: /usr/include/SDL2
+
+// TODO:
+// sdl2-mixer
+// sdl2-net
+// sdl2-ttf
+
 #include "c_gaf.h"
 #include "c_log.h"
 

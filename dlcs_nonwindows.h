@@ -19,6 +19,7 @@
 // Non Windows Defines and Includes
 
 #ifndef _WIN32
+//// #include <term.h>  // apt install libncurses5-dev //
 
 #include <arpa/inet.h>
 #include <ctype.h>
@@ -30,14 +31,14 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/un.h>
 #include <sys/utsname.h>
 #include <sys/wait.h>
 #include <tcl.h>   // apt install tcl-dev
-#include <term.h>  // apt install libncurses5-dev
 #include <termios.h>
 #include <unistd.h>
+#include <sys/types.h>
+
 
 #ifndef FREEBSD_NATIVE
 //#include <tcl.h>
