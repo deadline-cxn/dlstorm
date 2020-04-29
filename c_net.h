@@ -348,6 +348,16 @@ int         NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2);
 void        FinishCtlPacket(CPacket *pPacket);
 int         NET_Init(void);
 int         NET_Shutdown(void);
+
+bool dlcs_get_hostname(char *szHost);
+bool dlcs_get_ipaddress(char *szIP);
+
+// const char *dlcs_get_webpage(const char * url);
+// void        dlcs_get_webpage2(const char * url,char *x);
+// const char *dlcs_dns_lookup(const char * hostname);
+// const char *dlcs_inet_aton(const char * ip);
+// const char *dlcs_inet_ntoa(const char * ip);
+
 #ifdef __cplusplus
 }
 #endif

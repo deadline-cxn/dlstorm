@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_gfx.cpp
  **   Class:        C_GFX
  **                 C_Camera
@@ -13,11 +13,12 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  **   Link Libraries: OpenGL32 GLu32 GLaux SDLmain SDL
- **
  ***************************************************************/
+
 #include "c_gfx.h"
+
+#include "dlcs_macros.h"
 
 //////////////////////////////////////////////////////////////// C_Camera CLASS CONSTRUCTOR / DESTRUCTOR
 C_Camera::C_Camera() { Initialize(); }
@@ -53,7 +54,8 @@ void C_Camera::Go() {
     glTranslatef(-loc.x, -loc.y, -loc.z);
 }
 void C_Camera::Update() {
-    /*if(pFollowEntity) {
+    /*
+    if(pFollowEntity) {
         loc.x=pFollowEntity->loc.x;
         loc.y=pFollowEntity->loc.y;
         loc.z=pFollowEntity->loc.z;
@@ -156,187 +158,94 @@ void C_Camera::mouseMovement(int x, int y) {
 }
 
 //////////////////////////////////////////////////////////////// C_GFX CLASS CONSTRUCTOR / DESTRUCTOR
-C_GFX::C_GFX(int w, int h, int c, bool FullScreen, string wincaption, bool use3d, CLog *pUSELOG, CGAF *pUSEGAF) {
-    bUse3d = use3d;
-    if (!InitializeGFX(w, h, c, FullScreen, wincaption, use3d, pUSELOG, pUSEGAF)) {
+C_GFX::C_GFX(int w, int h, int c, bool FullScreen, const char *szInWindowCaption, const char *szInIcon, CLog *pUseLOG, CGAF *pUseGAF) {
+    InitVars();
+    if (!InitGFX(w, h, c, FullScreen, szInWindowCaption, szInIcon, pUseLOG, pUseGAF)) {
         ShutDownGFX();
         SDL_Quit();
-        pLog->_Add("SDL shut down (INIT)...");
+        LogEntry("C_GFX::SDL shut down (INIT)...\n");
     }
 }
+
 C_GFX::~C_GFX() {
     ShutDownGFX();
     SDL_Quit();
-    pLog->_Add("SDL shut down...");
+    LogEntry("C_GFX::SDL shut down...\n");
 }
+
 //////////////////////////////////////////////////////////////// GFX SYSTEM FUNCTIONS
-bool C_GFX::InitializeGFX(int w, int h, int c, bool FullScreen, string wincaption, bool use3d, CLog *pUSELOG, CGAF *pUSEGAF) {
-    // bEditEntities=false;
-    // entities.clear();
-    // models.clear();
+
+void C_GFX::InitVars() {
+    memset(szIcon, 0, 1024);
+    memset(szWindowCaption, 0, 1024);
+    GL              = 0;
+    pFont           = 0;
+    pWindowIcon     = 0;
+    pSelectedEntity = 0;
+    bEditEntities   = false;
+    entities.clear();
+    models.clear();
     textures.clear();
-    pLog = pUSELOG;
-    pGAF = pUSEGAF;
-    pLog->_Add("Init SDL/OpenGL GFX Subsystem...");
-    bSDLFailed = false;
-#ifdef __linux__
-    putenv("SDL_VIDEODRIVER=x11");
-#endif
-    SDL_InitSubSystem(SDL_INIT_VIDEO);
-    /*
-    SDL_VIDEODRIVER=x
-    example:
-    x11
-    dga     (the XFree86 DGA2)
-    nanox   (Linux)
-    fbcon   (Linux)
-    directfb    (Linux)
-    ps2gs   (Playstation 2)
-    ggi
-    vgl (BSD)
-    svgalib (Linux)
-    aalib
-    directx (Win32)
-    windib  (Win32)
-    bwindow (BeOS)
-    toolbox (MacOS Classic)
-    DSp (MacOS Classic)
-    Quartz  (Mac OS X)
-    CGX (Amiga)
-    photon  (QNX)
-    epoc    (Epoc)
-    dummy
-
-      if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags|SDL_HWSURFACE)) {
-        } else {
-            pLog->_Add("SDL_HWSURFACE SDL_VideoModeOK failure");
-            if(SDL_VideoModeOK(ScreenWidth,ScreenHeight,ScreenColors,VideoFlags)) {
-            }
-            else {
-                pLog->_Add("SDL_VideoModeOK failure");
-                return false;
-            }
-        }  */
-
     pDefaultTexture = 0;
+    pCamera         = 0;
+    bCreatedLog     = false;
+    bSDLFailed      = false;
+}
 
-    pCamera = 0;
-
-    bCreatedLog  = false;
-    bFullScreen  = FullScreen;
-    ScreenWidth  = w;
-    ScreenHeight = h;
-    ScreenColors = c;
-
-    VideoFlags = SDL_HWPALETTE | SDL_DOUBLEBUF;
-
-    if (bFullScreen) VideoFlags |= SDL_FULLSCREEN;
-
-    if (use3d) {
-        VideoFlags |= SDL_OPENGL;
-        SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);  // tell SDL that the GL drawing is going to be double buffered
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    }
-
-    SDL_version ver;
-    SDL_VERSION(&ver);
-    pLog->_Add("SDL Version %d.%d.%d", ver.major, ver.minor, ver.patch);
-    dlcsm_make_str(vdriver);
-    SDL_VideoDriverName(vdriver, sizeof(vdriver));
-    pLog->_Add("Video driver[%s]", vdriver);
-
-    VideoModes = SDL_ListModes(NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
-    if (VideoModes == (SDL_Rect **)0) {
-    } else {
-        if (VideoModes == (SDL_Rect **)-1)
-            pLog->_DebugAdd("All resolutions available");
-        else {
-            pLog->_DebugAdd("Available Modes");
-            for (int i = 0; VideoModes[i]; ++i) pLog->_DebugAdd("  %d x %d", VideoModes[i]->w, VideoModes[i]->h);
-        }
-    }
-
-    const SDL_VideoInfo *VideoInfo = SDL_GetVideoInfo();
-
-    if (VideoInfo) {
-        pLog->_DebugAdd("VideoInfo->hw_available [%d]        ", VideoInfo->hw_available);
-        pLog->_DebugAdd("VideoInfo->wm_available [%d]        ", VideoInfo->wm_available);
-        pLog->_DebugAdd("VideoInfo->blit_hw [%d]             ", VideoInfo->blit_hw);
-        pLog->_DebugAdd("VideoInfo->blit_hw_CC [%d]          ", VideoInfo->blit_hw_CC);
-        pLog->_DebugAdd("VideoInfo->blit_hw_A [%d]           ", VideoInfo->blit_hw_A);
-        pLog->_DebugAdd("VideoInfo->blit_sw [%d]             ", VideoInfo->blit_sw);
-        pLog->_DebugAdd("VideoInfo->blit_sw_CC [%d]          ", VideoInfo->blit_sw_CC);
-        pLog->_DebugAdd("VideoInfo->blit_sw_A [%d]           ", VideoInfo->blit_sw_A);
-        pLog->_DebugAdd("VideoInfo->blit_fill [%d]           ", VideoInfo->blit_fill);
-        pLog->_DebugAdd("VideoInfo->video_mem [%d]           ", VideoInfo->video_mem);
-        pLog->_DebugAdd("VideoInfo->vfmt->BitsPerPixel [%d]  ", VideoInfo->vfmt->BitsPerPixel);
-        pLog->_DebugAdd("VideoInfo->vfmt->BytesPerPixel [%d] ", VideoInfo->vfmt->BytesPerPixel);
-        pLog->_DebugAdd("VideoInfo->vfmt->Rloss [%d]         ", VideoInfo->vfmt->Rloss);
-        pLog->_DebugAdd("VideoInfo->vfmt->Gloss [%d]         ", VideoInfo->vfmt->Gloss);
-        pLog->_DebugAdd("VideoInfo->vfmt->Bloss [%d]         ", VideoInfo->vfmt->Bloss);
-        pLog->_DebugAdd("VideoInfo->vfmt->Aloss [%d]         ", VideoInfo->vfmt->Aloss);
-        pLog->_DebugAdd("VideoInfo->vfmt->Rshift [%d]        ", VideoInfo->vfmt->Rshift);
-        pLog->_DebugAdd("VideoInfo->vfmt->Gshift [%d]        ", VideoInfo->vfmt->Gshift);
-        pLog->_DebugAdd("VideoInfo->vfmt->Bshift [%d]        ", VideoInfo->vfmt->Bshift);
-        pLog->_DebugAdd("VideoInfo->vfmt->Ashift [%d]        ", VideoInfo->vfmt->Ashift);
-        pLog->_DebugAdd("VideoInfo->vfmt->Rmask [%d]         ", VideoInfo->vfmt->Rmask);
-        pLog->_DebugAdd("VideoInfo->vfmt->Gmask [%d]         ", VideoInfo->vfmt->Gmask);
-        pLog->_DebugAdd("VideoInfo->vfmt->Bmask [%d]         ", VideoInfo->vfmt->Bmask);
-        pLog->_DebugAdd("VideoInfo->vfmt->Amask [%d]         ", VideoInfo->vfmt->Amask);
-        pLog->_DebugAdd("VideoInfo->vfmt->colorkey [%d]      ", VideoInfo->vfmt->colorkey);
-        pLog->_DebugAdd("VideoInfo->vfmt->alpha [%d]         ", VideoInfo->vfmt->alpha);
-    } else {
-        bSDLFailed = true;
-        pLog->_Add("Failed getting Video Info : %s", SDL_GetError());
+bool C_GFX::InitGFX(int w, int h, int c, bool FullScreen, const char *szWindowInCaption, const char *szInIcon, CLog *pUseLOG, CGAF *pUseGAF) {
+    pLog = pUseLOG;
+    LogEntry("Init SDL/OpenGL GFX Subsystem...\n");
+    pGAF = pUseGAF;
+    // #ifdef __linux__     putenv((const char *)"SDL_VIDEODRIVER=x11"); #endif
+    // SDL_Quit();
+    strcpy(szIcon, szInIcon);
+    strcpy(szWindowCaption, szWindowInCaption);
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        LogEntry("SDL_Init(SDL_INIT_VIDEO) FAILED...\n");
         return false;
     }
-    if (VideoInfo->hw_available) {
-        VideoFlags |= SDL_HWSURFACE;
-        pLog->_Add("Hardware surfaces...");
-    } else {
-        VideoFlags |= SDL_SWSURFACE;
-        pLog->_Add("Software surfaces...");
-    }
-    if (VideoInfo->blit_hw) {
-        VideoFlags |= SDL_HWACCEL;
-        pLog->_Add("Hardware acceleration enabled!");
-    }
+    /* Video Flags:
+            SDL_WINDOW_FULLSCREEN fullscreen window
+            SDL_WINDOW_FULLSCREEN_DESKTOP fullscreen window at the current desktop resolution
+            SDL_WINDOW_OPENGL window usable with OpenGL context
+            SDL_WINDOW_VULKAN window usable with a Vulkan instance
+            SDL_WINDOW_HIDDEN window is not visible
+            SDL_WINDOW_BORDERLESS no window decoration
+            SDL_WINDOW_RESIZABLE window can be resized
+            SDL_WINDOW_MINIMIZED window is minimized
+            SDL_WINDOW_MAXIMIZED window is maximized
+            SDL_WINDOW_INPUT_GRABBED window has grabbed input focus
+            SDL_WINDOW_ALLOW_HIGHDPI window should be created in high-DPI mode if supported (>= SDL 2.0.1)     */
 
-    if (SDL_VideoModeOK(ScreenWidth, ScreenHeight, ScreenColors, VideoFlags)) {
-    } else {
-        pLog->_Add("SDL_VideoModeOK failure");
+    // TODO: Figure out the video flags
+    iVideoFlags   = 0;
+    bFullScreen   = FullScreen;
+    iScreenWidth  = w;  // 800;  // w;
+    iScreenHeight = h;  // 600;  // h;
+    iScreenColors = c;  // 32;   // c;
+
+    bUse3d = false;
+#ifdef _DLCS_OPENGL
+    iVideoFlags |= SDL_WINDOW_OPENGL;  // iVideoFlags = SDL_HWPALETTE | SDL_DOUBLEBUF; // old SDL 1.2 // if(bFullScreen) iVideoFlags |= SDL_WINDOW_FULLSCREEN;
+    bUse3d = true;
+#endif
+    // pWindow =
+    SDL_CreateWindowAndRenderer(iScreenWidth, iScreenHeight, iVideoFlags, &pWindow, &pRenderer);
+    // SDL_CreateWindow(szWindowCaption, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, iScreenWidth, iScreenHeight, iVideoFlags);
+    if (!pWindow) {
+        LogEntry(va("SDL_CreateWindow(%s,%d,%d,%d,%d,%d) FAILED\n", szWindowCaption, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, iScreenWidth, iScreenHeight, iVideoFlags));
         return false;
     }
-    pScreen = SDL_SetVideoMode(ScreenWidth, ScreenHeight, ScreenColors, VideoFlags);
-    if (!pScreen) {
-        bSDLFailed = true;
-        pLog->_Add("SDL_SetVideoMode failed");
-        return false;
-    }
+    pWindowIcon = LoadGAFSurface(pGAF, szIcon);
+    if (pWindowIcon) SDL_SetWindowIcon(pWindow, pWindowIcon);
+    LoadFont("gfx/font.bmp");
 
-    if (bUse3d) {
-        if (!Init3d()) return false;
-    }
+    if (bUse3d)
+        if (!Init3D()) return false;
 
     SDL_ShowCursor(SDL_DISABLE);
-    SetWindowTitle(wincaption);
-    pLog->_Add("SDL GFX Initialized");
-    return true;
-}
-bool C_GFX::Init3d() {
-    if (InitGL(ScreenWidth, ScreenHeight)) {
-        pLog->_Add("OpenGL initialized");
-    } else {
-        bSDLFailed = true;
-        pLog->_Add("Can't initialize OpenGL");
-        return false;
-    }
-
-    ilutRenderer(ILUT_OPENGL);
-    ilInit();
-    iluInit();
-    ilutInit();
-    ilutRenderer(ILUT_OPENGL);
+    SetWindowTitle(szWindowCaption);
+    LoadFont("gfx/font.bmp");
 
     pCamera = new C_Camera();
     if (pCamera) {
@@ -344,24 +253,54 @@ bool C_GFX::Init3d() {
         pCamera->Move_Right_Stop();
         pCamera->Move_Forward_Stop();
         pCamera->Move_Backward_Stop();
-        pLog->_Add("Camera initialized");
+        LogEntry("Camera initialized\n");
     } else {
-        pLog->_Add("Can't initialize Camera");
+        LogEntry("Can't initialize Camera\n");
         return false;
     }
+
+    LogEntry("SDL GFX Initialized\n");
+
+    return true;
+}
+
+bool C_GFX::Init3D() {
+    if (InitGL(iScreenWidth, iScreenHeight)) {
+        LogEntry("OpenGL initialized\n");
+    } else {
+        bSDLFailed = true;
+        LogEntry("Can't initialize OpenGL\n");
+        return false;
+    }
+
+    GL = SDL_GL_CreateContext(pWindow);
+
+    // pRenderer = 0;
+    // SDL_CreateWindowAndRenderer(800, 600, iVideoFlags, &pWindow, &pRenderer);
+    // if (!pRenderer) {
+    //        return false;
+    // }
+    // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
+    // SDL_RenderSetpLogicalSize(sdlpRenderer, 640, 480);
+
+    ilutRenderer(ILUT_OPENGL);
+    ilInit();
+    iluInit();
+    ilutInit();
+    ilutRenderer(ILUT_OPENGL);
 
     ///////////////////////////////////////////////////////////////////////
     // Textures
     textures.clear();
     if (LoadTextures(pGAF)) {
-        pLog->_Add("[%d] base textures loaded", textures.size());
+        LogEntry(va("[%d] base textures loaded\n", textures.size()));
     } else {
-        pLog->_Add("Can't initialize base textures");
+        LogEntry("Can't initialize base textures\n");
         return false;
     }
     pDefaultTexture = GetTexture("base/test.jpg");
     if (!pDefaultTexture) {
-        pLog->_Add("Can't initialize Default Texture");
+        LogEntry("Can't initialize Default Texture\n");
         return false;
     }
 
@@ -369,10 +308,10 @@ bool C_GFX::Init3d() {
     // Models
     // models.clear();
     // if(LoadModels()) {
-    // pLog->_Add("[%d] models loaded",models.size());
+    // LogEntry("[%d] models loaded\n",models.size());
     //}
     // else {
-    // pLog->_Add("Can't initialize models");
+    // LogEntry("Can't initialize models\n");
     // return false;
     //}
 
@@ -381,11 +320,117 @@ bool C_GFX::Init3d() {
     // entities.clear();
     // InitializeEntities();
     // pSelectedEntity=0;
-    //     pLog->_Add("[%d] entities created",entities.size());
+    //     LogEntry("[%d] entities created\n",entities.size());
 
-    pLog->_Add("3D GFX Initialized");
+    LogEntry("3D GFX Initialized\n");
     return true;
 }
+
+SDL_Texture *C_GFX::LoadGAFTexture(CGAF *pUseGAF, const char *szFilename) {
+    LogEntry(va("C_GFX::LoadGAFTexture(\"%s\")...\n", szFilename));
+    SDL_Texture *pTexture;
+    SDL_Surface *pSurface;
+    pSurface = LoadGAFSurface(pUseGAF, szFilename);
+    pTexture = SDL_CreateTextureFromSurface(pRenderer, pSurface);
+    SDL_FreeSurface(pSurface);
+    return pTexture;
+}
+
+SDL_Surface *C_GFX::LoadGAFSurface(CGAF *pUseGAF, const char *szFilename) {
+    LogEntry(va("C_GFX::LoadGAFSurface(\"%s\")...\n", szFilename));
+    if (!pUseGAF) {
+        LogEntry(va("pUseGAF is not defined, falling back to pGAF\n"));
+        if (!pGAF) {
+            LogEntry(va("pGAF is not defined, attempting to load gfx.gaf\n"));
+            pGAF = new CGAF("gfx.gaf", GAFCOMP_BEST);
+            if (pGAF) {
+                pUseGAF = pGAF;
+            } else {
+                LogEntry(va("pGAF gfx.gaf could not be opened\n"));
+                return 0;
+            }
+        } else {
+            pUseGAF = pGAF;
+        }
+    }
+    SDL_Surface *pReturnSurface;
+    pReturnSurface = 0;
+    SDL_RWops *rw;
+    rw          = 0;
+    int gf_size = 0;
+    gf_size     = pUseGAF->GetFileSize(szFilename);
+    if (gf_size >= 0) {
+        unsigned char *gfb;
+        gfb            = pUseGAF->GetFile(szFilename).fb;
+        rw             = SDL_RWFromMem(gfb, gf_size);
+        pReturnSurface = LoadMemSurface(rw);
+        SDL_FreeRW(rw);
+
+        SDL_SetColorKey(pReturnSurface, SDL_TRUE, SDL_MapRGB(pReturnSurface->format, 0, 0, 0));
+        LogEntry(va("C_GFX::LoadGAFSurface(\"%s\") - [%s] loaded to surface [%d]\n", szFilename, szFilename, pReturnSurface));
+    } else {
+        LogEntry(va("C_GFX::LoadGAFSurface(\"%s\") - [%s] doesn't appear to be a valid resource.\n", szFilename, szFilename));
+    }
+    return pReturnSurface;
+}
+
+SDL_Surface *C_GFX::LoadMemSurface(SDL_RWops *rw) {
+    LogEntry(va("C_GFX::LoadMemSurface((SDL_RWops *)%d)...\n", rw));
+    SDL_Surface *pReturnSurface;
+    pReturnSurface = 0;
+    if (!rw) return 0;
+    if (IMG_isBMP(rw)) {
+        pReturnSurface = IMG_LoadBMP_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isGIF(rw)) {
+        pReturnSurface = IMG_LoadGIF_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isJPG(rw)) {
+        pReturnSurface = IMG_LoadJPG_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isLBM(rw)) {
+        pReturnSurface = IMG_LoadLBM_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isPCX(rw)) {
+        pReturnSurface = IMG_LoadPCX_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isPNG(rw)) {
+        pReturnSurface = IMG_LoadPNG_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isPNM(rw)) {
+        pReturnSurface = IMG_LoadPNM_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isTIF(rw)) {
+        pReturnSurface = IMG_LoadTIF_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isXCF(rw)) {
+        pReturnSurface = IMG_LoadXCF_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isXPM(rw)) {
+        pReturnSurface = IMG_LoadXPM_RW(rw);
+        return pReturnSurface;
+    }
+    if (IMG_isXV(rw)) {
+        pReturnSurface = IMG_LoadXV_RW(rw);
+        return pReturnSurface;
+    }
+    if (pReturnSurface == 0) {
+        pReturnSurface = IMG_LoadTGA_RW(rw);
+        return pReturnSurface;
+    }
+    LogEntry(va("C_GFX::LoadSurface(SDL_RWops *)%d) - end\n", rw));
+    return pReturnSurface;
+}
+
 void C_GFX::SetWindowTitle(string fmt, ...) {
     char ach[512];
     char f2[512];
@@ -395,28 +440,31 @@ void C_GFX::SetWindowTitle(string fmt, ...) {
     vsprintf(ach, f2, va);
     va_end(va);
     windowcaption.assign(ach);
-    SDL_WM_SetCaption(windowcaption.c_str(), 0);
+    SDL_SetWindowTitle(pWindow, windowcaption.c_str());
+    // SDL_WM_SetCaption(, 0);
 }
 
 bool C_GFX::ToggleFullScreen(void) {
+    /*
 #ifdef __linux__
     return SDL_WM_ToggleFullScreen(pScreen);
 #endif
     const SDL_VideoInfo *VideoInfo = SDL_GetVideoInfo();
     if (VideoInfo->hw_available) {
-        VideoFlags |= SDL_HWSURFACE;
-        pLog->_Add("Hardware surfaces...");
+        iVideoFlags |= SDL_HWSURFACE;
+        LogEntry("Hardware surfaces...\n");
     } else {
-        VideoFlags |= SDL_SWSURFACE;
-        pLog->_Add("Software surfaces...");
+        iVideoFlags |= SDL_SWSURFACE;
+        LogEntry("Software surfaces...\n");
     }
     if (bFullScreen == true)
         bFullScreen = false;
     else
         bFullScreen = true;
-    SDL_SetVideoMode(ScreenWidth, ScreenHeight, ScreenColors, VideoFlags ^ SDL_FULLSCREEN);
-    InitGL(ScreenWidth, ScreenHeight);
+    SDL_SetVideoMode(iScreenWidth, iScreenHeight, iScreenColors, iVideoFlags ^ SDL_FULLSCREEN);
+    InitGL(iScreenWidth, iScreenHeight);
     LoadTextures(pGAF);
+    */
     return true;
 }
 
@@ -424,20 +472,20 @@ void C_GFX::ShutDownGFX(void) {
     if (bUse3d) {
         glFinish();
         glFlush();
-        pLog->_Add("OpenGL shut down...");
+        LogEntry("OpenGL shut down...\n");
     }
 
-    // ClearEntities();
-    // pLog->_Add("Entities shut down...");
+    ClearEntities();
+    LogEntry("Entities shut down...\n");
 
     dlcsm_delete(pCamera);
-    pLog->_Add("Camera shut down...");
+    LogEntry("Camera shut down...\n");
 
     DestroyTextures();
-    pLog->_Add("Textures shut down...");
+    LogEntry("Textures shut down...\n");
     // DestroyModels();
-    // pLog->_Add("Models shut down...");
-    SDL_FreeSurface(pScreen);
+    // LogEntry("Models shut down...\n");
+    // SDL_FreeSurface(pScreen);
 }
 int C_GFX::InitGL(int x, int y) {
     float ratio = (float)x / (float)y;
@@ -457,14 +505,14 @@ int C_GFX::InitGL(int x, int y) {
         glLoadIdentity();
         glClearColor( 0.f, 0.f, 0.f, 1.f );
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        //glViewport(0, 0, SDL_GetVideoSurface()->w, SDL_GetVideoSurface()->h);
+        //glViewport(0, 0, SDL_GetWindowSurface(pWindow)->w, SDL_GetWindowSurface(pWindow)->h);
         //glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
         //glLoadIdentity();									// Reset The Projection Matrix
-        //gluPerspective(45.0f,(GLfloat)SDL_GetVideoSurface()->w/(GLfloat)SDL_GetVideoSurface()->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
+        //gluPerspective(45.0f,(GLfloat)SDL_GetWindowSurface(pWindow)->w/(GLfloat)SDL_GetWindowSurface(pWindow)->h,1.0f,5000.0f); // gluPerspective(45.0f,1.333f,0.1f,20000.0f);
         //glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix*/
     GLenum error = glGetError();
     if (error != GL_NO_ERROR) {
-        pLog->_Add("Error initializing OpenGL! %s\n", gluErrorString(error));
+        LogEntry(va("Error initializing OpenGL! %s\n", gluErrorString(error)));
         return false;
     }
     return true;  // Initialization Went OK
@@ -489,7 +537,8 @@ void C_GFX::RenderScene(int mx, int my) {
 }
 void C_GFX::EndScene(void) {
     glFlush();
-    SDL_GL_SwapBuffers();
+    // SDL_GL_SwapBuffers();
+    SDL_GL_SwapWindow(pWindow);
 }
 void C_GFX::SetScreenRes(int x, int y, int cl, bool fs) {
     // ShutDownGFX();
@@ -497,7 +546,7 @@ void C_GFX::SetScreenRes(int x, int y, int cl, bool fs) {
 }
 //////////////////////////////////////////////////////////////// TEXTURES
 bool C_GFX::LoadTextures(CGAF *pGAF) {
-    pLog->_Add("Loading textures");
+    LogEntry("Loading textures\n");
     CGLTexture *   pTexture = 0;
     DIR *          dpdf;
     struct dirent *epdf;
@@ -505,14 +554,14 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     if (dpdf != NULL) {
         while ((epdf = readdir(dpdf))) {
             if ((!(dlcs_strcasecmp(epdf->d_name, ".")) || (dlcs_strcasecmp(epdf->d_name, ".."))) && (!dlcs_isdir(epdf->d_name))) {
-                pTexture = new CGLTexture(pLog, va("base/%s", epdf->d_name));
+                pTexture = new CGLTexture(this, pGAF, pLog, va("base/%s", epdf->d_name));
                 if (pTexture) {
-                    if (!pTexture->glBmap) {
-                        pLog->_Add("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)", epdf->d_name);
+                    if (!pTexture->pTexture) {
+                        LogEntry(va("ERROR LOADING base/%s (CGLTEXTURE OBJECT DESTROYED)\n", epdf->d_name));
                         dlcsm_delete(pTexture);
                     } else {
                         textures.push_back(pTexture);
-                        pLog->_DebugAdd("Texture[%s] width[%d] height[%d] bpp[%d] GL[%d] )", pTexture->filename.c_str(), pTexture->width, pTexture->height, pTexture->bpp, pTexture->glBmap);
+                        pLog->_DebugAdd("Texture[%s] width[%d] height[%d] bpp[%d] GL[%d] )", pTexture->szFilename, pTexture->width, pTexture->height, pTexture->bpp, pTexture->glBmap);
                     }
                 }
             }
@@ -521,12 +570,13 @@ bool C_GFX::LoadTextures(CGAF *pGAF) {
     closedir(dpdf);
     return true;
 }
-CGLTexture *C_GFX::GetTexture(string name) {
+CGLTexture *C_GFX::GetTexture(const char *szInName) {
     for (vector<CGLTexture *>::iterator it = textures.begin(); it != textures.end(); ++it) {
-        if ((**it).filename == name) return &(**it);
+        if (dlcs_strcasecmp((**it).szFilename, szInName)) return &(**it);
     }
     return 0;
 }
+
 CGLTexture *C_GFX::GetRandomTexture(void) {
     int x = (rand() % textures.size()) + 1;
     int y = 0;
@@ -536,6 +586,7 @@ CGLTexture *C_GFX::GetRandomTexture(void) {
     }
     return NULL;
 }
+
 bool C_GFX::DestroyTextures(void) {
     dlcsm_delete_vector(CGLTexture *, textures); /*  for(vector<CGLTexture*>::iterator it = textures.begin() ; it != textures.end(); ) {  lcsm_delete(*it);   it = textures.erase(it);    }*/
     return true;
@@ -544,7 +595,7 @@ bool C_GFX::DestroyTextures(void) {
 //////////////////////////////////////////////////////////////// MODELS
 bool C_GFX::LoadModels(void) {
 
-    pLog->AddEntry("Loading models...\n");
+    LogEntry("Loading models...\n");
     string filename;
     CGLModel *pModel;
     DIR *dpdf;
@@ -609,12 +660,12 @@ void C_GFX::DrawBar(RECT rc, long color1, long color2) {
     DrawBar(rc.left, rc.top, rc.right, rc.bottom, color1, color2);
 }
 void C_GFX::DrawBar(int iX, int iY, int iX2, int iY2, long color1, long color2) {
-    iY  = SDL_GetVideoSurface()->h - iY;
-    iY2 = SDL_GetVideoSurface()->h - iY2;
+    iY  = SDL_GetWindowSurface(pWindow)->h - iY;
+    iY2 = SDL_GetWindowSurface(pWindow)->h - iY2;
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, SDL_GetVideoSurface()->w, 0, SDL_GetVideoSurface()->h);
+    gluOrtho2D(0, SDL_GetWindowSurface(pWindow)->w, 0, SDL_GetWindowSurface(pWindow)->h);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
     glMatrixMode(GL_MODELVIEW);
@@ -643,15 +694,15 @@ void C_GFX::DrawBar(int iX, int iY, int iX2, int iY2, long color1, long color2) 
     glEnable(GL_DEPTH_TEST);
 }
 void C_GFX::DrawTransparentBar(int iX, int iY, int iX2, int iY2, long color1, long color2) {
-    iY  = SDL_GetVideoSurface()->h - iY;
-    iY2 = SDL_GetVideoSurface()->h - iY2;
+    iY  = SDL_GetWindowSurface(pWindow)->h - iY;
+    iY2 = SDL_GetWindowSurface(pWindow)->h - iY2;
     glEnable(GL_BLEND);
     glBlendFunc(GL_DST_COLOR, GL_ZERO);
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, SDL_GetVideoSurface()->w, 0, SDL_GetVideoSurface()->h);
+    gluOrtho2D(0, SDL_GetWindowSurface(pWindow)->w, 0, SDL_GetWindowSurface(pWindow)->h);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -678,10 +729,10 @@ void C_GFX::DrawTransparentBar(int iX, int iY, int iX2, int iY2, long color1, lo
     glEnable(GL_DEPTH_TEST);
 }
 void C_GFX::DrawVertice(int x, int y) { DrawBar(x, y, x + 2, y + 2, dlcsm_LONGRGB(255, 0, 0), dlcsm_LONGRGB(0, 0, 255)); }
-void C_GFX::DrawTexture(int x, int y, int x2, int y2, string name, u_char r, u_char g, u_char b) {
+void C_GFX::DrawTexture(int x, int y, int x2, int y2, const char *szInName, u_char r, u_char g, u_char b) {
     CGLTexture *pTexture;
     pTexture = 0;
-    pTexture = GetTexture(name);
+    pTexture = GetTexture(szInName);
     if (pTexture) pTexture->Draw2d(x, y, x2, y2, r, g, b);
 }
 void C_GFX::Draw3DBox(int x, int y, int x2, int y2) {
@@ -952,11 +1003,11 @@ void C_GFX::DrawStarField(int iDir) {
     static float dir = -.405f;
     int          y;
     // glClearColor( (0.2f),(0.4f),(1.0f),0);    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // DrawBaseGFX(0,0,SDL_GetVideoSurface()->w,SDL_GetVideoSurface()->h,"base/b0121.png",155,155,155);
+    // DrawBaseGFX(0,0,SDL_GetWindowSurface(pWindow)->w,SDL_GetWindowSurface(pWindow)->h,"base/b0121.png",155,155,155);
     if (!bstars) {
         for (y = 0; y < 500; y++) {
-            star[y].x     = (rand() % SDL_GetVideoSurface()->w - 100);
-            star[y].y     = rand() % SDL_GetVideoSurface()->h - 150;  //            -150;
+            star[y].x     = (rand() % SDL_GetWindowSurface(pWindow)->w - 100);
+            star[y].y     = rand() % SDL_GetWindowSurface(pWindow)->h - 150;  //            -150;
             star[y].speed = (rand() % 24) * 0.48f + 1.3f;
             strcpy(star[y].gfx, "base/star1.png");
             if ((rand() % 100) > 50) strcpy(star[y].gfx, "base/star2.jpg");
@@ -971,10 +1022,10 @@ void C_GFX::DrawStarField(int iDir) {
                     255);
         //                                          GetFade(3),                     GetFade(2),                     GetFade(1) );
         star[y].x += star[y].speed;
-        if (star[y].x > SDL_GetVideoSurface()->w) star[y].x = 0;  //-(50*star[y].speed);
+        if (star[y].x > SDL_GetWindowSurface(pWindow)->w) star[y].x = 0;  //-(50*star[y].speed);
     }
     // y=GetFade(2);
-    // ffy -= 3.4;    if(ffy<(-100)) ffy=SDL_GetVideoSurface()->w+100;
+    // ffy -= 3.4;    if(ffy<(-100)) ffy=SDL_GetWindowSurface(pWindow)->w+100;
 }
 //////////////////////////////////////////////////////////////// OTHER GFX FUNCTIONS
 u_char C_GFX::GetFade(char cWhichFade) {
@@ -1023,165 +1074,28 @@ u_char C_GFX::GetFade(char cWhichFade) {
     return 0;
 }
 
-/*
-//////////////////////////////////////////////////////////////// ENTITY FUNCTIONS
-void C_GFX::InitializeEntities(void) {
-    pLog->_Add(" GOING NUTS WITH ENTITIES!!!!!!!!!!!! ");
-    ClearEntities();
-    int i;
-    int numntt;
-    numntt=300;
-    string nout;
-    for(i=0;i<numntt;i++){
-        nout.assign(va("Entity %d",i));
-        MakeEntity(nout,0,0,0);
-    }
-}
-void C_GFX::MakeEntity(string name,float x, float y, float z) {
-    C_Entity *pNTT = new C_Entity(pLog,pGAF,this,0);
-    if(pNTT) {
-        pNTT->name=name;
-        pLog->_DebugAdd("ENTITY IS NAMED [%s]",pNTT->name.c_str());
-
-        if(x) pNTT->loc.x=x;
-        else  pNTT->loc.x     = (((float)rand()/(float)RAND_MAX)*1250)-625;
-        if(y) pNTT->loc.y=y;
-        else  pNTT->loc.y     = (((float)rand()/(float)RAND_MAX)*500)+20;
-        if(z) pNTT->loc.z=z;
-        else  pNTT->loc.z     = (((float)rand()/(float)RAND_MAX)*1250)-625;
-
-        pNTT->rot.x     = ( (float)rand()/(float)RAND_MAX)*360;
-        pNTT->rot.y     = ( (float)rand()/(float)RAND_MAX)*360;
-        pNTT->rot.z     = ( (float)rand()/(float)RAND_MAX)*360;
-        pNTT->autorot.x = ( (float)rand()/(float)RAND_MAX)*1.5f;
-        pNTT->autorot.y = ( (float)rand()/(float)RAND_MAX)*1.5f;
-        pNTT->autorot.z = ( (float)rand()/(float)RAND_MAX)*1.5f;
-        pNTT->scale.x   = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
-        pNTT->scale.y   = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
-        pNTT->scale.z   = (((float)rand()/(float)RAND_MAX)*5.0f)+1;
-        pNTT->color.r   = 0.8f;
-        pNTT->color.g   = 0.8f;
-        pNTT->color.b   = 0.8f;
-
-        pNTT->pTexture=GetRandomTexture();
-
-        pNTT->type  = ENTITY_STATIC;
-        if((rand()%100)>90) pNTT->type=ENTITY_LIGHT;
-        if((rand()%100)>90) pNTT->type=ENTITY_SOUND;
-        if((rand()%100)>90) pNTT->type=ENTITY_AURA;
-        if((rand()%100)>90) pNTT->type=ENTITY_NPC;
-
-        switch(pNTT->type) {
-            //case ENTITY_PLAYER:
-            //case ENTITY_NPC:
-            //case ENTITY_NPC_SPAWN:
-            //case ENTITY_NPC_GENERATOR:
-            case ENTITY_PLAYER_SPAWN:
-                pNTT->pTexture=GetTexture("base/ntt.ankh.png");
-                break;
-            case ENTITY_LIGHT:
-                pNTT->pTexture=GetTexture("base/ntt.light.png");
-                break;
-            case ENTITY_SOUND:
-                pNTT->pTexture=GetTexture("base/ntt.audio.png");
-                break;
-            case ENTITY_AURA:
-                pNTT->pTexture=GetTexture("base/ntt.aura.png");
-                break;
-            default:
-                break;
-        }
-
-        if(!pNTT->pTexture) pNTT->pTexture=pDefaultTexture;
-
-        if( (rand()%100)> 50 ) {
-            pNTT->pModel=GetRandomModel();
-            pNTT->pTexture=0;
-            if(pNTT->pModel)
-                pLog->_DebugAdd("Entity :%s", pNTT->pModel->name.c_str());
-            //pNTT->loc.x = 0.0f;
-            pNTT->loc.y = 0.0f;
-            //pNTT->loc.z = 0.0f;
-            pNTT->scale.x = 0.3f;
-            pNTT->scale.y = 0.3f;
-            pNTT->scale.z = 0.3f;
-            pNTT->rot.x = 0.0f;
-            // pNTT->rot.y = 0.0f;
-            pNTT->rot.z = 0.0f;
-            pNTT->autorot.x = 0.0f;
-            pNTT->autorot.y = 0.0f;
-            pNTT->autorot.z = 0.0f;
-        }
-        if(pNTT->pTexture) if(pNTT->pTexture->glBmap)
-        pLog->_DebugAdd("Entity texture set to [%s] GL[%d]", pNTT->pTexture->filename.c_str(), pNTT->pTexture->glBmap);
-        entities.push_back(pNTT);
-    }
-}
-void C_GFX::DrawEntities(void) {
-    for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++ )
-        (*it)->Draw(bEditEntities);
-}
-C_Entity* C_GFX::GetSelectedEntity(void) { return pSelectedEntity; }
-void C_GFX::ClearSelectEntity(void) {
-    for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++ ){
-        (*it)->bSelected=false;
-    }
-    pSelectedEntity=0;
-}
-void C_GFX::SelectEntity(C_Entity* pEntity) {
-    ClearSelectEntity();
-    pSelectedEntity=pEntity;
-    pSelectedEntity->bSelected=true;
-}
-void C_GFX::SelectClosestEntity(void) {
-    ClearSelectEntity();
-    dlcs_V3 thisloc;
-    dlcs_V3 v;
-
-    thisloc=pCamera->loc;
-
-    float dist;
-    float closestDist = 1000000000.0f;
-    pSelectedEntity=0;
-    for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++ ){
-        v.x=(*it)->loc.x-thisloc.x;
-        v.y=(*it)->loc.y-thisloc.y;
-        v.z=(*it)->loc.z-thisloc.z;
-        dist = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
-        if (dist < closestDist) {
-            closestDist = dist;
-            if(pSelectedEntity) pSelectedEntity->bSelected=false;
-            pSelectedEntity=(*it);
-            pSelectedEntity->bSelected=true;
-            return;
+bool C_GFX::LoadFont(const char *szInFile) {
+    if (pGAF) {
+        LogEntry(va("C_GFX::LoadFont(%s) GAF File found: Attempting to load surface from GAF\n", szInFile));
+        pFont = LoadGAFSurface(pGAF, szInFile);
+        if (pFont) {
+            LogEntry(va("C_GFX::LoadFont(%s) surface loaded from GAF\n", szInFile));
+            return true;
+        } else {
+            LogEntry(va("C_GFX::LoadFont(%s) surface not found in GAF\n", szInFile));
         }
     }
-}
-void C_GFX::DeleteEntity(C_Entity* pEntity) {
-    for(vector<C_Entity*>::iterator it=entities.begin(); it<entities.end(); it++){
-        if((*it)==pEntity) {
-            dlcsm_delete(*it);
-            it=entities.erase(it);
-            return;
-        }
+    LogEntry(va("C_GFX::LoadFont(%s) Attempting to load surface from file\n", szInFile));
+    pFont = SDL_LoadBMP(szInFile);
+    if (pFont) {
+        SDL_SetColorKey(pFont, 1, SDL_MapRGB(pFont->format, 0, 0, 0));
+        LogEntry("Font initialized\n");
+    } else {
+        LogEntry("Font could not be initialized\n");
     }
 }
-void C_GFX::ClearEntities(void) { dlcsm_delete_vector(C_Entity*,entities); entities.clear(); }
-void C_GFX::LoadEntities(dlcs_V3 WhichSector) { }
-void C_GFX::SaveEntities(dlcs_V3 WhichSector) { }
 
-*/
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-C2DFont::C2DFont() {}
-C2DFont::C2DFont(char *file) { Load(file); }
-C2DFont::~C2DFont() {}
-void C2DFont::Load(char *file) {
-    Font = SDL_LoadBMP(file);
-    if (Font) SDL_SetColorKey(Font, SDL_SRCCOLORKEY, SDL_MapRGB(Font->format, 0, 0, 0));
-}
-void C2DFont::Write(int x, int y, char *string, int bank) {
+void C_GFX::Write(int x, int y, char *string, int bank) {
     char     c;
     int      getx;
     int      gety;
@@ -1208,10 +1122,159 @@ void C2DFont::Write(int x, int y, char *string, int bank) {
         if (draw) {
             src_rect.x = getx;
             src_rect.y = gety + (bank * 128);
-            SDL_BlitSurface(Font, &src_rect, SDL_GetVideoSurface(), &dst_rect);
+            SDL_BlitSurface(pFont, &src_rect, SDL_GetWindowSurface(pWindow), &dst_rect);
         }
         dst_rect.x += 10;
     }
 }
+
+//////////////////////////////////////////////////////////////// ENTITY FUNCTIONS
+void C_GFX::InitializeEntities(void) {
+    LogEntry(" GOING NUTS WITH ENTITIES!!!!!!!!!!!! \n");
+    ClearEntities();
+    int i;
+    int numntt;
+    numntt = 300;
+
+    dlcsm_make_str(szNameOut);
+
+    for (i = 0; i < numntt; i++) {
+        strcpy(szNameOut, va("Entity %d", i));
+        MakeEntity(szNameOut, 0, 0, 0);
+    }
+}
+void C_GFX::MakeEntity(const char *szInName, float x, float y, float z) {
+    CEntity *pNTT = new CEntity(szInName);
+    if (pNTT) {
+        /*
+        pLog->_DebugAdd("ENTITY IS NAMED [%s]", pNTT->szName);
+        if (x)
+            pNTT->loc.x = x;
+        else
+            pNTT->loc.x = (((float)rand() / (float)RAND_MAX) * 1250) - 625;
+        if (y)
+            pNTT->loc.y = y;
+        else
+            pNTT->loc.y = (((float)rand() / (float)RAND_MAX) * 500) + 20;
+        if (z)
+            pNTT->loc.z = z;
+        else
+            pNTT->loc.z = (((float)rand() / (float)RAND_MAX) * 1250) - 625;
+
+        pNTT->rot.x     = ((float)rand() / (float)RAND_MAX) * 360;
+        pNTT->rot.y     = ((float)rand() / (float)RAND_MAX) * 360;
+        pNTT->rot.z     = ((float)rand() / (float)RAND_MAX) * 360;
+        pNTT->autorot.x = ((float)rand() / (float)RAND_MAX) * 1.5f;
+        pNTT->autorot.y = ((float)rand() / (float)RAND_MAX) * 1.5f;
+        pNTT->autorot.z = ((float)rand() / (float)RAND_MAX) * 1.5f;
+        pNTT->scale.x   = (((float)rand() / (float)RAND_MAX) * 5.0f) + 1;
+        pNTT->scale.y   = (((float)rand() / (float)RAND_MAX) * 5.0f) + 1;
+        pNTT->scale.z   = (((float)rand() / (float)RAND_MAX) * 5.0f) + 1;
+        pNTT->color.r   = 0.8f;
+        pNTT->color.g   = 0.8f;
+        pNTT->color.b   = 0.8f;
+
+        pNTT->pTexture = GetRandomTexture();
+
+        pNTT->type = ENTITY_STATIC;
+        if ((rand() % 100) > 90) pNTT->type = ENTITY_LIGHT;
+        if ((rand() % 100) > 90) pNTT->type = ENTITY_SOUND;
+        if ((rand() % 100) > 90) pNTT->type = ENTITY_AURA;
+        if ((rand() % 100) > 90) pNTT->type = ENTITY_NPC;
+
+        switch (pNTT->type) {
+            // case ENTITY_PLAYER:
+            // case ENTITY_NPC:
+            // case ENTITY_NPC_SPAWN:
+            // case ENTITY_NPC_GENERATOR:
+            case ENTITY_PLAYER_SPAWN: pNTT->pTexture = GetTexture("base/ntt.ankh.png"); break;
+            case ENTITY_LIGHT: pNTT->pTexture = GetTexture("base/ntt.light.png"); break;
+            case ENTITY_SOUND: pNTT->pTexture = GetTexture("base/ntt.audio.png"); break;
+            case ENTITY_AURA: pNTT->pTexture = GetTexture("base/ntt.aura.png"); break;
+            default: break;
+        }
+
+        if (!pNTT->pTexture) pNTT->pTexture = pDefaultTexture;
+
+        if ((rand() % 100) > 50) {
+            pNTT->pModel   = GetRandomModel();
+            pNTT->pTexture = 0;
+            if (pNTT->pModel) pLog->_DebugAdd("Entity :%s", pNTT->pModel->name.c_str());
+            // pNTT->loc.x = 0.0f;
+            pNTT->loc.y = 0.0f;
+            // pNTT->loc.z = 0.0f;
+            pNTT->scale.x = 0.3f;
+            pNTT->scale.y = 0.3f;
+            pNTT->scale.z = 0.3f;
+            pNTT->rot.x   = 0.0f;
+            // pNTT->rot.y = 0.0f;
+            pNTT->rot.z     = 0.0f;
+            pNTT->autorot.x = 0.0f;
+            pNTT->autorot.y = 0.0f;
+            pNTT->autorot.z = 0.0f;
+        }
+        if (pNTT->pTexture)
+            if (pNTT->pTexture->glBmap) pLog->_DebugAdd("Entity texture set to [%s] GL[%d]", pNTT->pTexture->szFilename, pNTT->pTexture->glBmap);
+            */
+        entities.push_back(pNTT);
+    }
+}
+void C_GFX::DrawEntities(void) {
+    // for (vector<CEntity *>::iterator it = entities.begin(); it < entities.end(); it++) (*it)->Draw(bEditEntities);
+}
+CEntity *C_GFX::GetSelectedEntity(void) { return pSelectedEntity; }
+void     C_GFX::ClearSelectEntity(void) {
+    for (vector<CEntity *>::iterator it = entities.begin(); it < entities.end(); it++) {
+        (*it)->bSelected = false;
+    }
+    pSelectedEntity = 0;
+}
+void C_GFX::SelectEntity(CEntity *pEntity) {
+    ClearSelectEntity();
+    pSelectedEntity            = pEntity;
+    pSelectedEntity->bSelected = true;
+}
+
+void C_GFX::SelectClosestEntity(void) {
+    ClearSelectEntity();
+    dlcs_V3 thisloc;
+    dlcs_V3 v;
+    thisloc = pCamera->loc;
+    float dist;
+    float closestDist = 1000000000.0f;
+    pSelectedEntity   = 0;
+    for (vector<CEntity *>::iterator it = entities.begin(); it < entities.end(); it++) {
+        v.x  = (*it)->loc.x - thisloc.x;
+        v.y  = (*it)->loc.y - thisloc.y;
+        v.z  = (*it)->loc.z - thisloc.z;
+        dist = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+        if (dist < closestDist) {
+            closestDist = dist;
+            if (pSelectedEntity) pSelectedEntity->bSelected = false;
+            pSelectedEntity            = (*it);
+            pSelectedEntity->bSelected = true;
+            return;
+        }
+    }
+}
+
+void C_GFX::DeleteEntity(CEntity *pEntity) {
+    for (vector<CEntity *>::iterator it = entities.begin(); it < entities.end(); it++) {
+        if ((*it) == pEntity) {
+            dlcsm_delete(*it);
+            it = entities.erase(it);
+            return;
+        }
+    }
+}
+
+void C_GFX::ClearEntities(void) {
+    dlcsm_delete_vector(CEntity *, entities);
+    entities.clear();
+}
+
+void C_GFX::LoadEntities(dlcs_V3 WhichSector) {}
+
+void C_GFX::SaveEntities(dlcs_V3 WhichSector) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

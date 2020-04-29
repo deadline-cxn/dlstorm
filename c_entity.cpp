@@ -22,9 +22,9 @@ CEntity::CEntity() {
     // Log=new CLog((const char *)"Entity.log");
 }
 
-CEntity::CEntity(const char *nm) {
+CEntity::CEntity(const char *szInName) {
     set_defaults();
-    strcpy(szName, nm);
+    strcpy(szName, szInName);
     // Log=new CLog(va("%s.log",name));
 }
 
@@ -34,10 +34,23 @@ CEntity::~CEntity() {
 
 void CEntity::set_defaults() {
     strcpy(szName, "Unknown");
-    type = G_ENTITY_FRIENDLY;
-    // x=100;
-    // y=100;
-    // z=0;
+    type             = G_ENTITY_FRIENDLY;
+    loc.x            = 0;
+    loc.y            = 0;
+    loc.z            = 0;
+    rot.x            = 0;
+    rot.y            = 0;
+    rot.z            = 0;
+    autorot.x        = 0;
+    autorot.y        = 0;
+    autorot.z        = 0;
+    scale.x          = 1;
+    scale.y          = 1;
+    scale.z          = 0;
+    color.r          = 1;
+    color.g          = 1;
+    color.b          = 1;
+    bSelected        = false;
     life_points      = 100;
     mana_points      = 100;
     power_points     = 100;

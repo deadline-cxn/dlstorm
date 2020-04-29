@@ -380,6 +380,53 @@ char *dlcs_get_os_version(void) {
 #endif
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////
+vector<string> dlcs_dir_to_vector(const char *szDir, const char *szWildCard) {
+    vector<string> diro;
+    string         f;
+    string         d;
+    d.assign(szDir);
+    diro.clear();
+    DIR *          dpdf;
+    struct dirent *epdf;
+    dpdf = opendir(szDir);
+    if (dpdf != NULL) {
+        while ((epdf = readdir(dpdf))) {
+            if ((!((dlcs_strcasecmp(epdf->d_name, ".")) || (dlcs_strcasecmp(epdf->d_name, ".."))))) {
+                f.assign(va("%s%c%s", szDir, PATH_SEP, epdf->d_name));
+                if (!dlcs_isdir(f.c_str())) {
+                    diro.push_back(f);
+                } else {
+                    vector<string> x = dlcs_dir_to_vector(f.c_str(), szWildCard);
+                    diro.insert(diro.end(), x.begin(), x.end());
+                }
+            }
+        }
+    }
+    closedir(dpdf);
+    return diro;
+    /* #include <fnmatch.h>
+    int fnmatch(const char *pattern, const char *string, int flags);
+    Description
+    The fnmatch() function checks whether the string argument matches the pattern argument, which is a shell wildcard pattern.
+    The flags argument modifies the behavior; it is the bitwise OR of zero or more of the following flags:
+    FNM_NOESCAPE If this flag is set, treat backslash as an ordinary character, instead of an escape character.
+    FNM_PATHNAME If this flag is set, match a slash in string only with a slash in pattern and not by an asterisk (*) or a question mark (?) metacharacter, nor by a bracket expression ([]) containing a slash.
+    FNM_PERIOD   If this flag is set, a leading period in string has to be matched exactly by a period in pattern. A period is considered to be leading if it is the first character in string, or if both FNM_PATHNAME is set and the period immediately follows a slash.
+    FNM_FILE_NAME This is a GNU synonym for FNM_PATHNAME.
+    FNM_LEADING_DIR If this flag (a GNU extension) is set, the pattern is considered to be matched if it matches an initial segment of string which is followed by a slash. This flag is mainly for the internal use of glibc and is only implemented in certain cases.
+    FNM_CASEFOLD  If this flag (a GNU extension) is set, the pattern is matched case-insensitively.
+    Return Value  Zero if string matches pattern, FNM_NOMATCH if there is no match or another nonzero value if there is an error.*/
+}
+
+bool dlcs_istrue(const char *szBoolCheck) {
+    if (dlcs_strcasecmp(szBoolCheck, "on")) return true;
+    if (dlcs_strcasecmp(szBoolCheck, "1")) return true;
+    if (dlcs_strcasecmp(szBoolCheck, "true")) return true;
+    if (dlcs_strcasecmp(szBoolCheck, "yes")) return true;
+    return false;
+}
+
 /*
 
 //////////////////////////////////////////////////////////////////////////////////

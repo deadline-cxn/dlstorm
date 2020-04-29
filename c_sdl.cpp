@@ -590,11 +590,13 @@ void CMouse::RefreshMouse(void) {
 void CMouse::UpdateWheel(SDL_Event e) {
     if (e.wheel.y > 0) {  // scroll up
         bWheelUp = true;
-    } else if (e.wheel.y < 0) {  // scroll down
+    }
+    else if (e.wheel.y < 0) {  // scroll down
         bWheelDown = true;
     }
     if (e.wheel.x > 0) {         // scroll right
-    } else if (e.wheel.x < 0) {  // scroll left
+    }
+    else if (e.wheel.x < 0) {  // scroll left
     }
 }
 ///////////////////////////////////////////////////////////////////////

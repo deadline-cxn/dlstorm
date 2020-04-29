@@ -16,6 +16,8 @@
  ***************************************************************/
 #ifndef _DLCS_CVAR
 #define _DLCS_CVAR
+
+#include "c_log.h"
 #include "dlcs.h"
 
 // name convention for the cvars:
@@ -47,16 +49,7 @@ class CVarSet {
     CVarSet();
     CVarSet(char *infilename);
     ~CVarSet();
-    void        Init();
-    void        set_cvar(const char *name, const char *value);
-    void        set_cvar(const char *name, int value);
-    void        get_cvar(const char *name, const char *value);
-    //const char *get_cvar(const char *name);
-    void *      get_cvar(const char *name);
-    int         get_cvartype(const char *s);
-    const char *get_cvartype_string(int t);
-    const char *get_cvarformatted(const char *f, void *cv);
-    char *      get_cvarformat(int t);
+
     // cvar map
     typedef void *                  strvar_t;
     typedef map<string, strvar_t>   strvarmap_t;
@@ -64,9 +57,22 @@ class CVarSet {
     strvarmap_t                     varmap;
     map<string, int>                cvar_type_map;         // cvar type map
     map<int, string>                cvar_type_format_map;  // cvar type format map
-    string                          filename;
+    char                            szFilename[_FILENAME_SIZE];
     bool                            bLoad(void);
     bool                            bSave(void);
+
+    CLog *pLog;
+
+    void        Init();
+    void        set_cvar(const char *name, const char *value);
+    void        set_cvar(const char *name, int value);
+    void        get_cvar(const char *name, const char *value);
+    void *      get_cvar(const char *name);
+    const char *get_cvar(const char *name, char *varout);
+    int         get_cvartype(const char *s);
+    const char *get_cvartype_string(int t);
+    const char *get_cvarformatted(const char *f, void *cv);
+    char *      get_cvarformat(int t);
 };
 
 #endif  // _DLCS_CVAR

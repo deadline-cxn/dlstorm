@@ -18,6 +18,7 @@
 #define _DLCS_DATA_STORAGE_CLASS
 #include "dlcs.h"
 #include "c_var.h"
+#include "c_log.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////// CC_Data class
@@ -25,11 +26,13 @@
 class CC_Data : public CVarSet {
 public:
     CC_Data();
-    CC_Data(char* infilename);
+    CC_Data(const char* infilename);
+    CC_Data(const char* infilename,CLog *inpLog);
     ~CC_Data(void);
-    void Initialize(void);
+    void Init(void);
     void CleanUp(void);
     void SetToDefaults(void);
+    CLog *pLog;
 };
 
 #endif // _DLCS_DATA_STORAGE_CLASS

@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2020
  **   File:         c_glfont.cpp
  **   Class:        CGLFont
  **   Description:  Fonts for OpenGL
@@ -12,87 +12,64 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 #include "c_glfont.h"
 /////////////////////////////////////// Utility function
 extern "C" int CGLFont_StrLen(const char *string) {
-    int  i, j = 0;
-    char ch[2];
+    int i, j = 0;
+    // char ch[2];
     for (i = 0; i < (int)strlen(string); i++) {
         if (string[i] == '^') {
             i++;
             if (string[i] == 0) return j;
             if (string[i] == '^') {
                 j++;
-                ch[0] = string[i];
-                ch[1] = 0;
+                // ch[0] = string[i];
+                // ch[1] = 0;
             }
             if (string[i] == '>') {
                 i += 6;
             }
         } else {
             j++;
-            ch[0] = string[i];
-            ch[1] = 0;
+            // ch[0] = string[i];
+            // ch[1] = 0;
         }
     }
     return j;
 }
 /////////////////////////////////////// CGLFont class
-CGLFont::CGLFont() {
-    pNext    = 0;
-    pFontTex = 0;
-    r        = 220;
-    g        = 220;
-    b        = 220;
-    width    = 8.5f;
-    height   = 8.5f;
-    // memset(Set1,0,64);
-    // memset(Set2,0,64);
-    // memset(szFile,0,1024);
-    filename.clear();
-}
-CGLFont::CGLFont(CLog *pInLog) {
-    pNext    = 0;
-    pLog     = pInLog;
-    pFontTex = 0;
-    r        = 220;
-    g        = 220;
-    b        = 220;
-    width    = 8.5f;
-    height   = 8.5f;
-    filename.clear();
-}
-CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog) {
-    pNext    = 0;
-    pGAF     = pInGAF;
-    pLog     = pInLog;
-    pFontTex = 0;
-    r        = 220;
-    g        = 220;
-    b        = 220;
-    width    = 8.5f;
-    height   = 8.5f;
-    filename.clear();
-}
-CGLFont::CGLFont(char *fn) {
-    pNext    = 0;
-    pFontTex = 0;
-    Load(fn);
-    r      = 120;
-    g      = 120;
-    b      = 120;
-    width  = 8.5f;
-    height = 8.5f;
-    filename.clear();
+// CGLFont::CGLFont() { Init(); }
+// CGLFont::CGLFont(CLog *pInLog) { Init(); pLog = pInLog; }
+// CGLFont::CGLFont(CGAF *pInGAF, CLog *pInLog) { Init(); pGAF = pInGAF; pLog = pInLog; }
+// CGLFont::CGLFont(char *fn) { Init(); Load(fn); }
+CGLFont::CGLFont(C_GFX *pInGFX, CGAF *pInGAF, CLog *pInLog) {
+    Init();
+    pGFX = pInGFX;
+    pGAF = pInGAF;
+    pLog = pInLog;
 }
 CGLFont::~CGLFont() { Kill(); }
-GLuint CGLFont::Load(string f) {  // Build Our Font Display List
+
+void CGLFont::Init() {
+    memset(szFilename, 0, _FILENAME_SIZE);
+    pGFX     = 0;
+    pGAF     = 0;
+    pLog     = 0;
+    pNext    = 0;
+    pFontTex = 0;
+    r        = 120;
+    g        = 120;
+    b        = 120;
+    width    = 8.5f;
+    height   = 8.5f;
+}
+
+GLuint CGLFont::Load(const char *szInFilename) {  // Build Our Font Display List
     float cx, cy;
     int   loop;
-    filename = f;
-    pFontTex = new CGLTexture(pLog, filename);
+    strcpy(szFilename, szInFilename);
+    pFontTex = new CGLTexture(pGFX, pGAF, pLog, szFilename);
     if (!pFontTex->glBmap) dlcsm_delete(pFontTex);
     if (!pFontTex) return 0;
     pFontList = glGenLists(256);                       // Creating 256 Display Lists
@@ -410,17 +387,17 @@ GLvoid CGLFont::Stuff(GLenum target, GLint x, GLint y, const char *string, int s
 GLvoid CGLFont::RawPrint(GLint x, GLint y, const char *string, int wset, u_char r, u_char g, u_char b) {
     if (!pFontTex) return;
     if (!pFontTex->glBmap) {
-        pFontTex->LoadGL(va("%s.png", filename.c_str()));
+        pFontTex->LoadGL(va("%s.png", szFilename));
     }
-    y = (-y) + (SDL_GetVideoSurface()->h) - 16;
+    y = (-y) + (SDL_GetWindowSurface(pGFX->pWindow)->h) - 16;
     if (wset < 2) {
-        glDisable(GL_DEPTH_TEST);                                              // Disables Depth Testing
-        glMatrixMode(GL_PROJECTION);                                           // Select The Projection Matrix
-        glPushMatrix();                                                        // Store The Projection Matrix
-        glLoadIdentity();                                                      // Reset The Projection Matrix
-        gluOrtho2D(0, SDL_GetVideoSurface()->w, 0, SDL_GetVideoSurface()->h);  // Set Up An Ortho Screen
-        glMatrixMode(GL_MODELVIEW);                                            // Select The Modelview Matrix
-        glPushMatrix();                                                        // Store The Modelview Matrix
+        glDisable(GL_DEPTH_TEST);                                                                          // Disables Depth Testing
+        glMatrixMode(GL_PROJECTION);                                                                       // Select The Projection Matrix
+        glPushMatrix();                                                                                    // Store The Projection Matrix
+        glLoadIdentity();                                                                                  // Reset The Projection Matrix
+        gluOrtho2D(0, SDL_GetWindowSurface(pGFX->pWindow)->w, 0, SDL_GetWindowSurface(pGFX->pWindow)->h);  // Set Up An Ortho Screen
+        glMatrixMode(GL_MODELVIEW);                                                                        // Select The Modelview Matrix
+        glPushMatrix();                                                                                    // Store The Modelview Matrix
         glColor3ub(r, g, b);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);

@@ -37,7 +37,7 @@
 
 #define G_ENTITY_DEFAULT_RESPAWN_TIME 30000  // 5 minutes
 
-class CEntity;
+// class CEntity;
 
 /*struct G_ENTITY_EVENT_RESULTS
 {
@@ -50,8 +50,14 @@ class CEntity;
 class CEntity : public CEvent {
    public:
     CEntity();
-    CEntity(const char *nm);
+    CEntity(const char *szInName);
     ~CEntity();
+
+    CEntity *parent;
+    CEntity *next;
+    CEntity *prev;
+    CEntity *target;
+
     char szName[_NAME_SIZE];
     int  type;
     int  life_points;
@@ -59,12 +65,7 @@ class CEntity : public CEvent {
     int  power_points;
     int  rage_points;
     int  status;
-
-    // A power up would be:                             resource_min 1, resource_max 1, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
-    // A mine node would be:                            resource_min 1, resource_max 6, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
-    // A coin in a scrolling platform game:             resource_min 1, resource_max 1, respawn_min 1, respawn_max 1, respawn_timer_min 0    , respawn_timer_max 0
-    // Node on random timer between 5 and 10 minutes:   resource_min 3, resource_max_9, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 60000
-
+    bool bSelected;
     int  resource_min;      // 0 = infinite resources
     int  resource_max;      // 0 = infinite resources
     int  respawn_min;       // 0 = infinite respawns
@@ -72,10 +73,16 @@ class CEntity : public CEvent {
     long respawn_time_min;  // 0 = default; default is 5 minutes (30000)
     long respawn_time_max;  // 0 = default; default is 5 minutes (30000)
 
-    CEntity *parent;
-    CEntity *next;
-    CEntity *prev;
-    CEntity *target;
+    dlcs_V3 loc;
+    dlcs_V3 rot;
+    dlcs_V3 autorot;
+    dlcs_V3 scale;
+    dlcs_C3 color;
+
+    // A power up would be:                             resource_min 1, resource_max 1, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
+    // A mine node would be:                            resource_min 1, resource_max 6, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 30000
+    // A coin in a scrolling platform game:             resource_min 1, resource_max 1, respawn_min 1, respawn_max 1, respawn_timer_min 0    , respawn_timer_max 0
+    // Node on random timer between 5 and 10 minutes:   resource_min 3, resource_max_9, respawn_min 0, respawn_max 0, respawn_timer_min 30000, respawn_timer_max 60000
 
     void set_defaults(void);
     bool roam(void);  //  brains of the entity, includes movement and other checking called once per cycle

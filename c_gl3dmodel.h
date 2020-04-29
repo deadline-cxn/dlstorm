@@ -21,7 +21,6 @@
 #include "c_gltexture.h"
 #include "c_log.h"
 #include "dlcs.h"
-#include "s_gnu.h"
 
 /*
 #ifdef DLCS_WINDOWS
@@ -36,7 +35,10 @@
 //#include "aiTypes.h"
 //#include "aiPostProcess.h"
 // #endif
+
 class C_GFX;
+class CGLTexture;
+
 /////////////////////////////// CGLMaterial class
 class CGLMaterial {
    public:

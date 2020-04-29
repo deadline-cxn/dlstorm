@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2013
+ **   Copyright:    2020
  **   File:         c_gui.h
  **   Class:        C_GUI
  **                 C_GSTMP
@@ -14,14 +14,13 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 #ifndef _DLCS_C_GUI
 #define _DLCS_C_GUI
 
 #include "dlcs.h"
 #include "c_gui_chat_enum.h"
-#include "c_sdl.h"
+#include "c_gfx.h"
 #include "c_gaf.h"
 #include "c_glfont.h"
 #include "c_glmouse.h"
@@ -116,16 +115,13 @@ class C_GCTRL;
 ////////////////////////// C_GCTRL class
 class C_GCTRL {
 public:
-    C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog,
-            CSDL_Wrap *pInGFX,
-            C_GUI *pInGUI,
-            C_CONS *pInConsole  );
+    C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );
     C_GCTRL(C_GCTRL *pInParentControl);
     ~C_GCTRL();
     void init_ctrl(void);
     void zeroize_ctrl(void);
     void set_value(const char *val);
-    void get_value(const char *str);
+    void get_value(char *str);
     char *get_value(void);
     void selecta(void);
     void on_leftclick(void);
@@ -149,7 +145,7 @@ public:
     void draw(bool bMouseWheelUp, bool bMouseWheelDown);
     void checkMouseClicks(bool bMouseWheelUp, bool bMouseWheelDown);
     CLog     *pLog;
-    CSDL_Wrap    *pGFX;
+    C_GFX    *pGFX;
     C_GUI    *pGUI;
     C_CONS   *pCons;
     C_GSTMP *parent_stump;
@@ -200,9 +196,7 @@ private:
 ////////////////////////// C_GSTMP class
 class C_GSTMP {
 public:
-    C_GSTMP(CLog *pInLog,
-            CSDL_Wrap *pInGFX,
-            C_GUI *pInGUI, C_CONS *pInConsole );
+    C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );
     ~C_GSTMP();
     void    init_stmp(void);
     void    zeroize_stmp(void);
@@ -220,7 +214,7 @@ public:
     C_GCTRL *get_control(const char *name);
     map <string, string> data;
     CLog    *pLog;
-    CSDL_Wrap   *pGFX;
+    C_GFX   *pGFX;
     C_GUI   *pGUI;
     C_CONS  *pCons;
     char    name[1024];
@@ -247,15 +241,64 @@ public:
 ////////////////////////// C_GUI class
 class C_GUI {
 public:
-    C_GUI();
-    C_GUI(CLog *pUSELog);
-    C_GUI(CGAF *pUSEGAF, CLog *pUSELog);
-    C_GUI(CSDL_Wrap *pUSEGFX,CGAF *pUSEGAF, CLog *pUSELog);
+    // C_GUI();    // C_GUI(CLog *pUSELog);    // C_GUI(CGAF *pUSEGAF, CLog *pUSELog);
+    C_GUI(C_GFX *pInGFX,CGAF *pInGAF, CLog *pInLog);
     ~C_GUI();
-    //class C_GLAYER{public:    C_GLAYER(CLog *pInLog, CSDL_Wrap *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );    ~C_GLAYER();
+
+    // vars
+    
+    //class C_GLAYER{public:    C_GLAYER(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );    ~C_GLAYER();
+
     C_GSTMP *focus_stump;
     C_GSTMP *first_gui_stump;
     C_GCTRL *focus_control;
+
+    bool    bCtrlMoving;
+    bool    bStmpMoving;
+    bool    bCtrlSizing;
+    bool    bStmpSizing;
+ 
+    char	szPromptMsg[1024];
+    bool    bClosePrompt;
+    char	szCommand[1024];
+    bool    bShowFPS;  // Show frames per second on or off
+    bool    bMadeLog;  // Made the log file on or off
+    CGAF    *pGAF;
+    C_GFX   *pGFX;
+    CLog    *pLog;
+    C_Mouse *pMouse;
+    map<string, int>    GC_TYPE;
+    map<string, int>    GC_PROP;
+    map<string, int>    GC_RELATIVE;
+
+    SDL_Keycode         ikey;
+    SDL_Keycode         iKeyUp;
+    SDL_Keycode         iKeyDown;
+    
+    const Uint8        *keystate;
+    SDL_Keymod          modstate;
+    SDL_Event           event;
+
+    map<SDL_Keycode, char *> KeyMap;
+    map<SDL_Keycode, bool>   KeyDown;
+    long KeyRepeatTimer;
+    CGLTextureList      *ButtonTexture;
+    CGLTextureList	    *B9utton;
+    CGLFontList         *font;
+    CGLFont             *pFirstFont;
+    bool    bStaticToolTip;
+    bool    bDrawToolTip;
+    bool    bResetToolTip;
+    RECT    rectToolTip;
+    char    hover_text[1024];
+    bool    bDebug;
+
+    bool	bGAFLoading;
+    C_GCTRL *last_control_clicked;
+    C_GCTRL *highest_control_clicked;
+    C_GSTMP *highest_stump_clicked;
+    C_CONS  *pCons;
+
     void    clear(void); // clear
     void    setdata(const char *stump, const char *ctrl, const char *value);
     char    *getdata(const char *ctrlname);
@@ -275,17 +318,14 @@ public:
     bool    isAControlMoving(void);
     bool    isAStumpSizing(void);
     bool    isAControlSizing(void);
-    bool    bCtrlMoving;
-    bool    bStmpMoving;
-    bool    bCtrlSizing;
-    bool    bStmpSizing;
+
     void    draw(void);
     void    draw_ctrls(void);
     C_GSTMP *get_stump(const char *name);
     C_GSTMP *get_prev_stump(const char *name);
     C_GSTMP *get_prev_stump(C_GSTMP *tstump);
     int     stump_count;
-    void    init(void); //  initialize basic data
+    void    Init(void); //  initialize basic data
     bool    initFonts(void); // initialize fonts
     bool    initButtons(void); // initialize buttons
     bool    loadFonts(void);
@@ -319,7 +359,8 @@ public:
     void    prompt(const char *szPrompt, const char *szCommand);
     bool    bIsPrompt(void);
     void    drawToolTip(void);
-    bool	cab_loading;
+
+
     //void	cab_call_process_file(const char *file);
     void	cab_call(const char *file);  // load a fm gui file
     void	cab_store(const char *file); // save a fm gui to a file
@@ -330,53 +371,23 @@ public:
     void	store(const char *name); // save a fm gui to a file
     void    bcall(const char *file);
     void    bstore(const char *file);
-    int     doInput(void);
-    int     processKeyboard(void);
+
+    // INPUT STUFF
+    int     DoInput(void);
+    int     DoKeyboard(SDL_Event event);
+    int     DoMouse(SDL_Event event);
     void    checkMouseClicks(void);
+
+    // Keybinds
     void    clearKeys(void);
     bool    bSaveBinds(const char *szFilename);
-    char	szPromptMsg[1024];
-    bool    bClosePrompt;
-    char	szCommand[1024];
-    bool    bShowFPS;  // Show frames per second on or off
-    bool    bMadeLog;  // Made the log file on or off
-    CGAF    *pGAF;
-    CSDL_Wrap   *pGFX;
-    CLog    *pLog;
-    C_Mouse *pMouse;
-    map<string, int>    GC_TYPE;
-    map<string, int>    GC_PROP;
-    map<string, int>    GC_RELATIVE;
 
-    SDL_Keysym              ikey;
-    SDL_Keysym              iKeyUp;
-    SDL_Keysym              iKeyDown;
-    
-    Uint8               *keystate;
-    SDL_Keymod          modstate;
-    SDL_Event           event;
+   
+    CGLFont *GetFont(const char* szWhichFont);
+    CGLFont *GetFont(int iWhich);
 
-    map<SDL_Keysym, char *> KeyMap;
-    map<SDL_Keysym, bool>   KeyDown;
-    long KeyRepeatTimer;
-    CGLTextureList      *ButtonTexture;
-    CGLTextureList	    *B9utton;
-    CGLFontList         *font;
-    CGLFont             *pFirstFont;
-    CGLFont             *GetFont(char* szWhichFont);
-    CGLFont             *GetFont(int iWhich);
-    bool    bStaticToolTip;
-    bool    bDrawToolTip;
-    bool    bResetToolTip;
-    RECT    rectToolTip;
-    char    hover_text[1024];
-    bool    bDebug;
-    C_GCTRL *last_control_clicked;
-    C_GCTRL *highest_control_clicked;
-    C_GSTMP *highest_stump_clicked;
-    C_CONS  *pCons;
     void    consEntry(const char *fmt, ...);
-    void _consExecute(const char *cmd);
+    void    _consExecute(const char *cmd);
     void    addChat(int channel, const char *user,  char *msg);
     map<string, int>    GUI_CHAT;
     map<int, string>    GUI_CHAT_COLOR;

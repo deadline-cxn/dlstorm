@@ -15,71 +15,53 @@
  **   Email:        defectiveseth@gmail.com
  **
  ***************************************************************/
+
 #include "c_glmouse.h"
+
 ///////////////////////////// C_MouseCursor Class
-C_MouseCursor::C_MouseCursor() {
-    filename.clear();
-    pTexture    = 0;
-    pLog        = new CLog("mousecursor.log");
-    bCreatedLog = true;
-    pLog->_DebugAdd("Mouse cursor created");
-}
-C_MouseCursor::C_MouseCursor(CLog *pInLog) {
-    pGAF        = 0;
-    bCreatedLog = false;
-    pLog        = pInLog;
-    pTexture    = 0;
-    x_offset    = 0;
-    y_offset    = 0;
-    x           = 0;
-    y           = 0;
-    x_hotspot   = 0;
-    y_hotspot   = 0;
-    pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
-}
-C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) {
+C_MouseCursor::C_MouseCursor(C_GFX *pInGFX, CGAF *pInGAF, CLog *pInLog) {
+    Init();
+    pGFX        = pInGFX;
     pGAF        = pInGAF;
     pLog        = pInLog;
-    bCreatedLog = false;
-    pTexture    = 0;
-    x_offset    = 0;
-    y_offset    = 0;
-    x           = 0;
-    y           = 0;
-    x_hotspot   = 0;
-    y_hotspot   = 0;
-    pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK");
-}
-C_MouseCursor::C_MouseCursor(string f) {
-    filename.clear();
-    pTexture  = 0;
-    x_offset  = 0;
-    y_offset  = 0;
-    x         = 0;
-    y         = 0;
-    x_hotspot = 0;
-    y_hotspot = 0;
-    load(f);
-    pLog        = new CLog("mousecursor.log");
-    bCreatedLog = true;
-    pLog->_DebugAdd("Mouse cursor created");
 }
 C_MouseCursor::~C_MouseCursor() {
     kill();
     pLog->_DebugAdd("Mouse cursor destroyed");
     if (bCreatedLog) dlcsm_delete(pLog);
 }
+
+// C_MouseCursor::C_MouseCursor() { Init(); pLog        = new CLog("mousecursor.log"); bCreatedLog = true; pLog->_DebugAdd("Mouse cursor created"); }
+// C_MouseCursor::C_MouseCursor(CLog *pInLog) { Init(); pLog        = pInLog;  pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK"); }
+// C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) { Init(); pGAF        = pInGAF; pLog        = pInLog; pLog->_DebugAdd(">> C_MouseCursor::C_MouseCursor(CGAF *pInGAF, CLog *pInLog) OK"); }
+// C_MouseCursor::C_MouseCursor(string f) { Init(); load(f); pLog        = new CLog("mousecursor.log"); bCreatedLog = true; pLog->_DebugAdd("Mouse cursor created"); }
+
+void C_MouseCursor::Init() {
+    memset(szFilename,0,_FILENAME_SIZE);
+    pGFX        = 0;
+    pGAF        = 0;
+    bCreatedLog = false;
+    pTexture    = 0;
+    x_offset    = 0;
+    y_offset    = 0;
+    x           = 0;
+    y           = 0;
+    x_hotspot   = 0;
+    y_hotspot   = 0;
+}
 GLvoid C_MouseCursor::kill() { dlcsm_delete(pTexture); }
-GLvoid C_MouseCursor::loadGAF(string f) {}
-GLvoid C_MouseCursor::load(string f) {
-    filename = f;
-    if (pGAF)
-        loadGAF(filename);
-    else {
-        pTexture = new CGLTexture(pLog);
-        pTexture->LoadGL(filename);
-        pLog->_DebugAdd("MOUSE TEXTURE: %s\n", pTexture->filename.c_str());
-    }
+GLvoid C_MouseCursor::loadGAF(const char *szInFilename) {
+    //   pTexture->  pGFX->LoadGAFSurface(pGAF,f.c_str());
+}
+GLvoid C_MouseCursor::load(const char *szInFilename) {
+    strcpy(szFilename,szInFilename);
+    // if (pGAF) loadGAF(filename);
+    // else {
+    pTexture = new CGLTexture(pGFX,pGAF,pLog,szFilename);
+    // pTexture->LoadGL(filename);
+    LogEntry(va("MOUSE TEXTURE: %s\n", pTexture->szFilename));
+
+    // }
     /*  if(!strlen(file)) return;
         strcpy(filename,file);
         DEL(Cursor);
@@ -107,16 +89,16 @@ GLvoid C_MouseCursor::load(string f) {
 }
 GLvoid C_MouseCursor::draw(void) {
     if (!pTexture) return;
-    if (!pTexture->glBmap) load(filename);
+    if (!pTexture->glBmap) load(szFilename);
     if (!pTexture->glBmap) return;
     x = x / 2;
-    y = (-y / 2) + (SDL_GetVideoSurface()->h / 2);
+    y = (-y / 2) + (SDL_GetWindowSurface(pGFX->pWindow)->h / 2);
     glLoadIdentity();
     glDisable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, SDL_GetVideoSurface()->w, 0, SDL_GetVideoSurface()->h);
+    gluOrtho2D(0, SDL_GetWindowSurface(pGFX->pWindow)->w, 0, SDL_GetWindowSurface(pGFX->pWindow)->h);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -149,21 +131,31 @@ GLvoid C_MouseCursor::draw(void) {
     glDisable(GL_TEXTURE_2D);
 }
 ///////////////////////////// C_Mouse class
-C_Mouse::C_Mouse() {}
-C_Mouse::C_Mouse(CLog *pInLog) {
-    pGAF    = 0;
-    pLog    = pInLog;
-    pCursor = new C_MouseCursor(pLog);
-    pCursor->load("mouse/default.png");
-}
-C_Mouse::C_Mouse(CGAF *pInGAF, CLog *pInLog) {
+// C_Mouse::C_Mouse() {}
+// C_Mouse::C_Mouse(CLog *pInLog) { pGAF    = 0;pLog    = pInLog;pCursor = new C_MouseCursor(pLog);pCursor->load("mouse/default.png"); }
+C_Mouse::C_Mouse(C_GFX *pInGFX, CGAF *pInGAF, CLog *pInLog) {
+    Init();
+    pGFX    = pInGFX;
     pGAF    = pInGAF;
     pLog    = pInLog;
-    pCursor = new C_MouseCursor(pLog);
+    pCursor = new C_MouseCursor(pGFX,pGAF,pLog);
     pCursor->load("mouse/default.png");
 }
 C_Mouse::~C_Mouse() { dlcsm_delete(pCursor); }
-void C_Mouse::InitializeInput(void) {
+
+void C_Mouse::Init() {
+    pGFX=0;
+    pLog=0;
+    pGAF=0;
+    pFirstMouseCursor=0;
+    pCursor=0;
+    bDraw=0;
+    // ClearClicks(void);
+    bLeftRelease=0;
+    bMiddleRelease=0;
+    bRightRelease=0;
+    ix=0;
+    iy=0;
     bLeftDown            = 0;
     bMiddleDown          = 0;
     bRightDown           = 0;
@@ -178,7 +170,11 @@ void C_Mouse::InitializeInput(void) {
     lLeftDblClickTimer   = dlcs_get_tickcount();
     lMiddleDblClickTimer = dlcs_get_tickcount();
     lRightDblClickTimer  = dlcs_get_tickcount();
+
 }
+
+// void C_Mouse::InitializeInput(void) { }
+
 void C_Mouse::draw() {
     if (!bDraw) return;
     pCursor->x = ix + pCursor->x_offset;
