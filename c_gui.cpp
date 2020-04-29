@@ -2748,13 +2748,13 @@ void C_GUI::drawToolTip(void) {
     bDrawToolTip  = false;
     bResetToolTip = false;
 }
-char *C_GUI::getdata(const char *ctrlname) {
+const char *C_GUI::getdata(const char *ctrlname) {
     if (!last_control_clicked) return ("null");
     return (const char *)last_control_clicked->parent_stump->data[ctrlname].c_str();
 }
-void C_GUI::getdata(const char *pString, const char *ctrlname) {
+void C_GUI::getdata(char *pString, const char *ctrlname) {
     // hash this shit into a table then be able to call it like $name
-    strcpy(pString, getdata(ctrlname));
+    strcpy(pString, (char *)getdata(ctrlname));
 }
 void C_GUI::setdata(const char *stump, const char *ctrl, const char *value) {
     if (get_stump(stump))
@@ -2924,10 +2924,10 @@ int C_GUI::DrawTextureGUIButton(C_GCTRL *gui_control, int x, int y) {
     }
     return false;
 }
-void C_GUI::prompt(const char *szPrompt, const char *szCommand) {
+void C_GUI::prompt(const char *szInPrompt, const char *szInCommand) {
     // ProcessConsoleCommand("play prompt.wav",0);
-    strcpy(szPromptMsg, szPrompt);
-    strcpy(szCommand, szCommand);
+    strcpy(szPromptMsg, szInPrompt);
+    strcpy(szCommand, szInCommand);
     bClosePrompt = false;
 }
 void C_GUI::drawCPUSTRING(int iX, int iY) {
