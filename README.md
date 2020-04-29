@@ -1,6 +1,18 @@
 # DLStorm C/C++ Code Library
 
-Utilities and C++ classes with the intent to make game programming with C/C++ easier. This library compiles one Windows and Linux. There are provisions for BSD and MacOS, but has not been tested.
+Utilities and C++ classes with the intent to make game programming with C/C++ easier.
+
+This library compiles on:
+- Windows
+ - XP
+ - 7
+ - 8
+ - 10
+- Linux
+ - Ubuntu 18.04
+ - Ubuntu 20.04
+ 
+Note: There are provisions for BSD and MacOS, but has not been tested.
 
 ## Build Defines
 
