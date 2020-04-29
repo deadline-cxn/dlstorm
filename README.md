@@ -1,9 +1,11 @@
 # DLStorm C/C++ Code Library
 
-Utilities and C++ classes with the intent to make game programming with C/C++ easier.
-I will start documenting these functions and add examples soon.
+Utilities and C++ classes with the intent to make game programming with C/C++ easier. This library compiles one Windows and Linux. There are provisions for BSD and MacOS, but has not been tested.
+
+## Build Defines
 
 In order for this package to work you must define:
+
 
 ```
 #define _DLCS_CONSOLE // will create a console only application
