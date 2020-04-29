@@ -16,6 +16,7 @@ In order for this package to work you must define:
 There is a scripts folder with a script to install the libraries for debian/ubuntu using apt.
 
 - install_libs_debian_ubuntu.sh
+
 ```
 sudo apt-get install libncurses5-dev libmysql++-dev tcl-dev liblua50-dev libdevil-dev libsdl1.2-dev
 ```
