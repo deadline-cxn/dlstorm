@@ -18,69 +18,52 @@
 #ifndef _DLCS_C_GUI
 #define _DLCS_C_GUI
 
-#include "dlcs.h"
-#include "c_gui_chat_enum.h"
-#include "c_gfx.h"
+#include "c_console.h"
 #include "c_gaf.h"
+#include "c_gfx.h"
 #include "c_glfont.h"
 #include "c_glmouse.h"
 #include "c_gltexture.h"
-#include "c_console.h"
+#include "c_gui_chat_enum.h"
+#include "dlcs.h"
 
 ////////////////////////// GUI Property definitions
-#define FM_GP_ALWAYS_ON_TOP     1
-#define FM_GP_SIZEABLE          2
-#define FM_GP_CLOSEX            4
-#define FM_GP_MOVEABLE          8
-#define FM_GP_MENU              16
-#define FM_GP_USEBACKGROUND     32
-#define FM_GP_BORDER            64
-#define FM_GP_MINIMIZE          128
-#define FM_GP_SERVER_DATA       256
-#define FM_GP_ALWAYS_ON_BOTTOM  512
-#define FM_GP_NO_RETURN       	1024
-#define FM_GP_DO_NOT_DIE	    2048
-#define FM_GP_FULLSCREEN	    4096
-#define FM_GP_TOGGLE_STATE	    8192
-#define FM_GP_PERSIST           16384
-#define FM_GP_FUTURE_1          32768
-#define FM_GP_FUTURE_2          65536
-#define FM_GSM_ALPHA_ASCEND  	1
-#define FM_GSM_ALPHA_DESCEND 	2
-#define MAX_BUTTONS		        128 // Button objects
-#define MAX_FONTS               11
+#define FM_GP_ALWAYS_ON_TOP    1
+#define FM_GP_SIZEABLE         2
+#define FM_GP_CLOSEX           4
+#define FM_GP_MOVEABLE         8
+#define FM_GP_MENU             16
+#define FM_GP_USEBACKGROUND    32
+#define FM_GP_BORDER           64
+#define FM_GP_MINIMIZE         128
+#define FM_GP_SERVER_DATA      256
+#define FM_GP_ALWAYS_ON_BOTTOM 512
+#define FM_GP_NO_RETURN        1024
+#define FM_GP_DO_NOT_DIE       2048
+#define FM_GP_FULLSCREEN       4096
+#define FM_GP_TOGGLE_STATE     8192
+#define FM_GP_PERSIST          16384
+#define FM_GP_FUTURE_1         32768
+#define FM_GP_FUTURE_2         65536
+#define FM_GSM_ALPHA_ASCEND    1
+#define FM_GSM_ALPHA_DESCEND   2
+#define MAX_BUTTONS            128  // Button objects
+#define MAX_FONTS              11
 ////////////////////////// GUI callback
 typedef void (*G_CBACK)(string whatgui);
 ////////////////////////// GUI Load mode
-enum eGUILOADMODE {
-    FGL_ATTACH=0,
-    FGL_GUMP,
-    FGL_CTRL,
-    FGL_CTRL_CHILD,
-    FGL_PROPERTY
-};
+enum eGUILOADMODE { FGL_ATTACH = 0, FGL_GUMP, FGL_CTRL, FGL_CTRL_CHILD, FGL_PROPERTY };
 ////////////////////////// GUI Relative indicator
-enum tGUIRelativeTo {
-    GUI_NOT_RELATIVE,
-    GUI_TOP_LEFT,
-    GUI_TOP_CENTER,
-    GUI_TOP_RIGHT,
-    GUI_MIDDLE_LEFT,
-    GUI_MIDDLE_CENTER,
-    GUI_MIDDLE_RIGHT,
-    GUI_BOTTOM_LEFT,
-    GUI_BOTTOM_CENTER,
-    GUI_BOTTOM_RIGHT
-};
+enum tGUIRelativeTo { GUI_NOT_RELATIVE, GUI_TOP_LEFT, GUI_TOP_CENTER, GUI_TOP_RIGHT, GUI_MIDDLE_LEFT, GUI_MIDDLE_CENTER, GUI_MIDDLE_RIGHT, GUI_BOTTOM_LEFT, GUI_BOTTOM_CENTER, GUI_BOTTOM_RIGHT };
 ////////////////////////// GUI Component types
 enum tGUIComponentTypes {
-    FM_GC_BUTTON=1,
+    FM_GC_BUTTON = 1,
     FM_GC_SUBMIT,
     FM_GC_CANCEL,
     FM_GC_TEXTBOX,
     FM_GC_PASSWORD,
     FM_GC_STATIC_TEXT,
-    FM_GC_LISTBOX, // Add methods to insert or remove data from listbox [NEW][DEL][MOVE UP][MOVE DOWN]
+    FM_GC_LISTBOX,  // Add methods to insert or remove data from listbox [NEW][DEL][MOVE UP][MOVE DOWN]
     FM_GC_3D_BOX,
     FM_GC_ACTION,
     FM_GC_MESSAGE,
@@ -90,7 +73,7 @@ enum tGUIComponentTypes {
     FM_GC_MENU,
     FM_GC_DROPBOX,
     FM_GC_STATIC_IMAGE,
-    FM_GC_REPORTER, // Reporter will copy one control value to another after x ticks
+    FM_GC_REPORTER,  // Reporter will copy one control value to another after x ticks
     FM_GC_GROUPTICK,
     FM_GC_SELECTA,
     FM_GC_SELECTA_PROPS,
@@ -114,286 +97,284 @@ class C_GSTMP;
 class C_GCTRL;
 ////////////////////////// C_GCTRL class
 class C_GCTRL {
-public:
-    C_GCTRL( C_GSTMP *pParentStump,CLog *pUSELog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );
+   public:
+    C_GCTRL(C_GSTMP *pParentStump, CLog *pUSELog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole);
     C_GCTRL(C_GCTRL *pInParentControl);
     ~C_GCTRL();
-    void init_ctrl(void);
-    void zeroize_ctrl(void);
-    void set_value(const char *val);
-    void get_value(char *str);
-    char *get_value(void);
-    void selecta(void);
-    void on_leftclick(void);
-    void on_rightclick(void);
-    void on_move(void);
-    void on_size(void);
-    void on_focus(void);
-    void on_wheelup(void);
-    void on_wheeldown(void);
-    char *convert$(const char *in);
-    void populate_ctrl_editor(void);
-    int  control_data_total;
-    void control_data_unselect(void);
-    void clear_control_data(void);
-    void put_control_data(const char *nname, const char *nvalue);
-    void sort_control_data(const char method);
-    void set_property(const char *nname, const char *nvalue);
-    void attach_default_children(void);
-    void hide_default_children(void);
-    void show_default_children(void);
-    void draw(bool bMouseWheelUp, bool bMouseWheelDown);
-    void checkMouseClicks(bool bMouseWheelUp, bool bMouseWheelDown);
-    CLog     *pLog;
-    C_GFX    *pGFX;
-    C_GUI    *pGUI;
-    C_CONS   *pCons;
-    C_GSTMP *parent_stump;
-    C_GCTRL  *parent_control;
-    C_GCTRL *first_child_control;
-    C_GCTRL *child_control;
-    map <string, string> property;
-    map <int, string>  data;
-    map <int, bool>    data_selected;
-    vector <string> buf;
-    char  name[1024];
-    char  type;
-    RECT  rect;
-    RECT  rect_2;
-    RECT  mrect;
-    //RECT  upbutton;
-    //RECT  downbutton;
-    int iRelativeTo;
-    char  media[1024];
-    char  media_hover[1024];
-    char  media_click[1024];
-    char  hover_text[1024];
-    char  group[1024];
-    char  action[1024];
-    char  console[1024];
-    char  datafill[1024];
-    char  datafilltarget[1024];
-    char  nexttabfocus[64];
-    bool  selected;
-    bool bMoving;
-    bool bSizing;
-    bool bEditing;
-    int   listdepth;
-    int   listoffset;
-    char  font;
-    char  fontbank;
-    int   props;
-    bool  visible;
-    long  background_color;
-    long  border_color;
-    bool  selecting;
-    int   max_val_len;
+    void                init_ctrl(void);
+    void                zeroize_ctrl(void);
+    void                set_value(const char *val);
+    void                get_value(char *str);
+    char *              get_value(void);
+    void                selecta(void);
+    void                on_leftclick(void);
+    void                on_rightclick(void);
+    void                on_move(void);
+    void                on_size(void);
+    void                on_focus(void);
+    void                on_wheelup(void);
+    void                on_wheeldown(void);
+    const char *        convert$(const char *in);
+    void                populate_ctrl_editor(void);
+    int                 control_data_total;
+    void                control_data_unselect(void);
+    void                clear_control_data(void);
+    void                put_control_data(const char *nname, const char *nvalue);
+    void                sort_control_data(const char method);
+    void                set_property(const char *nname, const char *nvalue);
+    void                attach_default_children(void);
+    void                hide_default_children(void);
+    void                show_default_children(void);
+    void                draw(bool bMouseWheelUp, bool bMouseWheelDown);
+    void                checkMouseClicks(bool bMouseWheelUp, bool bMouseWheelDown);
+    CLog *              pLog;
+    C_GFX *             pGFX;
+    C_GUI *             pGUI;
+    C_CONS *            pCons;
+    C_GSTMP *           parent_stump;
+    C_GCTRL *           parent_control;
+    C_GCTRL *           first_child_control;
+    C_GCTRL *           child_control;
+    map<string, string> property;
+    map<int, string>    data;
+    map<int, bool>      data_selected;
+    vector<string>      buf;
+    char                name[1024];
+    char                type;
+    RECT                rect;
+    RECT                rect_2;
+    RECT                mrect;
+    // RECT  upbutton;
+    // RECT  downbutton;
+    int      iRelativeTo;
+    char     media[1024];
+    char     media_hover[1024];
+    char     media_click[1024];
+    char     hover_text[1024];
+    char     group[1024];
+    char     action[1024];
+    char     console[1024];
+    char     datafill[1024];
+    char     datafilltarget[1024];
+    char     nexttabfocus[64];
+    bool     selected;
+    bool     bMoving;
+    bool     bSizing;
+    bool     bEditing;
+    int      listdepth;
+    int      listoffset;
+    char     font;
+    char     fontbank;
+    int      props;
+    bool     visible;
+    long     background_color;
+    long     border_color;
+    bool     selecting;
+    int      max_val_len;
     C_GCTRL *next;
     C_GCTRL *prev;
-private:
-    char  value[1024];
+
+   private:
+    char value[1024];
 };
 ////////////////////////// C_GSTMP class
 class C_GSTMP {
-public:
-    C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );
+   public:
+    C_GSTMP(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole);
     ~C_GSTMP();
-    void    init_stmp(void);
-    void    zeroize_stmp(void);
-    char    control_count(void);
-    void    add_control(const char *name, int type, int x, int y, int x2, int y2, int props, const char *media, const char *value);
-    void    mod_control(const char *name, int type, int x, int y, int x2, int y2, int props, const char *media, const char *value);
-    void    add_control(C_GCTRL *pInParentCtrl, const char *name, int type, int x, int y, int x2, int y2, int props, const char *media, const char *value);
-    void    size_control(const char *name,int x,int y,int x2,int y2);
-    void    del_control (const char *name);
-    void    clear_grouptick(const char *name);
-    void    set_group_selecta(C_GCTRL *sgc);
-    void    move_control_to_top(C_GCTRL *gc);
-    void    store_stmp(void);
-    void    store_stmp(const char *filename);
-    C_GCTRL *get_control(const char *name);
-    map <string, string> data;
-    CLog    *pLog;
-    C_GFX   *pGFX;
-    C_GUI   *pGUI;
-    C_CONS  *pCons;
-    char    name[1024];
-    char    media[1024];
-    char    caption[256];
-    char    action[1024]; // indicates local action to take
-    char    default_focus_control[256];
-    char    gamemode[1024];
-    int     iRelativeTo;
-    int     props;
-    float   x,y;
-    RECT    rect;
-    RECT    mrect;
-    bool    bMoving;
-    bool    bSizing;
-    bool    bEditing;
-    bool    bDeleteMe;
-    C_GSTMP *next;
-    C_GSTMP *prev;
-    C_GCTRL *first_gui_control;
-    C_GCTRL *gui_control;
-    C_GCTRL *focus_control;
+    void                init_stmp(void);
+    void                zeroize_stmp(void);
+    char                control_count(void);
+    void                add_control(const char *name, int type, int x, int y, int x2, int y2, int props, const char *media, const char *value);
+    void                mod_control(const char *name, int type, int x, int y, int x2, int y2, int props, const char *media, const char *value);
+    void                add_control(C_GCTRL *pInParentCtrl, const char *name, int type, int x, int y, int x2, int y2, int props, const char *media, const char *value);
+    void                size_control(const char *name, int x, int y, int x2, int y2);
+    void                del_control(const char *name);
+    void                clear_grouptick(const char *name);
+    void                set_group_selecta(C_GCTRL *sgc);
+    void                move_control_to_top(C_GCTRL *gc);
+    void                store_stmp(void);
+    void                store_stmp(const char *filename);
+    C_GCTRL *           get_control(const char *name);
+    map<string, string> data;
+    CLog *              pLog;
+    C_GFX *             pGFX;
+    C_GUI *             pGUI;
+    C_CONS *            pCons;
+    char                name[1024];
+    char                media[1024];
+    char                caption[256];
+    char                action[1024];  // indicates local action to take
+    char                default_focus_control[256];
+    char                gamemode[1024];
+    int                 iRelativeTo;
+    int                 props;
+    float               x, y;
+    RECT                rect;
+    RECT                mrect;
+    bool                bMoving;
+    bool                bSizing;
+    bool                bEditing;
+    bool                bDeleteMe;
+    C_GSTMP *           next;
+    C_GSTMP *           prev;
+    C_GCTRL *           first_gui_control;
+    C_GCTRL *           gui_control;
+    C_GCTRL *           focus_control;
 };
 ////////////////////////// C_GUI class
 class C_GUI {
-public:
+   public:
     // C_GUI();    // C_GUI(CLog *pUSELog);    // C_GUI(CGAF *pUSEGAF, CLog *pUSELog);
-    C_GUI(C_GFX *pInGFX,CGAF *pInGAF, CLog *pInLog);
+    C_GUI(C_GFX *pInGFX, CGAF *pInGAF, CLog *pInLog);
     ~C_GUI();
 
     // vars
-    
-    //class C_GLAYER{public:    C_GLAYER(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );    ~C_GLAYER();
+
+    // class C_GLAYER{public:    C_GLAYER(CLog *pInLog, C_GFX *pInGFX, C_GUI *pInGUI, C_CONS *pInConsole );    ~C_GLAYER();
 
     C_GSTMP *focus_stump;
     C_GSTMP *first_gui_stump;
     C_GCTRL *focus_control;
 
-    bool    bCtrlMoving;
-    bool    bStmpMoving;
-    bool    bCtrlSizing;
-    bool    bStmpSizing;
- 
-    char	szPromptMsg[1024];
-    bool    bClosePrompt;
-    char	szCommand[1024];
-    bool    bShowFPS;  // Show frames per second on or off
-    bool    bMadeLog;  // Made the log file on or off
-    CGAF    *pGAF;
-    C_GFX   *pGFX;
-    CLog    *pLog;
-    C_Mouse *pMouse;
-    map<string, int>    GC_TYPE;
-    map<string, int>    GC_PROP;
-    map<string, int>    GC_RELATIVE;
+    bool bCtrlMoving;
+    bool bStmpMoving;
+    bool bCtrlSizing;
+    bool bStmpSizing;
 
-    SDL_Keycode         ikey;
-    SDL_Keycode         iKeyUp;
-    SDL_Keycode         iKeyDown;
-    
-    const Uint8        *keystate;
-    SDL_Keymod          modstate;
-    SDL_Event           event;
+    char             szPromptMsg[1024];
+    bool             bClosePrompt;
+    char             szCommand[1024];
+    bool             bShowFPS;  // Show frames per second on or off
+    bool             bMadeLog;  // Made the log file on or off
+    CGAF *           pGAF;
+    C_GFX *          pGFX;
+    CLog *           pLog;
+    C_Mouse *        pMouse;
+    map<string, int> GC_TYPE;
+    map<string, int> GC_PROP;
+    map<string, int> GC_RELATIVE;
+
+    SDL_Keycode ikey;
+    SDL_Keycode iKeyUp;
+    SDL_Keycode iKeyDown;
+
+    const Uint8 *keystate;
+    SDL_Keymod   modstate;
+    SDL_Event    event;
 
     map<SDL_Keycode, char *> KeyMap;
     map<SDL_Keycode, bool>   KeyDown;
-    long KeyRepeatTimer;
-    CGLTextureList      *ButtonTexture;
-    CGLTextureList	    *B9utton;
-    CGLFontList         *font;
-    CGLFont             *pFirstFont;
-    bool    bStaticToolTip;
-    bool    bDrawToolTip;
-    bool    bResetToolTip;
-    RECT    rectToolTip;
-    char    hover_text[1024];
-    bool    bDebug;
+    long                     KeyRepeatTimer;
+    CGLTextureList *         ButtonTexture;
+    CGLTextureList *         B9utton;
+    CGLFontList *            font;
+    CGLFont *                pFirstFont;
+    bool                     bStaticToolTip;
+    bool                     bDrawToolTip;
+    bool                     bResetToolTip;
+    RECT                     rectToolTip;
+    char                     hover_text[1024];
+    bool                     bDebug;
 
-    bool	bGAFLoading;
+    bool     bGAFLoading;
     C_GCTRL *last_control_clicked;
     C_GCTRL *highest_control_clicked;
     C_GSTMP *highest_stump_clicked;
-    C_CONS  *pCons;
+    C_CONS * pCons;
 
-    void    clear(void); // clear
-    void    setdata(const char *stump, const char *ctrl, const char *value);
-    char    *getdata(const char *ctrlname);
-    void    getdata(const char *pString, const char *ctrlname);
-    int     getctrltype(const char *);
-    void    edit_stump(const char *file);
-    void    remove_control(const char *stump, const char *control);
-    void    set_focus_stump(C_GSTMP *pStump);
-    void    set_focus_control(C_GCTRL *pCtrl);
-    void    moveStumpToTop(C_GSTMP *pStump);
-    void    add_stump(const char *name,int x,int y,int x2,int y2,int props,const char *media);
-    void    mod_stump(const char *name,int x,int y,int x2,int y2,int props,const char *media);
-    void    del_stump(C_GSTMP *tstump);
-    void    del_stump(const char *name);
-    void    del_stumps(void);
-    bool    isAStumpMoving(void);
-    bool    isAControlMoving(void);
-    bool    isAStumpSizing(void);
-    bool    isAControlSizing(void);
+    void  clear(void);  // clear
+    void  setdata(const char *stump, const char *ctrl, const char *value);
+    char *getdata(const char *ctrlname);
+    void  getdata(const char *pString, const char *ctrlname);
+    int   getctrltype(const char *);
+    void  edit_stump(const char *file);
+    void  remove_control(const char *stump, const char *control);
+    void  set_focus_stump(C_GSTMP *pStump);
+    void  set_focus_control(C_GCTRL *pCtrl);
+    void  moveStumpToTop(C_GSTMP *pStump);
+    void  add_stump(const char *name, int x, int y, int x2, int y2, int props, const char *media);
+    void  mod_stump(const char *name, int x, int y, int x2, int y2, int props, const char *media);
+    void  del_stump(C_GSTMP *tstump);
+    void  del_stump(const char *name);
+    void  del_stumps(void);
+    bool  isAStumpMoving(void);
+    bool  isAControlMoving(void);
+    bool  isAStumpSizing(void);
+    bool  isAControlSizing(void);
 
-    void    draw(void);
-    void    draw_ctrls(void);
+    void     draw(void);
+    void     draw_ctrls(void);
     C_GSTMP *get_stump(const char *name);
     C_GSTMP *get_prev_stump(const char *name);
     C_GSTMP *get_prev_stump(C_GSTMP *tstump);
-    int     stump_count;
-    void    Init(void); //  initialize basic data
-    bool    initFonts(void); // initialize fonts
-    bool    initButtons(void); // initialize buttons
-    bool    loadFonts(void);
-    bool    load1Font(void);
-    bool    loadButtons(const char *szFilename);
-    bool    destroyFonts(void);
-    bool    destroyButtons(void);
+    int      stump_count;
+    void     Init(void);         //  initialize basic data
+    bool     initFonts(void);    // initialize fonts
+    bool     initButtons(void);  // initialize buttons
+    bool     loadFonts(void);
+    bool     load1Font(void);
+    bool     loadButtons(const char *szFilename);
+    bool     destroyFonts(void);
+    bool     destroyButtons(void);
     // G_CBACK _gcdatafill(string whatgui, string whatdata);
-    void    drawButton(int which, int updown, int x, int y);
-    void    drawButton(int which, int updown, int x, int y, int w, int h);
-    void    drawGUIResourceC(int which,int iX,int iY,int iX2,int iY2,unsigned char r, unsigned char g, unsigned char b);
-    void    drawGUIButton(int x, int y,int whichslice,int size);
-    void    drawGUIResource(int w,int x,int y,int x2,int y2);
-    int     drawSlicedGUIButton(C_GCTRL *gui_control,int x,int y); //int x, int y, int width);
-    int     DrawTextureGUIButton(C_GCTRL *gui_control,int x,int y);
-    void    drawB9utton(int x,int y, int w, int h);
-    void    drawMouse(int iX,int iY,int iMouseMode);
-    void    drawStatBar(int iX,int iY, int iW, int iT,int iV); // iT is total value, iV is current value, will draw percentage bar
-    void    drawCStatBar(int iX,int iY, int iW, int iT,int iV,long Color1,long Color2); // iT is total value, iV is current value, will draw percentage bar
-    bool    flashCursor(int iX, int iY);
-    void    gPrintPct(float fX, float fY,const char *szText,int fnt);
-    void    gPrint(int iX,int iY,const char *szText,const char *fnt);
-    void    gPrint(int iX,int iY,const char *szText,const char *fnt,int wset);
-    void    gPrint(int iX,int iY,const char *szText,int font);
-    void    gPrint(int iX,int iY,const char *szText,int font, int wset);
-    void    drawOSIcon(int iX,int iY,const char *szOS);
-    void    drawPrompt(void);
-    void    drawFileXferStatus(void);
-    void    drawFPS(int iX,int iY);//,long color);
-    void    drawCPUSTRING(int iX, int iY);
-    void    prompt(const char *szPrompt, const char *szCommand);
-    bool    bIsPrompt(void);
-    void    drawToolTip(void);
+    void drawButton(int which, int updown, int x, int y);
+    void drawButton(int which, int updown, int x, int y, int w, int h);
+    void drawGUIResourceC(int which, int iX, int iY, int iX2, int iY2, unsigned char r, unsigned char g, unsigned char b);
+    void drawGUIButton(int x, int y, int whichslice, int size);
+    void drawGUIResource(int w, int x, int y, int x2, int y2);
+    int  drawSlicedGUIButton(C_GCTRL *gui_control, int x, int y);  // int x, int y, int width);
+    int  DrawTextureGUIButton(C_GCTRL *gui_control, int x, int y);
+    void drawB9utton(int x, int y, int w, int h);
+    void drawMouse(int iX, int iY, int iMouseMode);
+    void drawStatBar(int iX, int iY, int iW, int iT, int iV);                             // iT is total value, iV is current value, will draw percentage bar
+    void drawCStatBar(int iX, int iY, int iW, int iT, int iV, long Color1, long Color2);  // iT is total value, iV is current value, will draw percentage bar
+    bool flashCursor(int iX, int iY);
+    void gPrintPct(float fX, float fY, const char *szText, int fnt);
+    void gPrint(int iX, int iY, const char *szText, const char *fnt);
+    void gPrint(int iX, int iY, const char *szText, const char *fnt, int wset);
+    void gPrint(int iX, int iY, const char *szText, int font);
+    void gPrint(int iX, int iY, const char *szText, int font, int wset);
+    void drawOSIcon(int iX, int iY, const char *szOS);
+    void drawPrompt(void);
+    void drawFileXferStatus(void);
+    void drawFPS(int iX, int iY);  //,long color);
+    void drawCPUSTRING(int iX, int iY);
+    void prompt(const char *szPrompt, const char *szCommand);
+    bool bIsPrompt(void);
+    void drawToolTip(void);
 
-
-    //void	cab_call_process_file(const char *file);
-    void	cab_call(const char *file);  // load a fm gui file
-    void	cab_store(const char *file); // save a fm gui to a file
-    void	call_do_line(const char *line);
-    void	call(const char *file);  // load a fm gui file
-    void    call_file(const char *file);
-    void	store(void); // save all stumps
-    void	store(const char *name); // save a fm gui to a file
-    void    bcall(const char *file);
-    void    bstore(const char *file);
+    // void	cab_call_process_file(const char *file);
+    void cab_call(const char *file);   // load a fm gui file
+    void cab_store(const char *file);  // save a fm gui to a file
+    void call_do_line(const char *line);
+    void call(const char *file);  // load a fm gui file
+    void call_file(const char *file);
+    void store(void);              // save all stumps
+    void store(const char *name);  // save a fm gui to a file
+    void bcall(const char *file);
+    void bstore(const char *file);
 
     // INPUT STUFF
-    int     DoInput(void);
-    int     DoKeyboard(SDL_Event event);
-    int     DoMouse(SDL_Event event);
-    void    checkMouseClicks(void);
+    int  DoInput(void);
+    int  DoKeyboard(SDL_Event event);
+    int  DoMouse(SDL_Event event);
+    void checkMouseClicks(void);
 
     // Keybinds
-    void    clearKeys(void);
-    bool    bSaveBinds(const char *szFilename);
+    void clearKeys(void);
+    bool bSaveBinds(const char *szFilename);
 
-   
-    CGLFont *GetFont(const char* szWhichFont);
+    CGLFont *GetFont(const char *szWhichFont);
     CGLFont *GetFont(int iWhich);
 
-    void    consEntry(const char *fmt, ...);
-    void    _consExecute(const char *cmd);
-    void    addChat(int channel, const char *user,  char *msg);
-    map<string, int>    GUI_CHAT;
-    map<int, string>    GUI_CHAT_COLOR;
+    void             consEntry(const char *fmt, ...);
+    void             _consExecute(const char *cmd);
+    void             addChat(int channel, const char *user, char *msg);
+    map<string, int> GUI_CHAT;
+    map<int, string> GUI_CHAT_COLOR;
 };
-#endif //_DLCS_C_GUI
-
+#endif  //_DLCS_C_GUI
 
 /*
 // Some junk
@@ -558,7 +539,7 @@ void C_CONS::_GlobalIntegers(){
     intmap["insert"] = SDLK_INSERT;
     intmap["delete"] = SDLK_DELETE;
     intmap["l_windows"] = SDLK_LSUPER;
-    intmap["r_windows"] = SDLK_RSUPER;
+    intmap["r_windows"] = SDLK_RSUPER;fonts/fnt01.png
 //    intmap["start"] = SDLK_START;
     intmap["power"] = SDLK_POWER;
 //    intmap["sleep"] = SDLK_SLEEP;
@@ -574,6 +555,4 @@ void C_CONS::_GlobalIntegers(){
 //    intmap["mediaselect"] = SDLK_MEDIASELECT;
 }
 */
-//G_CBACK C_GUI::_gcdatafill(string whatgui, string whatdata){//    pLog->_Add("_gcdatafill whatgui[%s] whatdata[%s]",(const char *)whatgui.c_str(),(const char *)whatdata.c_str());}
-
-
+// G_CBACK C_GUI::_gcdatafill(string whatgui, string whatdata){//    pLog->_Add("_gcdatafill whatgui[%s] whatdata[%s]",(const char *)whatgui.c_str(),(const char *)whatdata.c_str());}

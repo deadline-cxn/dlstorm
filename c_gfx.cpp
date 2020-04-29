@@ -226,6 +226,7 @@ bool C_GFX::InitGFX(int w, int h, int c, bool FullScreen, const char *szWindowIn
 
     bUse3d = false;
 #ifdef _DLCS_OPENGL
+    LogEntry("Setting up for OpenGL\n");
     iVideoFlags |= SDL_WINDOW_OPENGL;  // iVideoFlags = SDL_HWPALETTE | SDL_DOUBLEBUF; // old SDL 1.2 // if(bFullScreen) iVideoFlags |= SDL_WINDOW_FULLSCREEN;
     bUse3d = true;
 #endif
@@ -238,14 +239,14 @@ bool C_GFX::InitGFX(int w, int h, int c, bool FullScreen, const char *szWindowIn
     }
     pWindowIcon = LoadGAFSurface(pGAF, szIcon);
     if (pWindowIcon) SDL_SetWindowIcon(pWindow, pWindowIcon);
-    LoadFont("gfx/font.bmp");
+    LoadFont("fonts/fnt01.png");
 
     if (bUse3d)
         if (!Init3D()) return false;
 
     SDL_ShowCursor(SDL_DISABLE);
     SetWindowTitle(szWindowCaption);
-    LoadFont("gfx/font.bmp");
+    LoadFont("fonts/fnt01.png");
 
     pCamera = new C_Camera();
     if (pCamera) {

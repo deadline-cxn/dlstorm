@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_var.cpp
  **   Class:        CVar
  **   Description:  Var class

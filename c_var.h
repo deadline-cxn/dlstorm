@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_var.h
  **   Class:        CVar
  **   Description:  Var class
@@ -60,8 +60,7 @@ class CVarSet {
     char                            szFilename[_FILENAME_SIZE];
     bool                            bLoad(void);
     bool                            bSave(void);
-
-    CLog *pLog;
+    CLog *                          pLog;
 
     void        Init();
     void        set_cvar(const char *name, const char *value);

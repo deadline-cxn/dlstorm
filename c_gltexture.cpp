@@ -228,8 +228,6 @@ GLuint CGLTexture::LoadGL(const char *szInFilename) {
     }
     ilDeleteImages(1, &imageID);
     return glBmap;
-
-    return 0;
 }
 
 /*

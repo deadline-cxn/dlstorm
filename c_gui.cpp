@@ -357,7 +357,7 @@ void C_GCTRL::populate_ctrl_editor(void) {
     // pGUI->GC_PROP[FM_GP_BORDER].c_str();
     // (const char *)va("%d",props);
 }
-char *C_GCTRL::convert$(const char *in) {
+const char *C_GCTRL::convert$(const char *in) {
     vector<string> varswap;
     char           temp[1024];
     char           temp2[1024];
