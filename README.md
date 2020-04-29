@@ -11,7 +11,7 @@ In order for this package to work you must define:
 #define _DLCS_OPENGL  // will create an OPENGL application. Must be useds with _DLCS_SDL
 ```
 
-#Scripts
+# Scripts
 
 There is a scripts folder with a script to install the libraries for debian/ubuntu using apt.
 
@@ -20,7 +20,7 @@ There is a scripts folder with a script to install the libraries for debian/ubun
 sudo apt-get install libncurses5-dev libmysql++-dev tcl-dev liblua50-dev libdevil-dev libsdl1.2-dev
 ```
 
-#Files
+# Files
 
 ```
 dlstorm.cpp	C, various functions that make coding easier
@@ -44,8 +44,9 @@ c_map.cpp	In development
 c_sqlite.cpp	SQLite class wrapper
 c_timer.cpp	Timer class
 c_gnu.cpp	Portability stuff
+```
 
-#Contact Me!
+# Contact Me!
  
 - Twitter: @Sethcoder
 - Email: defectiveseth@gmail.com
