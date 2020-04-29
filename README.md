@@ -24,8 +24,8 @@ sudo apt-get install libncurses5-dev libmysql++-dev tcl-dev liblua50-dev libdevi
 ## Files
 
 ```
-dlstorm.cpp	C, various functions that make coding easier
-dlstorm_lib.h	Header, creates macros and system level definitions for portability
+dlcs.cpp	C, various functions that make coding easier
+dlcs_lib.h	Header, creates macros and system level definitions for portability
 c_net.cpp	Network class wrapper
 c_log.cpp	Log class to log information into a file
 c_data.cpp	Data storage class (creates .ini files with general data)
