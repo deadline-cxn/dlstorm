@@ -1,11 +1,8 @@
 # DLStorm C/C++ Code Library
 ============================
 
-##Deadline's C/C++ Code Library
-
 Utilities and C++ classes with the intent to make game programming with C/C++ easier.
 I will start documenting these functions and add examples soon.
-
 
 In order for this package to work you must define:
 
@@ -14,6 +11,8 @@ In order for this package to work you must define:
 #define _DLCS_SDL     // will create a SDL application
 #define _DLCS_OPENGL  // will create an OPENGL application. Must be useds with _DLCS_SDL
 ```
+
+.
 
 #Scripts
 
