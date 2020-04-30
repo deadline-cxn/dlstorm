@@ -1,33 +1,33 @@
 #include "c_sqlitedb.h"
 
-C_SQLite::C_SQLite(const char *szInFilename, CLog *pInLog) {
-    Init();
-    pLog = pInLog;
-    OpenDB(szInFilename);
-}
-C_SQLite::~C_SQLite() {
-    Shutdown();  //
-}
+C_SQLite::C_SQLite() {}
+
+// C_SQLite::C_SQLite(const char *szInFilename, CLog *pInLog) {     Init();     pLog = pInLog;     OpenDB(szInFilename);}
+// C_SQLite::~C_SQLite() {     Shutdown();  // }
+
+C_SQLite::~C_SQLite() {}
 
 /////////////////////////////////////////
 
 void C_SQLite::Init() {
-    pDB  = 0;
+    // pDB  = 0;
     pLog = 0;
+
     memset(szDBFilename, 0, _FILENAME_SIZE);
 }
 void C_SQLite::Shutdown() {
-    sqlite3_close(pDB);  //
+    //  sqlite3_close(pDB);  //
     LogEntry("SQLite shut down.\n");
 }
 
 int C_SQLite::OpenDB(const char *szInFilename) {
     strcpy(szDBFilename, szInFilename);
-    int iResult = sqlite3_open(szDBFilename, &pDB);
+    // int iResult = sqlite3_open(szDBFilename, &pDB);
+    int iResult = 0;
     if (iResult) {
-        LogEntry(va("SQLite version %s using database: [%s]\n", SQLITE_VERSION, szDBFilename));
+        // LogEntry(va("SQLite version %s using database: [%s]\n", SQLITE_VERSION, szDBFilename));
     } else {
-        LogEntry(va("SQLite version %s failed to load file [%s]\n", SQLITE_VERSION, szDBFilename));
+        // LogEntry(va("SQLite version %s failed to load file [%s]\n", SQLITE_VERSION, szDBFilename));
     }
     return iResult;
 }
@@ -90,7 +90,8 @@ int C_SQLite::db_query(const char *fmt, ...) {
     char *zErrMsg = 0;
     int   rc, x;
 
-    rc = sqlite3_get_table(pDB, s_exe.c_str(), &db_result, &dbr_nrow, &dbr_ncol, &zErrMsg);
+    // rc = sqlite3_get_table(pDB, s_exe.c_str(), &db_result, &dbr_nrow, &dbr_ncol, &zErrMsg);
+    rc = -1;
 
     if (vcol_head.size()) {
         vcol_head.clear();
@@ -99,7 +100,7 @@ int C_SQLite::db_query(const char *fmt, ...) {
         vdata.clear();
     }
 
-    if (rc == SQLITE_OK) {
+    if (!rc) {
         for (int i = 0; i < dbr_ncol; ++i) {
             vcol_head.push_back(db_result[i]);  // First row heading
         }
@@ -108,7 +109,7 @@ int C_SQLite::db_query(const char *fmt, ...) {
         }
     }
 
-    sqlite3_free_table(db_result);
+    // sqlite3_free_table(db_result);
 
     if (db_logresult) {
         s.clear();

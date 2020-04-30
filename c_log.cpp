@@ -17,17 +17,15 @@
 #include "c_log.h"
 /////////////////////////////////// CLog class
 CLog::CLog() {
+    Initialize();
     memset(logfile, 0, _MAX_PATH);
     strcpy(logfile, "log.log");
-    Initialize();
-    //    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::CLog(const char *szFilename) {
     Initialize();
     SetName(szFilename);
     Restart();
     LineFeedsOn();
-    //    if(bDebug) _Add("DEBUGGING ACTIVE");
 }
 CLog::CLog(const char *szFilename, bool bQ) {
     Initialize();
@@ -39,6 +37,18 @@ CLog::CLog(const char *szFilename, bool bQ) {
 }
 CLog::~CLog() {}
 void CLog::Initialize(void) {
+    memset(szBegin, 0, _TEXTNAME_SIZE);
+    memset(szEnd, 0, _TEXTNAME_SIZE);
+    memset(szLineSep, 0, _TEXTNAME_SIZE);
+    memset(logfile, 0, _MAX_PATH);
+    // memset(currentdir, 0, _MAX_PATH);
+    // memset(logdir, 0, _MAX_PATH);
+    bActive    = true;
+    bLineFeeds = false;
+    disable    = false;
+    bDebug     = false;
+    bQuiet     = false;
+
 #ifdef _DLCS_DEBUG_LOG
     bDebug = true;
 #else
@@ -161,7 +171,7 @@ void CLog::AddEntryNoTime(const char *fmt, ...) {
     if (fp) {
         if (!bLineFeeds) {
             fprintf(fp, "%s", ach);
-            if (!bQuiet) printf("%s\n",ach);
+            if (!bQuiet) printf("%s\n", ach);
         } else {
             fprintf(fp, "%s\n", ach);
             if (!bQuiet) printf("%s\n", ach);

@@ -40,8 +40,8 @@ class CLog {
     char szEnd[_TEXTNAME_SIZE];
     char szLineSep[_TEXTNAME_SIZE];
     char logfile[_MAX_PATH];
-    char currentdir[_MAX_PATH];
-    char logdir[_MAX_PATH];
+    // char currentdir[_MAX_PATH];
+    // char logdir[_MAX_PATH];
     bool bActive;
     bool bLineFeeds;
     bool disable;
