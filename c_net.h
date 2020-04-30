@@ -18,6 +18,9 @@
 #ifndef _DLCS_C_NET
 #define _DLCS_C_NET
 
+#include <map>
+using namespace std;
+
 #include "dlcs.h"
 
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
@@ -69,116 +72,7 @@
     iPacketCursor += sizeof(Val);             \
     if (iPacketCursor > iPacketLen) return 0; \
     return *((Val *)(pPacketBuffer + iPacketCursor - sizeof(Val)));
-#ifdef _WIN32
-static struct stErrorEntry {
-    int         iID;
-    const char *pMessage;
-} pErrorList[] = {
-    0,
-    "no error",
-    WSAEACCES,
-    "WSAEACCES - permission denied",
-    WSAEADDRINUSE,
-    "WSAEADDRINUSE - address already in use",
-    WSAEADDRNOTAVAIL,
-    "WSAEADDRNOTAVAIL - cannot assign requested address",
-    WSAEAFNOSUPPORT,
-    "WSAEAFNOSUPPORT [Lost internet connection]",
-    WSAEALREADY,
-    "WSAEALREADY - operation already in progress",
-    WSAECONNABORTED,
-    "WSAECONNABORTED - software caused connection abort",
-    WSAECONNREFUSED,
-    "WSAECONNREFUSED - connection refused",
-    WSAECONNRESET,
-    "WSAECONNRESET - connection reset by peer",
-    WSAEDESTADDRREQ,
-    "WSAEDESTADDRREQ - destination address required",
-    WSAEFAULT,
-    "WSAEFAULT - bad address",
-    WSAEHOSTDOWN,
-    "WSAEHOSTDOWN - host is down",
-    WSAEHOSTUNREACH,
-    "WSAEHOSTUNREACH - no route to host",
-    WSAEINPROGRESS,
-    "WSAEINPROGRESS - operation now in progress",
-    WSAEINTR,
-    "WSAEINTR - interrupted function call",
-    WSAEINVAL,
-    "WSAEINVAL - invalid argument",
-    WSAEISCONN,
-    "WSAEISCONN - socket is already connected",
-    WSAEMFILE,
-    "WSAEMFILE  - too many open files",
-    WSAEMSGSIZE,
-    "WSAEMSGSIZE - message too long",
-    WSAENETDOWN,
-    "WSAENETDOWN - network is down",
-    WSAENETRESET,
-    "WSAENETRESET - network dropped connection on reset",
-    WSAENETUNREACH,
-    "WSAENETUNREACH - network is unreachable",
-    WSAENOBUFS,
-    "WSAENOBUFS - no buffer space available",
-    WSAENOPROTOOPT,
-    "WSAENOPROTOOPT - bad protocol option",
-    WSAENOTCONN,
-    "WSAENOTCONN - socket is not connected",
-    WSAENOTSOCK,
-    "WSAENOTSOCK - socket operation on non-socket",
-    WSAEOPNOTSUPP,
-    "WSAEOPNOTSUPP - operation not supported",
-    WSAEPFNOSUPPORT,
-    "WSAEPFNOSUPPORT - protocol family not supported",
-    WSAEPROCLIM,
-    "WSAEPROCLIM - too many processes",
-    WSAEPROTONOSUPPORT,
-    "WSAEPROTONOSUPPORT - protocol not supported",
-    WSAEPROTOTYPE,
-    "WSAEPROTOTYPE - protocol wrong type for socket",
-    WSAESHUTDOWN,
-    "WSAESHUTDOWN - cannot send after socket shutdown",
-    WSAESOCKTNOSUPPORT,
-    "WSAESOCKTNOSUPPORT - socket type not supported",
-    WSAETIMEDOUT,
-    "WSAETIMEDOUT - connection timed out",
-    WSATYPE_NOT_FOUND,
-    "WSATYPE_NOT_FOUND - class type not found",
-    WSAEWOULDBLOCK,
-    "WSAEWOULDBLOCK - resource temporarily unavailable",
-    WSAHOST_NOT_FOUND,
-    "WSAHOST_NOT_FOUND - host not found",
-    WSA_INVALID_HANDLE,
-    "WSA_INVALID_HANDLE - specified event object handle is invalid",
-    WSA_INVALID_PARAMETER,
-    "WSA_INVALID_PARAMETER - one or more parameters are invalid",
-    WSA_IO_INCOMPLETE,
-    "WSA_IO_INCOMPLETE - overlapped i/o event object not in signaled state",
-    WSA_IO_PENDING,
-    "WSA_IO_PENDING - overlapped operations will complete later",
-    WSA_NOT_ENOUGH_MEMORY,
-    "WSA_NOT_ENOUGH_MEMORY - insufficient nemory available",
-    WSANOTINITIALISED,
-    "WSANOTINITIALISED - successful WSASartup() not yet performened",
-    WSANO_DATA,
-    "WSANO_DATA - valid name, no data record of requested type",
-    WSANO_RECOVERY,
-    "WSANO_RECOVERY - this is a non-recoverable error",
-    WSASYSCALLFAILURE,
-    "WSASYSCALLFAILURE - system call failure",
-    WSASYSNOTREADY,
-    "WSASYSNOTREADY - network subsystem is unavailable",
-    WSATRY_AGAIN,
-    "WSATRY_AGAIN - non-authoriative host not found",
-    WSAVERNOTSUPPORTED,
-    "WSAVERNOTSUPPORTED - winsock.dll version out of range",
-    WSAEDISCON,
-    "WSAEDISCON - graceful shutdown in progress",
-    WSA_OPERATION_ABORTED,
-    "WSA_OPERATION_ABORTED - overlapped operation aborted",
-};
-const int iNumMessages = sizeof(pErrorList) / sizeof(struct stErrorEntry);
-#endif
+
 /////////////////////////// Login operation codes
 typedef enum {
     LOGIN_WHAT,
@@ -348,16 +242,13 @@ int         NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2);
 void        FinishCtlPacket(CPacket *pPacket);
 int         NET_Init(void);
 int         NET_Shutdown(void);
-
-bool dlcs_get_hostname(char *szHost);
-bool dlcs_get_ipaddress(char *szIP);
-
+bool        dlcs_get_hostname(char *szHost);
+bool        dlcs_get_ipaddress(char *szIP);
 // const char *dlcs_get_webpage(const char * url);
 // void        dlcs_get_webpage2(const char * url,char *x);
 // const char *dlcs_dns_lookup(const char * hostname);
 // const char *dlcs_inet_aton(const char * ip);
 // const char *dlcs_inet_ntoa(const char * ip);
-
 #ifdef __cplusplus
 }
 #endif

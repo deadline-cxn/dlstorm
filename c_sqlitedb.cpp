@@ -1,15 +1,38 @@
 #include "c_sqlitedb.h"
 
-char **        db_result;
-int            dbr_nrow;
-int            dbr_ncol;
-vector<string> vcol_head;
-vector<string> vdata;
-bool           db_logresult;
-sqlite3 *      pDB;
+C_SQLite::C_SQLite(const char *szInFilename, CLog *pInLog) {
+    Init();
+    pLog = pInLog;
+    OpenDB(szInFilename);
+}
+C_SQLite::~C_SQLite() {
+    Shutdown();  //
+}
 
 /////////////////////////////////////////
-string db_getvalue(string s_col1, string s_key, string s_col2) {
+
+void C_SQLite::Init() {
+    pDB  = 0;
+    pLog = 0;
+    memset(szDBFilename, 0, _FILENAME_SIZE);
+}
+void C_SQLite::Shutdown() {
+    sqlite3_close(pDB);  //
+    LogEntry("SQLite shut down.\n");
+}
+
+int C_SQLite::OpenDB(const char *szInFilename) {
+    strcpy(szDBFilename, szInFilename);
+    int iResult = sqlite3_open(szDBFilename, &pDB);
+    if (iResult) {
+        LogEntry(va("SQLite version %s using database: [%s]\n", SQLITE_VERSION, szDBFilename));
+    } else {
+        LogEntry(va("SQLite version %s failed to load file [%s]\n", SQLITE_VERSION, szDBFilename));
+    }
+    return iResult;
+}
+
+string C_SQLite::db_getvalue(string s_col1, string s_key, string s_col2) {
     int i, w_col1, w_col2;
     // x, w_row
 
@@ -42,7 +65,7 @@ string db_getvalue(string s_col1, string s_key, string s_col2) {
     return r_str;
 }
 /////////////////////////////////////////
-int db_queryl(const char *fmt, ...) {
+int C_SQLite::db_queryl(const char *fmt, ...) {
     char    ach[1024];
     va_list va;
     va_start(va, fmt);
@@ -52,7 +75,7 @@ int db_queryl(const char *fmt, ...) {
     return db_query(ach);
 }
 /////////////////////////////////////////
-int db_query(const char *fmt, ...) {
+int C_SQLite::db_query(const char *fmt, ...) {
     char    ach[1024];
     va_list va;
     va_start(va, fmt);

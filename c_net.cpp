@@ -15,7 +15,9 @@
  **   Email:        defectiveseth@gmail.com
  **
  ***************************************************************/
+
 #include "c_net.h"
+
 /////////////////////////// CCSocket class
 CCSocket::CCSocket() { initSocket(); }
 CCSocket::CCSocket(int iPort) {
@@ -67,6 +69,7 @@ void CCSocket::initSocket(void) {
     PacketBuffer.iSequence = 0;
     memset(PacketBuffer.pData, 0, MAX_DATAGRAM);
 }
+
 CCSocket::~CCSocket() {
     CloseSocket(iSocket);
     FREE(pSendBuffer);
@@ -723,14 +726,60 @@ int NET_Shutdown(void) {
 }
 const char *NET_pGetLastError(void) {
 #ifdef _WIN32
-    int err;
-    err = WSAGetLastError();
-    for (int i = 0; i < iNumMessages; i++) {
-        if (pErrorList[i].iID == err) {
-            return (const char *)pErrorList[i].pMessage;
-        }
-    }
-    return (const char *)pErrorList[0].pMessage;
+    map<int, std::string> WindowsErrorMap;
+    WindowsErrorMap[0]                     = "no error";
+    WindowsErrorMap[WSAEACCES]             = "WSAEACCES - permission denied";
+    WindowsErrorMap[WSAEADDRINUSE]         = "WSAEADDRINUSE - address already in use";
+    WindowsErrorMap[WSAEADDRNOTAVAIL]      = "WSAEADDRNOTAVAIL - cannot assign requested address";
+    WindowsErrorMap[WSAEAFNOSUPPORT]       = "WSAEAFNOSUPPORT [Lost internet connection]";
+    WindowsErrorMap[WSAEALREADY]           = "WSAEALREADY - operation already in progress";
+    WindowsErrorMap[WSAECONNABORTED]       = "WSAECONNABORTED - software caused connection abort";
+    WindowsErrorMap[WSAECONNREFUSED]       = "WSAECONNREFUSED - connection refused";
+    WindowsErrorMap[WSAECONNRESET]         = "WSAECONNRESET - connection reset by peer";
+    WindowsErrorMap[WSAEDESTADDRREQ]       = "WSAEDESTADDRREQ - destination address required";
+    WindowsErrorMap[WSAEFAULT]             = "WSAEFAULT - bad address";
+    WindowsErrorMap[WSAEHOSTDOWN]          = "WSAEHOSTDOWN - host is down";
+    WindowsErrorMap[WSAEHOSTUNREACH]       = "WSAEHOSTUNREACH - no route to host";
+    WindowsErrorMap[WSAEINPROGRESS]        = "WSAEINPROGRESS - operation now in progress";
+    WindowsErrorMap[WSAEINTR]              = "WSAEINTR - interrupted function call";
+    WindowsErrorMap[WSAEINVAL]             = "WSAEINVAL - invalid argument";
+    WindowsErrorMap[WSAEISCONN]            = "WSAEISCONN - socket is already connected";
+    WindowsErrorMap[WSAEMFILE]             = "WSAEMFILE  - too many open files";
+    WindowsErrorMap[WSAEMSGSIZE]           = "WSAEMSGSIZE - message too long";
+    WindowsErrorMap[WSAENETDOWN]           = "WSAENETDOWN - network is down";
+    WindowsErrorMap[WSAENETRESET]          = "WSAENETRESET - network dropped connection on reset";
+    WindowsErrorMap[WSAENETUNREACH]        = "WSAENETUNREACH - network is unreachable";
+    WindowsErrorMap[WSAENOBUFS]            = "WSAENOBUFS - no buffer space available";
+    WindowsErrorMap[WSAENOPROTOOPT]        = "WSAENOPROTOOPT - bad protocol option";
+    WindowsErrorMap[WSAENOTCONN]           = "WSAENOTCONN - socket is not connected";
+    WindowsErrorMap[WSAENOTSOCK]           = "WSAENOTSOCK - socket operation on non-socket";
+    WindowsErrorMap[WSAEOPNOTSUPP]         = "WSAEOPNOTSUPP - operation not supported";
+    WindowsErrorMap[WSAEPFNOSUPPORT]       = "WSAEPFNOSUPPORT - protocol family not supported";
+    WindowsErrorMap[WSAEPROCLIM]           = "WSAEPROCLIM - too many processes";
+    WindowsErrorMap[WSAEPROTONOSUPPORT]    = "WSAEPROTONOSUPPORT - protocol not supported";
+    WindowsErrorMap[WSAEPROTOTYPE]         = "WSAEPROTOTYPE - protocol wrong type for socket";
+    WindowsErrorMap[WSAESHUTDOWN]          = "WSAESHUTDOWN - cannot send after socket shutdown";
+    WindowsErrorMap[WSAESOCKTNOSUPPORT]    = "WSAESOCKTNOSUPPORT - socket type not supported";
+    WindowsErrorMap[WSAETIMEDOUT]          = "WSAETIMEDOUT - connection timed out";
+    WindowsErrorMap[WSATYPE_NOT_FOUND]     = "WSATYPE_NOT_FOUND - class type not found";
+    WindowsErrorMap[WSAEWOULDBLOCK]        = "WSAEWOULDBLOCK - resource temporarily unavailable";
+    WindowsErrorMap[WSAHOST_NOT_FOUND]     = "WSAHOST_NOT_FOUND - host not found";
+    WindowsErrorMap[WSA_INVALID_HANDLE]    = "WSA_INVALID_HANDLE - specified event object handle is invalid";
+    WindowsErrorMap[WSA_INVALID_PARAMETER] = "WSA_INVALID_PARAMETER - one or more parameters are invalid";
+    WindowsErrorMap[WSA_IO_INCOMPLETE]     = "WSA_IO_INCOMPLETE - overlapped i/o event object not in signaled state";
+    WindowsErrorMap[WSA_IO_PENDING]        = "WSA_IO_PENDING - overlapped operations will complete later";
+    WindowsErrorMap[WSA_NOT_ENOUGH_MEMORY] = "WSA_NOT_ENOUGH_MEMORY - insufficient nemory available";
+    WindowsErrorMap[WSANOTINITIALISED]     = "WSANOTINITIALISED - successful WSASartup() not yet performened";
+    WindowsErrorMap[WSANO_DATA]            = "WSANO_DATA - valid name, no data record of requested type";
+    WindowsErrorMap[WSANO_RECOVERY]        = "WSANO_RECOVERY - this is a non-recoverable error";
+    WindowsErrorMap[WSASYSCALLFAILURE]     = "WSASYSCALLFAILURE - system call failure";
+    WindowsErrorMap[WSASYSNOTREADY]        = "WSASYSNOTREADY - network subsystem is unavailable";
+    WindowsErrorMap[WSATRY_AGAIN]          = "WSATRY_AGAIN - non-authoriative host not found";
+    WindowsErrorMap[WSAVERNOTSUPPORTED]    = "WSAVERNOTSUPPORTED - winsock.dll version out of range";
+    WindowsErrorMap[WSAEDISCON]            = "WSAEDISCON - graceful shutdown in progress";
+    WindowsErrorMap[WSA_OPERATION_ABORTED] = "WSA_OPERATION_ABORTED - overlapped operation aborted";
+    return (const char *)WindowsErrorMap[WSAGetLastError()].c_str();
+
 #else
     return (strerror(errno));
 #endif
@@ -776,33 +825,26 @@ const char *NET_pAddrToString(struct sockaddr *pAddr) {
 }
 
 bool dlcs_get_hostname(char *szHost) {
-    // string x;
-    char y[HOST_NAME_MAX];
-    memset(y, 0, HOST_NAME_MAX);
-    // x.assign(y);
-    gethostname(y, HOST_NAME_MAX);
-    strcpy(szHost, y);
+    gethostname(szHost, _HOST_NAME_MAX);
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool dlcs_get_ipaddress(char *szIP) {
-    char x[_FILENAME_SIZE];
-    memset(x, 0, _FILENAME_SIZE);
-    char y[_FILENAME_SIZE];
-    memset(y, 0, _FILENAME_SIZE);
-    strcpy(y, "127.0.0.1");  // TODO: Add actual computer ip address here
-    dlcs_get_hostname(y);
-    struct hostent *phe = gethostbyname(y);
-    if (phe == 0) {  // x=;
-        strcpy(x, "ERROR");
+    dlcsm_make_str(szTemp1);
+    dlcsm_make_str(szTemp2);
+    strcpy(szTemp2, "127.0.0.1");  // TODO: Add actual computer ip address here
+    dlcs_get_hostname(szTemp2);
+    struct hostent *phe = gethostbyname(szTemp2);
+    if (phe == 0) {
+        strcpy(szTemp1, "ERROR");
     } else {
         for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
             struct in_addr addr;
             memcpy(&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-            strcpy(x, inet_ntoa(addr));
+            strcpy(szTemp1, inet_ntoa(addr));
         }
     }
-    strcpy(szIP, x);
+    strcpy(szIP, szTemp1);
     return true;
 }
 /*

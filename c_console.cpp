@@ -116,7 +116,7 @@ void        C_CONS::RegVar(const char *name, void *var) { varmap[name] = var; }
 void        C_CONS::RegInt(const char *name, int x) { intmap[name] = x; }
 void        C_CONS::set_cvar(char *name, char *value) {}
 void        C_CONS::get_cvar(char *name, char *value) {}
-int         C_CONS::get_cvartype(const char *s) {}
-const char *C_CONS::get_cvartype_string(int t) {}
-const char *C_CONS::get_cvarformatted(const char *f, void *cv) {}
-char *      C_CONS::get_cvarformat(int t) {}
+int         C_CONS::get_cvartype(const char *s) { return 0; }
+const char *C_CONS::get_cvartype_string(int t) { return 0; }
+const char *C_CONS::get_cvarformatted(const char *f, void *cv) { return 0; }
+char *      C_CONS::get_cvarformat(int t) { return 0; }

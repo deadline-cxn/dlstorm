@@ -1,6 +1,21 @@
 {
     "configurations": [
         {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/include/tcl8.6",
+                "/usr/include/SDL2",
+                "/usr/include/GL",
+                "/usr/include/IL"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        },
+        {
             "name": "Win32",
             "includePath": [
                 "E:\\dev\\repos\\dlstorm",

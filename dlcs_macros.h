@@ -20,14 +20,21 @@
 
 //#define	MAKERGB(v,r,g,b)       v=r+(g<<8)+(b<<16)
 //#define	MAKERGBA(v,r,g,b,a)    v[0]=r;v[1]=g;v[2]=b;v[3]=a
+
 #define zl(x)             \
     if (Log) {            \
         Log->AddEntry(x); \
     }
-#define LogEntry(x)        \
-    if (pLog) {            \
-        pLog->AddEntry(x); \
+
+#define LogEntry(fmt, ...)                                  \
+    if (pLog) {                                             \
+        pLog->bLineFeeds = 0;                               \
+        if (fmt[strlen(fmt) - 1] == '\n')                   \
+            pLog->AddEntry(va(fmt, ##__VA_ARGS__));         \
+        else                                                \
+            pLog->AddEntry(va("%s\n", fmt, ##__VA_ARGS__)); \
     }
+
 #define s_MAKEDWORD(a, b, c, d) ((a) + (b << 8) + (c << 16) + (d << 24))
 #define s_MAKEWORD(a, b)        ((a) + (b << 8))
 #define PI                      3.145f
