@@ -1,0 +1,2 @@
+- move all dlstorm code to dlstorm/src
+- doxygen the dlstorm/src and put it in dlstorm/docs
