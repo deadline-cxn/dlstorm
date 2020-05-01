@@ -73,6 +73,7 @@
     memset(x, 0, 1024);
 
 // MISC MACROS
+
 #define dlcsm_GetRValue(rgb)   ((BYTE)(rgb))
 #define dlcsm_GetGValue(rgb)   ((BYTE)(((WORD)(rgb)) >> 8))
 #define dlcsm_GetBValue(rgb)   ((BYTE)((rgb) >> 16))
@@ -137,5 +138,7 @@
     memset(x, 0, y);
 #define dlcsm_zero(x)  memset(x, 0, sizeof(x));
 #define dlcsm_debug(x) printf(x);
+
+#define dlcsm_explode_list(x) vector<string> x
 
 #endif  // _DLCS_MACROS

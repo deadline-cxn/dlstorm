@@ -20,6 +20,8 @@
 #include "c_log.h"
 #include "dlcs.h"
 
+#define _DLCS_CVARSET_DEFAULT_FILENAME "default_cvar_filename.ini"
+
 // name convention for the cvars:
 // b_  = bool
 // s_  = string
@@ -47,22 +49,24 @@ enum convar_types {
 class CVarSet {
    public:
     CVarSet();
-    CVarSet(char *infilename);
+    CVarSet(char *szInFilename);
     ~CVarSet();
 
     // cvar map
-    typedef void *                  strvar_t;
-    typedef map<string, strvar_t>   strvarmap_t;
-    map<string, strvar_t>::iterator svm_i;
-    strvarmap_t                     varmap;
-    map<string, int>                cvar_type_map;         // cvar type map
-    map<int, string>                cvar_type_format_map;  // cvar type format map
-    char                            szFilename[_FILENAME_SIZE];
-    bool                            bLoad(void);
-    bool                            bSave(void);
-    CLog *                          pLog;
+    // typedef void *                  strvar_t;
+    // typedef map<string, strvar_t>   strvarmap_t;
+    // map<string, strvar_t>::iterator svm_i;
+    // strvarmap_t      varmap;
+    //     map<string, int> cvar_type_map;         // cvar type map
+    //     map<int, string> cvar_type_format_map;  // cvar type format map
 
-    void        Init();
+    char  szFilename[_FILENAME_SIZE];
+    bool  bLoadCVars(void);
+    bool  bSaveCVars(void);
+    CLog *pLog;
+
+    void Init();
+
     void        set_cvar(const char *name, const char *value);
     void        set_cvar(const char *name, int value);
     void        get_cvar(const char *name, const char *value);
@@ -72,6 +76,38 @@ class CVarSet {
     const char *get_cvartype_string(int t);
     const char *get_cvarformatted(const char *f, void *cv);
     char *      get_cvarformat(int t);
+
+    void RegFunc(const char *name, void *func);
+    void RegVar(const char *name, void *var);
+    void RegInt(const char *name, int x);
+
+    // function map
+    typedef void                     strfunc_t(const string &);
+    typedef map<string, strfunc_t *> strfmap_t;
+    strfmap_t                        map_Functions;
+
+    // cvar map
+    typedef void *                  strvar_t;
+    typedef map<string, strvar_t>   strvarmap_t;
+    map<string, strvar_t>::iterator svm_i;
+    strvarmap_t                     map_CVars;
+
+    // cvar type map
+    map<string, int> cvar_type_map;
+
+    // cvar type format map
+    map<int, string> cvar_type_format_map;
+
+    // string map
+    map<string, string> stringmap;
+
+    // int map
+    map<string, int> intmap;
+
+    // void                _GlobalStrings(void);
+    // void                _GlobalIntegers(void);
+    // void                _GlobalFunctions(void);
+    // void                _GlobalVars(void);
 };
 
 #endif  // _DLCS_CVAR

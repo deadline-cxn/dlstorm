@@ -17,18 +17,47 @@
 #include "c_console.h"
 
 C_CONS::C_CONS() { Init(); }
-C_CONS::C_CONS(CGAF *pInGAF, CLog *pInLog) {
+
+C_CONS::C_CONS(CLog *pInLog) {
     Init();
-    pGAF = pInGAF;
     pLog = pInLog;
+    strcpy(szFilename, _DLCS_C_CONSOLE_DEFAULT_FILENAME);
+    pCVars = new CVarSet(szFilename);
 }
+
+C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF) {
+    Init();
+    pLog = pInLog;
+    pGAF = pInGAF;
+    strcpy(szFilename, _DLCS_C_CONSOLE_DEFAULT_FILENAME);
+    pCVars = new CVarSet(szFilename);
+}
+C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF, const char *szInFilename) {
+    Init();
+    pLog = pInLog;
+    pGAF = pInGAF;
+    strcpy(szFilename, szInFilename);
+    pCVars = new CVarSet(szFilename);
+}
+
+C_CONS::C_CONS(CLog *pInLog, const char *szInFilename) {
+    Init();
+    pLog = pInLog;
+    strcpy(szFilename, szInFilename);
+    pCVars = new CVarSet(szFilename);
+}
+
 C_CONS::~C_CONS() {}
 
 bool C_CONS::Init(void) {
-    pGAF   = 0;
-    pLog   = 0;
+    memset(szFilename, 0, _FILENAME_SIZE);
     iLines = 32;
-    buf.clear();
+    pCVars = 0;
+    pLog   = 0;
+    pGAF   = 0;
+    memset(szConsoleInput, 0, _DLCS_CONSOLE_ENTRY_SIZE);
+    vConsoleBuffer.clear();
+    // iConsoleHistoryPosition = 0;
     return 1;
 }
 
@@ -46,8 +75,6 @@ void C_CONS::AddLine(const char *fmt, ...) {
 }
 
 void C_CONS::_Execute(const char *cmd) {
-    unsigned int i;
-    //,j;
     char temp[1024];
     memset(temp, 0, 1024);
 
@@ -56,7 +83,7 @@ void C_CONS::_Execute(const char *cmd) {
     memset(cmd2, 0, 1024);
     strcpy(cmd2, cmd);
 
-    for (i = 0; i < strlen(cmd2); i++) {
+    for (unsigned int i = 0; i < strlen(cmd2); i++) {
         switch (cmd2[i]) {
             case '\n':
             case '\r':
@@ -75,13 +102,13 @@ void C_CONS::_Execute(const char *cmd) {
     if (cQuoteCount & 1) return;  // mismatched quote
     vector<string> ncmd = dlcs_explode(";", cmd2);
     if (ncmd.size() > 1) {
-        for (i = 0; i < ncmd.size(); i++) {
+        for (unsigned int i = 0; i < ncmd.size(); i++) {
             _Execute((char *)ncmd[i].c_str());
         }
         return;
     }
 
-    for (i = 0; i < strlen(cmd2); i++) {
+    for (unsigned int i = 0; i < strlen(cmd2); i++) {
         switch (cmd2[i]) {
             case '': cmd2[i] = ';'; break;
         }
@@ -90,7 +117,7 @@ void C_CONS::_Execute(const char *cmd) {
     vector<string> narg = dlcs_explode(" ", cmd2);
 
     if (narg.size() > 0) {
-        if (funcmap.find((char *)narg[0].c_str()) != funcmap.end()) {
+        if (map_Functions.find((char *)narg[0].c_str()) != map_Functions.end()) {
             if (narg.size() > 0) {
                 memset(temp, 0, 1024);
                 strcpy(temp, narg[1].c_str());
@@ -100,23 +127,10 @@ void C_CONS::_Execute(const char *cmd) {
                     }
                 } else
                     strcpy(temp, "(null)");
-                // dlcs_trim_lf(cmd);
-                // dlcs_trim_lf(temp);
-                // pLog->_Add("C_CONS::_Execute > [%s] [%s]...",cmd,temp);
-                funcmap.find(narg[0].c_str())->second(temp);
+                map_Functions.find(narg[0].c_str())->second(temp);
             }
             return;
         }
     }
-    // pLog->_Add("C_CONS::_Execute 6 > %s...",cmd);
+    LogEntry("C_CONS::_Execute> %s...", cmd);
 }
-
-void        C_CONS::RegFunc(const char *name, void *func) { funcmap[name] = (void (*)(const std::string &))func; }
-void        C_CONS::RegVar(const char *name, void *var) { varmap[name] = var; }
-void        C_CONS::RegInt(const char *name, int x) { intmap[name] = x; }
-void        C_CONS::set_cvar(char *name, char *value) {}
-void        C_CONS::get_cvar(char *name, char *value) {}
-int         C_CONS::get_cvartype(const char *s) { return 0; }
-const char *C_CONS::get_cvartype_string(int t) { return 0; }
-const char *C_CONS::get_cvarformatted(const char *f, void *cv) { return 0; }
-char *      C_CONS::get_cvarformat(int t) { return 0; }
