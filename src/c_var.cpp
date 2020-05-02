@@ -14,14 +14,19 @@
  **   Email:        defectiveseth@gmail.com
  **
  ***************************************************************/
+
 #include "c_var.h"
+
+#include "dlcs.h"
+
 CVarSet::CVarSet() {
     Init();
     strcpy(szFilename, _DLCS_CVARSET_DEFAULT_FILENAME);
 }
-CVarSet::CVarSet(char *szInFilename) {
+CVarSet::CVarSet(char *szInFilename, CLog *pInLog) {
     Init();
     strcpy(szFilename, szInFilename);
+    pLog = pInLog;
     bLoadCVars();
 }
 CVarSet::~CVarSet() {
@@ -36,6 +41,7 @@ CVarSet::~CVarSet() {
     map_CVars.clear();
 }
 void CVarSet::Init() {
+    pLog = 0;
     map_CVars.clear();
     cvar_type_map.clear();
     cvar_type_format_map.clear();
@@ -64,12 +70,13 @@ void CVarSet::Init() {
 }
 void CVarSet::set_cvar(const char *name, int value) { set_cvar(name, va("%d", value)); }
 void CVarSet::set_cvar(const char *name, const char *value) {
-    // printf("CVarSet: Setting %s to %s\n",name,value);
+    LogEntry(va("CVarSet::set_cvar(%s,%s);\n", name, value));
+
     bool bFound;
-    // int *newint;
-    // int  ivartype;
-    // ivartype = get_cvartype(name);
-    bFound = 0;
+    int *newint;
+    int  ivartype;
+    ivartype = get_cvartype(name);
+    bFound   = 0;
     for (svm_i = map_CVars.begin(); svm_i != map_CVars.end(); ++svm_i) {
         if (dlcs_strcasecmp(((*svm_i).first.c_str()), name)) {
             bFound = 1;
@@ -83,58 +90,55 @@ void CVarSet::set_cvar(const char *name, const char *value) {
     } else {
         strcpy((char *)(map_CVars.find(name)->second), value);
     }
-    /*
-    switch(ivartype) {
-    case CVAR_BOOL:
-        (*(bool *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_INT:
-        if(!bFound) {
-            newint = new int(atoi(value));
-            map_CVars[name]=newint;
-        } else {
-            (*(int *)(*svm_i).second) = atoi(value);
-        }
-        break;
-    case CVAR_UINT:
-        (*(unsigned int *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_CHAR:
-        (*(char *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_UCHAR:
-        (*(unsigned char *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_FLOAT:
-        (*(float *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_LONG:
-        (*(long *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_ULONG:
-        (*(unsigned long *)(*svm_i).second) = atoi(value);
-        break;
-    case CVAR_STRING:
-        if(!bFound) {
-            char *newchars=new char[256];
-            map_CVars[name]=newchars;
-            strcpy(newchars,value);
-        } else {
-            strcpy( (char *)(map_CVars.find(name)->second), value);
-        }
-        break;
+
+    switch (ivartype) {
+        case CVAR_BOOL: (*(bool *)(*svm_i).second) = atoi(value); break;
+        case CVAR_INT:
+            if (!bFound) {
+                newint          = new int(atoi(value));
+                map_CVars[name] = newint;
+            } else {
+                (*(int *)(*svm_i).second) = atoi(value);
+            }
+            break;
+        case CVAR_UINT: (*(unsigned int *)(*svm_i).second) = atoi(value); break;
+        case CVAR_CHAR: (*(char *)(*svm_i).second) = atoi(value); break;
+        case CVAR_UCHAR: (*(unsigned char *)(*svm_i).second) = atoi(value); break;
+        case CVAR_FLOAT: (*(float *)(*svm_i).second) = atoi(value); break;
+        case CVAR_LONG: (*(long *)(*svm_i).second) = atoi(value); break;
+        case CVAR_ULONG: (*(unsigned long *)(*svm_i).second) = atoi(value); break;
+        case CVAR_STRING:
+            if (!bFound) {
+                char *newchars  = new char[256];
+                map_CVars[name] = newchars;
+                strcpy(newchars, value);
+            } else {
+                strcpy((char *)(map_CVars.find(name)->second), value);
+            }
+            break;
     }
-    */
 }
 
 void *CVarSet::get_cvar(const char *name) {
+    dlcsm_make_str(szTemp);
+    return get_cvar(name, szTemp);
+}
+
+bool CVarSet::get_cvar_s(const char *name, char *szReturnVal) {
+    LogEntry(va("CVarSet::get_cvar_s(%s)", name));
+    (const char *)get_cvar(name, szReturnVal);  //
+    return true;
+}
+
+void *CVarSet::get_cvar(const char *name, char *szReturnVal) {
+    LogEntry(va("CVarSet::get_cvar(%s)", name));
     int ivartype;
     ivartype = get_cvartype(name);
-
     char szValuez[_FILENAME_SIZE];
     memset(szValuez, 0, _FILENAME_SIZE);
     strcpy(szValuez, (const char *)map_CVars.find(name)->second);
-    // strcpy(value, "NULL");
+    strcpy(szReturnVal, szValuez);
+
     switch (ivartype) {
         case CVAR_BOOL: return (void *)(bool)dlcs_istrue(szValuez); break;
         case CVAR_INT: return (void *)(int)atoi(szValuez); break;
@@ -148,7 +152,8 @@ void *CVarSet::get_cvar(const char *name) {
         default: return (void *)0; break;
     }
 }
-const char *CVarSet::get_cvar(const char *name, char *varout) {
+/*
+void *CVarSet::get_cvar(const char *name, char *varout) {
     int ivartype;
     ivartype = get_cvartype(name);
     strcpy(varout, "NULL");
@@ -166,6 +171,7 @@ const char *CVarSet::get_cvar(const char *name, char *varout) {
     }
     return (const char *)varout;
 }
+*/
 
 char *      CVarSet::get_cvarformat(int t) { return (char *)cvar_type_format_map[t].c_str(); }
 const char *CVarSet::get_cvarformatted(const char *f, void *cv) { return va(f, cv); }
@@ -195,29 +201,29 @@ int CVarSet::get_cvartype(const char *s) {
     return CVAR_NULL;
 }
 bool CVarSet::bLoadCVars(void) {
-    LogEntry(va("CVarSet::bLoad (%s)\n", szFilename));
+    LogEntry(va("CVarSet::bLoadCVars() szFilename from class member: %s\n", szFilename));
 
     FILE *fp;
     char  In[256];
-    // char  temp[1024];
-    // float          f;
+    memset(In, 0, 256);
     vector<string> lin;
     fp = fopen(szFilename, "rt");
     if (!fp) return false;
     while (fgets(In, 255, fp)) {
-        //
         In[strlen(In) - 1] = 0;
-
-        lin = dlcs_explode("=", In);
-
+        lin                = dlcs_explode("=", In);
         if (lin.size() > 1) {
             set_cvar(lin[0].c_str(), (char *)lin[1].c_str());
-            LogEntry(va("CVarSet::pLoadCVars (%s) -> set_cvar(%s,%s);\n", szFilename, lin[0].c_str(), lin[1].c_str()));
+            char szTempVar[_TEXTNAME_SIZE];
+            memset(szTempVar, 0, _TEXTNAME_SIZE);
+            get_cvar_s(lin[0].c_str(), szTempVar);
+            LogEntry(va("CVarSet::bLoadCVars (%s) -> set_cvar(%s,%s);\n", szFilename, szTempVar));
         }
     }
     fclose(fp);
     return true;
 }
+
 bool CVarSet::bSaveCVars(void) {
     FILE *fout;
     char  Temp[256];
@@ -241,6 +247,75 @@ const char *C_CONS::get_cvartype_string(int t) { return 0; }
 const char *C_CONS::get_cvarformatted(const char *f, void *cv) { return 0; }
 char *      C_CONS::get_cvarformat(int t) { return 0; }
 */
+
+bool CVarSet::bRegisterFunction(const char *szInFunctioname, strfunc_t *pCFunction) {
+    map_Functions[szInFunctioname] = (void (*)(const std::string &))pCFunction;  //
+    return true;
+}
+
+bool CVarSet::bCallFunction(const char *szInFunction) {
+    LogEntry("C_VarSet::bCallFunction> (%s)...", szInFunction);
+
+    char szPassedArgs[1024];
+    memset(szPassedArgs, 0, 1024);
+
+    int  cQuoteCount = 0;  // bool bQuote2=0;
+    char cmd2[1024];
+    memset(cmd2, 0, 1024);
+    strcpy(cmd2, szInFunction);
+
+    for (unsigned int i = 0; i < strlen(cmd2); i++) {
+        switch (cmd2[i]) {
+            case '\n':
+            case '\r':
+            case '\t': cmd2[i] = ' '; break;
+            case '"': cQuoteCount++; break;
+            case ';':
+                if (cQuoteCount & 1) {
+                    cmd2[i] = '';  // Check " - Any ; in between quotes will temp change to 0xFF
+                    break;
+                }  // else bQuote2=true;
+                break;
+            default: break;
+        }
+    }
+
+    if (cQuoteCount & 1) return false;  // mismatched quote
+
+    vector<string> ncmd = dlcs_explode(";", cmd2);
+    if (ncmd.size() > 1) {
+        for (unsigned int i = 0; i < ncmd.size(); i++) {
+            bCallFunction((char *)ncmd[i].c_str());
+        }
+        return false;
+    }
+
+    for (unsigned int i = 0; i < strlen(cmd2); i++) {
+        switch (cmd2[i]) {
+            case '': cmd2[i] = ';'; break;
+        }
+    }
+
+    vector<string> narg = dlcs_explode(" ", cmd2);
+
+    if (narg.size() > 0) {
+        if (map_Functions.find((char *)narg[0].c_str()) != map_Functions.end()) {
+            if (narg.size() > 0) {
+                memset(szPassedArgs, 0, 1024);
+                strcpy(szPassedArgs, narg[1].c_str());
+                if (narg.size() > 1) {
+                    for (unsigned int i = 2; i < narg.size(); i++) {
+                        strcat(szPassedArgs, va(" %s", narg[i].c_str()));
+                    }
+                } else
+                    strcpy(szPassedArgs, "(null)");
+                map_Functions.find(narg[0].c_str())->second(szPassedArgs);
+            }
+            return true;
+        }
+    }
+    return false;
+}
 
 void CVarSet::RegFunc(const char *name, void *func) { map_Functions[name] = (void (*)(const std::string &))func; }
 void CVarSet::RegVar(const char *name, void *var) { map_CVars[name] = var; }

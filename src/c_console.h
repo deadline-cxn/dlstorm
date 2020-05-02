@@ -35,7 +35,7 @@ class C_CONS {
     C_CONS(CLog *pInLog, const char *szInFilename);
     ~C_CONS();
 
-    char *       szFilename[_FILENAME_SIZE];
+    char         szFilename[_FILENAME_SIZE];
     CVarSet *    pCVars;
     unsigned int iLines;
     CLog *       pLog;

@@ -49,7 +49,7 @@ enum convar_types {
 class CVarSet {
    public:
     CVarSet();
-    CVarSet(char *szInFilename);
+    CVarSet(char *szInFilename, CLog *pInLog);
     ~CVarSet();
 
     // cvar map
@@ -64,22 +64,6 @@ class CVarSet {
     bool  bLoadCVars(void);
     bool  bSaveCVars(void);
     CLog *pLog;
-
-    void Init();
-
-    void        set_cvar(const char *name, const char *value);
-    void        set_cvar(const char *name, int value);
-    void        get_cvar(const char *name, const char *value);
-    void *      get_cvar(const char *name);
-    const char *get_cvar(const char *name, char *varout);
-    int         get_cvartype(const char *s);
-    const char *get_cvartype_string(int t);
-    const char *get_cvarformatted(const char *f, void *cv);
-    char *      get_cvarformat(int t);
-
-    void RegFunc(const char *name, void *func);
-    void RegVar(const char *name, void *var);
-    void RegInt(const char *name, int x);
 
     // function map
     typedef void                     strfunc_t(const string &);
@@ -108,6 +92,28 @@ class CVarSet {
     // void                _GlobalIntegers(void);
     // void                _GlobalFunctions(void);
     // void                _GlobalVars(void);
+
+    void Init();
+
+    void set_cvar(const char *name, const char *value);
+    void set_cvar(const char *name, int value);
+    // void        get_cvar(const char *name, const char *value);
+    void *      get_cvar(const char *name);
+    bool        get_cvar_s(const char *name, char *szReturnVal);
+    void *      get_cvar(const char *name, char *szReturnVal);
+    int         get_cvartype(const char *s);
+    const char *get_cvartype_string(int t);
+    const char *get_cvarformatted(const char *f, void *cv);
+    char *      get_cvarformat(int t);
+
+    bool bRegisterFunction(const char *szInFunctioname, strfunc_t *pCFunction);
+    bool bCreateFunction(const char *szInFunctionname, strfunc_t *pInFunction);
+    bool bCallFunction(const char *szFunctionnameAndArgs);
+    bool bDeleteFunction(const char *szInFunctionname);
+
+    void RegFunc(const char *name, void *func);
+    void RegVar(const char *name, void *var);
+    void RegInt(const char *name, int x);
 };
 
 #endif  // _DLCS_CVAR
