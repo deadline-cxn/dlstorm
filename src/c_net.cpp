@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_net.cpp
  **   Class:        CPacket
  **                 CCSocket
@@ -13,22 +13,34 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 
 #include "c_net.h"
 
 /////////////////////////// CCSocket class
-CCSocket::CCSocket() { initSocket(); }
+CCSocket::CCSocket() {
+    initSocket();  //
+}
+
 CCSocket::CCSocket(int iPort) {
     initSocket();
     if (Listen(iPort, true) == -1) {
         printf("ERROR LISTENING ON PORT %d\n", iPort);
-    } else {
+    }  //
+    else {
         printf("SETTING LISTEN PORT TO %d\n", iPort);
     }
 }
-CCSocket::CCSocket(int iPort, bool bListen) { initSocket(); }
+CCSocket::CCSocket(int iPort, bool bListen) {
+    initSocket();  //
+}
+
+CCSocket::~CCSocket() {
+    CloseSocket(iSocket);
+    FREE(pSendBuffer);
+    FREE(pReceiveBuffer);
+}
+
 void CCSocket::initSocket(void) {
     iSocket                    = -1;
     iLastLength                = 0;
@@ -44,37 +56,29 @@ void CCSocket::initSocket(void) {
     iReceiveSequence           = 0;
     iCurReceiveSize            = NET_MINMESSAGE;
     iCurBufSize                = NET_MINMESSAGE;
-
-    pSendBuffer = (char *)malloc(iCurBufSize);
+    pSendBuffer                = (char *)malloc(iCurBufSize);
+    dAliveTimeout              = NET_TIMEOUT_ALIVE;
+    dConnectRetry              = NET_RETRY_CONNECTION;
+    dConnectTimeOut            = NET_TIMEOUT_CONNECTIONREQUEST;
+    dAckTimeOut                = NET_TIMEOUT_ACK;
+    dGuessReboot               = NET_TIMEOUT_REBOOTGUESS;
+    dMasterTimeout             = NET_TIMEOUT_MASTER;
+    dMasterRetry               = NET_RETRY_MASTER;
+    dBufferedSize              = NET_BUFFERED_SIZE;
+    dBufferedQueue             = NET_BUFFERED_QUEUE;
+    PacketBuffer.iLen          = 0;
+    PacketBuffer.iSequence     = 0;
     if (!pSendBuffer) {
         return;
     }
-
     pReceiveBuffer = (char *)malloc(iCurReceiveSize);
     if (!pReceiveBuffer) {
         FREE(pSendBuffer);
         return;
     }
-
-    dAliveTimeout          = NET_TIMEOUT_ALIVE;
-    dConnectRetry          = NET_RETRY_CONNECTION;
-    dConnectTimeOut        = NET_TIMEOUT_CONNECTIONREQUEST;
-    dAckTimeOut            = NET_TIMEOUT_ACK;
-    dGuessReboot           = NET_TIMEOUT_REBOOTGUESS;
-    dMasterTimeout         = NET_TIMEOUT_MASTER;
-    dMasterRetry           = NET_RETRY_MASTER;
-    dBufferedSize          = NET_BUFFERED_SIZE;
-    dBufferedQueue         = NET_BUFFERED_QUEUE;
-    PacketBuffer.iLen      = 0;
-    PacketBuffer.iSequence = 0;
     memset(PacketBuffer.pData, 0, MAX_DATAGRAM);
 }
 
-CCSocket::~CCSocket() {
-    CloseSocket(iSocket);
-    FREE(pSendBuffer);
-    FREE(pReceiveBuffer);
-}
 void CCSocket::SendReliableMessage(CPacket *pMessage) {
     if (!pMessage) return;
     SendReliableMessage(pMessage->pGetPacketBuffer(), pMessage->iGetCurSize());
@@ -150,11 +154,8 @@ void CCSocket::ReSendMessage(void) {
         iDataLen = MAX_DATAGRAM;
         eom      = 0;
     }
-
     if (iDataLen > MAX_DATAGRAM) return;
-
-    iPacketLen = NET_HEADERSIZE + iDataLen;
-
+    iPacketLen             = NET_HEADERSIZE + iDataLen;
     PacketBuffer.iLen      = htonl(iPacketLen | (NET_FLAG_RELIABLE | eom));
     PacketBuffer.iSequence = htonl(iSendSequence - 1);
     memcpy(PacketBuffer.pData, pSendBuffer, iDataLen);
@@ -184,7 +185,7 @@ int CCSocket::SendUnreliableMessage(const char *pData, int iSize) {
     PacketBuffer.iSequence = htonl(iUnreliableSendSequence++);
     memcpy(PacketBuffer.pData, pData, iSize);
     ret = nSend((const char *)&PacketBuffer, iPacketLen, (struct sockaddr *)&ToAddr);
-    // if ((ret == -1) || (ret != iPacketLen)) { }
+    // if ((ret == -1) || (ret != iPacketLen)) { } // what is this?
     iPacketsSent++;
     return ret;
 }
@@ -200,27 +201,21 @@ int CCSocket::iGetMessage() {
     iLastLength = 0;
     while (1) {
         iLength = nRecv((char *)&PacketBuffer, NET_DATAGRAMSIZE, (struct sockaddr *)&FromAddr);
-
         if (iLength == -1) {
             printf("ya done goofed 000\n");
             return -1;
         }
-
         if (iLength == 0) break;
 #ifdef _WIN32
-        if (&FromAddr.sin_addr.s_addr != &ToAddr.sin_addr.s_addr)
+        if (&FromAddr.sin_addr.s_addr != &ToAddr.sin_addr.s_addr) {
 #else
-
-        if (&FromAddr.sin_addr.s_addr != &ToAddr.sin_addr.s_addr)
+        if (&FromAddr.sin_addr.s_addr != &ToAddr.sin_addr.s_addr) {
 #endif
-
-        {
             // Log
             // printf("CCSocket::iGetMessage() forged packet received from %s - supposed to be from %s",NET_pAddrToString(&Read_Addr),NET_pAddrToString(&reAddr));
             // printf("ya done goofed\n");
             // continue;
         }
-
         if (iLength < NET_HEADERSIZE) {
             iShortPacketCount++;
             continue;
@@ -232,13 +227,10 @@ int CCSocket::iGetMessage() {
         if (iLength > NET_DATAGRAMSIZE) {
             // Log
             // printf("CCSocket::iGetMessage() forged header received %s",NET_pAddrToString(&Read_Addr.stAddr));
-            printf("ya done goofed 2\n");
+            printf("Packet was too big... ya done goofed 2\n");
             iLongPacketCount++;
             continue;
         }
-
-        // finally a valid message
-
         iSequence = ntohl(PacketBuffer.iSequence);
         iPacketsReceived++;
         dLastMessage = dlcs_get_tickcount();
@@ -261,7 +253,6 @@ int CCSocket::iGetMessage() {
             err         = 2;
             break;
         }
-
         if (iFlags & NET_FLAG_ACK) {
             if (iSequence != (iSendSequence - 1)) {
                 // Log("CCSocket::iGetMessage() stale ACK received %s",NET_pAddrToString(&ReadAddr.stAddr));
@@ -278,7 +269,6 @@ int CCSocket::iGetMessage() {
             }
             continue;
         }
-
         if (iFlags & NET_FLAG_RELIABLE) {
             PacketBuffer.iLen      = ntohl(NET_HEADERSIZE | NET_FLAG_ACK);
             PacketBuffer.iSequence = ntohl(iSequence);
@@ -316,6 +306,7 @@ int CCSocket::iGetMessage() {
     if (bSendNext) SendMessageNext();
     return err;
 }
+
 const char *CCSocket::pcGetMessage() {
     assert(pReceiveBuffer != NULL);
     if (iLastLength)
@@ -323,12 +314,14 @@ const char *CCSocket::pcGetMessage() {
     else
         return pReceiveBuffer;
 }
+
 int CCSocket::iGetMessageSize() {
     if (iLastLength)
         return iLastLength;
     else
         return iReceivedMessageLength;
 }
+
 CPacket *CCSocket::pGetMessage() {
     if (!pTempPacket) {
         pTempPacket = new CPacket(iGetMessageSize(), pcGetMessage());
@@ -340,23 +333,20 @@ CPacket *CCSocket::pGetMessage() {
     }
     return pTempPacket;
 }
+
 CCSocket *CCSocket::pAccept(int iReSocket, struct sockaddr *ReAddr) {
     CPacket         Send(NET_DATAGRAMSIZE);
     struct sockaddr NewAddr;
-
     iSocket = OpenSocket(0);
     if (iSocket == -1) {  // Log("CCSocket::pAccept() unable to connect to host");
         return 0;
     }
-
     NET_GetSocketAddr(iSocket, &NewAddr);  // here is where it gets port info
-
     Send.Write(0);
     Send.Write(0);
     Send.Write((char)CTL_ACCEPT);
     Send.Write(iGetRemotePort());  // SocketPort(&NewAddr)); // here is where it sends port back to client
     FinishCtlPacket(&Send);
-
     if (  // NET_Write(iReSocket,
         nSend(Send.pGetPacketBuffer(), Send.iGetCurSize(), ReAddr) == -1) {
         // Log("CCSocket::pAccept() error making a new connection");
@@ -366,28 +356,49 @@ CCSocket *CCSocket::pAccept(int iReSocket, struct sockaddr *ReAddr) {
     bConnected = true;
     return this;
 }
-void CCSocket::Disconnect() { CloseSocket(iSocket); }
+
+void CCSocket::Disconnect() {
+    CloseSocket(iSocket);  //
+}
+
 // void CCSocket::SetAddress(CInetAddress *pAddress){    pAddr = pAddress;}
-double CCSocket::dReceiveStatus() { return 0; }
-double CCSocket::dSendStatus() { return 0; }
+
+double CCSocket::dReceiveStatus() {
+    return 0;  //
+}
+
+double CCSocket::dSendStatus() {
+    return 0;  //
+}
+
 // CInetAddress *CCSocket::pGetAddress(void){    return pAddr; }
-void CCSocket::FinishCtlPacket(CPacket *pPacket) { ::FinishCtlPacket(pPacket); }
-int  CCSocket::Listen(int iHostPort, int iState) {
+
+void CCSocket::FinishCtlPacket(CPacket *pPacket) {
+    ::FinishCtlPacket(pPacket);  //
+}
+
+int CCSocket::Listen(int iHostPort, int iState) {
     if (iState) {
         if (iSocket != INVALID_SOCKET) {
             return 0;
         }
-        if ((iSocket = OpenSocket(iHostPort)) == INVALID_SOCKET) return -1;
-    } else {
+        if ((iSocket = OpenSocket(iHostPort)) == INVALID_SOCKET) {
+            return -1;  //
+        }
+    }       //
+    else {  //
         if (iSocket == INVALID_SOCKET) return 0;
-
         CloseSocket(iSocket);
-
         iSocket = INVALID_SOCKET;
+        // LogEntry("Can not allocate socket resource");
     }
     return 0;
 }
-int CCSocket::OpenSocket(int iPort) { return OpenSocket("127.0.0.1", iPort); }
+
+int CCSocket::OpenSocket(int iPort) {
+    return OpenSocket("127.0.0.1", iPort);  //
+}
+
 int CCSocket::OpenSocket(const char *pAddress, int iPort) {
     ToAddr.sin_family = AF_INET;
     ToAddr.sin_port   = htons((short)iPort);
@@ -396,60 +407,48 @@ int CCSocket::OpenSocket(const char *pAddress, int iPort) {
 #else
     inet_pton(AF_INET, pAddress, &(ToAddr.sin_addr));
 #endif
-
     iSocket = -1;
-
     if ((iSocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
-
 #ifdef _WIN32
     u_long _true = 1;
-    if (ioctlsocket(iSocket, FIONBIO, &_true) == SOCKET_ERROR)
+    if (ioctlsocket(iSocket, FIONBIO, &_true) == SOCKET_ERROR) {
 #else
     bzero(&pAddress, sizeof(pAddress));  // linux func
-    if (fcntl(iSocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
+    if (fcntl(iSocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR) {
 #endif
-    {
         CloseSocket(iSocket);
         return SOCKET_ERROR;
     }
-
 #ifdef _WIN32
     if (bind(iSocket, (struct sockaddr *)&ToAddr, sizeof(ToAddr)) == SOCKET_ERROR) {
         CloseSocket(iSocket);
         return SOCKET_ERROR;
     }
-
 #else
-
     bind(iSocket, (struct sockaddr *)&ToAddr, sizeof ToAddr);
-
 #endif
     return iSocket;
 }
+
 int CCSocket::zOpenSocket(int iPort) {
     int                newsocket;
     struct sockaddr_in address;
     if ((newsocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
 #ifdef _WIN32
     u_long _true = 1;
-    if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR)
+    if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR) {
 #else
     bzero(&address, sizeof(address));  // linux func
-    if (fcntl(newsocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
+    if (fcntl(newsocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR) {
 #endif
-    {
         CloseSocket(newsocket);
         return SOCKET_ERROR;
     }
-
     address.sin_family      = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port        = htons((short)iPort);
-
-    ToAddr.sin_family = AF_INET;
-    // reAddr.sin_addr.s_addr = INADDR_ANY;
-    ToAddr.sin_port = htons((short)iPort);
-
+    ToAddr.sin_family       = AF_INET;
+    ToAddr.sin_port         = htons((short)iPort);
 #ifdef _WIN32
     if (bind(newsocket, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) {
         CloseSocket(newsocket);
@@ -457,35 +456,30 @@ int CCSocket::zOpenSocket(int iPort) {
     }
 #else
     bind(newsocket, (struct sockaddr *)&address, sizeof(address));
-
 #endif
-
     return newsocket;
 }
+
 int CCSocket::zOpenSocket(const char *pAddress, int iPort) {
     int                newsocket;
     struct sockaddr_in address;
     if ((newsocket = socket(AF_INET, SOCK_DGRAM, 0)) == SOCKET_ERROR) return -1;
 #ifdef _WIN32
     u_long _true = 1;
-    if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR)
+    if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR) {
 #else
     bzero(&address, sizeof(address));  // linux func
-    if (fcntl(newsocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR)
+    if (fcntl(newsocket, F_SETFL, O_NONBLOCK) == SOCKET_ERROR) {
 #endif
-    {
         CloseSocket(newsocket);
         return SOCKET_ERROR;
     }
-
     address.sin_family      = AF_INET;
     address.sin_addr.s_addr = inet_addr(pAddress);  // INADDR_ANY;
     address.sin_port        = htons((short)iPort);
-
-    ToAddr.sin_family      = AF_INET;
-    ToAddr.sin_addr.s_addr = inet_addr(pAddress);  // INADDR_ANY;
-    ToAddr.sin_port        = htons((short)iPort);
-
+    ToAddr.sin_family       = AF_INET;
+    ToAddr.sin_addr.s_addr  = inet_addr(pAddress);  // INADDR_ANY;
+    ToAddr.sin_port         = htons((short)iPort);
 #ifdef _WIN32
     if (bind(newsocket, (struct sockaddr *)&address, sizeof(address)) == SOCKET_ERROR) {
         CloseSocket(newsocket);
@@ -493,7 +487,6 @@ int CCSocket::zOpenSocket(const char *pAddress, int iPort) {
     }
 #else
     bind(newsocket, (struct sockaddr *)&address, sizeof(address));
-
 #endif
     return newsocket;
 }
@@ -504,13 +497,18 @@ int CCSocket::CloseSocket(int iSocket) {
     return close(iSocket);
 #endif
 }
+
 int CCSocket::CheckNewConnections(void) {
-    char pBuffer[65535];
+    char pBuffer[MAX_DATAGRAM];
     if (iSocket == INVALID_SOCKET) return -1;
     if (recvfrom(iSocket, pBuffer, sizeof(pBuffer), MSG_PEEK, NULL, NULL) > 0) return iSocket;
     return -1;
 }
-int CCSocket::nRecv(char *pBuf, int iLen, struct sockaddr *pAddr) { return nRecv(iSocket, pBuf, iLen, pAddr); }
+
+int CCSocket::nRecv(char *pBuf, int iLen, struct sockaddr *pAddr) {
+    return nRecv(iSocket, pBuf, iLen, pAddr);  //
+}
+
 int CCSocket::nRecv(SOCKET iSocket, char *pBuff, int iLen, struct sockaddr *pAddr) {
     int iAddrlen = sizeof(struct sockaddr);
     int err;
@@ -529,32 +527,30 @@ int CCSocket::nRecv(SOCKET iSocket, char *pBuff, int iLen, struct sockaddr *pAdd
     if (FD_ISSET(iSocket, &readfds) > 0) {
         err = recvfrom(iSocket, pBuff, iLen, 0, (struct sockaddr *)pAddr, (socklen_t *)&iAddrlen);
     }
-
 #endif
-
 #ifdef _WIN32
     int errnum;
-
     err = recvfrom(iSocket, pBuff, iLen, 0, (struct sockaddr *)pAddr, &iAddrlen);
-
     if (err == SOCKET_ERROR) {
         errnum = WSAGetLastError();
         if (errnum == WSAEWOULDBLOCK || errnum == WSAECONNREFUSED) {
             return 0;
         }
     }
-
 #endif
     // if(err==-1) { Log("%s on recvfrom()",NET_pGetLastError()); }
     return err;
 }
-int CCSocket::nSend(const char *pBuf, int iLen, struct sockaddr *pAddr) { return nSend(iSocket, pBuf, iLen, pAddr); }
+
+int CCSocket::nSend(const char *pBuf, int iLen, struct sockaddr *pAddr) {
+    return nSend(iSocket, pBuf, iLen, pAddr);  //
+}
+
 int CCSocket::nSend(SOCKET iSocket, const char *pBuf, int iLen, struct sockaddr *pAddr) {
     int err;
 #ifdef SIMULATE_CONNECTION
     if (!(rand() % 10)) return iLen;
 #endif  // SIMULATE_CONNECTION
-
 #ifdef _WIN32
     err = sendto(iSocket, pBuf, iLen, 0, (struct sockaddr *)pAddr, sizeof(struct sockaddr));
 #else
@@ -562,6 +558,7 @@ int CCSocket::nSend(SOCKET iSocket, const char *pBuf, int iLen, struct sockaddr 
 #endif
     return err;
 }
+
 int CCSocket::NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr) {
     int addrlen = sizeof(struct sockaddr);
     memset(pAddr, 0, sizeof(struct sockaddr));
@@ -571,29 +568,40 @@ int CCSocket::NET_GetSocketAddr(int iSocket, struct sockaddr *pAddr) {
 #else
     a = getsockname(iSocket, (struct sockaddr *)pAddr, (socklen_t *)&addrlen);
 #endif
-    // unsigned int a; // a = ((struct sockaddr_in *)pAddr)->sin_addr.s_addr;
     return a;
 }
+
 void CCSocket::SetRemotePort(int iPort) {
     if (iPort > 0xffff) return;
     if (iPort < 1024) return;
     ToAddr.sin_port = htons((short)iPort);
 }
+
 int CCSocket::iGetLocalPort(void) {
     struct sockaddr_in local_address;
     socklen_t          addr_size = sizeof(local_address);
     getsockname(iSocket, (struct sockaddr *)&local_address, &addr_size);
     return ntohs(local_address.sin_port);
 }
-int   CCSocket::iGetRemotePort(void) { return ntohs(ToAddr.sin_port); }
-char *CCSocket::pGetRemoteIPAddress() { return inet_ntoa(ToAddr.sin_addr); }
+
+int CCSocket::iGetRemotePort(void) {
+    return ntohs(ToAddr.sin_port);  //
+}
+
+char *CCSocket::pGetRemoteIPAddress() {
+    return inet_ntoa(ToAddr.sin_addr);  //
+}
+
 char *CCSocket::pGetLocalIPAddress() {
     struct sockaddr_in local_address;
     socklen_t          addr_size = sizeof(local_address);
     getsockname(iSocket, (struct sockaddr *)&local_address, &addr_size);
     return inet_ntoa(local_address.sin_addr);
 }
-/////////////////////////// CPacket class
+
+///////////////////////////////////////////////////////////////////////////////////
+// CPacket class
+///////////////////////////////////////////////////////////////////////////////////
 CPacket::CPacket() {
     pPacketBuffer = NULL;
     iPacketSize   = 0;
@@ -601,6 +609,7 @@ CPacket::CPacket() {
     iPacketLen    = 0;
     bUserAlloc    = false;
 }
+
 CPacket::CPacket(int iSize) {
     if (iSize < 0) return;
     pPacketBuffer = (char *)malloc(iSize);
@@ -610,6 +619,7 @@ CPacket::CPacket(int iSize) {
     iPacketLen    = 0;
     bUserAlloc    = false;
 }
+
 CPacket::CPacket(int iSize, const char *pBuffer) {
     if (iSize < 0) return;
     if (pBuffer == NULL) return;
@@ -618,19 +628,30 @@ CPacket::CPacket(int iSize, const char *pBuffer) {
     iPacketCursor            = 0;
     bUserAlloc               = true;
 }
+
 CPacket::~CPacket() {
-    if ((!bUserAlloc) && (pPacketBuffer != NULL)) free(pPacketBuffer);
+    if ((!bUserAlloc) && (pPacketBuffer != NULL)) {
+        free(pPacketBuffer);  //
+    }
 }
+
 void CPacket::DumpPacket(void) {
     printf("-=[Packet Info]=========================================================-");
     for (int y = 0; y < iPacketLen; y++) {
         if (pPacketBuffer[y] < 32) {
-        } else {
+            //
+        }  //
+        else {
+            //
         }
     }
     printf("-==========================================================[End Packet]=-");
 }
-int  CPacket::iGetMaxSize(void) { return iPacketSize; }
+
+int CPacket::iGetMaxSize(void) {
+    return iPacketSize;  //
+}
+
 void CPacket::SetMaxSize(int iSize, const char *pBuffer) {
     if (iSize < 0) return;
     if ((bUserAlloc) && (pBuffer)) {
@@ -638,7 +659,6 @@ void CPacket::SetMaxSize(int iSize, const char *pBuffer) {
         iPacketSize   = iSize;
         return;
     }
-
     iPacketSize = iSize;
     if (pPacketBuffer == NULL) {
         pPacketBuffer = (char *)malloc(iSize);
@@ -647,26 +667,42 @@ void CPacket::SetMaxSize(int iSize, const char *pBuffer) {
     pPacketBuffer = (char *)realloc(pPacketBuffer, iSize);
     if (pPacketBuffer == NULL) return;
 }
-int  CPacket::iGetCurSize(void) { return iPacketLen - iPacketCursor; }
-void CPacket::SetCurSize(int iNewLen) { iPacketLen = iNewLen; }
+
+int CPacket::iGetCurSize(void) {
+    return iPacketLen - iPacketCursor;  //
+}
+
+void CPacket::SetCurSize(int iNewLen) {
+    iPacketLen = iNewLen;  //
+}
+
 void CPacket::Reset(void) {
     iPacketCursor = 0;
     iPacketLen    = 0;
 }
-void  CPacket::Rewind(void) { iPacketCursor = 0; }
-char *CPacket::pGetPacketBuffer(void) { return pPacketBuffer; }
-void  CPacket::Write(int Val) { WRITE(int) }
-void  CPacket::Write(long Val) { WRITE(long) }
-void  CPacket::Write(char Val) { WRITE(char) }
-void  CPacket::Write(short Val) { WRITE(short) }
-void  CPacket::Write(float Val) { WRITE(float) }
-void  CPacket::Write(const char *Val) {
+
+void CPacket::Rewind(void) {
+    iPacketCursor = 0;  //
+}
+
+char *CPacket::pGetPacketBuffer(void) {
+    return pPacketBuffer;  //
+}
+
+void CPacket::Write(int Val) { WRITE(int) }
+void CPacket::Write(long Val) { WRITE(long) }
+void CPacket::Write(char Val) { WRITE(char) }
+void CPacket::Write(short Val) { WRITE(short) }
+void CPacket::Write(float Val) { WRITE(float) }
+
+void CPacket::Write(const char *Val) {
     int i = strlen(Val) + 1;
     if (pPacketBuffer == NULL) return;
     if (iPacketLen + i > iPacketSize) return;
     strcpy(pPacketBuffer + iPacketLen, Val);
     iPacketLen += i;
 }
+
 void CPacket::Write(const char *Val, int iSize) {
     if (!iSize) return;
     if (pPacketBuffer == NULL) return;
@@ -674,6 +710,7 @@ void CPacket::Write(const char *Val, int iSize) {
     memcpy(pPacketBuffer + iPacketLen, Val, iSize);
     iPacketLen += iSize;
 }
+
 const char *CPacket::pWrite(int iSize) {
     if (!iSize) return NULL;
     if (!pPacketBuffer) return NULL;
@@ -681,11 +718,13 @@ const char *CPacket::pWrite(int iSize) {
     iPacketLen += iSize;
     return pPacketBuffer + iPacketLen - iSize;
 }
-int         CPacket::iRead(void) { READ(int) }
-long        CPacket::dwRead(void) { READ(long) }
-char        CPacket::cRead(void) { READ(char) }
-short       CPacket::sRead(void) { READ(short) }
-float       CPacket::fRead(void) { READ(float) }
+
+int   CPacket::iRead(void) { READ(int) }
+long  CPacket::dwRead(void) { READ(long) }
+char  CPacket::cRead(void) { READ(char) }
+short CPacket::sRead(void) { READ(short) }
+float CPacket::fRead(void) { READ(float) }
+
 const char *CPacket::pRead(void) {
     int i;
     if (iPacketLen < 1) return ("null");
@@ -695,6 +734,7 @@ const char *CPacket::pRead(void) {
     if (iPacketCursor > iPacketLen) return ("null");
     return (const char *)(pPacketBuffer + i);
 }
+
 const char *CPacket::pRead(int iSize) {
     int i;
     if (iSize == 0) return ("null");
@@ -705,7 +745,10 @@ const char *CPacket::pRead(int iSize) {
     if (iPacketCursor > iPacketLen) return ("null");
     return (const char *)(pPacketBuffer + i);
 }
-/////////////////////////// Network utility functions
+
+///////////////////////////////////////////////////////////////////////////////////
+// Network utility functions
+///////////////////////////////////////////////////////////////////////////////////
 int NET_Init() {
 #ifdef _WIN32
     int     err;
@@ -717,6 +760,7 @@ int NET_Init() {
 #endif
     return 0;
 }
+
 int NET_Shutdown(void) {
     // NET_Listen(0);
 #ifdef _WIN32
@@ -724,6 +768,7 @@ int NET_Shutdown(void) {
 #endif
     return 0;
 }
+
 const char *NET_pGetLastError(void) {
 #ifdef _WIN32
     map<int, std::string> WindowsErrorMap;
@@ -779,15 +824,16 @@ const char *NET_pGetLastError(void) {
     WindowsErrorMap[WSAEDISCON]            = "WSAEDISCON - graceful shutdown in progress";
     WindowsErrorMap[WSA_OPERATION_ABORTED] = "WSA_OPERATION_ABORTED - overlapped operation aborted";
     return (const char *)WindowsErrorMap[WSAGetLastError()].c_str();
-
 #else
     return (strerror(errno));
 #endif
 }
+
 void FinishCtlPacket(CPacket *pPacket) {
     int j                                 = (NET_FLAG_CTL | (pPacket->iGetCurSize() & NET_FLAG_LENGTH_MASK));
     *((int *)pPacket->pGetPacketBuffer()) = htonl(j);
 }
+
 int NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName) {
     struct hostent *hostentry;
     hostentry = gethostbyaddr((const char *)&((struct sockaddr_in *)pAddr)->sin_addr, sizeof(struct in_addr), AF_INET);
@@ -798,6 +844,7 @@ int NET_GetNameFromAddr(struct sockaddr *pAddr, char *pName) {
     strcpy(pName, NET_pAddrToString(pAddr));
     return 0;
 }
+
 int NET_GetAddrFromName(const char *pName, struct sockaddr *pAddr) {
     struct hostent *hostentry;
     hostentry = gethostbyname(pName);
@@ -806,12 +853,14 @@ int NET_GetAddrFromName(const char *pName, struct sockaddr *pAddr) {
     ((struct sockaddr_in *)pAddr)->sin_addr.s_addr = *(int *)hostentry->h_addr_list[0];
     return 0;
 }
+
 int NET_AddrCompare(struct sockaddr *pAddr1, struct sockaddr *pAddr2) {
     if (pAddr1->sa_family != pAddr2->sa_family) return -1;
     if (((struct sockaddr_in *)pAddr1)->sin_addr.s_addr != ((struct sockaddr_in *)pAddr2)->sin_addr.s_addr) return -1;
     if (((struct sockaddr_in *)pAddr1)->sin_port != ((struct sockaddr_in *)pAddr2)->sin_port) return 1;
     return 0;
 }
+
 const char *NET_pAddrToString(struct sockaddr *pAddr) {
     static char buffer[22];
     if (pAddr == NULL)
@@ -828,7 +877,7 @@ bool dlcs_get_hostname(char *szHost) {
     gethostname(szHost, _HOST_NAME_MAX);
     return true;
 }
-////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool dlcs_get_ipaddress(char *szIP) {
     dlcsm_make_str(szTemp1);
     dlcsm_make_str(szTemp2);
@@ -847,6 +896,7 @@ bool dlcs_get_ipaddress(char *szIP) {
     strcpy(szIP, szTemp1);
     return true;
 }
+
 /*
 ////////////////////////////////////////////////////////////////////////////////////////////////
 void DLCODESTORM::dlcs_get_webpage2(string url, char *x) {  }

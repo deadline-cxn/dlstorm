@@ -124,21 +124,41 @@
 #define dlcsm_max(a, b)          ((a > b) ? a : b)
 #define dlcsm_tobool(x)          (x ? 1 : 0)
 // STRING MACROS
-#define dlcsm_make_tinyname(x) \
-    char x[_TINYNAME_SIZE];    \
+#define dlcsm_make_tinystr(x) \
+    char x[_TINYNAME_SIZE];   \
     memset(x, 0, _TINYNAME_SIZE);
-#define dlcsm_make_filename(x) \
-    char x[_FILENAME_SIZE];    \
+#define dlcsm_make_filestr(x) \
+    char x[_FILENAME_SIZE];   \
     memset(x, 0, _FILENAME_SIZE);
+#define dlcsm_make_textstr(x) \
+    char x[_TEXTNAME_SIZE];   \
+    memset(x, 0, _TEXTNAME_SIZE);
 #define dlcsm_make_str(x)   \
     char x[_TEXTNAME_SIZE]; \
     memset(x, 0, _TEXTNAME_SIZE);
-#define dlcsm_make_lstr(x, y) \
-    char x[y];                \
+#define dlcsm_make_sizestr(x, y) \
+    char x[y];                   \
     memset(x, 0, y);
 #define dlcsm_zero(x)  memset(x, 0, sizeof(x));
 #define dlcsm_debug(x) printf(x);
+#define dlcsm_rtrim(x, y) \
+    while (y[strlen(y) - 1] == x) y[strlen(y) - 1] = 0;
 
 #define dlcsm_explode_list(x) vector<string> x
+
+#define dlcsm_vargs(x, y) \
+    va_list y;            \
+    va_start(y, x);       \
+    vprintf(x, y);        \
+    va_end(y);
+
+#define dlcsm_get_vargs(x, y, z) \
+    char x[256];                 \
+    memset(x, 0, 256);           \
+    va_list z;                   \
+    va_start(z, y);              \
+    vsprintf(x, y, z);           \
+    perror(buffer);              \
+    va_end(z);
 
 #endif  // _DLCS_MACROS

@@ -7,6 +7,7 @@
  **   Copyright:    2020
  **   File:         c_console.h
  **   Class:        C_CONS
+ **   Description:  Console class
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
@@ -31,6 +32,8 @@ class C_CONS {
     C_CONS();
     C_CONS(CLog *pInLog);
     C_CONS(CLog *pInLog, CGAF *pInGAF);
+    C_CONS(CLog *pInLog, CVarSet *pInCVars);
+    C_CONS(CLog *pInLog, CGAF *pInGAF, CVarSet *pInCVars);
     C_CONS(CLog *pInLog, CGAF *pInGAF, const char *szInFilename);
     C_CONS(CLog *pInLog, const char *szInFilename);
     ~C_CONS();

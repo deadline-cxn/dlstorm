@@ -7,11 +7,11 @@
  **   Copyright:    2020
  **   File:         c_console.cpp
  **   Class:        C_CONS
+ **   Description:  Console class
  **   Author:       Seth Parson
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 
 #include "c_console.h"
@@ -22,7 +22,7 @@ C_CONS::C_CONS(CLog *pInLog) {
     Init();
     pLog = pInLog;
     strcpy(szFilename, _DLCS_C_CONSOLE_DEFAULT_FILENAME);
-    pCVars = new CVarSet(szFilename, pLog);
+    pCVars = new CVarSet(pLog, szFilename);
 }
 
 C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF) {
@@ -30,7 +30,22 @@ C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF) {
     pLog = pInLog;
     pGAF = pInGAF;
     strcpy(szFilename, _DLCS_C_CONSOLE_DEFAULT_FILENAME);
-    pCVars = new CVarSet(szFilename, pLog);
+    pCVars = new CVarSet(pLog, szFilename);
+}
+
+C_CONS::C_CONS(CLog *pInLog, CVarSet *pInCVars) {
+    Init();
+    pLog   = pInLog;
+    pCVars = pInCVars;
+    strcpy(szFilename, pCVars->szFilename);
+}
+
+C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF, CVarSet *pInCVars) {
+    Init();
+    pLog   = pInLog;
+    pGAF   = pInGAF;
+    pCVars = pInCVars;
+    strcpy(szFilename, pCVars->szFilename);
 }
 
 C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF, const char *szInFilename) {
@@ -38,14 +53,14 @@ C_CONS::C_CONS(CLog *pInLog, CGAF *pInGAF, const char *szInFilename) {
     pLog = pInLog;
     pGAF = pInGAF;
     strcpy(szFilename, szInFilename);
-    pCVars = new CVarSet(szFilename, pLog);
+    pCVars = new CVarSet(pLog, szFilename);
 }
 
 C_CONS::C_CONS(CLog *pInLog, const char *szInFilename) {
     Init();
     pLog = pInLog;
     strcpy(szFilename, szInFilename);
-    pCVars = new CVarSet(szFilename, pLog);
+    pCVars = new CVarSet(pLog, szFilename);
 }
 
 C_CONS::~C_CONS() {}

@@ -12,15 +12,25 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 #ifndef _DLCS_CVAR
 #define _DLCS_CVAR
 
+#include <cassert>
+#include <iostream>
+#include <map>
+#include <string>
+#include <typeindex>
+#include <typeinfo>
+#include <vector>
+
 #include "c_log.h"
 #include "dlcs.h"
 
+using namespace std;
+
 #define _DLCS_CVARSET_DEFAULT_FILENAME "default_cvar_filename.ini"
+#define _DLCS_CVAR_VAR_SIZE            1024
 
 // name convention for the cvars:
 // b_  = bool
@@ -45,11 +55,65 @@ enum convar_types {
     CVAR_ULONG,
     CVAR_FLOAT,
 };
+/*
+typedef void (*voidFunctionType)(void);
+
+struct stFunctionInterface {
+    std::map<std::string, std::pair<voidFunctionType, std::type_index>> m1;
+
+    template <typename T>
+    void insert(string s1, T f1) {
+        auto tt = type_index(typeid(f1));
+        m1.insert(std::make_pair(s1, std::make_pair((voidFunctionType)f1, tt)));
+    }
+
+    template <typename T, typename... Args>
+    T searchAndCall(std::string s1, Args &&... args) {
+        auto mapIter = m1.find(s1);
+        // chk if not end
+        auto mapVal = mapIter->second;
+
+        // auto typeCastedFun = reinterpret_cast<T(*)(Args ...)>(mapVal.first);
+        auto typeCastedFun = (T(*)(Args...))(mapVal.first);
+
+        // compare the types is equal or not
+        assert(mapVal.second == std::type_index(typeid(typeCastedFun)));
+        return typeCastedFun(std::forward<Args>(args)...);
+    }
+};
+
+template <class... Args>
+struct MapHolder {
+    static std::map<std::string, int (*)(Args...)> CallbackMap;
+};
+
+template <class... Args>
+std::map<std::string, int (*)(Args...)> MapHolder<Args...>::CallbackMap;
+
+class Callback {
+   public:
+    template <class  //
+              ... Args>
+    void RegisterFunction(std::string name, int (*func)(Args...)) {
+        MapHolder<Args...>::CallbackMap[name] = func;
+    }
+
+    template <class  //
+              ... Args>
+    int ExecuteFunction(std::string name, Args &&... args) {
+        return MapHolder<Args...>::CallbackMap[name](std::forward<Args>(args)...);
+    };
+};
+*/
+
+typedef void                               strfunc_t(const char *format, ...);
+typedef std::map<std::string, strfunc_t *> strfmap_t;
 
 class CVarSet {
    public:
     CVarSet();
-    CVarSet(char *szInFilename, CLog *pInLog);
+    CVarSet(CLog *pInLog);
+    CVarSet(CLog *pInLog, char *szInFilename);
     ~CVarSet();
 
     // cvar map
@@ -61,20 +125,26 @@ class CVarSet {
     //     map<int, string> cvar_type_format_map;  // cvar type format map
 
     char  szFilename[_FILENAME_SIZE];
-    bool  bLoadCVars(void);
-    bool  bSaveCVars(void);
+    bool  bLoad(void);
+    bool  bLoad(const char *szInFilename);
+    bool  bSave(void);
+    bool  bSave(const char *szInFilename);
     CLog *pLog;
 
     // function map
-    typedef void                     strfunc_t(const string &);
-    typedef map<string, strfunc_t *> strfmap_t;
-    strfmap_t                        map_Functions;
+    // typedef void (*strfunc_t)(void);  //(const string &);
+    // typedef map<string, strfunc_t *> strfmap_t;
+    // strfmap_t map_Functions;
+    strfmap_t map_Functions;
 
     // cvar map
     typedef void *                  strvar_t;
     typedef map<string, strvar_t>   strvarmap_t;
     map<string, strvar_t>::iterator svm_i;
     strvarmap_t                     map_CVars;
+
+    // stFunctionInterface SFunctionInterface;
+    // Callback            SFunctionCallback;
 
     // cvar type map
     map<string, int> cvar_type_map;
@@ -98,22 +168,26 @@ class CVarSet {
     void set_cvar(const char *name, const char *value);
     void set_cvar(const char *name, int value);
     // void        get_cvar(const char *name, const char *value);
-    void *      get_cvar(const char *name);
-    bool        get_cvar_s(const char *name, char *szReturnVal);
-    void *      get_cvar(const char *name, char *szReturnVal);
+    void *get_cvar(const char *name);
+    // bool        get_cvar_s(const char *name, char *szReturnVal);
+    // void *      get_cvar(const char *name, char *szReturnVal);
     int         get_cvartype(const char *s);
     const char *get_cvartype_string(int t);
     const char *get_cvarformatted(const char *f, void *cv);
     char *      get_cvarformat(int t);
 
-    bool bRegisterFunction(const char *szInFunctioname, strfunc_t *pCFunction);
-    bool bCreateFunction(const char *szInFunctionname, strfunc_t *pInFunction);
+    bool bRegisterFunction(const char *szInFunctionname, strfunc_t pCFunction);
     bool bCallFunction(const char *szFunctionnameAndArgs);
     bool bDeleteFunction(const char *szInFunctionname);
 
-    void RegFunc(const char *name, void *func);
-    void RegVar(const char *name, void *var);
-    void RegInt(const char *name, int x);
+    // void RegFunc(const char *name, void *func);
+    // void RegVar(const char *name, void *var);
+    //    void RegInt(const char *name, int x);
+
+    void        test_var_func1(void);
+    int         i_test_var_func2();
+    int         i_test_var_func3(int a);
+    vector<int> vi_test_var_func4();
 };
 
 #endif  // _DLCS_CVAR

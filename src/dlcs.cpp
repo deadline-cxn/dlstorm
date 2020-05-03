@@ -69,14 +69,14 @@ vector<string> dlcs_explode(const string &delimiter, const string &str) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
 bool Dir2File(const char *szDir, char *szFile, char *szWildCard) {
-#ifdef _WIN32
+#ifdef _WIN32_ERROR_THIS_OUT
     FILE *          fp;
     HANDLE          dirsearch;  // Directory handle for reading directory information
     WIN32_FIND_DATA FileData;   // WIN32_FIND_DATA structure needed for reading directory information
     char            szCurrentDir[_MAX_PATH];
-    GetCurrentDirectory(_MAX_PATH, szCurrentDir);
+    GetCurrentDirectory(_MAX_PATH, (char *)szCurrentDir);
     SetCurrentDirectory(szDir);
-    dirsearch = FindFirstFile(szWildCard, &FileData);
+    dirsearch = FindFirstFile(&szWildCard, &FileData);
     if (dirsearch == INVALID_HANDLE_VALUE) return false;
     fp = fopen(szFile, "wt");
     if (!fp) return false;
@@ -105,7 +105,7 @@ bool Dir2File(const char *szDir, char *szFile, char *szWildCard) {
         FindNextFile(dirsearch, &FileData);
     }
     FindClose(dirsearch);
-    SetCurrentDirectory(szCurrentDir);
+    SetCurrentDirectory(&szCurrentDir);
     fclose(fp);
 #endif
     return true;

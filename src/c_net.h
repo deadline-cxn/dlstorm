@@ -4,7 +4,7 @@
  **   ---- D/L \----
  **       \/
  **   License:      BSD
- **   Copyright:    2017
+ **   Copyright:    2020
  **   File:         c_net.h
  **   Class:        CPacket
  **                 CCSocket
@@ -13,7 +13,6 @@
  **   Twitter:      @Sethcoder
  **   Website:      www.sethcoder.com
  **   Email:        defectiveseth@gmail.com
- **
  ***************************************************************/
 #ifndef _DLCS_C_NET
 #define _DLCS_C_NET
@@ -25,19 +24,26 @@ using namespace std;
 
 //#define SIMULATE_CONNECTION // uncomment to simulate a internet connection w/packet loss
 #ifndef DLSCM_WINDOWS
+//
 #ifdef SOCKET
 #undef SOCKET
 #endif
+//
 #define SOCKET int
+//
 #ifdef INVALID_SOCKET
 #undef INVALID_SOCKET
 #endif
+//
 #define INVALID_SOCKET -1
+//
 #ifdef SOCKET_ERROR
 #undef SOCKET_ERROR
 #endif
 #define SOCKET_ERROR -1
+//
 #endif
+
 #define NET_WAITFORANSWER             6000  // should be an inivar?
 #define NET_MINMESSAGE                8192  // do not let buffersize fall below this value
 #define NET_HEADERSIZE                (2 * (int)sizeof(unsigned int))
@@ -60,7 +66,7 @@ using namespace std;
 #define NET_BUFFERED_QUEUE            3
 #define NET_FILE_XFER_BLOCK_SIZE      1024
 #define NET_NAMELEN                   64
-#define MAX_DATAGRAM                  1024  // Length of unreliable message
+#define MAX_DATAGRAM                  8192  // Length of unreliable message
 #define WRITE(Type)                                           \
     if (pPacketBuffer == NULL) return;                        \
     if (iPacketLen + (int)sizeof(Type) > iPacketSize) return; \
@@ -129,7 +135,17 @@ class CPacket {
     int         iPacketLen;
 };
 /////////////////////////// Control packet responses
-typedef enum { CTL_CONNECT = 1, CTL_PLACEHOLDER, CTL_REJECT, CTL_ACCEPT, CTL_PING, CTL_SERVERINFO, CTL_SERVERINFO_RESET, CTL_SERVERINFO_END, CTL_SERVERINFO_GET } tSocketCtrlMsg;
+typedef enum {
+    CTL_CONNECT = 1,  //
+    CTL_PLACEHOLDER,
+    CTL_REJECT,
+    CTL_ACCEPT,
+    CTL_PING,
+    CTL_SERVERINFO,
+    CTL_SERVERINFO_RESET,
+    CTL_SERVERINFO_END,
+    CTL_SERVERINFO_GET
+} tSocketCtrlMsg;
 /////////////////////////// CCSocket class
 class CCSocket {
    public:
