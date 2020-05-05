@@ -116,6 +116,37 @@ class CVarSet {
     CVarSet(CLog *pInLog, char *szInFilename);
     ~CVarSet();
 
+    char                            szFilename[_FILENAME_SIZE];
+    bool                            bLoad(void);
+    bool                            bLoad(const char *szInFilename);
+    bool                            bSave(void);
+    bool                            bSave(const char *szInFilename);
+    CLog *                          pLog;
+    strfmap_t                       map_Functions;  // function map
+    typedef void *                  strvar_t;       // cvar map
+    typedef map<string, strvar_t>   strvarmap_t;
+    map<string, strvar_t>::iterator svm_i;
+    strvarmap_t                     map_CVars;
+    map<string, int>                cvar_type_map;         // cvar type map
+    map<int, string>                cvar_type_format_map;  // cvar type format map
+    map<string, string>             stringmap;             // string map
+    map<string, int>                intmap;                // int map
+
+    void Init();
+
+    void        Set(const char *szInName, const char *szInValue);
+    void        Set(const char *szInName, int iInValue);
+    const char *szGet(const char *szInName);
+    int         iGet(const char *szInName);
+    bool        bGet(const char *szInName);
+    int         iGetCVarType(const char *szInName);
+    const char *szGetCVarTypeString(int iInType);
+    const char *szGetCVarFormatted(const char *szInFormattedString, void *cv);
+    char *      szGetCVarFormat(int iInType);
+    bool        bRegisterFunction(const char *szInFunctionname, strfunc_t pCFunction);
+    bool        bCallFunction(const char *szFunctionnameAndArgs);
+    bool        bDeleteFunction(const char *szInFunctionname);
+
     // cvar map
     // typedef void *                  strvar_t;
     // typedef map<string, strvar_t>   strvarmap_t;
@@ -123,71 +154,22 @@ class CVarSet {
     // strvarmap_t      varmap;
     //     map<string, int> cvar_type_map;         // cvar type map
     //     map<int, string> cvar_type_format_map;  // cvar type format map
-
-    char  szFilename[_FILENAME_SIZE];
-    bool  bLoad(void);
-    bool  bLoad(const char *szInFilename);
-    bool  bSave(void);
-    bool  bSave(const char *szInFilename);
-    CLog *pLog;
-
-    // function map
     // typedef void (*strfunc_t)(void);  //(const string &);
     // typedef map<string, strfunc_t *> strfmap_t;
     // strfmap_t map_Functions;
-    strfmap_t map_Functions;
-
-    // cvar map
-    typedef void *                  strvar_t;
-    typedef map<string, strvar_t>   strvarmap_t;
-    map<string, strvar_t>::iterator svm_i;
-    strvarmap_t                     map_CVars;
-
-    // stFunctionInterface SFunctionInterface;
-    // Callback            SFunctionCallback;
-
-    // cvar type map
-    map<string, int> cvar_type_map;
-
-    // cvar type format map
-    map<int, string> cvar_type_format_map;
-
-    // string map
-    map<string, string> stringmap;
-
-    // int map
-    map<string, int> intmap;
-
+    // void        test_var_func1(void);
+    // int         i_test_var_func2();
+    // int         i_test_var_func3(int a);
+    // vector<int> vi_test_var_func4();
+    // void RegFunc(const char *name, void *func);
+    // void RegVar(const char *name, void *var);
+    //    void RegInt(const char *name, int x);
     // void                _GlobalStrings(void);
     // void                _GlobalIntegers(void);
     // void                _GlobalFunctions(void);
     // void                _GlobalVars(void);
-
-    void Init();
-
-    void set_cvar(const char *name, const char *value);
-    void set_cvar(const char *name, int value);
-    // void        get_cvar(const char *name, const char *value);
-    void *get_cvar(const char *name);
-    // bool        get_cvar_s(const char *name, char *szReturnVal);
-    // void *      get_cvar(const char *name, char *szReturnVal);
-    int         get_cvartype(const char *s);
-    const char *get_cvartype_string(int t);
-    const char *get_cvarformatted(const char *f, void *cv);
-    char *      get_cvarformat(int t);
-
-    bool bRegisterFunction(const char *szInFunctionname, strfunc_t pCFunction);
-    bool bCallFunction(const char *szFunctionnameAndArgs);
-    bool bDeleteFunction(const char *szInFunctionname);
-
-    // void RegFunc(const char *name, void *func);
-    // void RegVar(const char *name, void *var);
-    //    void RegInt(const char *name, int x);
-
-    void        test_var_func1(void);
-    int         i_test_var_func2();
-    int         i_test_var_func3(int a);
-    vector<int> vi_test_var_func4();
+    // stFunctionInterface SFunctionInterface;
+    // Callback            SFunctionCallback;
 };
 
 #endif  // _DLCS_CVAR
