@@ -3,8 +3,14 @@
 
 #include "c_log.h"
 #include "dlcs.h"
+
+// SQLite installation:
 // apt install libsqlite3-dev / will install it to /usr/include/sqlite3.h
 #include "sqlite3.h"
+
+// MySQL installation:
+// apt install libssl-dev libmysqlclient-dev libmysql++-dev
+//#include "mysql.h"
 
 #define _DLCS_DB_FLATFILE 1
 #define _DLCS_DB_MYSQL    2

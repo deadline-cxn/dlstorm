@@ -31,9 +31,9 @@ int C_DLCS_DB::OpenSQLiteDB(const char *szInFilename) {
     int iResult = 0;
     iResult     = sqlite3_open(SSQLite3Config.szFilename, &SSQLite3Config.pDB);
     if (!iResult) {
-        LogEntry(va("SQLite version %s using database: [%s]\n", SQLITE_VERSION, SSQLite3Config.szFilename));
+        LogEntry(va("C_DLCS_DB::OpenSQLiteDB() SQLite version %s using database: [%s]\n", SQLITE_VERSION, SSQLite3Config.szFilename));
     } else {
-        LogEntry(va("SQLite version %s failed to load file [%s]\n", SQLITE_VERSION, SSQLite3Config.szFilename));
+        LogEntry(va("C_DLCS_DB::OpenSQLiteDB() SQLite version %s failed to load file [%s]\n", SQLITE_VERSION, SSQLite3Config.szFilename));
     }
     return iResult;
 }
