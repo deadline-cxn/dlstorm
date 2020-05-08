@@ -1,3 +1,18 @@
+/***************************************************************
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2020
+ **   File:         dlcs_db.h
+ **   Class:        C_DLCS_DB
+ **   Description:  Database class
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ ***************************************************************/
 #ifndef _DLCS_DB
 #define _DLCS_DB
 

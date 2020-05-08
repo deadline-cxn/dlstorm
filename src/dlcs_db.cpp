@@ -1,3 +1,18 @@
+/***************************************************************
+ **   DLSTORM   Deadline's Code Storm Library
+ **          /\
+ **   ---- D/L \----
+ **       \/
+ **   License:      BSD
+ **   Copyright:    2020
+ **   File:         dlcs_db.cpp
+ **   Class:        C_DLCS_DB
+ **   Description:  Database class
+ **   Author:       Seth Parson
+ **   Twitter:      @Sethcoder
+ **   Website:      www.sethcoder.com
+ **   Email:        defectiveseth@gmail.com
+ ***************************************************************/
 #include "dlcs_db.h"
 
 // - create new database class that abstracts db layer (will be able to use different methods such as flatfile, mysql,sqlite)
